@@ -15,6 +15,7 @@ st.set_page_config(
 COLOR_DARK_BLUE = "#0D3B66"
 COLOR_GRAY = "#F5F5F5"
 COLOR_GOLD = "#F4D35E"
+COLOR_BLACK = "#000000"
 
 # Estilos CSS Personalizados
 st.markdown(f"""
@@ -22,6 +23,11 @@ st.markdown(f"""
     /* Fundo Geral */
     .stApp {{
         background-color: {COLOR_GRAY};
+    }}
+    
+    /* Cores de Texto Globais */
+    .stApp, .stApp p, .stApp span, .stApp label, .stApp li {{
+        color: {COLOR_BLACK} !important;
     }}
     
     /* Sidebar */
@@ -33,15 +39,15 @@ st.markdown(f"""
     }}
     
     /* Títulos e Cabeçalhos */
-    h1, h2, h3 {{
-        color: {COLOR_DARK_BLUE};
+    h1, h2, h3, h4, h5, h6 {{
+        color: {COLOR_DARK_BLUE} !important;
         font-family: 'Helvetica Neue', sans-serif;
     }}
     
     /* Botões na Sidebar */
     .stSidebar .stButton > button {{
         background-color: transparent;
-        color: white;
+        color: white !important;
         border: 1px solid rgba(255,255,255,0.3);
         width: 100%;
         text-align: left;
@@ -50,13 +56,13 @@ st.markdown(f"""
     
     .stSidebar .stButton > button:hover {{
         border-color: {COLOR_GOLD};
-        color: {COLOR_GOLD};
+        color: {COLOR_GOLD} !important;
     }}
 
     /* Botões Principais (Dourados) */
     .main .stButton > button {{
-        background-color: {COLOR_GOLD};
-        color: {COLOR_DARK_BLUE};
+        background-color: {COLOR_GOLD} !important;
+        color: {COLOR_DARK_BLUE} !important;
         font-weight: bold;
         border: none;
         border-radius: 5px;
@@ -70,6 +76,15 @@ st.markdown(f"""
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         border-left: 5px solid {COLOR_GOLD};
         margin-bottom: 20px;
+    }}
+    
+    .custom-card h3, .custom-card p {{
+        color: {COLOR_DARK_BLUE} !important;
+    }}
+
+    /* Forçar cor preta em widgets específicos */
+    .stMarkdown div p {{
+        color: {COLOR_BLACK} !important;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -135,7 +150,7 @@ page = st.session_state.page
 if page == "Home":
     st.markdown("<div style='text-align: center; padding: 20px;'>", unsafe_allow_html=True)
     st.title("Transforme Sua Liderança com a Ciência do Inconsciente")
-    st.markdown(f"<h3 style='color: {COLOR_GOLD};'>Descubra como a psicanálise e a neurociência podem revolucionar sua capacidade de liderar</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color: {COLOR_GOLD} !important;'>Descubra como a psicanálise e a neurociência podem revolucionar sua capacidade de liderar</h3>", unsafe_allow_html=True)
     st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
     st.markdown("</div>", unsafe_allow_html=True)
     
