@@ -16,6 +16,9 @@ if 'invite_sent' not in st.session_state:
 if 'show_employee_form' not in st.session_state:
     st.session_state.show_employee_form = False
 
+# URL do WhatsApp (substituir SEUNUMERO pelo número real)
+WHATSAPP_URL = "https://wa.me/SEUNUMERO"
+
 # --- Sidebar de Navegação ---
 st.sidebar.title("LPS")
 
@@ -63,6 +66,8 @@ if page == "Home":
     st.write("- **Redução de conflitos**: Entenda as dinâmicas ocultas.")
     st.write("- **Menor turnover**: Retenha talentos humanos.")
     st.write("- **Liderança consciente**: Visão sistêmica e autêntica.")
+    
+    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
 
 elif page == "Sobre":
     st.title("Sobre a Plataforma")
@@ -72,6 +77,7 @@ elif page == "Sobre":
 
 elif page == "LPS Curso":
     st.title("LPS Curso")
+    st.info("Todas as opções de compra estão vinculadas à realização do Curso LPS")
     st.write("Módulos do Programa:")
     st.write("1. Neurociência")
     st.write("2. Inconsciente")
@@ -80,10 +86,7 @@ elif page == "LPS Curso":
     st.write("5. Entendendo a Equipe")
     st.write("6. Aplicação Prática")
     
-    st.write("Deseja expandir os conhecimentos da sua equipe?")
-    if st.button("Solicitar Acessos Adicionais", type="primary"):
-        st.session_state.page = "Mentoria"
-        st.rerun()
+    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
 
 elif page == "LPSTest":
     st.title("LPSTest: Descubra os perfis e mova as peças como um jogo")
@@ -93,6 +96,8 @@ elif page == "LPSTest":
     e compreender as peças do tabuleiro organizacional com clareza.
     """)
     
+    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Solicitar Acessos via WhatsApp</button></a>', unsafe_allow_html=True)
+
     st.divider()
     
     st.subheader("Área do Gestor")
@@ -143,3 +148,7 @@ elif page == "Mentoria":
         st.text_input("E-mail")
         st.text_area("Mensagem")
         st.form_submit_button("Enviar Solicitação", type="primary")
+    
+    st.markdown("---")
+    st.write("Ou se preferir, fale conosco diretamente:")
+    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
