@@ -16,8 +16,9 @@ if 'invite_sent' not in st.session_state:
 if 'show_employee_form' not in st.session_state:
     st.session_state.show_employee_form = False
 
-# URL do WhatsApp (substituir SEUNUMERO pelo número real)
-WHATSAPP_URL = "https://wa.me/SEUNUMERO"
+# URL do WhatsApp Oficial
+WHATSAPP_URL = "https://wa.me/5511971419453"
+OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 
 # --- Sidebar de Navegação ---
 st.sidebar.title("LPS")
@@ -62,12 +63,13 @@ if page == "Home":
     # Placeholder de vídeo
     st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
     
+    # Botão de WhatsApp visível abaixo do vídeo
+    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
+    
     st.subheader("Benefícios")
     st.write("- **Redução de conflitos**: Entenda as dinâmicas ocultas.")
     st.write("- **Menor turnover**: Retenha talentos humanos.")
     st.write("- **Liderança consciente**: Visão sistêmica e autêntica.")
-    
-    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
 
 elif page == "Sobre":
     st.title("Sobre a Plataforma")
@@ -142,13 +144,20 @@ elif page == "Mentoria":
     st.title("Mentoria e Contato")
     st.write("Informações sobre agendamento e sessões individuais.")
     
-    with st.form("contact_form"):
-        st.write("Solicite acessos adicionais ou agende uma mentoria:")
-        st.text_input("Nome")
-        st.text_input("E-mail")
-        st.text_area("Mensagem")
-        st.form_submit_button("Enviar Solicitação", type="primary")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Informações de Contato")
+        st.write(f"📞 WhatsApp: +55 11 97141-9453")
+        st.write(f"📧 E-mail: {OFFICIAL_EMAIL}")
+    
+    with col2:
+        with st.form("contact_form"):
+            st.subheader("Envie uma mensagem")
+            st.text_input("Nome")
+            st.text_input("E-mail")
+            st.text_area("Mensagem")
+            st.form_submit_button("Enviar Solicitação", type="primary")
     
     st.markdown("---")
-    st.write("Ou se preferir, fale conosco diretamente:")
-    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
+    st.write("Fale conosco agora mesmo:")
+    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
