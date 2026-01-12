@@ -101,7 +101,7 @@ with st.sidebar:
 if selection == "Home":
     st.markdown("<div style='text-align: center; padding: 50px;'>", unsafe_allow_html=True)
     st.title("Transforme Sua Liderança com a Ciência do Inconsciente")
-    st.markdown(f"<h3 style='color: {COLOR_GOLD};'>Descubra o poder da Psicanálise aplicada aos negócios</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='color: {COLOR_GOLD};'>Descubra como a psicanálise e a neurociência podem revolucionar sua capacidade de liderar</h3>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
@@ -109,43 +109,51 @@ if selection == "Home":
     with col1:
         st.markdown(f"""
         <div class="custom-card">
-            <h3>Autoconhecimento</h3>
-            <p>Entenda os gatilhos inconscientes que moldam suas decisões.</p>
+            <h3>Redução de Conflitos</h3>
+            <p>Entenda as dinâmicas ocultas que geram atritos e aprenda a mediá-los com eficácia.</p>
         </div>
         """, unsafe_allow_html=True)
         
     with col2:
         st.markdown(f"""
         <div class="custom-card">
-            <h3>Gestão de Equipes</h3>
-            <p>Lidere com empatia estratégica e reduza conflitos.</p>
+            <h3>Menor Turnover</h3>
+            <p>Retenha talentos através de uma gestão que compreende as necessidades humanas reais.</p>
         </div>
         """, unsafe_allow_html=True)
         
     with col3:
         st.markdown(f"""
         <div class="custom-card">
-            <h3>Alta Performance</h3>
-            <p>Desbloqueie o potencial oculto da sua organização.</p>
+            <h3>Liderança Consciente</h3>
+            <p>Desenvolva uma visão sistêmica e autêntica do seu papel como gestor.</p>
         </div>
         """, unsafe_allow_html=True)
 
 elif selection == "Sobre":
     st.title("Sobre a Plataforma")
-    st.write("A Liderança Psicanalítica (LPS) é uma metodologia inovadora que une os conceitos de Freud e Lacan à gestão corporativa moderna.")
-    st.image("https://placehold.co/800x400/0D3B66/F4D35E?text=Metodologia+LPS", caption="A Ciência do Inconsciente na Liderança")
+    st.write("""
+    A Liderança Psicanalítica (LPS) é uma metodologia inovadora que une os conceitos da psicanálise e neurociência à gestão corporativa moderna.
+    
+    **Sobre a Fundadora:**
+    Viviane Nishiura é Psicóloga clínica, formada pela Mackenzie e especialista pelo IPq-HC FMUSP. Com vasta experiência clínica e corporativa, ela desenvolveu o LPS para humanizar e potencializar a liderança.
+    """)
+    st.image("https://placehold.co/800x400/0D3B66/F4D35E?text=Viviane+Nishiura+LPS", caption="Viviane Nishiura - Liderança Psicanalítica")
 
 elif selection == "LPS Curso":
-    st.title("LPS Curso")
+    st.title("LPS Curso: Módulos do Programa")
     st.info("Inscrições abertas para a próxima turma!")
     
     col1, col2 = st.columns([2, 1])
     with col1:
         st.markdown("""
-        ### O que você vai aprender:
-        - **Módulo 1:** Fundamentos da Psicanálise Corporativa
-        - **Módulo 2:** Análise de Perfil Inconsciente
-        - **Módulo 3:** Liderança e Transferência
+        ### Estrutura do Curso:
+        1. **Neurociência:** As bases biológicas do comportamento e decisão.
+        2. **Inconsciente:** O que motiva as ações além da superfície.
+        3. **Transferência:** A dinâmica das relações entre líder e liderado.
+        4. **Autoconsciência:** O mergulho do líder em sua própria psique.
+        5. **Entendendo a Equipe:** Leitura de grupo e clima organizacional.
+        6. **Aplicação Prática:** Transformando teoria em resultados reais.
         """)
     with col2:
         st.markdown(f"""
@@ -158,7 +166,8 @@ elif selection == "LPS Curso":
 
 elif selection == "LPSTest":
     st.title("LPSTest: Análise de Perfil")
-    st.write("Responda ao questionário para identificar seu arquétipo de liderança.")
+    st.markdown("#### O LPSTest revela as forças inconscientes que moldam seu estilo de liderança")
+    st.write("Responda ao questionário abaixo para iniciar sua jornada de descoberta.")
     
     with st.expander("Iniciar Teste Rápido"):
         q1 = st.slider("Quanto você centraliza decisões?", 0, 10, 5)
@@ -169,7 +178,6 @@ elif selection == "LPSTest":
             score = (q1 + q2 + q3) / 3
             st.success("Análise concluída!")
             
-            # Gráfico Simples
             chart_data = pd.DataFrame({
                 "Competência": ["Centralização", "Resolução", "Inovação"],
                 "Nível": [q1, q2, q3]
@@ -200,7 +208,6 @@ elif selection == "LPSChat":
             st.markdown(prompt)
 
         with st.chat_message("assistant"):
-            # Mock response for simplicity without API key setup
             response = f"Interessante sua questão sobre '{prompt}'. Na visão da liderança psicanalítica, devemos olhar para o que não é dito. O que isso representa para o inconsciente da sua equipe?"
             st.markdown(response)
         
