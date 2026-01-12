@@ -16,6 +16,7 @@ COLOR_DARK_BLUE = "#0D3B66"
 COLOR_GRAY = "#F5F5F5"
 COLOR_GOLD = "#F4D35E"
 COLOR_BLACK = "#000000"
+COLOR_WHITE = "#FFFFFF"
 
 # Estilos CSS Personalizados
 st.markdown(f"""
@@ -34,40 +35,52 @@ st.markdown(f"""
     [data-testid="stSidebar"] {{
         background-color: {COLOR_DARK_BLUE};
     }}
-    [data-testid="stSidebar"] * {{
-        color: white !important;
+    
+    /* Títulos na Sidebar */
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {{
+        color: {COLOR_WHITE} !important;
+    }}
+
+    /* Botões na Sidebar (Navegação) */
+    .stSidebar .stButton > button {{
+        background-color: transparent !important;
+        color: {COLOR_WHITE} !important;
+        border: 1px solid rgba(255,255,255,0.3) !important;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 5px;
+        border-radius: 8px !important;
+        transition: all 0.3s ease;
     }}
     
+    .stSidebar .stButton > button:hover {{
+        background-color: {COLOR_GOLD} !important;
+        color: {COLOR_DARK_BLUE} !important;
+        border-color: {COLOR_GOLD} !important;
+    }}
+
+    /* Botões na Área Principal */
+    .main .stButton > button {{
+        background-color: {COLOR_DARK_BLUE} !important;
+        color: {COLOR_WHITE} !important;
+        font-weight: bold;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }}
+
+    .main .stButton > button:hover {{
+        background-color: {COLOR_GOLD} !important;
+        color: {COLOR_DARK_BLUE} !important;
+    }}
+
     /* Títulos e Cabeçalhos */
     h1, h2, h3, h4, h5, h6 {{
         color: {COLOR_DARK_BLUE} !important;
         font-family: 'Helvetica Neue', sans-serif;
     }}
     
-    /* Botões na Sidebar */
-    .stSidebar .stButton > button {{
-        background-color: transparent;
-        color: white !important;
-        border: 1px solid rgba(255,255,255,0.3);
-        width: 100%;
-        text-align: left;
-        margin-bottom: 5px;
-    }}
-    
-    .stSidebar .stButton > button:hover {{
-        border-color: {COLOR_GOLD};
-        color: {COLOR_GOLD} !important;
-    }}
-
-    /* Botões Principais (Dourados) */
-    .main .stButton > button {{
-        background-color: {COLOR_GOLD} !important;
-        color: {COLOR_DARK_BLUE} !important;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-    }}
-
     /* Card Personalizado */
     .custom-card {{
         background-color: white;
@@ -84,6 +97,11 @@ st.markdown(f"""
 
     /* Forçar cor preta em widgets específicos */
     .stMarkdown div p {{
+        color: {COLOR_BLACK} !important;
+    }}
+    
+    /* Estilo para Inputs na Sidebar */
+    .stSidebar .stTextInput input {{
         color: {COLOR_BLACK} !important;
     }}
     </style>
