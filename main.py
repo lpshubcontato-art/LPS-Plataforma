@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 
 # Configuração da Página - Tema padrão
 st.set_page_config(
@@ -19,6 +20,16 @@ if 'show_employee_form' not in st.session_state:
 # URL do WhatsApp Oficial
 WHATSAPP_URL = "https://wa.me/5511971419453"
 OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
+
+# Mapeamento de Módulos e PDFs
+MODULES = [
+    {"id": 1, "name": "Neurociência", "file": "attached_assets/Módulo_1_1768431876967.pdf"},
+    {"id": 2, "name": "Psicanálise", "file": "attached_assets/Módulo_2_1768431876968.pdf"},
+    {"id": 3, "name": "Transferência", "file": "attached_assets/Módulo_3_1768431876969.pdf"},
+    {"id": 4, "name": "Inconsciente Coletivo", "file": "attached_assets/Módulo_4_1768431876970.pdf"},
+    {"id": 5, "name": "Autoconsciência", "file": "attached_assets/Módulo_5_1768431876971.pdf"},
+    {"id": 6, "name": "Mapeamento da Equipe", "file": "attached_assets/Módulo_6_1768431876972.pdf"},
+]
 
 # --- Sidebar de Navegação ---
 st.sidebar.title("LPS")
@@ -80,13 +91,23 @@ elif page == "Sobre":
 elif page == "LPS Curso":
     st.title("LPS Curso")
     st.info("Todas as opções de compra estão vinculadas à realização do Curso LPS")
-    st.write("Módulos do Programa:")
-    st.write("1. Neurociência")
-    st.write("2. Inconsciente")
-    st.write("3. Transferência")
-    st.write("4. Autoconsciência")
-    st.write("5. Entendendo a Equipe")
-    st.write("6. Aplicação Prática")
+    
+    st.write("Explore os módulos do programa e baixe o material de apoio:")
+    
+    for mod in MODULES:
+        with st.expander(f"Módulo {mod['id']}: {mod['name']}"):
+            st.write(f"Conteúdo detalhado do Módulo {mod['id']}.")
+            if os.path.exists(mod['file']):
+                with open(mod['file'], "rb") as f:
+                    st.download_button(
+                        label=f"Baixar Material de Apoio (PDF) - Módulo {mod['id']}",
+                        data=f,
+                        file_name=f"LPS_Modulo_{mod['id']}_{mod['name'].replace(' ', '_')}.pdf",
+                        mime="application/pdf",
+                        key=f"dl_{mod['id']}"
+                    )
+            else:
+                st.warning("Arquivo PDF não encontrado no servidor.")
     
     st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
 
