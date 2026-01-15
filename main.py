@@ -6,7 +6,7 @@ import json
 import hashlib
 import streamlit.components.v1 as components
 from datetime import datetime
-from openai import OpenAI
+import google.generativeai as genai
 
 # Configuração da Página - Tema LPS
 st.set_page_config(
@@ -531,7 +531,7 @@ def render_login_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width="stretch")
+            st.image(LOGO_PATH, width=300)
         
         st.markdown("""
             <div style="background-color: #0D3B66; padding: 2rem; border-radius: 15px; margin-top: 1rem;">
@@ -587,7 +587,7 @@ def render_login_page():
 if st.session_state.authenticated and not is_employee_access:
     with st.sidebar:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width="stretch")
+            st.image(LOGO_PATH, width=300)
         st.title("LPS Hub")
         if st.session_state.user:
             st.caption(f"Olá, {st.session_state.user['name']}")
@@ -992,20 +992,18 @@ INSTRUÇÕES DE RESPOSTA:
         with st.chat_message("assistant"):
             with st.spinner("Analisando..."):
                 try:
-                    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+                    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+                    model = genai.GenerativeModel('gemini-1.5-flash')
                     
-                    messages = [{"role": "system", "content": system_prompt}]
+                    # Build conversation history for Gemini
+                    chat_history = f"{system_prompt}\n\n"
                     for msg in st.session_state.chat_messages:
-                        messages.append({"role": msg["role"], "content": msg["content"]})
+                        role = "Gestor" if msg["role"] == "user" else "Consultor"
+                        chat_history += f"{role}: {msg['content']}\n\n"
                     
-                    response = client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=messages,
-                        max_tokens=1500,
-                        temperature=0.7
-                    )
+                    response = model.generate_content(chat_history)
                     
-                    assistant_message = response.choices[0].message.content
+                    assistant_message = response.text
                     st.markdown(assistant_message)
                     st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
                 

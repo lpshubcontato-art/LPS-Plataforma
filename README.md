@@ -17,7 +17,7 @@ streamlit run main.py --server.port 5000
 Ao hospedar no Streamlit Cloud, configure as seguintes variáveis em **Settings > Secrets**:
 
 ```toml
-OPENAI_API_KEY = "sua-chave-aqui"
+GOOGLE_API_KEY = "sua-chave-do-google-gemini-aqui"
 ```
 
 ## Funcionalidades
