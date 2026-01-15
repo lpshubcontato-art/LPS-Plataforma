@@ -58,17 +58,98 @@ if 'page' not in st.session_state:
 WHATSAPP_URL = "https://wa.me/5511971419453"
 OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 
-# Mapeamento de Módulos (8 Módulos conforme solicitado)
-# Incluindo IDs fictícios do Vimeo para os vídeos (serão substituídos pelos reais do usuário)
+# Mapeamento de Módulos (8 Módulos conforme solicitado) com os links do Vimeo fornecidos
 MODULES = [
-    {"id": 0, "name": "Introdução", "file": "attached_assets/introdução_1768431876966.pdf", "vimeo_id": "824804225"},
-    {"id": 1, "name": "Neurociência", "file": "attached_assets/Módulo_1_1768431876967.pdf", "vimeo_id": "824804225"},
-    {"id": 2, "name": "Psicanálise", "file": "attached_assets/Módulo_2_1768431876968.pdf", "vimeo_id": "824804225"},
-    {"id": 3, "name": "Transferência", "file": "attached_assets/Módulo_3_1768431876969.pdf", "vimeo_id": "824804225"},
-    {"id": 4, "name": "Inconsciente Coletivo", "file": "attached_assets/Módulo_4_1768431876970.pdf", "vimeo_id": "824804225"},
-    {"id": 5, "name": "Autoconsciência", "file": "attached_assets/Módulo_5_1768431876971.pdf", "vimeo_id": "824804225"},
-    {"id": 6, "name": "Mapeamento da Equipe", "file": "attached_assets/Módulo_6_1768431876972.pdf", "vimeo_id": "824804225"},
-    {"id": 7, "name": "Interpretação dos Arquétipos", "file": "attached_assets/Módulo_7_1768431876973.pdf", "vimeo_id": "824804225"},
+    {
+        "id": 0, 
+        "name": "Introdução", 
+        "file": "attached_assets/introdução_1768431876966.pdf", 
+        "videos": [
+            "https://vimeo.com/1154502544", 
+            "https://vimeo.com/1154502598", 
+            "https://vimeo.com/1154502492"
+        ]
+    },
+    {
+        "id": 1, 
+        "name": "Neurociência", 
+        "file": "attached_assets/Módulo_1_1768431876967.pdf", 
+        "videos": [
+            "https://vimeo.com/1154503073", 
+            "https://vimeo.com/1154503122", 
+            "https://vimeo.com/1154503201", 
+            "https://vimeo.com/1154503286", 
+            "https://vimeo.com/1154503332", 
+            "https://vimeo.com/1154502907", 
+            "https://vimeo.com/1154502997"
+        ]
+    },
+    {
+        "id": 2, 
+        "name": "Psicanálise", 
+        "file": "attached_assets/Módulo_2_1768431876968.pdf", 
+        "videos": [
+            "https://vimeo.com/1154504282", 
+            "https://vimeo.com/1154503918", 
+            "https://vimeo.com/1154503996", 
+            "https://vimeo.com/1154504129", 
+            "https://vimeo.com/1154504216", 
+            "https://vimeo.com/1154504054"
+        ]
+    },
+    {
+        "id": 3, 
+        "name": "Transferência", 
+        "file": "attached_assets/Módulo_3_1768431876969.pdf", 
+        "videos": [
+            "https://vimeo.com/1154508629", 
+            "https://vimeo.com/1154508577", 
+            "https://vimeo.com/1154508688", 
+            "https://vimeo.com/1154508745", 
+            "https://vimeo.com/1154508530"
+        ]
+    },
+    {
+        "id": 4, 
+        "name": "Inconsciente Coletivo", 
+        "file": "attached_assets/Módulo_4_1768431876970.pdf", 
+        "videos": [
+            "https://vimeo.com/1154509566", 
+            "https://vimeo.com/1154509679", 
+            "https://vimeo.com/1154509769", 
+            "https://vimeo.com/1154509511"
+        ]
+    },
+    {
+        "id": 5, 
+        "name": "Autoconsciência", 
+        "file": "attached_assets/Módulo_5_1768431876971.pdf", 
+        "videos": [
+            "https://vimeo.com/1154510241", 
+            "https://vimeo.com/1154510404", 
+            "https://vimeo.com/1154510309"
+        ]
+    },
+    {
+        "id": 6, 
+        "name": "Mapeamento da Equipe", 
+        "file": "attached_assets/Módulo_6_1768431876972.pdf", 
+        "videos": [
+            "https://vimeo.com/1154510682", 
+            "https://vimeo.com/1154510710", 
+            "https://vimeo.com/1154510729", 
+            "https://vimeo.com/1154510816"
+        ]
+    },
+    {
+        "id": 7, 
+        "name": "Interpretação dos Arquétipos", 
+        "file": "attached_assets/Módulo_7_1768431876973.pdf", 
+        "videos": [
+            "https://vimeo.com/1154511020", 
+            "https://vimeo.com/1154511064"
+        ]
+    },
 ]
 
 # --- Sidebar de Navegação ---
@@ -101,7 +182,7 @@ if page == "Home":
     st.title("Transforme Sua Liderança com a Ciência do Inconsciente")
     st.write("Bem-vindo à plataforma de Liderança Psicanalítica (LPS).")
     
-    st.video("https://vimeo.com/824804225") # Vídeo de boas vindas
+    st.video("https://vimeo.com/1154502544") # Vídeo de boas vindas (Parte 1 da Introdução como destaque)
     
     st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
     
@@ -116,11 +197,15 @@ elif page == "LPS Curso":
     
     for mod in MODULES:
         with st.expander(f"Módulo {mod['id']}: {mod['name']}"):
-            # Vídeo do Vimeo
-            vimeo_url = f"https://vimeo.com/{mod['vimeo_id']}"
-            st.video(vimeo_url)
+            st.write(f"Vídeos do {mod['name']}:")
             
-            st.write(f"Material complementar para o {mod['name']}:")
+            # Exibe todos os vídeos da lista para o módulo
+            for i, video_url in enumerate(mod['videos'], 1):
+                st.write(f"Parte {i}:")
+                st.video(video_url)
+            
+            st.write("---")
+            st.write(f"Material complementar:")
             
             # Botão de Download PDF
             if os.path.exists(mod['file']):
