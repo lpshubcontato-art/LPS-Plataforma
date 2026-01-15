@@ -434,7 +434,7 @@ if 'token' in query_params:
 # Sidebar
 with st.sidebar:
     if os.path.exists(LOGO_PATH):
-        st.image(LOGO_PATH, use_container_width=True)
+        st.image(LOGO_PATH, width="stretch")
     st.title("LPS Hub")
     if st.button("🏠 Home"):
         st.session_state.page = "Home"
