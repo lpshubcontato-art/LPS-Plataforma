@@ -4,3 +4,10 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# LPS Platform
+lps_data.db
+__pycache__/
+*.pyc
+.env
+.streamlit/secrets.toml
