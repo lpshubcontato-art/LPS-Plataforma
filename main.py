@@ -60,10 +60,20 @@ st.markdown("""
         border-right: 1px solid #e0e0e0;
     }
 
-    .logo-container {
+    /* Estilização para o cabeçalho alinhado */
+    .header-container {
         display: flex;
+        align-items: center;
         justify-content: center;
-        padding: 1rem;
+        gap: 20px;
+        margin-bottom: 2rem;
+    }
+    
+    .header-title {
+        color: var(--primary-blue);
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: bold;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -110,17 +120,20 @@ with st.sidebar:
 page = st.session_state.page
 
 if page == "Home":
-    if os.path.exists(LOGO_PATH):
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.image(LOGO_PATH, use_container_width=True)
+    # Cabeçalho com logo pequeno e título alinhados
+    st.markdown("""
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: -50px; margin-bottom: 30px;">
+            <img src="https://raw.githubusercontent.com/user-attachments/assets/650e41f0-410a-428a-8531-18e47854694b" style="width: 60px;">
+            <h1 style="color: #0D3B66; margin: 0; font-size: 2.2rem;">Plataforma de Liderança Psicanalítica (LPS)</h1>
+        </div>
+    """, unsafe_allow_html=True)
             
-    st.title("Transforme Sua Liderança com a Ciência do Inconsciente")
-    st.subheader("Descubra como a neurociência e a psicanálise podem revolucionar sua capacidade de liderar e influenciar equipes.")
+    st.markdown("<h2 style='text-align: center; color: #0D3B66;'>Transforme Sua Liderança com a Ciência do Inconsciente</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-size: 1.2rem;'>Descubra como a neurociência e a psicanálise podem revolucionar sua capacidade de liderar e influenciar equipes.</p>", unsafe_allow_html=True)
     
     vimeo_video("https://vimeo.com/1154502544")
     
-    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px; width:auto;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
+    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:20px; width:auto;">Falar com a Consultora no WhatsApp</button></a></div>', unsafe_allow_html=True)
 
 elif page == "LPS Curso":
     st.title("🎓 Programa LPS")
