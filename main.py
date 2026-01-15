@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import streamlit.components.v1 as components
 
 # Configuração da Página - Tema LPS (Azul Marinho #0D3B66 e Dourado #F4D35E)
 st.set_page_config(
@@ -44,30 +45,31 @@ st.markdown("""
     }
 
     /* Ajuste de visibilidade dos expansores */
-    .st-emotion-cache-p4m0vl {
-        color: var(--primary-blue) !important;
-    }
-    
     div[data-testid="stExpander"] {
         border: 1px solid var(--primary-blue);
         border-radius: 8px;
         background-color: var(--light-gold);
     }
 
-    div[data-testid="stExpander"] p {
+    /* Texto do título do expansor */
+    div[data-testid="stExpander"] summary p {
         color: var(--primary-blue) !important;
-        font-weight: bold;
+        font-weight: bold !important;
+        font-size: 1.1rem !important;
     }
 
-    .st-emotion-cache-16477hk {
-        color: var(--primary-blue) !important;
-    }
-
-    summary {
-        color: var(--primary-blue) !important;
+    /* Garantir que o ícone do expansor também seja visível */
+    div[data-testid="stExpander"] summary svg {
+        fill: var(--primary-blue) !important;
     }
     </style>
     """, unsafe_allow_html=True)
+
+# Função para renderizar vídeo do Vimeo via Iframe (mais estável)
+def vimeo_video(url):
+    video_id = url.split('/')[-1]
+    embed_url = f"https://player.vimeo.com/video/{video_id}"
+    components.iframe(embed_url, height=450, scrolling=False)
 
 # Inicialização do Estado de Sessão
 if 'page' not in st.session_state:
@@ -77,7 +79,7 @@ if 'page' not in st.session_state:
 WHATSAPP_URL = "https://wa.me/5511971419453"
 OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 
-# Mapeamento de Módulos com links diretos do Vimeo
+# Mapeamento de Módulos com links diretos (LIMPOS) do Vimeo
 MODULES = [
     {
         "id": 0, 
@@ -91,7 +93,7 @@ MODULES = [
     },
     {
         "id": 1, 
-        "name": "Neurociência", 
+        "name": "Módulo 1: Neurociência", 
         "file": "attached_assets/Módulo_1_1768431876967.pdf", 
         "videos": [
             "https://vimeo.com/1154503073", 
@@ -105,7 +107,7 @@ MODULES = [
     },
     {
         "id": 2, 
-        "name": "Psicanálise", 
+        "name": "Módulo 2: Psicanálise", 
         "file": "attached_assets/Módulo_2_1768431876968.pdf", 
         "videos": [
             "https://vimeo.com/1154504282", 
@@ -118,7 +120,7 @@ MODULES = [
     },
     {
         "id": 3, 
-        "name": "Transferência", 
+        "name": "Módulo 3: Transferência", 
         "file": "attached_assets/Módulo_3_1768431876969.pdf", 
         "videos": [
             "https://vimeo.com/1154508629", 
@@ -130,7 +132,7 @@ MODULES = [
     },
     {
         "id": 4, 
-        "name": "Inconsciente Coletivo", 
+        "name": "Módulo 4: Inconsciente Coletivo", 
         "file": "attached_assets/Módulo_4_1768431876970.pdf", 
         "videos": [
             "https://vimeo.com/1154509566", 
@@ -141,7 +143,7 @@ MODULES = [
     },
     {
         "id": 5, 
-        "name": "Autoconsciência", 
+        "name": "Módulo 5: Autoconsciência", 
         "file": "attached_assets/Módulo_5_1768431876971.pdf", 
         "videos": [
             "https://vimeo.com/1154510241", 
@@ -151,7 +153,7 @@ MODULES = [
     },
     {
         "id": 6, 
-        "name": "Mapeamento da Equipe", 
+        "name": "Módulo 6: Mapeamento da Equipe", 
         "file": "attached_assets/Módulo_6_1768431876972.pdf", 
         "videos": [
             "https://vimeo.com/1154510682", 
@@ -162,7 +164,7 @@ MODULES = [
     },
     {
         "id": 7, 
-        "name": "Interpretação dos Arquétipos", 
+        "name": "Módulo 7: Interpretação dos Arquétipos", 
         "file": "attached_assets/Módulo_7_1768431876973.pdf", 
         "videos": [
             "https://vimeo.com/1154511020", 
@@ -201,7 +203,8 @@ if page == "Home":
     st.title("Transforme Sua Liderança com a Ciência do Inconsciente")
     st.write("Bem-vindo à plataforma de Liderança Psicanalítica (LPS).")
     
-    st.video("https://vimeo.com/1154502544")
+    # Vídeo de destaque via Iframe
+    vimeo_video("https://vimeo.com/1154502544")
     
     st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
     
@@ -215,12 +218,13 @@ elif page == "LPS Curso":
     st.info("Abaixo estão os 8 módulos que compõem sua jornada de liderança.")
     
     for mod in MODULES:
-        with st.expander(f"Módulo {mod['id']}: {mod['name']}"):
+        with st.expander(f"{mod['name']}"):
             st.write(f"Vídeos do {mod['name']}:")
             
             for i, video_url in enumerate(mod['videos'], 1):
-                st.write(f"Parte {i}:")
-                st.video(video_url)
+                st.write(f"**Parte {i}:**")
+                vimeo_video(video_url)
+                st.write("") # Espaçamento entre vídeos
             
             st.write("---")
             st.write(f"Material complementar:")
