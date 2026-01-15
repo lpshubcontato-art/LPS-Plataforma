@@ -343,6 +343,8 @@ if 'manager_data' not in st.session_state:
     st.session_state.manager_data = None
 if 'login_mode' not in st.session_state:
     st.session_state.login_mode = "login"
+if 'show_test_form' not in st.session_state:
+    st.session_state.show_test_form = False
 
 WHATSAPP_URL = "https://wa.me/5511971419453"
 LOGO_PATH = "attached_assets/logotipo_1768443722848.jpeg"
@@ -693,38 +695,63 @@ elif page == "LPSTest":
         st.session_state.page = "Login"
         st.rerun()
     st.title("📝 LPSTest Assessment - Seu Perfil")
-    st.write("Responda às 48 afirmações. (1 = Discordo Totalmente, 5 = Concordo Totalmente)")
     
-    with st.form("manager_assessment"):
-        responses = render_assessment_form("manager")
-        submit = st.form_submit_button("Gerar Meu Perfil de Liderança")
-        
-        if submit and st.session_state.user:
-            dominant, secondary, details, bion_role, block_sums = calculate_profile(responses)
-            user_id = st.session_state.user['id']
-            save_manager_profile(user_id, dominant, secondary, details)
-            st.session_state.manager_data = get_manager_by_user(user_id)
-            st.session_state.assessment_results = {
-                "dominant": dominant,
-                "secondary": secondary,
-                "details": details,
-                "bion_role": bion_role
-            }
-            st.rerun()
+    # Check for existing saved profile from database
+    saved_profile = get_manager_profile_by_user(st.session_state.user['id'])
     
-    if st.session_state.assessment_results:
-        res = st.session_state.assessment_results
+    if saved_profile:
+        st.success("✅ Seu perfil já está salvo! Você pode refazer o teste a qualquer momento.")
         st.markdown(f"""
             <div class="result-card">
-                <div class="profile-title">Resultado: {res['dominant']} + {res['secondary']}</div>
+                <div class="profile-title">Seu Perfil Atual: {saved_profile['dominant']} + {saved_profile['secondary']}</div>
                 <div class="section-header">🧠 Forças</div>
-                <p>{res['details']['forcas']}</p>
+                <p>{saved_profile['details'].get('forcas', 'Perfil calculado.')}</p>
                 <div class="section-header">⚠ Riscos</div>
-                <p>{res['details']['riscos']}</p>
+                <p>{saved_profile['details'].get('riscos', 'Agende mentoria para análise.')}</p>
                 <div class="section-header">➡ Recomendações</div>
-                <p>{res['details'].get('recomendacoes', 'Agende mentoria.')}</p>
+                <p>{saved_profile['details'].get('recomendacoes', 'Agende mentoria.')}</p>
             </div>
         """, unsafe_allow_html=True)
+        st.write("---")
+        if st.button("🔄 Refazer LPSTest"):
+            st.session_state.show_test_form = True
+            st.rerun()
+    
+    # Show form if no saved profile OR user wants to redo
+    if not saved_profile or st.session_state.get('show_test_form', False):
+        st.write("Responda às 48 afirmações. (1 = Discordo Totalmente, 5 = Concordo Totalmente)")
+        
+        with st.form("manager_assessment"):
+            responses = render_assessment_form("manager")
+            submit = st.form_submit_button("Gerar Meu Perfil de Liderança")
+            
+            if submit and st.session_state.user:
+                dominant, secondary, details, bion_role, block_sums = calculate_profile(responses)
+                user_id = st.session_state.user['id']
+                save_manager_profile(user_id, dominant, secondary, details)
+                st.session_state.manager_data = get_manager_by_user(user_id)
+                st.session_state.show_test_form = False
+                st.session_state.assessment_results = {
+                    "dominant": dominant,
+                    "secondary": secondary,
+                    "details": details,
+                    "bion_role": bion_role
+                }
+                st.rerun()
+        
+        if st.session_state.assessment_results:
+            res = st.session_state.assessment_results
+            st.markdown(f"""
+                <div class="result-card">
+                    <div class="profile-title">Resultado: {res['dominant']} + {res['secondary']}</div>
+                    <div class="section-header">🧠 Forças</div>
+                    <p>{res['details']['forcas']}</p>
+                    <div class="section-header">⚠ Riscos</div>
+                    <p>{res['details']['riscos']}</p>
+                    <div class="section-header">➡ Recomendações</div>
+                    <p>{res['details'].get('recomendacoes', 'Agende mentoria.')}</p>
+                </div>
+            """, unsafe_allow_html=True)
 
 elif page == "TeamManagement":
     if not st.session_state.authenticated:
