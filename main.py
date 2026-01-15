@@ -1,7 +1,10 @@
 import streamlit as st
 import os
+import sqlite3
+import uuid
+import json
 import streamlit.components.v1 as components
-from PIL import Image
+from datetime import datetime
 
 # Configuração da Página - Tema LPS
 st.set_page_config(
@@ -9,6 +12,149 @@ st.set_page_config(
     page_icon="🧠",
     layout="wide"
 )
+
+# Database Setup
+def init_db():
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    
+    # Managers table
+    c.execute('''CREATE TABLE IF NOT EXISTS managers (
+        id TEXT PRIMARY KEY,
+        session_id TEXT UNIQUE,
+        name TEXT,
+        email TEXT,
+        profile_dominant TEXT,
+        profile_secondary TEXT,
+        profile_details TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+    
+    # Employees table
+    c.execute('''CREATE TABLE IF NOT EXISTS employees (
+        id TEXT PRIMARY KEY,
+        manager_id TEXT,
+        link_token TEXT UNIQUE,
+        slot_number INTEGER,
+        name TEXT,
+        email TEXT,
+        profile_dominant TEXT,
+        profile_secondary TEXT,
+        profile_details TEXT,
+        bion_role TEXT,
+        completed INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (manager_id) REFERENCES managers(id)
+    )''')
+    
+    # Course progress table
+    c.execute('''CREATE TABLE IF NOT EXISTS course_progress (
+        id TEXT PRIMARY KEY,
+        session_id TEXT UNIQUE,
+        progress_data TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+    
+    conn.commit()
+    conn.close()
+
+init_db()
+
+def get_db():
+    return sqlite3.connect('lps_data.db')
+
+def generate_manager_id(session_id):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id FROM managers WHERE session_id = ?", (session_id,))
+    result = c.fetchone()
+    if result:
+        conn.close()
+        return result[0]
+    manager_id = str(uuid.uuid4())
+    c.execute("INSERT INTO managers (id, session_id) VALUES (?, ?)", (manager_id, session_id))
+    conn.commit()
+    conn.close()
+    return manager_id
+
+def generate_employee_link(manager_id, slot_number):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT link_token FROM employees WHERE manager_id = ? AND slot_number = ?", (manager_id, slot_number))
+    result = c.fetchone()
+    if result:
+        conn.close()
+        return result[0]
+    token = str(uuid.uuid4())[:8]
+    employee_id = str(uuid.uuid4())
+    c.execute("INSERT INTO employees (id, manager_id, link_token, slot_number) VALUES (?, ?, ?, ?)", 
+              (employee_id, manager_id, token, slot_number))
+    conn.commit()
+    conn.close()
+    return token
+
+def save_manager_profile(session_id, dominant, secondary, details):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""UPDATE managers SET profile_dominant = ?, profile_secondary = ?, profile_details = ? 
+                 WHERE session_id = ?""", (dominant, secondary, json.dumps(details), session_id))
+    conn.commit()
+    conn.close()
+
+def get_manager_employees(manager_id):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT * FROM employees WHERE manager_id = ? ORDER BY slot_number", (manager_id,))
+    employees = c.fetchall()
+    conn.close()
+    return employees
+
+def save_employee_result(token, name, email, dominant, secondary, details, bion_role):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""UPDATE employees SET name = ?, email = ?, profile_dominant = ?, profile_secondary = ?, 
+                 profile_details = ?, bion_role = ?, completed = 1 WHERE link_token = ?""",
+              (name, email, dominant, secondary, json.dumps(details), bion_role, token))
+    conn.commit()
+    conn.close()
+
+def get_employee_by_token(token):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT * FROM employees WHERE link_token = ?", (token,))
+    employee = c.fetchone()
+    conn.close()
+    return employee
+
+def get_manager_profile(session_id):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT profile_dominant, profile_secondary, profile_details FROM managers WHERE session_id = ?", (session_id,))
+    result = c.fetchone()
+    conn.close()
+    if result and result[0]:
+        return {
+            "dominant": result[0],
+            "secondary": result[1],
+            "details": json.loads(result[2]) if result[2] else {}
+        }
+    return None
+
+def get_app_url():
+    """Get the current app URL for generating employee links"""
+    try:
+        # Try to get from environment or use a default pattern
+        replit_url = os.environ.get('REPLIT_DEV_DOMAIN', '')
+        if replit_url:
+            return f"https://{replit_url}"
+        # Fallback for production
+        replit_slug = os.environ.get('REPL_SLUG', '')
+        replit_owner = os.environ.get('REPL_OWNER', '')
+        if replit_slug and replit_owner:
+            return f"https://{replit_slug}.{replit_owner}.repl.co"
+    except:
+        pass
+    return ""
 
 # Estilização Customizada
 st.markdown("""
@@ -20,13 +166,8 @@ st.markdown("""
         --light-gold: #FFF9E6;
     }
     
-    .main {
-        background-color: var(--bg-gray);
-    }
-    
-    h1, h2, h3 {
-        color: var(--primary-blue) !important;
-    }
+    .main { background-color: var(--bg-gray); }
+    h1, h2, h3 { color: var(--primary-blue) !important; }
     
     .stButton>button {
         background-color: var(--primary-blue);
@@ -93,6 +234,33 @@ st.markdown("""
         margin-top: 20px;
         font-weight: bold;
     }
+
+    .employee-card {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 2px solid var(--accent-gold);
+        margin: 10px 0;
+    }
+
+    .link-box {
+        background-color: var(--light-gold);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--primary-blue);
+        font-family: monospace;
+        word-break: break-all;
+    }
+
+    .bion-badge {
+        background-color: var(--primary-blue);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-top: 5px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -108,9 +276,12 @@ if 'progress' not in st.session_state:
     st.session_state.progress = {}
 if 'assessment_results' not in st.session_state:
     st.session_state.assessment_results = None
+if 'session_id' not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+if 'employee_token' not in st.session_state:
+    st.session_state.employee_token = None
 
 WHATSAPP_URL = "https://wa.me/5511971419453"
-OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 LOGO_PATH = "attached_assets/logotipo_1768443722848.jpeg"
 
 # Definições das questões do Assessment (8 por bloco)
@@ -177,7 +348,6 @@ ASSESSMENT_QUESTIONS = {
     ]
 }
 
-# Mapeamento para nomes de exibição dos perfis
 BLOCK_TO_PROFILE = {
     "Relação": "🛡 Protetor",
     "Contenção": "🧱 Contenedor",
@@ -187,36 +357,79 @@ BLOCK_TO_PROFILE = {
     "Reflexão": "🧠 Observador Reflexivo"
 }
 
-# Banco de Dados de Perfis (Versão Completa conforme Roteiro)
+# Mapeamento de Papéis de Bion baseado nas respostas
+def classify_bion_role(block_sums):
+    """
+    Classifica o papel grupal segundo Bion:
+    - Porta-voz: Alta Autoridade + Alta Reflexão (expressa o que o grupo sente)
+    - Bode Expiatório: Alta Relação + Baixa Contenção (absorve projeções negativas)
+    - Dependente: Alta Contenção + Baixa Autoridade (busca proteção no líder)
+    - Líder de Luta-Fuga: Alto Narcisismo + Alta Estrutura (reativo a ameaças)
+    - Sabotador Silencioso: Alta Estrutura + Baixa Reflexão (resiste passivamente)
+    """
+    autoridade = block_sums.get("Autoridade", 24)
+    contencao = block_sums.get("Contenção", 24)
+    narcisismo = block_sums.get("Narcisismo", 24)
+    estrutura = block_sums.get("Estrutura", 24)
+    relacao = block_sums.get("Relação", 24)
+    reflexao = block_sums.get("Reflexão", 24)
+    
+    # Thresholds
+    high = 30
+    low = 20
+    
+    if autoridade >= high and reflexao >= high:
+        return "🎤 Porta-voz"
+    elif relacao >= high and contencao <= low:
+        return "🐐 Bode Expiatório"
+    elif contencao >= high and autoridade <= low:
+        return "🤝 Dependente"
+    elif narcisismo >= high and estrutura >= high:
+        return "⚔️ Líder de Luta-Fuga"
+    elif estrutura >= high and reflexao <= low:
+        return "🔇 Sabotador Silencioso"
+    else:
+        return "⚖️ Neutro/Adaptável"
+
+BION_DESCRIPTIONS = {
+    "🎤 Porta-voz": "Expressa verbalmente o que o grupo sente mas não consegue dizer. Canaliza tensões coletivas.",
+    "🐐 Bode Expiatório": "Absorve projeções negativas do grupo. Frequentemente culpado por falhas sistêmicas.",
+    "🤝 Dependente": "Busca proteção e direção no líder. Evita autonomia e delega responsabilidade emocional.",
+    "⚔️ Líder de Luta-Fuga": "Reativo a ameaças reais ou imaginárias. Mobiliza o grupo para atacar ou fugir.",
+    "🔇 Sabotador Silencioso": "Resiste passivamente às mudanças. Cumpre tarefas sem engajamento emocional.",
+    "⚖️ Neutro/Adaptável": "Perfil equilibrado. Adapta-se às necessidades do grupo sem assumir papel fixo."
+}
+
 PROFILES_DB = {
     "🛡 Protetor": {
         "🧠 Observador Reflexivo": {
-            "forcas": "✔ Inspira confiança e acolhimento. ✔ Capacidade de análise emocional e previsão de conflitos. ✔ Toma decisões considerando o impacto humano.",
-            "riscos": "⚠ Pode absorver emocionalmente os problemas do time. ⚠ Pode hesitar diante de decisões duras por empatia excessiva.",
-            "recomendacoes": "➡ Estabeleça limites claros entre você e a equipe. ➡ Reserve tempo para ação, não apenas para análise."
+            "forcas": "✔ Inspira confiança e acolhimento. ✔ Capacidade de análise emocional e previsão de conflitos.",
+            "riscos": "⚠ Pode absorver emocionalmente os problemas do time. ⚠ Pode hesitar diante de decisões duras.",
+            "recomendacoes": "➡ Estabeleça limites claros. ➡ Reserve tempo para ação, não apenas análise."
         },
         "🔥 Narciso Estratégico": {
-            "forcas": "✔ Inspira pertencimento e admiração. ✔ Gera lealdade por meio da conexão emocional. ✔ Sabe como influenciar com afeto e presença.",
-            "riscos": "⚠ Pode depender demais da validação externa. ⚠ Corre risco de evitar feedbacks duros para manter o carinho do time.",
-            "recomendacoes": "➡ Trabalhe a construção da sua autoridade sem depender do afeto. ➡ Lembre-se: cuidar também é confrontar quando necessário."
-        },
-        "🏗 Estruturador": {
-            "forcas": "✔ Cria ambientes emocionalmente estáveis. ✔ Protege o time com sistemas e processos claros.",
-            "riscos": "⚠ Pode se tornar rígido demais. ⚠ Dificuldade em lidar com o imprevisto emocional.",
-            "recomendacoes": "➡ Permita que a equipe falhe sob sua supervisão. ➡ Flexibilize as regras em momentos de alta criatividade."
+            "forcas": "✔ Inspira pertencimento e admiração. ✔ Gera lealdade por conexão emocional.",
+            "riscos": "⚠ Pode depender demais da validação externa. ⚠ Evita feedbacks duros.",
+            "recomendacoes": "➡ Construa autoridade sem depender do afeto. ➡ Cuidar também é confrontar."
         }
     }
 }
 
 MODULES_DATA = [
-    {"id": 1, "name": "Módulo 1: Neurociência da Liderança - químicos cerebrais, Círculo de Segurança", "file": "attached_assets/Módulo_1_1768431876967.pdf", "videos": ["https://vimeo.com/1154503073", "https://vimeo.com/1154503122", "https://vimeo.com/1154503201", "https://vimeo.com/1154503286", "https://vimeo.com/1154503332", "https://vimeo.com/1154502907", "https://vimeo.com/1154502997"]},
-    {"id": 2, "name": "Módulo 2: Mergulho no Inconsciente - Id, Ego, Superego, mecanismos de defesa", "file": "attached_assets/Módulo_2_1768431876968.pdf", "videos": ["https://vimeo.com/1154504282", "https://vimeo.com/1154503918", "https://vimeo.com/1154503996", "https://vimeo.com/1154504129", "https://vimeo.com/1154504216", "https://vimeo.com/1154504054"]},
-    {"id": 3, "name": "Módulo 3: Relações e Transferência - dinâmicas líder-liderado, manejo de contratransferência", "file": "attached_assets/Módulo_3_1768431876969.pdf", "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577", "https://vimeo.com/1154508688", "https://vimeo.com/1154508745", "https://vimeo.com/1154508530"]},
-    {"id": 4, "name": "Módulo 4: Autoconsciência - seu arquétipo de liderança", "file": "attached_assets/Módulo_5_1768431876971.pdf", "videos": ["https://vimeo.com/1154510241", "https://vimeo.com/1154510404", "https://vimeo.com/1154510309"]},
-    {"id": 5, "name": "Módulo 5: Entendendo a Equipe - assessment dos funcionários, papéis grupais de Bion", "file": "attached_assets/Módulo_6_1768431876972.pdf", "videos": ["https://vimeo.com/1154510682", "https://vimeo.com/1154510710", "https://vimeo.com/1154510729", "https://vimeo.com/1154510816"]},
-    {"id": 6, "name": "Módulo 6: Aplicação Prática - casos reais, plano de ação personalizado", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020", "https://vimeo.com/1154511064"]},
-    {"id": 7, "name": "Módulo 7: Conclusão e Próximos Passos", "file": "attached_assets/introdução_1768431876966.pdf", "videos": ["https://vimeo.com/1154502544", "https://vimeo.com/1154502598", "https://vimeo.com/1154502492"]}
+    {"id": 1, "name": "Módulo 1: Neurociência da Liderança", "file": "attached_assets/Módulo_1_1768431876967.pdf", "videos": ["https://vimeo.com/1154503073", "https://vimeo.com/1154503122", "https://vimeo.com/1154503201"]},
+    {"id": 2, "name": "Módulo 2: Mergulho no Inconsciente", "file": "attached_assets/Módulo_2_1768431876968.pdf", "videos": ["https://vimeo.com/1154504282", "https://vimeo.com/1154503918"]},
+    {"id": 3, "name": "Módulo 3: Relações e Transferência", "file": "attached_assets/Módulo_3_1768431876969.pdf", "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577"]},
+    {"id": 4, "name": "Módulo 4: Autoconsciência", "file": "attached_assets/Módulo_5_1768431876971.pdf", "videos": ["https://vimeo.com/1154510241"]},
+    {"id": 5, "name": "Módulo 5: Entendendo a Equipe", "file": "attached_assets/Módulo_6_1768431876972.pdf", "videos": ["https://vimeo.com/1154510682"]},
+    {"id": 6, "name": "Módulo 6: Aplicação Prática", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]},
+    {"id": 7, "name": "Módulo 7: Conclusão", "file": "attached_assets/introdução_1768431876966.pdf", "videos": ["https://vimeo.com/1154502544"]}
 ]
+
+# Check for employee token in URL
+query_params = st.query_params
+if 'token' in query_params:
+    st.session_state.employee_token = query_params['token']
+    st.session_state.page = "EmployeeAssessment"
 
 # Sidebar
 with st.sidebar:
@@ -232,6 +445,9 @@ with st.sidebar:
     if st.button("📝 LPSTest"):
         st.session_state.page = "LPSTest"
         st.rerun()
+    if st.button("👥 Gestão de Equipe"):
+        st.session_state.page = "TeamManagement"
+        st.rerun()
     if st.button("💬 LPSChat"):
         st.session_state.page = "LPSChat"
         st.rerun()
@@ -242,21 +458,54 @@ with st.sidebar:
         st.session_state.page = "Sobre"
         st.rerun()
     st.write("---")
-    st.markdown(f'[💬 Suporte e Orçamento]({WHATSAPP_URL})')
+    st.markdown(f'[💬 Suporte]({WHATSAPP_URL})')
 
-# Conteúdo Principal
 page = st.session_state.page
 
+# Assessment Form Component
+def render_assessment_form(form_key, is_employee=False):
+    responses = {}
+    for block_name, questions in ASSESSMENT_QUESTIONS.items():
+        st.markdown(f"### {block_name}")
+        for i, q in enumerate(questions):
+            st.markdown(f'<div class="question-text">{i+1}. {q}</div>', unsafe_allow_html=True)
+            responses[f"{block_name}_{i}"] = st.select_slider(
+                "Nota:",
+                options=[1, 2, 3, 4, 5],
+                value=3,
+                key=f"{form_key}_{block_name}_{i}"
+            )
+        st.write("---")
+    return responses
+
+def calculate_profile(responses):
+    block_sums = {}
+    for block in ASSESSMENT_QUESTIONS.keys():
+        block_sums[block] = sum(responses[f"{block}_{i}"] for i in range(8))
+    
+    sorted_blocks = sorted(block_sums.items(), key=lambda x: x[1], reverse=True)
+    dom_key = sorted_blocks[0][0]
+    sec_key = sorted_blocks[1][0]
+    
+    dominant_name = BLOCK_TO_PROFILE[dom_key]
+    secondary_name = BLOCK_TO_PROFILE[sec_key]
+    
+    details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
+        "forcas": f"✔ Combinação de {dominant_name} e {secondary_name}.",
+        "riscos": "⚠ Necessidade de vigília sobre dinâmicas da equipe.",
+        "recomendacoes": "➡ Agende mentoria personalizada."
+    })
+    
+    bion_role = classify_bion_role(block_sums)
+    
+    return dominant_name, secondary_name, details, bion_role, block_sums
+
+# Pages
 if page == "Home":
-    st.markdown("""
-        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: -50px; margin-bottom: 30px;">
-            <img src="https://raw.githubusercontent.com/user-attachments/assets/650e41f0-410a-428a-8531-18e47854694b" style="width: 60px;">
-            <h1 style="color: #0D3B66; margin: 0; font-size: 2.2rem;">Plataforma de Liderança Psicanalítica (LPS)</h1>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #0D3B66;'>Plataforma de Liderança Psicanalítica (LPS)</h1>", unsafe_allow_html=True)
     st.markdown("<h2 style='text-align: center; color: #0D3B66;'>Transforme Sua Liderança com a Ciência do Inconsciente</h2>", unsafe_allow_html=True)
     vimeo_video("https://vimeo.com/1154502544")
-    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:20px; width:auto;">Falar com a Consultora no WhatsApp</button></a></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold;">Falar com a Consultora</button></a></div>', unsafe_allow_html=True)
 
 elif page == "LPS Curso":
     st.title("🎓 Programa LPS")
@@ -268,57 +517,27 @@ elif page == "LPS Curso":
             for v_idx, v_url in enumerate(mod['videos']):
                 lesson_id = f"m{mod['id']}_v{v_idx}"
                 vimeo_video(v_url)
-                st.session_state.progress[lesson_id] = st.checkbox("Concluí esta aula", value=st.session_state.progress.get(lesson_id, False), key=lesson_id)
+                st.session_state.progress[lesson_id] = st.checkbox("Concluí", value=st.session_state.progress.get(lesson_id, False), key=lesson_id)
             if os.path.exists(mod['file']):
                 with open(mod['file'], "rb") as f:
-                    st.download_button("⬇️ Baixar Material", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
+                    st.download_button("⬇️ Material", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
 
 elif page == "LPSTest":
-    st.title("📝 LPSTest Assessment")
-    st.write("Responda às 48 afirmações abaixo. (1 = Discordo Totalmente, 5 = Concordo Totalmente)")
+    st.title("📝 LPSTest Assessment - Seu Perfil")
+    st.write("Responda às 48 afirmações. (1 = Discordo Totalmente, 5 = Concordo Totalmente)")
     
-    with st.form("assessment_form"):
-        responses = {}
-        for block_name, questions in ASSESSMENT_QUESTIONS.items():
-            st.markdown(f"### {block_name}")
-            for i, q in enumerate(questions):
-                st.markdown(f'<div class="question-text">{i+1}. {q}</div>', unsafe_allow_html=True)
-                # Usando select_slider sem o argumento labels que causou erro
-                responses[f"{block_name}_{i}"] = st.select_slider(
-                    "Sua nota:",
-                    options=[1, 2, 3, 4, 5],
-                    value=3,
-                    key=f"q_{block_name}_{i}"
-                )
-            st.write("---")
-        
-        # Botão de envio obrigatório no final do formulário
+    with st.form("manager_assessment"):
+        responses = render_assessment_form("manager")
         submit = st.form_submit_button("Gerar Meu Perfil de Liderança")
         
         if submit:
-            # Calculando somas por bloco
-            block_sums = {}
-            for block in ASSESSMENT_QUESTIONS.keys():
-                block_sums[block] = sum(responses[f"{block}_{i}"] for i in range(8))
-            
-            sorted_blocks = sorted(block_sums.items(), key=lambda x: x[1], reverse=True)
-            dom_key = sorted_blocks[0][0]
-            sec_key = sorted_blocks[1][0]
-            
-            dominant_name = BLOCK_TO_PROFILE[dom_key]
-            secondary_name = BLOCK_TO_PROFILE[sec_key]
-            
-            # Detalhes do Perfil
-            details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
-                "forcas": f"✔ Combinação de {dominant_name} e {secondary_name}. ✔ Capacidade de liderança equilibrada.",
-                "riscos": "⚠ Necessidade de vigília constante sobre as dinâmicas da equipe.",
-                "recomendacoes": "➡ Agende sua mentoria personalizada para detalhar este perfil."
-            })
-            
+            dominant, secondary, details, bion_role, block_sums = calculate_profile(responses)
+            save_manager_profile(st.session_state.session_id, dominant, secondary, details)
             st.session_state.assessment_results = {
-                "dominant": dominant_name,
-                "secondary": secondary_name,
-                "details": details
+                "dominant": dominant,
+                "secondary": secondary,
+                "details": details,
+                "bion_role": bion_role
             }
             st.rerun()
     
@@ -327,23 +546,155 @@ elif page == "LPSTest":
         st.markdown(f"""
             <div class="result-card">
                 <div class="profile-title">Resultado: {res['dominant']} + {res['secondary']}</div>
-                <div class="section-header">🧠 Forças do Arquétipo Híbrido</div>
-                <p style="margin-top:10px;">{res['details']['forcas']}</p>
-                <div class="section-header">⚠ Riscos e Pontos Cegos</div>
-                <p style="margin-top:10px;">{res['details']['riscos']}</p>
-                <div class="section-header">➡ Recomendações de Desenvolvimento</div>
-                <p style="margin-top:10px;">{res['details'].get('recomendacoes', 'Agende uma mentoria para mais detalhes.')}</p>
+                <div class="section-header">🧠 Forças</div>
+                <p>{res['details']['forcas']}</p>
+                <div class="section-header">⚠ Riscos</div>
+                <p>{res['details']['riscos']}</p>
+                <div class="section-header">➡ Recomendações</div>
+                <p>{res['details'].get('recomendacoes', 'Agende mentoria.')}</p>
             </div>
         """, unsafe_allow_html=True)
-        st.info("💡 Este é um resumo técnico. O relatório completo é discutido na mentoria individual.")
+
+elif page == "TeamManagement":
+    st.title("👥 Gestão de Equipe")
+    st.write("Gere links para seus colaboradores responderem ao assessment e veja o mapeamento completo.")
+    
+    manager_id = generate_manager_id(st.session_state.session_id)
+    manager_profile = get_manager_profile(st.session_state.session_id)
+    
+    # Show Manager Profile First
+    if manager_profile:
+        st.markdown(f"""
+            <div class="result-card" style="margin-bottom: 20px;">
+                <div class="profile-title">👤 Seu Perfil (Gestor)</div>
+                <p style="text-align: center; font-size: 1.3rem;"><strong>{manager_profile['dominant']} + {manager_profile['secondary']}</strong></p>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.warning("⚠️ Complete seu LPSTest primeiro para ver a comparação com sua equipe.")
+    
+    st.write("---")
+    
+    # Generate Links Section
+    st.subheader("🔗 Gerar Links para Funcionários")
+    st.write("Cada link é único. Copie e envie para cada colaborador.")
+    
+    base_url = get_app_url()
+    cols = st.columns(4)
+    
+    for i, col in enumerate(cols):
+        with col:
+            slot = i + 1
+            token = generate_employee_link(manager_id, slot)
+            full_link = f"{base_url}?token={token}" if base_url else f"?token={token}"
+            st.markdown(f"**Funcionário {slot}**")
+            st.code(full_link, language=None)
+            st.caption("Copie e envie este link")
+    
+    if not base_url:
+        st.info("💡 Após publicar o app, os links terão a URL completa automaticamente.")
+    
+    st.write("---")
+    
+    # Team Dashboard with Comparative View
+    st.subheader("📊 Dashboard Comparativo da Equipe")
+    employees = get_manager_employees(manager_id)
+    
+    if employees:
+        completed_count = sum(1 for e in employees if e[10] == 1)
+        st.metric("Respostas Recebidas", f"{completed_count}/4")
+        
+        # Comparative table header
+        if manager_profile and completed_count > 0:
+            st.markdown(f"""
+                <div style="background-color: #0D3B66; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                    <strong>Comparação:</strong> Seu perfil ({manager_profile['dominant']}) vs Equipe
+                </div>
+            """, unsafe_allow_html=True)
+        
+        for emp in employees:
+            if emp[10] == 1:  # completed
+                emp_name = emp[4] or f'Funcionário {emp[3]}'
+                st.markdown(f"""
+                    <div class="employee-card">
+                        <h4 style="color: #0D3B66; margin:0;">{emp_name}</h4>
+                        <p><strong>Perfil:</strong> {emp[6]} + {emp[7]}</p>
+                        <span class="bion-badge">{emp[9]}</span>
+                        <p style="font-size: 0.9rem; color: #666; margin-top:10px;">
+                            {BION_DESCRIPTIONS.get(emp[9], '')}
+                        </p>
+                        <p style="font-size: 0.85rem; color: #0D3B66; margin-top: 8px;">
+                            📧 Resultado enviado para: {emp[5]}
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                    <div class="employee-card" style="opacity: 0.5;">
+                        <h4 style="color: #0D3B66; margin:0;">Funcionário {emp[3]}</h4>
+                        <p>⏳ Aguardando resposta...</p>
+                    </div>
+                """, unsafe_allow_html=True)
+    else:
+        st.info("Os links serão gerados automaticamente. Copie-os acima e envie para seus colaboradores.")
+
+elif page == "EmployeeAssessment":
+    token = st.session_state.employee_token
+    employee = get_employee_by_token(token)
+    
+    if not employee:
+        st.error("Link inválido ou expirado.")
+    elif employee[10] == 1:  # already completed
+        st.success("Você já respondeu ao assessment! Obrigado pela participação.")
+        st.markdown(f"""
+            <div class="result-card">
+                <div class="profile-title">Seu Perfil Registrado</div>
+                <p style="text-align: center;"><strong>{employee[6]} + {employee[7]}</strong></p>
+                <p style="text-align: center; font-size: 0.9rem; color: #666;">
+                    Seu resultado foi salvo e enviado para seu e-mail ({employee[5]}).
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.title("📝 Assessment de Equipe")
+        st.write("Responda às afirmações abaixo de forma honesta. Seus resultados individuais são confidenciais.")
+        
+        with st.form("employee_assessment"):
+            name = st.text_input("Seu Nome")
+            email = st.text_input("Seu E-mail (receberá seu resultado individual)")
+            st.write("---")
+            responses = render_assessment_form("employee")
+            submit = st.form_submit_button("Enviar Minhas Respostas")
+            
+            if submit:
+                if not name or not email:
+                    st.error("Preencha seu nome e e-mail.")
+                else:
+                    dominant, secondary, details, bion_role, _ = calculate_profile(responses)
+                    save_employee_result(token, name, email, dominant, secondary, details, bion_role)
+                    st.balloons()
+                    st.success("Obrigado! Suas respostas foram salvas com sucesso.")
+                    st.markdown(f"""
+                        <div class="result-card">
+                            <div class="profile-title">Seu Perfil de Liderança</div>
+                            <p style="text-align: center; font-size: 1.5rem;"><strong>{dominant} + {secondary}</strong></p>
+                            <div class="section-header">🧠 Suas Forças</div>
+                            <p>{details['forcas']}</p>
+                            <div class="section-header">⚠ Pontos de Atenção</div>
+                            <p>{details['riscos']}</p>
+                            <div class="section-header">➡ Recomendações</div>
+                            <p>{details.get('recomendacoes', 'Participe da mentoria para aprofundar.')}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    st.info(f"📧 Uma cópia deste resultado será enviada para {email}. Apenas você e seu gestor terão acesso ao mapeamento completo da equipe.")
 
 elif page == "LPSChat":
     st.title("💬 LPSChat")
-    st.chat_input("Descreva a situação da sua equipe para análise...")
+    st.chat_input("Descreva a situação da sua equipe...")
 
 elif page == "Mentoria":
     st.title("📅 Mentoria")
-    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px;">Agendar Mentoria Síncrona</button></a></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold;">Agendar Mentoria</button></a></div>', unsafe_allow_html=True)
 
 elif page == "Sobre":
     st.title("👤 Sobre Viviane Nishiura")
