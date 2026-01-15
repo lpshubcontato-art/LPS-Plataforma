@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a Streamlit-based Python application for "Liderança Psicanalítica" (Psychoanalytic Leadership). The application features a custom-styled interface using the LPS brand colors (Navy Blue #0D3B66 and Gold #F4D35E). The project appears to be in a transitional state with remnants of a full-stack TypeScript application structure (React + Express + PostgreSQL) but is currently configured to run as a Streamlit Python application.
+This is a Streamlit-based Python application for "Liderança Psicanalítica" (Psychoanalytic Leadership). The application features a custom-styled interface using the LPS brand colors (Navy Blue #0D3B66 and Gold #F4D35E).
 
 ## User Preferences
 
@@ -15,6 +15,23 @@ Preferred communication style: Simple, everyday language.
 - **Entry Point**: `main.py` serves as the application entry
 - **Styling**: Custom CSS embedded in Streamlit for brand theming
 - **Server**: Runs on port 5000 with Streamlit's built-in server
+- **Database**: SQLite (lps_data.db) with users, managers, employees, course_progress tables
+
+### Authentication System
+- **Password Hashing**: SHA-256 for credential storage
+- **Session Management**: Streamlit session_state for authenticated sessions
+- **User Types**: Managers (full access via login) and Employees (token-based access)
+- **Session Variables**: authenticated, user (id/name/email), manager_data, login_mode
+
+### Access Control
+- **Managers**: Register/login, see full sidebar with course and team management
+- **Employees**: Access via unique token URL (?token=xxx), see only Assessment page
+
+### Database Tables
+- **users**: id, email, password_hash, name, user_type, created_at
+- **managers**: id, user_id, session_id, name, email, profile data, created_at
+- **employees**: id, manager_id, link_token, slot_number, profile data, bion_role
+- **course_progress**: id, user_id, progress_data, updated_at
 
 ### Legacy/Dormant TypeScript Stack
 The repository contains configuration for a full-stack TypeScript application that is not currently active:
