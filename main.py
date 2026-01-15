@@ -79,7 +79,7 @@ if 'page' not in st.session_state:
 WHATSAPP_URL = "https://wa.me/5511971419453"
 OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 
-# Mapeamento de Módulos com links diretos (LIMPOS) do Vimeo
+# Mapeamento de Módulos atualizado com os novos nomes e vídeos organizados
 MODULES = [
     {
         "id": 0, 
@@ -93,7 +93,7 @@ MODULES = [
     },
     {
         "id": 1, 
-        "name": "Módulo 1: Neurociência", 
+        "name": "Módulo 1: Neurociência da Liderança (Químicos cerebrais e Círculo de Segurança)", 
         "file": "attached_assets/Módulo_1_1768431876967.pdf", 
         "videos": [
             "https://vimeo.com/1154503073", 
@@ -107,7 +107,7 @@ MODULES = [
     },
     {
         "id": 2, 
-        "name": "Módulo 2: Psicanálise", 
+        "name": "Módulo 2: Mergulho no Inconsciente (Id, Ego, Superego e Mecanismos de Defesa)", 
         "file": "attached_assets/Módulo_2_1768431876968.pdf", 
         "videos": [
             "https://vimeo.com/1154504282", 
@@ -120,7 +120,7 @@ MODULES = [
     },
     {
         "id": 3, 
-        "name": "Módulo 3: Transferência", 
+        "name": "Módulo 3: Relações e Transferência (Dinâmicas líder-liderado e manejo de contratransferência)", 
         "file": "attached_assets/Módulo_3_1768431876969.pdf", 
         "videos": [
             "https://vimeo.com/1154508629", 
@@ -132,19 +132,8 @@ MODULES = [
     },
     {
         "id": 4, 
-        "name": "Módulo 4: Inconsciente Coletivo", 
-        "file": "attached_assets/Módulo_4_1768431876970.pdf", 
-        "videos": [
-            "https://vimeo.com/1154509566", 
-            "https://vimeo.com/1154509679", 
-            "https://vimeo.com/1154509769", 
-            "https://vimeo.com/1154509511"
-        ]
-    },
-    {
-        "id": 5, 
-        "name": "Módulo 5: Autoconsciência", 
-        "file": "attached_assets/Módulo_5_1768431876971.pdf", 
+        "name": "Módulo 4: Autoconsciência (Seu arquétipo de liderança)", 
+        "file": "attached_assets/Módulo_5_1768431876971.pdf", # Note: Module 5 PDF originally for Autoconsciência
         "videos": [
             "https://vimeo.com/1154510241", 
             "https://vimeo.com/1154510404", 
@@ -152,9 +141,9 @@ MODULES = [
         ]
     },
     {
-        "id": 6, 
-        "name": "Módulo 6: Mapeamento da Equipe", 
-        "file": "attached_assets/Módulo_6_1768431876972.pdf", 
+        "id": 5, 
+        "name": "Módulo 5: Entendendo a Equipe (Assessments e papéis grupais de Bion)", 
+        "file": "attached_assets/Módulo_6_1768431876972.pdf", # Note: Module 6 PDF originally for Entendendo a Equipe
         "videos": [
             "https://vimeo.com/1154510682", 
             "https://vimeo.com/1154510710", 
@@ -163,14 +152,14 @@ MODULES = [
         ]
     },
     {
-        "id": 7, 
-        "name": "Módulo 7: Interpretação dos Arquétipos", 
-        "file": "attached_assets/Módulo_7_1768431876973.pdf", 
+        "id": 6, 
+        "name": "Módulo 6: Aplicação Prática (Casos reais e plano de ação personalizado)", 
+        "file": "attached_assets/Módulo_7_1768431876973.pdf", # Note: Module 7 PDF originally for Aplicação Prática
         "videos": [
             "https://vimeo.com/1154511020", 
             "https://vimeo.com/1154511064"
         ]
-    },
+    }
 ]
 
 # --- Sidebar de Navegação ---
@@ -215,11 +204,11 @@ if page == "Home":
 
 elif page == "LPS Curso":
     st.title("🎓 Programa LPS: Módulos do Curso")
-    st.info("Abaixo estão os 8 módulos que compõem sua jornada de liderança.")
+    st.info("Abaixo estão os módulos que compõem sua jornada de liderança.")
     
     for mod in MODULES:
         with st.expander(f"{mod['name']}"):
-            st.write(f"Vídeos do {mod['name']}:")
+            st.write(f"Vídeos do módulo:")
             
             for i, video_url in enumerate(mod['videos'], 1):
                 st.write(f"**Parte {i}:**")
@@ -232,9 +221,9 @@ elif page == "LPS Curso":
             if os.path.exists(mod['file']):
                 with open(mod['file'], "rb") as f:
                     st.download_button(
-                        label=f"⬇️ Baixar PDF - {mod['name']}",
+                        label=f"⬇️ Baixar PDF - Material de Apoio",
                         data=f,
-                        file_name=f"LPS_{mod['name'].replace(' ', '_')}.pdf",
+                        file_name=f"LPS_{mod['name'].split(':')[0].strip().replace(' ', '_')}.pdf",
                         mime="application/pdf",
                         key=f"dl_mod_{mod['id']}"
                     )
