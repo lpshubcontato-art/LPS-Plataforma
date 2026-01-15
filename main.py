@@ -531,10 +531,13 @@ def render_login_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=300)
+            st.image(LOGO_PATH, width=150)
         
         st.markdown("""
-            <div style="background-color: #0D3B66; padding: 2rem; border-radius: 15px; margin-top: 1rem;">
+            <h1 style="color: #0D3B66; font-size: 2.5rem; text-align: center; font-weight: bold; margin: 0.5rem 0;">
+                Liderança Psicanalítica
+            </h1>
+            <div style="background-color: #0D3B66; padding: 1.5rem; border-radius: 15px; margin-top: 1rem;">
                 <p class="welcome-text">Transforme Sua Liderança com a Ciência do Inconsciente</p>
             </div>
         """, unsafe_allow_html=True)
@@ -587,7 +590,7 @@ def render_login_page():
 if st.session_state.authenticated and not is_employee_access:
     with st.sidebar:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=300)
+            st.image(LOGO_PATH, width=120)
         st.title("LPS Hub")
         if st.session_state.user:
             st.caption(f"Olá, {st.session_state.user['name']}")
@@ -992,7 +995,7 @@ INSTRUÇÕES DE RESPOSTA:
         with st.chat_message("assistant"):
             with st.spinner("Analisando..."):
                 try:
-                    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+                    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
                     model = genai.GenerativeModel('gemini-1.5-flash')
                     
                     # Build conversation history for Gemini
