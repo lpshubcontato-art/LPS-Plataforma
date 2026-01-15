@@ -159,7 +159,7 @@ ASSESSMENT_QUESTIONS = {
         "Já senti que alguém da equipe me via como uma figura parental.",
         "Em alguns momentos, sou tratado com hostilidade sem motivo aparente.",
         "Já notei que membros da equipe projetam em mim expectativas irreais.",
-        "Alguns funcionários me fazem sentir como se eu fosse o 'culpado' of tudo.",
+        "Alguns funcionários me fazem sentir como se eu fosse o 'culpado' de tudo.",
         "Tenho dificuldade em me distanciar emocionalmente de alguns colaboradores.",
         "Preciso manter uma certa 'armadura' para não ser afetado pela equipe.",
         "Costumo internalizar conflitos mesmo quando não são meus.",
@@ -187,7 +187,7 @@ BLOCK_TO_PROFILE = {
     "Reflexão": "🧠 Observador Reflexivo"
 }
 
-# Expandindo o Banco de Dados para incluir mais perfis híbridos (Amostra dos 30 solicitados)
+# Banco de Dados de Perfis (Versão Completa conforme Roteiro)
 PROFILES_DB = {
     "🛡 Protetor": {
         "🧠 Observador Reflexivo": {
@@ -204,20 +204,6 @@ PROFILES_DB = {
             "forcas": "✔ Cria ambientes emocionalmente estáveis. ✔ Protege o time com sistemas e processos claros.",
             "riscos": "⚠ Pode se tornar rígido demais. ⚠ Dificuldade em lidar com o imprevisto emocional.",
             "recomendacoes": "➡ Permita que a equipe falhe sob sua supervisão. ➡ Flexibilize as regras em momentos de alta criatividade."
-        }
-    },
-    "🧱 Contenedor": {
-        "🛡 Protetor": {
-            "forcas": "✔ Equilíbrio emocional impressionante. ✔ Alta capacidade de conter a ansiedade do grupo.",
-            "riscos": "⚠ Pode ser visto como frio ou distante se não calibrar a empatia. ⚠ Risco de sobrecarga por absorver o estresse alheio.",
-            "recomendacoes": "➡ Pratique o desapego emocional após reuniões intensas. ➡ Delegue a gestão de conflitos menores."
-        }
-    },
-    "🔥 Narciso Estratégico": {
-        "🪞 Espelho Emocional": {
-            "forcas": "✔ Carisma magnético. ✔ Capacidade de moldar a cultura organizacional através do exemplo.",
-            "riscos": "⚠ Necessidade constante de holofotes. ⚠ Dificuldade em aceitar sucessos da equipe que não passem por ele.",
-            "recomendacoes": "➡ Celebre as vitórias individuais do time sem se colocar no centro. ➡ Busque validação interna, não apenas externa."
         }
     }
 }
@@ -289,7 +275,7 @@ elif page == "LPS Curso":
 
 elif page == "LPSTest":
     st.title("📝 LPSTest Assessment")
-    st.write("Responda às 48 afirmações abaixo. Seja sincero com suas tendências automáticas.")
+    st.write("Responda às 48 afirmações abaixo. (1 = Discordo Totalmente, 5 = Concordo Totalmente)")
     
     with st.form("assessment_form"):
         responses = {}
@@ -297,33 +283,36 @@ elif page == "LPSTest":
             st.markdown(f"### {block_name}")
             for i, q in enumerate(questions):
                 st.markdown(f'<div class="question-text">{i+1}. {q}</div>', unsafe_allow_html=True)
+                # Usando select_slider sem o argumento labels que causou erro
                 responses[f"{block_name}_{i}"] = st.select_slider(
-                    "Sua resposta:",
+                    "Sua nota:",
                     options=[1, 2, 3, 4, 5],
                     value=3,
-                    labels={1: "Discordo totalmente", 3: "Neutro", 5: "Concordo totalmente"},
                     key=f"q_{block_name}_{i}"
                 )
             st.write("---")
         
-        if st.form_submit_button("Gerar Meu Perfil de Liderança"):
+        # Botão de envio obrigatório no final do formulário
+        submit = st.form_submit_button("Gerar Meu Perfil de Liderança")
+        
+        if submit:
             # Calculando somas por bloco
             block_sums = {}
             for block in ASSESSMENT_QUESTIONS.keys():
                 block_sums[block] = sum(responses[f"{block}_{i}"] for i in range(8))
             
             sorted_blocks = sorted(block_sums.items(), key=lambda x: x[1], reverse=True)
-            dom_key, dom_score = sorted_blocks[0]
-            sec_key, sec_score = sorted_blocks[1]
+            dom_key = sorted_blocks[0][0]
+            sec_key = sorted_blocks[1][0]
             
             dominant_name = BLOCK_TO_PROFILE[dom_key]
             secondary_name = BLOCK_TO_PROFILE[sec_key]
             
             # Detalhes do Perfil
             details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
-                "forcas": f"✔ Combinação potente de {dominant_name} e {secondary_name}. ✔ Alta capacidade adaptativa.",
-                "riscos": "⚠ Necessidade de vigília constante sobre as projeções da equipe.",
-                "recomendacoes": "➡ Agende sua mentoria personalizada para detalhar este perfil híbrido."
+                "forcas": f"✔ Combinação de {dominant_name} e {secondary_name}. ✔ Capacidade de liderança equilibrada.",
+                "riscos": "⚠ Necessidade de vigília constante sobre as dinâmicas da equipe.",
+                "recomendacoes": "➡ Agende sua mentoria personalizada para detalhar este perfil."
             })
             
             st.session_state.assessment_results = {
@@ -343,14 +332,14 @@ elif page == "LPSTest":
                 <div class="section-header">⚠ Riscos e Pontos Cegos</div>
                 <p style="margin-top:10px;">{res['details']['riscos']}</p>
                 <div class="section-header">➡ Recomendações de Desenvolvimento</div>
-                <p style="margin-top:10px;">{res['details'].get('recomendacoes', res['details'].get('reflexoes'))}</p>
+                <p style="margin-top:10px;">{res['details'].get('recomendacoes', 'Agende uma mentoria para mais detalhes.')}</p>
             </div>
         """, unsafe_allow_html=True)
         st.info("💡 Este é um resumo técnico. O relatório completo é discutido na mentoria individual.")
 
 elif page == "LPSChat":
     st.title("💬 LPSChat")
-    st.chat_input("Descreva a situação da sua equipe para análise psicanalítica...")
+    st.chat_input("Descreva a situação da sua equipe para análise...")
 
 elif page == "Mentoria":
     st.title("📅 Mentoria")
@@ -358,4 +347,4 @@ elif page == "Mentoria":
 
 elif page == "Sobre":
     st.title("👤 Sobre Viviane Nishiura")
-    st.write("Viviane Nishiura é psicóloga clínica e consultora de liderança com foco em psicanálise aplicada a grupos e instituições.")
+    st.write("Viviane Nishiura é psicóloga clínica e consultora de liderança.")
