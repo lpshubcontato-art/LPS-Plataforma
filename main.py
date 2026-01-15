@@ -167,23 +167,44 @@ elif page == "LPS Curso":
 
 elif page == "LPSTest":
     st.title("📝 LPSTest")
-    st.info("Área de Testes em Breve")
-    st.write("Nesta seção, gestores e equipes terão acesso a ferramentas de assessment validadas para mapeamento comportamental e psicanalítico.")
+    st.write("O LPSTest revela as forças inconscientes que moldam seu estilo de liderança e a dinâmica de sua equipe.")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Gerar Link para Funcionário"):
+            st.success("Link gerado com sucesso! (Simulação)")
+    with col2:
+        if st.button("Ver Meus Resultados"):
+            st.info("Seus resultados estarão disponíveis após a conclusão do teste.")
 
 elif page == "LPSChat":
     st.title("💬 LPSChat")
-    st.info("Mapeamento de Equipe via IA")
-    st.write("Nossa Inteligência Artificial ajudará você a analisar dinâmicas de grupo e perfis individuais com base na metodologia LPS.")
+    st.warning("Nossa IA está sendo treinada com a bibliografia de Neurociência e Psicanálise para analisar sua equipe.")
+    
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    if prompt := st.chat_input("Como posso ajudar com sua equipe hoje?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        
+        with st.chat_message("assistant"):
+            st.markdown("Estou analisando sua solicitação com base nos princípios LPS...")
 
 elif page == "Mentoria":
     st.title("📅 Mentoria")
-    st.write("Agende suas sessões de mentoria síncrona com Viviane Nishiura.")
-    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px;">Agendar via WhatsApp</button></a>', unsafe_allow_html=True)
+    st.write("Agende suas sessões de mentoria síncrona com Viviane Nishiura para aprofundar seu desenvolvimento.")
+    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px;">Agendar Mentoria Síncrona</button></a></div>', unsafe_allow_html=True)
 
 elif page == "Sobre":
     st.title("👤 Sobre Viviane Nishiura")
     st.write("""
-    **Viviane Nishiura** é Psicóloga clínica formada pela **Universidade Mackenzie** e especialista pelo **Instituto de Psiquiatria do Hospital das Clínicas da Faculdade de Medicina da USP (IPq-HC FMUSP)**.
+    **Viviane Nishiura** é Psicóloga clínica formada pela **Universidade Mackenzie**, pós-graduada em gestão de projetos, especialista em **Transtornos de Personalidade (IPq-HC FMUSP)** e pesquisadora das forças inconscientes nas organizações.
     
     Com mais de 28 anos de experiência em Recursos Humanos e Desenvolvimento Organizacional, Viviane fundou a metodologia **Liderança Psicanalítica (LPS)** para integrar a profundidade da psicanálise com as descobertas da neurociência no ambiente corporativo.
     """)
