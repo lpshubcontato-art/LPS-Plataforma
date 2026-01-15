@@ -3,6 +3,7 @@ import os
 import sqlite3
 import uuid
 import json
+import hashlib
 import streamlit.components.v1 as components
 from datetime import datetime
 
@@ -13,22 +14,47 @@ st.set_page_config(
     layout="wide"
 )
 
+# Password hashing functions
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password, hashed):
+    return hash_password(password) == hashed
+
 # Database Setup
 def init_db():
     conn = sqlite3.connect('lps_data.db')
     c = conn.cursor()
     
+    # Users table for authentication
+    c.execute('''CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        email TEXT UNIQUE,
+        password_hash TEXT,
+        name TEXT,
+        user_type TEXT DEFAULT 'manager',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+    
     # Managers table
     c.execute('''CREATE TABLE IF NOT EXISTS managers (
         id TEXT PRIMARY KEY,
-        session_id TEXT UNIQUE,
+        user_id TEXT,
+        session_id TEXT,
         name TEXT,
         email TEXT,
         profile_dominant TEXT,
         profile_secondary TEXT,
         profile_details TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
     )''')
+    
+    # Migration: Add user_id column to managers if it doesn't exist
+    c.execute("PRAGMA table_info(managers)")
+    columns = [col[1] for col in c.fetchall()]
+    if 'user_id' not in columns:
+        c.execute("ALTER TABLE managers ADD COLUMN user_id TEXT")
     
     # Employees table
     c.execute('''CREATE TABLE IF NOT EXISTS employees (
@@ -50,9 +76,10 @@ def init_db():
     # Course progress table
     c.execute('''CREATE TABLE IF NOT EXISTS course_progress (
         id TEXT PRIMARY KEY,
-        session_id TEXT UNIQUE,
+        user_id TEXT,
         progress_data TEXT,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
     )''')
     
     conn.commit()
@@ -60,22 +87,52 @@ def init_db():
 
 init_db()
 
-def get_db():
-    return sqlite3.connect('lps_data.db')
-
-def generate_manager_id(session_id):
+# Authentication functions
+def register_user(email, password, name):
     conn = get_db()
     c = conn.cursor()
-    c.execute("SELECT id FROM managers WHERE session_id = ?", (session_id,))
-    result = c.fetchone()
-    if result:
+    try:
+        user_id = str(uuid.uuid4())
+        password_hash = hash_password(password)
+        c.execute("INSERT INTO users (id, email, password_hash, name) VALUES (?, ?, ?, ?)",
+                  (user_id, email.lower(), password_hash, name))
+        manager_id = str(uuid.uuid4())
+        c.execute("INSERT INTO managers (id, user_id, email, name) VALUES (?, ?, ?, ?)",
+                  (manager_id, user_id, email.lower(), name))
+        conn.commit()
         conn.close()
-        return result[0]
-    manager_id = str(uuid.uuid4())
-    c.execute("INSERT INTO managers (id, session_id) VALUES (?, ?)", (manager_id, session_id))
-    conn.commit()
+        return user_id, None
+    except sqlite3.IntegrityError:
+        conn.close()
+        return None, "E-mail já cadastrado."
+
+def authenticate_user(email, password):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id, password_hash, name FROM users WHERE email = ?", (email.lower(),))
+    result = c.fetchone()
     conn.close()
-    return manager_id
+    if result and verify_password(password, result[1]):
+        return {"id": result[0], "name": result[2], "email": email.lower()}
+    return None
+
+def get_manager_by_user(user_id):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id, profile_dominant, profile_secondary, profile_details FROM managers WHERE user_id = ?", (user_id,))
+    result = c.fetchone()
+    conn.close()
+    if result:
+        return {
+            "id": result[0],
+            "dominant": result[1],
+            "secondary": result[2],
+            "details": json.loads(result[3]) if result[3] else {}
+        }
+    return None
+
+def get_db():
+    return sqlite3.connect('lps_data.db')
 
 def generate_employee_link(manager_id, slot_number):
     conn = get_db()
@@ -93,11 +150,11 @@ def generate_employee_link(manager_id, slot_number):
     conn.close()
     return token
 
-def save_manager_profile(session_id, dominant, secondary, details):
+def save_manager_profile(user_id, dominant, secondary, details):
     conn = get_db()
     c = conn.cursor()
     c.execute("""UPDATE managers SET profile_dominant = ?, profile_secondary = ?, profile_details = ? 
-                 WHERE session_id = ?""", (dominant, secondary, json.dumps(details), session_id))
+                 WHERE user_id = ?""", (dominant, secondary, json.dumps(details), user_id))
     conn.commit()
     conn.close()
 
@@ -126,10 +183,10 @@ def get_employee_by_token(token):
     conn.close()
     return employee
 
-def get_manager_profile(session_id):
+def get_manager_profile_by_user(user_id):
     conn = get_db()
     c = conn.cursor()
-    c.execute("SELECT profile_dominant, profile_secondary, profile_details FROM managers WHERE session_id = ?", (session_id,))
+    c.execute("SELECT profile_dominant, profile_secondary, profile_details FROM managers WHERE user_id = ?", (user_id,))
     result = c.fetchone()
     conn.close()
     if result and result[0]:
@@ -271,15 +328,21 @@ def vimeo_video(url):
 
 # Inicialização do Estado de Sessão
 if 'page' not in st.session_state:
-    st.session_state.page = "Home"
+    st.session_state.page = "Login"
 if 'progress' not in st.session_state:
     st.session_state.progress = {}
 if 'assessment_results' not in st.session_state:
     st.session_state.assessment_results = None
-if 'session_id' not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
 if 'employee_token' not in st.session_state:
     st.session_state.employee_token = None
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+if 'user' not in st.session_state:
+    st.session_state.user = None
+if 'manager_data' not in st.session_state:
+    st.session_state.manager_data = None
+if 'login_mode' not in st.session_state:
+    st.session_state.login_mode = "login"
 
 WHATSAPP_URL = "https://wa.me/5511971419453"
 LOGO_PATH = "attached_assets/logotipo_1768443722848.jpeg"
@@ -425,40 +488,137 @@ MODULES_DATA = [
     {"id": 7, "name": "Módulo 7: Conclusão", "file": "attached_assets/introdução_1768431876966.pdf", "videos": ["https://vimeo.com/1154502544"]}
 ]
 
-# Check for employee token in URL
+# Check for employee token in URL (takes priority over auth)
 query_params = st.query_params
+is_employee_access = False
 if 'token' in query_params:
     st.session_state.employee_token = query_params['token']
     st.session_state.page = "EmployeeAssessment"
+    is_employee_access = True
 
-# Sidebar
-with st.sidebar:
-    if os.path.exists(LOGO_PATH):
-        st.image(LOGO_PATH, width="stretch")
-    st.title("LPS Hub")
-    if st.button("🏠 Home"):
-        st.session_state.page = "Home"
-        st.rerun()
-    if st.button("🎓 LPS Curso"):
-        st.session_state.page = "LPS Curso"
-        st.rerun()
-    if st.button("📝 LPSTest"):
-        st.session_state.page = "LPSTest"
-        st.rerun()
-    if st.button("👥 Gestão de Equipe"):
-        st.session_state.page = "TeamManagement"
-        st.rerun()
-    if st.button("💬 LPSChat"):
-        st.session_state.page = "LPSChat"
-        st.rerun()
-    if st.button("📅 Mentoria"):
-        st.session_state.page = "Mentoria"
-        st.rerun()
-    if st.button("👤 Sobre"):
-        st.session_state.page = "Sobre"
-        st.rerun()
-    st.write("---")
-    st.markdown(f'[💬 Suporte]({WHATSAPP_URL})')
+# Login Page Function
+def render_login_page():
+    st.markdown("""
+        <style>
+        .login-container {
+            background-color: #0D3B66;
+            padding: 3rem;
+            border-radius: 15px;
+            max-width: 450px;
+            margin: 2rem auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .login-title {
+            color: #F4D35E;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .welcome-text {
+            color: white;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if os.path.exists(LOGO_PATH):
+            st.image(LOGO_PATH, width="stretch")
+        
+        st.markdown("""
+            <div style="background-color: #0D3B66; padding: 2rem; border-radius: 15px; margin-top: 1rem;">
+                <p class="welcome-text">Transforme Sua Liderança com a Ciência do Inconsciente</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        tab1, tab2 = st.tabs(["Entrar", "Cadastrar"])
+        
+        with tab1:
+            with st.form("login_form"):
+                email = st.text_input("E-mail", key="login_email", placeholder="seu@email.com")
+                password = st.text_input("Senha", type="password", key="login_password")
+                submit = st.form_submit_button("Entrar", use_container_width=True)
+                
+                if submit:
+                    if email and password:
+                        user = authenticate_user(email, password)
+                        if user:
+                            st.session_state.authenticated = True
+                            st.session_state.user = user
+                            st.session_state.manager_data = get_manager_by_user(user['id'])
+                            st.session_state.page = "Home"
+                            st.rerun()
+                        else:
+                            st.error("E-mail ou senha incorretos.")
+                    else:
+                        st.error("Preencha todos os campos.")
+        
+        with tab2:
+            with st.form("register_form"):
+                name = st.text_input("Nome Completo", key="reg_name")
+                email = st.text_input("E-mail", key="reg_email", placeholder="seu@email.com")
+                password = st.text_input("Senha", type="password", key="reg_password")
+                password2 = st.text_input("Confirmar Senha", type="password", key="reg_password2")
+                submit = st.form_submit_button("Criar Conta", use_container_width=True)
+                
+                if submit:
+                    if not all([name, email, password, password2]):
+                        st.error("Preencha todos os campos.")
+                    elif password != password2:
+                        st.error("As senhas não coincidem.")
+                    elif len(password) < 6:
+                        st.error("Senha deve ter no mínimo 6 caracteres.")
+                    else:
+                        user_id, error = register_user(email, password, name)
+                        if user_id:
+                            st.success("Conta criada! Faça login para continuar.")
+                        else:
+                            st.error(error)
+
+# Sidebar (only for authenticated managers, not employees via token)
+if st.session_state.authenticated and not is_employee_access:
+    with st.sidebar:
+        if os.path.exists(LOGO_PATH):
+            st.image(LOGO_PATH, use_container_width=True)
+        st.title("LPS Hub")
+        if st.session_state.user:
+            st.caption(f"Olá, {st.session_state.user['name']}")
+        st.write("---")
+        if st.button("🏠 Home", key="nav_home"):
+            st.session_state.page = "Home"
+            st.rerun()
+        if st.button("🎓 LPS Curso", key="nav_curso"):
+            st.session_state.page = "LPS Curso"
+            st.rerun()
+        if st.button("📝 LPSTest", key="nav_test"):
+            st.session_state.page = "LPSTest"
+            st.rerun()
+        if st.button("👥 Gestão de Equipe", key="nav_team"):
+            st.session_state.page = "TeamManagement"
+            st.rerun()
+        if st.button("💬 LPSChat", key="nav_chat"):
+            st.session_state.page = "LPSChat"
+            st.rerun()
+        if st.button("📅 Mentoria", key="nav_mentoria"):
+            st.session_state.page = "Mentoria"
+            st.rerun()
+        if st.button("👤 Sobre", key="nav_sobre"):
+            st.session_state.page = "Sobre"
+            st.rerun()
+        st.write("---")
+        st.markdown(f'[💬 Suporte]({WHATSAPP_URL})')
+        st.write("---")
+        if st.button("🚪 Sair", key="nav_logout"):
+            st.session_state.authenticated = False
+            st.session_state.user = None
+            st.session_state.manager_data = None
+            st.session_state.page = "Login"
+            st.rerun()
 
 page = st.session_state.page
 
@@ -501,7 +661,13 @@ def calculate_profile(responses):
     return dominant_name, secondary_name, details, bion_role, block_sums
 
 # Pages
-if page == "Home":
+if page == "Login":
+    render_login_page()
+
+elif page == "Home":
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
     st.markdown("<h1 style='text-align: center; color: #0D3B66;'>Plataforma de Liderança Psicanalítica (LPS)</h1>", unsafe_allow_html=True)
     st.markdown("<h2 style='text-align: center; color: #0D3B66;'>Transforme Sua Liderança com a Ciência do Inconsciente</h2>", unsafe_allow_html=True)
     vimeo_video("https://vimeo.com/1154502544")
@@ -523,6 +689,9 @@ elif page == "LPS Curso":
                     st.download_button("⬇️ Material", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
 
 elif page == "LPSTest":
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
     st.title("📝 LPSTest Assessment - Seu Perfil")
     st.write("Responda às 48 afirmações. (1 = Discordo Totalmente, 5 = Concordo Totalmente)")
     
@@ -530,9 +699,11 @@ elif page == "LPSTest":
         responses = render_assessment_form("manager")
         submit = st.form_submit_button("Gerar Meu Perfil de Liderança")
         
-        if submit:
+        if submit and st.session_state.user:
             dominant, secondary, details, bion_role, block_sums = calculate_profile(responses)
-            save_manager_profile(st.session_state.session_id, dominant, secondary, details)
+            user_id = st.session_state.user['id']
+            save_manager_profile(user_id, dominant, secondary, details)
+            st.session_state.manager_data = get_manager_by_user(user_id)
             st.session_state.assessment_results = {
                 "dominant": dominant,
                 "secondary": secondary,
@@ -556,87 +727,94 @@ elif page == "LPSTest":
         """, unsafe_allow_html=True)
 
 elif page == "TeamManagement":
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
     st.title("👥 Gestão de Equipe")
     st.write("Gere links para seus colaboradores responderem ao assessment e veja o mapeamento completo.")
     
-    manager_id = generate_manager_id(st.session_state.session_id)
-    manager_profile = get_manager_profile(st.session_state.session_id)
-    
-    # Show Manager Profile First
-    if manager_profile:
-        st.markdown(f"""
-            <div class="result-card" style="margin-bottom: 20px;">
-                <div class="profile-title">👤 Seu Perfil (Gestor)</div>
-                <p style="text-align: center; font-size: 1.3rem;"><strong>{manager_profile['dominant']} + {manager_profile['secondary']}</strong></p>
-            </div>
-        """, unsafe_allow_html=True)
+    manager_data = st.session_state.manager_data
+    if not manager_data:
+        st.error("Dados do gestor não encontrados. Por favor, faça login novamente.")
     else:
-        st.warning("⚠️ Complete seu LPSTest primeiro para ver a comparação com sua equipe.")
-    
-    st.write("---")
-    
-    # Generate Links Section
-    st.subheader("🔗 Gerar Links para Funcionários")
-    st.write("Cada link é único. Copie e envie para cada colaborador.")
-    
-    base_url = get_app_url()
-    cols = st.columns(4)
-    
-    for i, col in enumerate(cols):
-        with col:
-            slot = i + 1
-            token = generate_employee_link(manager_id, slot)
-            full_link = f"{base_url}?token={token}" if base_url else f"?token={token}"
-            st.markdown(f"**Funcionário {slot}**")
-            st.code(full_link, language=None)
-            st.caption("Copie e envie este link")
-    
-    if not base_url:
-        st.info("💡 Após publicar o app, os links terão a URL completa automaticamente.")
-    
-    st.write("---")
-    
-    # Team Dashboard with Comparative View
-    st.subheader("📊 Dashboard Comparativo da Equipe")
-    employees = get_manager_employees(manager_id)
-    
-    if employees:
-        completed_count = sum(1 for e in employees if e[10] == 1)
-        st.metric("Respostas Recebidas", f"{completed_count}/4")
+        manager_id = manager_data['id']
+        manager_profile = manager_data if manager_data.get('dominant') else None
         
-        # Comparative table header
-        if manager_profile and completed_count > 0:
+        # Show Manager Profile First
+        if manager_profile:
             st.markdown(f"""
-                <div style="background-color: #0D3B66; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                    <strong>Comparação:</strong> Seu perfil ({manager_profile['dominant']}) vs Equipe
+                <div class="result-card" style="margin-bottom: 20px;">
+                    <div class="profile-title">👤 Seu Perfil (Gestor)</div>
+                    <p style="text-align: center; font-size: 1.3rem;"><strong>{manager_profile['dominant']} + {manager_profile['secondary']}</strong></p>
                 </div>
             """, unsafe_allow_html=True)
+        else:
+            st.warning("⚠️ Complete seu LPSTest primeiro para ver a comparação com sua equipe.")
         
-        for emp in employees:
-            if emp[10] == 1:  # completed
-                emp_name = emp[4] or f'Funcionário {emp[3]}'
+        st.write("---")
+        
+        # Generate Links Section
+        st.subheader("🔗 Gerar Links para Funcionários")
+        st.write("Cada link é único. Copie e envie para cada colaborador.")
+        
+        base_url = get_app_url()
+        cols = st.columns(4)
+        
+        for i, col in enumerate(cols):
+            with col:
+                slot = i + 1
+                token = generate_employee_link(manager_id, slot)
+                full_link = f"{base_url}?token={token}" if base_url else f"?token={token}"
+                st.markdown(f"**Funcionário {slot}**")
+                st.code(full_link, language=None)
+                st.caption("Copie e envie este link")
+        
+        if not base_url:
+            st.info("Copie o link e adicione a URL do seu app publicado na frente.")
+        
+        st.write("---")
+        
+        # Team Dashboard with Comparative View
+        st.subheader("📊 Dashboard Comparativo da Equipe")
+        employees = get_manager_employees(manager_id)
+        
+        if employees:
+            completed_count = sum(1 for e in employees if e[10] == 1)
+            st.metric("Respostas Recebidas", f"{completed_count}/4")
+            
+            # Comparative table header
+            if manager_profile and completed_count > 0:
                 st.markdown(f"""
-                    <div class="employee-card">
-                        <h4 style="color: #0D3B66; margin:0;">{emp_name}</h4>
-                        <p><strong>Perfil:</strong> {emp[6]} + {emp[7]}</p>
-                        <span class="bion-badge">{emp[9]}</span>
-                        <p style="font-size: 0.9rem; color: #666; margin-top:10px;">
-                            {BION_DESCRIPTIONS.get(emp[9], '')}
-                        </p>
-                        <p style="font-size: 0.85rem; color: #0D3B66; margin-top: 8px;">
-                            📧 Resultado enviado para: {emp[5]}
-                        </p>
+                    <div style="background-color: #0D3B66; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                        <strong>Comparacao:</strong> Seu perfil ({manager_profile['dominant']}) vs Equipe
                     </div>
                 """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                    <div class="employee-card" style="opacity: 0.5;">
-                        <h4 style="color: #0D3B66; margin:0;">Funcionário {emp[3]}</h4>
-                        <p>⏳ Aguardando resposta...</p>
-                    </div>
-                """, unsafe_allow_html=True)
-    else:
-        st.info("Os links serão gerados automaticamente. Copie-os acima e envie para seus colaboradores.")
+            
+            for emp in employees:
+                if emp[10] == 1:  # completed
+                    emp_name = emp[4] or f'Funcionario {emp[3]}'
+                    st.markdown(f"""
+                        <div class="employee-card">
+                            <h4 style="color: #0D3B66; margin:0;">{emp_name}</h4>
+                            <p><strong>Perfil:</strong> {emp[6]} + {emp[7]}</p>
+                            <span class="bion-badge">{emp[9]}</span>
+                            <p style="font-size: 0.9rem; color: #666; margin-top:10px;">
+                                {BION_DESCRIPTIONS.get(emp[9], '')}
+                            </p>
+                            <p style="font-size: 0.85rem; color: #0D3B66; margin-top: 8px;">
+                                Resultado enviado para: {emp[5]}
+                            </p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                        <div class="employee-card" style="opacity: 0.5;">
+                            <h4 style="color: #0D3B66; margin:0;">Funcionario {emp[3]}</h4>
+                            <p>Aguardando resposta...</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+        else:
+            st.info("Os links serao gerados automaticamente. Copie-os acima e envie para seus colaboradores.")
 
 elif page == "EmployeeAssessment":
     token = st.session_state.employee_token
