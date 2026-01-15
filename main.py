@@ -587,7 +587,7 @@ def render_login_page():
 if st.session_state.authenticated and not is_employee_access:
     with st.sidebar:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, use_container_width=True)
+            st.image(LOGO_PATH, width="stretch")
         st.title("LPS Hub")
         if st.session_state.user:
             st.caption(f"Olá, {st.session_state.user['name']}")
@@ -677,6 +677,9 @@ elif page == "Home":
     st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold;">Falar com a Consultora</button></a></div>', unsafe_allow_html=True)
 
 elif page == "LPS Curso":
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
     st.title("🎓 Programa LPS")
     total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
     completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
@@ -1016,9 +1019,15 @@ INSTRUÇÕES DE RESPOSTA:
             st.rerun()
 
 elif page == "Mentoria":
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
     st.title("📅 Mentoria")
     st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold;">Agendar Mentoria</button></a></div>', unsafe_allow_html=True)
 
 elif page == "Sobre":
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
     st.title("👤 Sobre Viviane Nishiura")
     st.write("Viviane Nishiura é psicóloga clínica e consultora de liderança.")
