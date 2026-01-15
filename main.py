@@ -17,6 +17,7 @@ st.markdown("""
         --primary-blue: #0D3B66;
         --accent-gold: #F4D35E;
         --bg-gray: #F5F5F5;
+        --light-gold: #FFF9E6;
     }
     
     .main {
@@ -42,10 +43,28 @@ st.markdown("""
         border: none;
     }
 
+    /* Ajuste de visibilidade dos expansores */
+    .st-emotion-cache-p4m0vl {
+        color: var(--primary-blue) !important;
+    }
+    
     div[data-testid="stExpander"] {
         border: 1px solid var(--primary-blue);
         border-radius: 8px;
-        background-color: white;
+        background-color: var(--light-gold);
+    }
+
+    div[data-testid="stExpander"] p {
+        color: var(--primary-blue) !important;
+        font-weight: bold;
+    }
+
+    .st-emotion-cache-16477hk {
+        color: var(--primary-blue) !important;
+    }
+
+    summary {
+        color: var(--primary-blue) !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -58,7 +77,7 @@ if 'page' not in st.session_state:
 WHATSAPP_URL = "https://wa.me/5511971419453"
 OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 
-# Mapeamento de Módulos (8 Módulos conforme solicitado) com os links do Vimeo fornecidos
+# Mapeamento de Módulos com links diretos do Vimeo
 MODULES = [
     {
         "id": 0, 
@@ -182,7 +201,7 @@ if page == "Home":
     st.title("Transforme Sua Liderança com a Ciência do Inconsciente")
     st.write("Bem-vindo à plataforma de Liderança Psicanalítica (LPS).")
     
-    st.video("https://vimeo.com/1154502544") # Vídeo de boas vindas (Parte 1 da Introdução como destaque)
+    st.video("https://vimeo.com/1154502544")
     
     st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
     
@@ -199,7 +218,6 @@ elif page == "LPS Curso":
         with st.expander(f"Módulo {mod['id']}: {mod['name']}"):
             st.write(f"Vídeos do {mod['name']}:")
             
-            # Exibe todos os vídeos da lista para o módulo
             for i, video_url in enumerate(mod['videos'], 1):
                 st.write(f"Parte {i}:")
                 st.video(video_url)
@@ -207,7 +225,6 @@ elif page == "LPS Curso":
             st.write("---")
             st.write(f"Material complementar:")
             
-            # Botão de Download PDF
             if os.path.exists(mod['file']):
                 with open(mod['file'], "rb") as f:
                     st.download_button(
