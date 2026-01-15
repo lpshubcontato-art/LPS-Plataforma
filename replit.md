@@ -33,6 +33,12 @@ Preferred communication style: Simple, everyday language.
 - **employees**: id, manager_id, link_token, slot_number, profile data, bion_role
 - **course_progress**: id, user_id, progress_data, updated_at
 
+### LPSChat AI Integration
+- **Model**: OpenAI gpt-4o-mini
+- **Context**: System prompt includes manager profile, employee profiles with Bion roles
+- **Concepts**: Bion roles, Transferência/Contratransferência, Tarefa Real
+- **Behavior**: Analyzes team dynamics, suggests interventions based on psychoanalytic concepts
+
 ### Legacy/Dormant TypeScript Stack
 The repository contains configuration for a full-stack TypeScript application that is not currently active:
 - **Frontend**: React with Vite, TypeScript, Tailwind CSS, and shadcn/ui components
