@@ -6,6 +6,7 @@ import json
 import hashlib
 import streamlit.components.v1 as components
 from datetime import datetime
+from openai import OpenAI
 
 # Configuração da Página - Tema LPS
 st.set_page_config(
@@ -894,8 +895,125 @@ elif page == "EmployeeAssessment":
                     st.info(f"📧 Uma cópia deste resultado será enviada para {email}. Apenas você e seu gestor terão acesso ao mapeamento completo da equipe.")
 
 elif page == "LPSChat":
-    st.title("💬 LPSChat")
-    st.chat_input("Descreva a situação da sua equipe...")
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
+    
+    st.title("💬 LPSChat - Consultor de Liderança Psicanalítica")
+    st.write("Converse com a IA sobre sua equipe. Ela tem acesso aos perfis dos seus funcionários.")
+    
+    # Initialize chat history
+    if 'chat_messages' not in st.session_state:
+        st.session_state.chat_messages = []
+    
+    # Get manager and employee data for context
+    manager_data = st.session_state.manager_data
+    user_name = st.session_state.user['name'] if st.session_state.user else "Gestor"
+    
+    # Fetch employees data
+    employees_context = ""
+    if manager_data:
+        employees = get_manager_employees(manager_data['id'])
+        if employees:
+            employees_list = []
+            for emp in employees:
+                if emp[10] == 1:  # completed
+                    emp_info = f"- {emp[4] or 'Funcionário ' + str(emp[3])}: Perfil {emp[6]} + {emp[7]}, Papel de Bion: {emp[9]}"
+                    employees_list.append(emp_info)
+            if employees_list:
+                employees_context = "\n".join(employees_list)
+    
+    # Manager profile context
+    manager_profile = ""
+    if manager_data and manager_data.get('dominant'):
+        manager_profile = f"Perfil do Gestor: {manager_data['dominant']} + {manager_data['secondary']}"
+    
+    # System prompt with psychoanalytic concepts
+    system_prompt = f"""Você é um consultor especialista em Liderança Psicanalítica, baseado na metodologia LPS de Viviane Nishiura.
+
+CONTEXTO DO GESTOR:
+Nome: {user_name}
+{manager_profile if manager_profile else "O gestor ainda não completou o LPSTest."}
+
+EQUIPE DO GESTOR:
+{employees_context if employees_context else "Nenhum funcionário completou o assessment ainda."}
+
+CONCEITOS-CHAVE QUE VOCÊ DEVE USAR:
+
+1. PAPÉIS DE BION (Dinâmica Grupal):
+- Porta-voz: Expressa o que o grupo sente mas não consegue dizer
+- Bode Expiatório: Absorve projeções negativas do grupo
+- Dependente: Busca proteção no líder, evita autonomia
+- Líder de Luta-Fuga: Reativo a ameaças, mobiliza ataque ou fuga
+- Sabotador Silencioso: Resiste passivamente às mudanças
+
+2. TRANSFERÊNCIA E CONTRATRANSFERÊNCIA:
+- Transferência: Quando funcionários projetam no líder expectativas de figuras parentais
+- Contratransferência: Quando o líder reage emocionalmente às projeções (irritação, bloqueio, fadiga)
+- Use esses conceitos para explicar POR QUE o líder se sente irritado ou bloqueado
+
+3. TAREFA REAL vs REGRESSÃO EMOCIONAL:
+- Quando o grupo está em regressão (ansiedade, conflito, paralisia), sugira SEMPRE focar na Tarefa Real
+- A Tarefa Real é o objetivo concreto do trabalho que traz o grupo de volta à racionalidade
+- Pergunte: "Qual é a tarefa que vocês precisam entregar?" para tirar o grupo da regressão
+
+4. PERFIS DE LIDERANÇA:
+- Protetor: Acolhe mas pode absorver demais
+- Contenedor: Mantém calma em crises
+- Narciso Estratégico: Inspira mas precisa de validação
+- Estruturador: Organiza mas pode controlar demais
+- Espelho Emocional: Reflete o grupo mas pode ser afetado
+- Observador Reflexivo: Analisa mas pode hesitar
+
+INSTRUÇÕES DE RESPOSTA:
+- Analise sempre os dados reais da equipe do gestor
+- Identifique riscos dinâmicos (ex: presença de Bode Expiatório)
+- Sugira intervenções práticas baseadas nos conceitos psicanalíticos
+- Sempre termine sugerindo foco na Tarefa Real para resolver regressões
+- Seja empático mas direto nas recomendações
+- Use português brasileiro"""
+
+    # Display chat history
+    for message in st.session_state.chat_messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+    
+    # Chat input
+    if prompt := st.chat_input("Descreva a situação da sua equipe ou faça uma pergunta..."):
+        # Add user message to history
+        st.session_state.chat_messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        
+        # Generate AI response
+        with st.chat_message("assistant"):
+            with st.spinner("Analisando..."):
+                try:
+                    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+                    
+                    messages = [{"role": "system", "content": system_prompt}]
+                    for msg in st.session_state.chat_messages:
+                        messages.append({"role": msg["role"], "content": msg["content"]})
+                    
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=messages,
+                        max_tokens=1500,
+                        temperature=0.7
+                    )
+                    
+                    assistant_message = response.choices[0].message.content
+                    st.markdown(assistant_message)
+                    st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
+                
+                except Exception as e:
+                    st.error(f"Erro ao conectar com a IA: {str(e)}")
+    
+    # Clear chat button
+    if st.session_state.chat_messages:
+        if st.button("🗑️ Limpar Conversa"):
+            st.session_state.chat_messages = []
+            st.rerun()
 
 elif page == "Mentoria":
     st.title("📅 Mentoria")
