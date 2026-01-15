@@ -1,19 +1,17 @@
 import streamlit as st
-import pandas as pd
 import os
 import streamlit.components.v1 as components
 
-# Configuração da Página - Tema LPS (Azul Marinho #0D3B66 e Dourado #F4D35E)
+# Configuração da Página - Tema LPS
 st.set_page_config(
     page_title="Liderança Psicanalítica",
     page_icon="🧠",
     layout="wide"
 )
 
-# Estilização Customizada para Cores Azul Marinho e Dourado
+# Estilização Customizada
 st.markdown("""
     <style>
-    /* Azul Marinho #0D3B66 e Dourado #F4D35E */
     :root {
         --primary-blue: #0D3B66;
         --accent-gold: #F4D35E;
@@ -36,211 +34,146 @@ st.markdown("""
         border: 2px solid var(--accent-gold);
     }
     
+    /* Estilização do Botão de Download: Dourado com texto Preto */
     .stDownloadButton>button {
-        background-color: var(--accent-gold);
-        color: var(--primary-blue);
-        font-weight: bold;
-        border-radius: 8px;
-        border: none;
+        background-color: var(--accent-gold) !important;
+        color: black !important;
+        font-weight: bold !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--primary-blue) !important;
+    }
+    
+    .stDownloadButton>button:hover {
+        background-color: #e5c654 !important;
+        color: black !important;
     }
 
-    /* Ajuste de visibilidade dos expansores */
     div[data-testid="stExpander"] {
         border: 1px solid var(--primary-blue);
         border-radius: 8px;
         background-color: var(--light-gold);
     }
 
-    /* Texto do título do expansor */
     div[data-testid="stExpander"] summary p {
         color: var(--primary-blue) !important;
         font-weight: bold !important;
         font-size: 1.1rem !important;
     }
 
-    /* Garantir que o ícone do expansor também seja visível */
     div[data-testid="stExpander"] summary svg {
         fill: var(--primary-blue) !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# Função para renderizar vídeo do Vimeo via Iframe (mais estável)
 def vimeo_video(url):
     video_id = url.split('/')[-1]
     embed_url = f"https://player.vimeo.com/video/{video_id}"
     components.iframe(embed_url, height=450, scrolling=False)
 
-# Inicialização do Estado de Sessão
 if 'page' not in st.session_state:
     st.session_state.page = "Home"
 
-# URL do WhatsApp Oficial
 WHATSAPP_URL = "https://wa.me/5511971419453"
 OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 
-# Mapeamento de Módulos atualizado com os novos nomes e vídeos organizados
+# Estrutura completa conforme roteiro técnico
 MODULES = [
     {
-        "id": 0, 
-        "name": "Introdução", 
-        "file": "attached_assets/introdução_1768431876966.pdf", 
-        "videos": [
-            "https://vimeo.com/1154502544", 
-            "https://vimeo.com/1154502598", 
-            "https://vimeo.com/1154502492"
-        ]
-    },
-    {
         "id": 1, 
-        "name": "Módulo 1: Neurociência da Liderança (Químicos cerebrais e Círculo de Segurança)", 
+        "name": "Módulo 1: Neurociência da Liderança - químicos cerebrais, Círculo de Segurança", 
         "file": "attached_assets/Módulo_1_1768431876967.pdf", 
-        "videos": [
-            "https://vimeo.com/1154503073", 
-            "https://vimeo.com/1154503122", 
-            "https://vimeo.com/1154503201", 
-            "https://vimeo.com/1154503286", 
-            "https://vimeo.com/1154503332", 
-            "https://vimeo.com/1154502907", 
-            "https://vimeo.com/1154502997"
-        ]
+        "videos": ["https://vimeo.com/1154503073", "https://vimeo.com/1154503122", "https://vimeo.com/1154503201", "https://vimeo.com/1154503286", "https://vimeo.com/1154503332", "https://vimeo.com/1154502907", "https://vimeo.com/1154502997"]
     },
     {
         "id": 2, 
-        "name": "Módulo 2: Mergulho no Inconsciente (Id, Ego, Superego e Mecanismos de Defesa)", 
+        "name": "Módulo 2: Mergulho no Inconsciente - Id, Ego, Superego, mecanismos de defesa", 
         "file": "attached_assets/Módulo_2_1768431876968.pdf", 
-        "videos": [
-            "https://vimeo.com/1154504282", 
-            "https://vimeo.com/1154503918", 
-            "https://vimeo.com/1154503996", 
-            "https://vimeo.com/1154504129", 
-            "https://vimeo.com/1154504216", 
-            "https://vimeo.com/1154504054"
-        ]
+        "videos": ["https://vimeo.com/1154504282", "https://vimeo.com/1154503918", "https://vimeo.com/1154503996", "https://vimeo.com/1154504129", "https://vimeo.com/1154504216", "https://vimeo.com/1154504054"]
     },
     {
         "id": 3, 
-        "name": "Módulo 3: Relações e Transferência (Dinâmicas líder-liderado e manejo de contratransferência)", 
+        "name": "Módulo 3: Relações e Transferência - dinâmicas líder-liderado, manejo de contratransferência", 
         "file": "attached_assets/Módulo_3_1768431876969.pdf", 
-        "videos": [
-            "https://vimeo.com/1154508629", 
-            "https://vimeo.com/1154508577", 
-            "https://vimeo.com/1154508688", 
-            "https://vimeo.com/1154508745", 
-            "https://vimeo.com/1154508530"
-        ]
+        "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577", "https://vimeo.com/1154508688", "https://vimeo.com/1154508745", "https://vimeo.com/1154508530"]
     },
     {
         "id": 4, 
-        "name": "Módulo 4: Autoconsciência (Seu arquétipo de liderança)", 
-        "file": "attached_assets/Módulo_5_1768431876971.pdf", # Note: Module 5 PDF originally for Autoconsciência
-        "videos": [
-            "https://vimeo.com/1154510241", 
-            "https://vimeo.com/1154510404", 
-            "https://vimeo.com/1154510309"
-        ]
+        "name": "Módulo 4: Autoconsciência - seu arquétipo de liderança", 
+        "file": "attached_assets/Módulo_5_1768431876971.pdf", 
+        "videos": ["https://vimeo.com/1154510241", "https://vimeo.com/1154510404", "https://vimeo.com/1154510309"]
     },
     {
         "id": 5, 
-        "name": "Módulo 5: Entendendo a Equipe (Assessments e papéis grupais de Bion)", 
-        "file": "attached_assets/Módulo_6_1768431876972.pdf", # Note: Module 6 PDF originally for Entendendo a Equipe
-        "videos": [
-            "https://vimeo.com/1154510682", 
-            "https://vimeo.com/1154510710", 
-            "https://vimeo.com/1154510729", 
-            "https://vimeo.com/1154510816"
-        ]
+        "name": "Módulo 5: Entendendo a Equipe - assessment dos funcionários, papéis grupais de Bion", 
+        "file": "attached_assets/Módulo_6_1768431876972.pdf", 
+        "videos": ["https://vimeo.com/1154510682", "https://vimeo.com/1154510710", "https://vimeo.com/1154510729", "https://vimeo.com/1154510816"]
     },
     {
         "id": 6, 
-        "name": "Módulo 6: Aplicação Prática (Casos reais e plano de ação personalizado)", 
-        "file": "attached_assets/Módulo_7_1768431876973.pdf", # Note: Module 7 PDF originally for Aplicação Prática
-        "videos": [
-            "https://vimeo.com/1154511020", 
-            "https://vimeo.com/1154511064"
-        ]
+        "name": "Módulo 6: Aplicação Prática - casos reais, plano de ação personalizado", 
+        "file": "attached_assets/Módulo_7_1768431876973.pdf", 
+        "videos": ["https://vimeo.com/1154511020", "https://vimeo.com/1154511064"]
+    },
+    {
+        "id": 7, 
+        "name": "Módulo 7: Conclusão e Próximos Passos", 
+        "file": "attached_assets/introdução_1768431876966.pdf", # Usando intro como referência final
+        "videos": ["https://vimeo.com/1154502544", "https://vimeo.com/1154502598", "https://vimeo.com/1154502492"]
     }
 ]
 
-# --- Sidebar de Navegação ---
+# Sidebar
 st.sidebar.title("LPS Platform")
-
 if st.sidebar.button("🏠 Home"):
     st.session_state.page = "Home"
     st.rerun()
-
 if st.sidebar.button("🎓 LPS Curso"):
     st.session_state.page = "LPS Curso"
     st.rerun()
-
 if st.sidebar.button("📝 LPSTest"):
     st.session_state.page = "LPSTest"
     st.rerun()
-
 if st.sidebar.button("👤 Sobre"):
     st.session_state.page = "Sobre"
     st.rerun()
-
 if st.sidebar.button("📞 Contato"):
     st.session_state.page = "Mentoria"
     st.rerun()
 
-# --- Conteúdo Principal ---
+# Conteúdo
 page = st.session_state.page
-
 if page == "Home":
-    st.title("Transforme Sua Liderança com a Ciência do Inconsciente")
-    st.write("Bem-vindo à plataforma de Liderança Psicanalítica (LPS).")
-    
-    # Vídeo de destaque via Iframe
+    st.title("Liderança Psicanalítica")
     vimeo_video("https://vimeo.com/1154502544")
-    
     st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; margin-top:10px;">Falar com a Consultora no WhatsApp</button></a>', unsafe_allow_html=True)
-    
-    st.subheader("O que você encontrará aqui:")
-    st.write("- **Metodologia Exclusiva**: Unindo neurociência e psicanálise.")
-    st.write("- **Autoconhecimento**: Identificação de arquétipos de liderança.")
-    st.write("- **Gestão Estratégica**: Ferramentas para mapeamento de equipe.")
 
 elif page == "LPS Curso":
-    st.title("🎓 Programa LPS: Módulos do Curso")
-    st.info("Abaixo estão os módulos que compõem sua jornada de liderança.")
-    
+    st.title("🎓 Programa LPS")
     for mod in MODULES:
         with st.expander(f"{mod['name']}"):
-            st.write(f"Vídeos do módulo:")
-            
-            for i, video_url in enumerate(mod['videos'], 1):
+            for i, v_url in enumerate(mod['videos'], 1):
                 st.write(f"**Parte {i}:**")
-                vimeo_video(video_url)
-                st.write("") # Espaçamento entre vídeos
-            
+                vimeo_video(v_url)
             st.write("---")
-            st.write(f"Material complementar:")
-            
             if os.path.exists(mod['file']):
                 with open(mod['file'], "rb") as f:
                     st.download_button(
-                        label=f"⬇️ Baixar PDF - Material de Apoio",
+                        label=f"⬇️ Baixar Material de Apoio (PDF)",
                         data=f,
-                        file_name=f"LPS_{mod['name'].split(':')[0].strip().replace(' ', '_')}.pdf",
+                        file_name=os.path.basename(mod['file']),
                         mime="application/pdf",
-                        key=f"dl_mod_{mod['id']}"
+                        key=f"dl_v3_{mod['id']}"
                     )
-            else:
-                st.warning("Arquivo PDF em processamento.")
 
 elif page == "LPSTest":
-    st.title("📝 LPSTest Assessment")
-    st.write("Realize o mapeamento de perfil e arquétipos.")
-    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Solicitar Acesso Completo no WhatsApp</button></a>', unsafe_allow_html=True)
+    st.title("📝 LPSTest")
+    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Solicitar Acesso no WhatsApp</button></a>', unsafe_allow_html=True)
 
 elif page == "Sobre":
     st.title("Sobre Viviane Nishiura")
-    st.write("Psicóloga clínica e especialista em comportamento organizacional.")
 
 elif page == "Mentoria":
-    st.title("📞 Contato e Mentoria")
+    st.title("📞 Contato")
     st.write(f"E-mail: {OFFICIAL_EMAIL}")
-    st.write("WhatsApp: +55 11 97141-9453")
-    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold;">Chamar no WhatsApp</button></a>', unsafe_allow_html=True)
+    st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold;">WhatsApp</button></a>', unsafe_allow_html=True)
