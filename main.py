@@ -94,7 +94,6 @@ OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 LOGO_PATH = "attached_assets/logotipo_1768443722848.jpeg"
 
 # Banco de Dados de Perfis (Amostra expandida dos 30 perfis conforme documentos)
-# Em um cenário real, todos os 30 seriam cadastrados aqui.
 PROFILES_DB = {
     "🛡 Protetor": {
         "🧠 Observador Reflexivo": {
@@ -106,48 +105,6 @@ PROFILES_DB = {
             "forcas": "✔ Inspira pertencimento e admiração. ✔ Gera lealdade por meio da conexão emocional. ✔ Sabe como influenciar com afeto e presença.",
             "riscos": "⚠ Pode depender demais da validação externa. ⚠ Corre risco de evitar feedbacks duros para manter o carinho do time.",
             "reflexoes": "➡ Trabalhe a construção da sua autoridade sem depender do afeto. ➡ Lembre-se: cuidar também é confrontar quando necessário."
-        },
-        "🏗 Estruturador": {
-            "forcas": "✔ Cria ambientes emocionalmente estáveis. ✔ Protege o time com sistemas e processos claros. ✔ Excelente para liderar equipes em ambientes caóticos.",
-            "riscos": "⚠ Pode se tornar rígido(a) demais tentando 'salvar' todos. ⚠ Pode controlar excessivamente para evitar conflitos.",
-            "reflexoes": "➡ Confie mais na maturidade emocional do time. ➡ Flexibilize regras quando perceber crescimento autônomo."
-        },
-        "🧱 Contenedor": {
-            "forcas": "✔ Equilíbrio emocional impressionante. ✔ Alta capacidade de empatia sem perder o centro. ✔ Inspira respeito e lealdade.",
-            "riscos": "⚠ Pode assumir a responsabilidade emocional de todos. ⚠ Pode ser visto como 'pai' ou 'mãe', gerando dependência excessiva.",
-            "reflexoes": "➡ Incentive autonomia emocional na equipe. ➡ Crie momentos de autorreflexão para não se sobrecarregar."
-        },
-        "🪞 Espelho Emocional": {
-            "forcas": "✔ Capacidade ímpar de adaptação ao grupo. ✔ Constrói confiança e acolhimento rapidamente. ✔ Sensível às dinâmicas invisíveis da equipe.",
-            "riscos": "⚠ Pode perder autenticidade tentando corresponder a todas as expectativas. ⚠ Pode se frustrar com rejeições ou incompreensões sutis.",
-            "reflexoes": "➡ Mantenha contato com sua identidade, além da imagem percebida. ➡ Fortaleça a liderança com base em valores, não só em aceitação."
-        }
-    },
-    "🎭 Relacional Reativo": {
-        "👑 Idealista Exigente": {
-            "forcas": "✔ Extrema habilidade diplomática e de leitura de ambiente. ✔ Capacidade de criar conexões e harmonia rapidamente. ✔ Sensibilidade às necessidades emocionais.",
-            "riscos": "⚠ Dificuldade em tomar decisões firmes ou impopulares. ⚠ Tendência a evitar feedbacks negativos.",
-            "reflexoes": "➡ Como equilibrar a busca por harmonia com a necessidade de clareza e firmeza? ➡ Sua identidade depende da aprovação?"
-        },
-        "🛡 Protetor": {
-            "forcas": "✔ Capacidade excepcional de empatia e leitura emocional. ✔ Habilidade natural para mediar conflitos. ✔ Cria ambiente acolhedor.",
-            "riscos": "⚠ Risco extremo de esgotamento emocional (burnout). ⚠ Dificuldade em estabelecer limites saudáveis.",
-            "reflexoes": "➡ Onde terminam as emoções da equipe e começam as suas? ➡ Como ser empático(a) sem se sobrecarregar?"
-        },
-        "🔥 Buscador de Reconhecimento": {
-            "forcas": "✔ Extremo carisma, charme e habilidade de conexão social. ✔ Capacidade de energizar e entusiasmar grupos.",
-            "riscos": "⚠ Risco de superficialidade nas relações. ⚠ Tendência a priorizar a popularidade sobre a eficácia.",
-            "reflexoes": "➡ O que há por trás da sua necessidade de ser sempre popular? ➡ Você consegue sustentar uma posição impopular?"
-        },
-        "🏗 Estruturador Cauteloso": {
-            "forcas": "✔ Capacidade de criar processos que promovem colaboração. ✔ Habilidade em comunicar regras de forma diplomática.",
-            "riscos": "⚠ Risco de excesso de burocracia para evitar conversas difíceis. ⚠ Tendência a evitar tomadas de decisão que gerem conflito.",
-            "reflexoes": "➡ Suas estruturas servem para facilitar o trabalho ou para evitar o desconforto das relações? ➡ Como usar a clareza dos processos para abordar conflitos?"
-        },
-        "🧠 Observador Consciente": {
-            "forcas": "✔ Excepcional inteligência emocional e interpessoal. ✔ Habilidade de ler as entrelinhas das relações.",
-            "riscos": "⚠ Risco de paralisia por análise nas relações. ⚠ Pode usar a compreensão para manipular sutilmente ou evitar confrontos.",
-            "reflexoes": "➡ Como transformar sua percepção em ação clara? ➡ Você está se escondendo atrás da análise?"
         }
     }
 }
@@ -164,7 +121,8 @@ MODULES_DATA = [
 
 total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
 completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
-course_completed = completed_lessons >= total_lessons
+# Bloqueio desativado temporariamente para testes conforme solicitado
+course_completed = True 
 
 # Sidebar
 with st.sidebar:
@@ -220,102 +178,83 @@ elif page == "LPS Curso":
 
 elif page == "LPSTest":
     st.title("📝 LPSTest Assessment")
-    if course_completed:
-        st.write("O LPSTest revela as forças inconscientes que moldam seu estilo de liderança.")
+    st.write("O LPSTest revela as forças inconscientes que moldam seu estilo de liderança.")
+    
+    with st.form("assessment_form"):
+        st.subheader("Assessment de Liderança")
+        blocks = {
+            "Autoridade": "Bloco 1 - Autoridade Interna e Autoimagem",
+            "Contenção": "Bloco 2 - Contenção Emocional do Grupo",
+            "Narcisismo": "Bloco 3 - Narcisismo e Reconhecimento",
+            "Estrutura": "Bloco 4 - Estrutura e Lógica de Tarefa",
+            "Relação": "Bloco 5 - Relação com a Equipe e Projeções",
+            "Reflexão": "Bloco 6 - Reflexão, Crítica e Autoconsciência"
+        }
+        block_scores = {}
+        for key, label in blocks.items():
+            block_scores[key] = st.slider(f"{label} (Soma dos pontos)", 8, 40, 24)
         
-        with st.form("assessment_form"):
-            st.subheader("Assessment de Liderança")
-            # 6 Blocos conforme solicitado
-            blocks = {
-                "Autoridade": "Bloco 1 - Autoridade Interna e Autoimagem",
-                "Contenção": "Bloco 2 - Contenção Emocional do Grupo",
-                "Narcisismo": "Bloco 3 - Narcisismo e Reconhecimento",
-                "Estrutura": "Bloco 4 - Estrutura e Lógica de Tarefa",
-                "Relação": "Bloco 5 - Relação com a Equipe e Projeções",
-                "Reflexão": "Bloco 6 - Reflexão, Crítica e Autoconsciência"
-            }
-            block_scores = {}
-            for key, label in blocks.items():
-                block_scores[key] = st.slider(f"{label} (Soma dos pontos)", 8, 40, 24)
+        if st.form_submit_button("Gerar Meu Perfil Dominante"):
+            sorted_scores = sorted(block_scores.items(), key=lambda x: x[1], reverse=True)
+            dominant_key = sorted_scores[0][0]
+            secondary_key = sorted_scores[1][0]
             
-            if st.form_submit_button("Gerar Meu Perfil Dominante"):
-                sorted_scores = sorted(block_scores.items(), key=lambda x: x[1], reverse=True)
-                dominant_key = sorted_scores[0][0]
-                secondary_key = sorted_scores[1][0]
-                
-                # Mapeamento técnico para os perfis do DB
-                # Dominantes mapeados para nomes do PROFILES_DB
-                mapping = {
-                    "Relação": "🛡 Protetor",
-                    "Contenção": "🧱 Contenedor",
-                    "Narcisismo": "🔥 Narciso Estratégico",
-                    "Estrutura": "🏗 Estruturador",
-                    "Autoridade": "🪞 Espelho Emocional",
-                    "Reflexão": "🧠 Observador Reflexivo"
-                }
-                
-                # Nomes Secundários mapeados
-                sec_mapping = {
-                    "Reflexão": "🧠 Observador Reflexivo",
-                    "Narcisismo": "🔥 Narciso Estratégico",
-                    "Estrutura": "🏗 Estruturador",
-                    "Contenção": "🧱 Contenedor",
-                    "Autoridade": "🪞 Espelho Emocional",
-                    "Relação": "🛡 Protetor"
-                }
-                
-                # Caso especial para Relacional Reativo que não está no mapeamento simples de blocos mas está no DB
-                # Ajustando para usar nomes do DB
-                db_dominant = mapping.get(dominant_key, "🛡 Protetor")
-                db_secondary = sec_mapping.get(secondary_key, "🧠 Observador Reflexivo")
-                
-                # Busca no DB
-                profile_details = PROFILES_DB.get(db_dominant, {}).get(db_secondary, {
-                    "forcas": "Seu perfil híbrido combina as forças dominantes de ambos os blocos identificados.",
-                    "riscos": "Considere o equilíbrio entre as tendências de cada arquétipo.",
-                    "reflexoes": "Agende uma mentoria síncrona para uma análise personalizada de seus resultados."
-                })
-                
-                st.session_state.assessment_results = {
-                    "dominant": db_dominant,
-                    "secondary": db_secondary,
-                    "details": profile_details
-                }
-        
-        if st.session_state.assessment_results:
-            res = st.session_state.assessment_results
-            st.markdown(f"""
-                <div class="result-card">
-                    <div class="profile-title">Seu Perfil LPS: {res['dominant']} + {res['secondary']}</div>
-                    <hr>
-                    <h4 style="color: #0D3B66;">Forças Principais:</h4>
-                    <p>{res['details']['forcas']}</p>
-                    <h4 style="color: #0D3B66;">Riscos e Sombras:</h4>
-                    <p>{res['details']['riscos']}</p>
-                    <h4 style="color: #0D3B66;">Reflexões para Desenvolvimento:</h4>
-                    <p>{res['details']['reflexoes']}</p>
-                    <br>
-                    <p style="font-size: 0.9rem; color: #666;">Para baixar o relatório completo em PDF, entre em contato com seu consultor.</p>
-                </div>
-            """, unsafe_allow_html=True)
-            if st.button("📤 Exportar para Mentoria"):
-                st.info("Relatório enviado para análise da consultora Viviane Nishiura.")
-    else:
-        st.error("🔒 Conclua o curso para liberar o assessment.")
+            mapping = {
+                "Relação": "🛡 Protetor",
+                "Contenção": "🧱 Contenedor",
+                "Narcisismo": "🔥 Narciso Estratégico",
+                "Estrutura": "🏗 Estruturador",
+                "Autoridade": "🪞 Espelho Emocional",
+                "Reflexão": "🧠 Observador Reflexivo"
+            }
+            
+            db_dominant = mapping.get(dominant_key, "🛡 Protetor")
+            db_secondary = mapping.get(secondary_key, "🧠 Observador Reflexivo")
+            
+            profile_details = PROFILES_DB.get(db_dominant, {}).get(db_secondary, {
+                "forcas": "Seu perfil híbrido combina as forças dominantes identificadas.",
+                "riscos": "Considere o equilíbrio entre as tendências de cada arquétipo.",
+                "reflexoes": "Agende uma mentoria para análise personalizada."
+            })
+            
+            st.session_state.assessment_results = {
+                "dominant": db_dominant,
+                "secondary": db_secondary,
+                "details": profile_details
+            }
+    
+    if st.session_state.assessment_results:
+        res = st.session_state.assessment_results
+        st.markdown(f"""
+            <div class="result-card">
+                <div class="profile-title">Seu Perfil LPS: {res['dominant']} + {res['secondary']}</div>
+                <hr>
+                <h4 style="color: #0D3B66;">Forças Principais:</h4>
+                <p>{res['details']['forcas']}</p>
+                <h4 style="color: #0D3B66;">Riscos e Sombras:</h4>
+                <p>{res['details']['riscos']}</p>
+                <h4 style="color: #0D3B66;">Reflexões para Desenvolvimento:</h4>
+                <p>{res['details']['reflexoes']}</p>
+            </div>
+        """, unsafe_allow_html=True)
 
 elif page == "LPSChat":
     st.title("💬 LPSChat")
-    if course_completed:
-        st.chat_input("Descreva sua equipe...")
-    else:
-        st.error("🔒 Conclua o curso para liberar o chat.")
+    st.warning("Cérebro LPS: Análise baseada em Otto Kernberg e Wilfred Bion.")
+    if "messages" not in st.session_state: st.session_state.messages = []
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]): st.markdown(msg["content"])
+    if prompt := st.chat_input("Descreva a dinâmica da sua equipe..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"): st.markdown(prompt)
+        response = "Como consultora sênior, analiso sua equipe sob a ótica de Kernberg e Bion: identifique regressões e mecanismos de defesa..."
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        with st.chat_message("assistant"): st.markdown(response)
 
 elif page == "Mentoria":
     st.title("📅 Mentoria")
-    if course_completed:
-        st.markdown(f'<a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px;">Agendar Mentoria</button></a>', unsafe_allow_html=True)
-    else:
-        st.error("🔒 Conclua o curso para liberar a mentoria.")
+    st.write("Agende suas sessões de mentoria síncrona com Viviane Nishiura.")
+    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px;">Agendar Mentoria</button></a></div>', unsafe_allow_html=True)
 
 elif page == "Sobre":
     st.title("👤 Sobre")
