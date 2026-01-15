@@ -8,6 +8,9 @@ import streamlit.components.v1 as components
 from datetime import datetime
 import google.generativeai as genai
 
+# Definir diretório de trabalho como local do script
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 # Configuração da Página - Tema LPS
 st.set_page_config(
     page_title="Plataforma LPS",
