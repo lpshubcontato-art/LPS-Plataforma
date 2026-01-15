@@ -59,14 +59,22 @@ st.markdown("""
         background-color: white;
         border-right: 1px solid #e0e0e0;
     }
-
-    /* Cabeçalho alinhado */
-    .header-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-        margin-bottom: 2rem;
+    
+    /* Estilização Chat */
+    .stChatMessage {
+        border-radius: 15px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    [data-testid="stChatMessage"]:nth-child(even) {
+        background-color: var(--primary-blue) !important;
+        color: white !important;
+    }
+    
+    [data-testid="stChatMessage"]:nth-child(odd) {
+        background-color: var(--accent-gold) !important;
+        color: black !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -97,7 +105,7 @@ MODULES_DATA = [
     {"id": 7, "name": "Módulo 7: Conclusão e Próximos Passos", "file": "attached_assets/introdução_1768431876966.pdf", "videos": ["https://vimeo.com/1154502544", "https://vimeo.com/1154502598", "https://vimeo.com/1154502492"]}
 ]
 
-# Total de aulas para o checklist (contando partes dos vídeos)
+# Total de aulas para o checklist
 total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
 completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
 course_completed = completed_lessons >= total_lessons
@@ -148,53 +156,49 @@ elif page == "LPS Curso":
     st.progress(completed_lessons / total_lessons if total_lessons > 0 else 0)
     st.write(f"Progresso: {completed_lessons}/{total_lessons} aulas concluídas")
     
-    for m_idx, mod in enumerate(MODULES_DATA):
+    for mod in MODULES_DATA:
         with st.expander(mod['name']):
             for v_idx, v_url in enumerate(mod['videos']):
                 lesson_id = f"m{mod['id']}_v{v_idx}"
                 st.write(f"**Parte {v_idx+1}:**")
                 vimeo_video(v_url)
-                
-                # Checkbox de conclusão
                 is_completed = st.checkbox("Concluí esta aula", value=st.session_state.progress.get(lesson_id, False), key=lesson_id)
                 st.session_state.progress[lesson_id] = is_completed
-            
             st.write("---")
             if os.path.exists(mod['file']):
                 with open(mod['file'], "rb") as f:
-                    st.download_button(
-                        label="⬇️ Baixar Material de Apoio (PDF)",
-                        data=f,
-                        file_name=os.path.basename(mod['file']),
-                        mime="application/pdf",
-                        key=f"dl_rule_{mod['id']}"
-                    )
+                    st.download_button(label="⬇️ Baixar Material de Apoio (PDF)", data=f, file_name=os.path.basename(mod['file']), mime="application/pdf", key=f"dl_r_{mod['id']}")
 
 elif page == "LPSTest":
     st.title("📝 LPSTest")
     if course_completed:
         st.write("O LPSTest revela as forças inconscientes que moldam seu estilo de liderança e a dinâmica de sua equipe.")
         col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Gerar Link para Funcionário"):
-                st.success("Link gerado com sucesso!")
-        with col2:
-            if st.button("Ver Meus Resultados"):
-                st.info("Seus resultados estarão disponíveis após a conclusão do teste.")
+        with col1: st.button("Gerar Link para Funcionário")
+        with col2: st.button("Ver Meus Resultados")
     else:
         st.error("🔒 Esta ferramenta será liberada assim que você concluir todos os módulos do curso")
 
 elif page == "LPSChat":
     st.title("💬 LPSChat")
     if course_completed:
-        st.warning("Nossa IA está sendo treinada com a bibliografia de Neurociência e Psicanálise para analisar sua equipe.")
+        st.warning("Cérebro LPS: Análise baseada em Otto Kernberg e Wilfred Bion.")
+        st.info("Tom: Consultora Sênior em Psicologia Organizacional.")
         if "messages" not in st.session_state: st.session_state.messages = []
         for msg in st.session_state.messages:
             with st.chat_message(msg["role"]): st.markdown(msg["content"])
-        if prompt := st.chat_input("Como posso ajudar com sua equipe hoje?"):
+        if prompt := st.chat_input("Descreva a dinâmica da sua equipe..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"): st.markdown(prompt)
-            with st.chat_message("assistant"): st.markdown("Analisando com base nos princípios LPS...")
+            # Simulação de resposta estruturada baseada no roteiro
+            response = """Como consultora sênior, analiso sua equipe sob a ótica de Kernberg e Bion:
+            
+- **Dinâmica Grupal**: Identifico possíveis regressões a suposições básicas (Dependência ou Luta/Fuga).
+- **Mecanismos de Defesa**: Observe se há Projeção ou Negação na equipe.
+- **Sugestão**: Fortaleça o Círculo de Segurança e reestruture a **Tarefa Real** para tirar o grupo da regressão emocional.
+- **Liderança**: Use seu arquétipo para agir sob pressão e reduzir o Cortisol com empatia e metas claras."""
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            with st.chat_message("assistant"): st.markdown(response)
     else:
         st.error("🔒 Esta ferramenta será liberada assim que você concluir todos os módulos do curso")
 
