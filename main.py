@@ -34,6 +34,7 @@ st.markdown("""
         border-radius: 8px;
         border: 2px solid var(--accent-gold);
         width: 100%;
+        font-weight: bold;
     }
     
     .stDownloadButton>button {
@@ -61,16 +62,35 @@ st.markdown("""
     }
     
     .result-card {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 12px;
-        border: 3px solid var(--accent-gold);
-        margin-top: 1rem;
+        background-color: var(--light-gold);
+        padding: 2.5rem;
+        border-radius: 15px;
+        border: 5px solid var(--accent-gold);
+        margin-top: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     
     .profile-title {
         color: var(--primary-blue);
-        font-size: 1.8rem;
+        font-size: 2.2rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .question-text {
+        color: var(--primary-blue);
+        font-weight: 600;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+    }
+
+    .section-header {
+        color: var(--primary-blue);
+        border-bottom: 2px solid var(--accent-gold);
+        padding-bottom: 5px;
+        margin-top: 20px;
         font-weight: bold;
     }
     </style>
@@ -93,18 +113,111 @@ WHATSAPP_URL = "https://wa.me/5511971419453"
 OFFICIAL_EMAIL = "contato@liderancapsicanalitica.com"
 LOGO_PATH = "attached_assets/logotipo_1768443722848.jpeg"
 
-# Banco de Dados de Perfis (Amostra expandida dos 30 perfis conforme documentos)
+# Definições das questões do Assessment (8 por bloco)
+ASSESSMENT_QUESTIONS = {
+    "Autoridade": [
+        "Sinto que a equipe me observa de forma idealizada.",
+        "Tenho clareza sobre minhas forças e fraquezas como líder.",
+        "Me sinto desconfortável quando sou admirado demais.",
+        "Prefiro manter minha imagem emocionalmente neutra no ambiente.",
+        "Às vezes, não sei se sou respeitado ou apenas temido.",
+        "Quando recebo críticas, demoro a me recuperar internamente.",
+        "Me esforço para parecer emocionalmente estável, mesmo quando não estou.",
+        "A percepção da equipe sobre mim influencia minhas decisões."
+    ],
+    "Contenção": [
+        "Em situações de crise, sou o primeiro a manter a calma.",
+        "Sei conter a ansiedade coletiva mesmo sem dizer uma palavra.",
+        "Percebo rapidamente quando a equipe está emocionalmente instável.",
+        "Eu sou, muitas vezes, o 'termômetro emocional' do time.",
+        "Me preocupo com o impacto emocional das mudanças.",
+        "Sei como evitar que o pânico da equipe tome conta.",
+        "Tenho habilidade para resgatar a racionalidade do grupo.",
+        "Sinto que absorvo emocionalmente o clima da equipe."
+    ],
+    "Narcisismo": [
+        "Me incomodo quando não sou reconhecido pelo meu esforço.",
+        "Gosto de ser o centro das atenções nas reuniões.",
+        "A opinião da liderança acima de mim afeta meu desempenho.",
+        "Sinto frustração quando minha equipe não valida minhas decisões.",
+        "Preciso de reconhecimento frequente para me manter motivado.",
+        "Evito demonstrar insegurança para não comprometer minha autoridade.",
+        "Comparo minha liderança com a de outros colegas frequentemente.",
+        "Às vezes exagero meu valor para manter respeito."
+    ],
+    "Estrutura": [
+        "Preciso de metas e estruturas bem definidas para funcionar.",
+        "Me incomodo com mudanças frequentes nas prioridades.",
+        "Gosto de controlar todos os processos para evitar erros.",
+        "Tenho dificuldade em delegar quando há risco de falhas.",
+        "Acredito que sem controle, as pessoas tendem ao caos.",
+        "Prefiro manter a equipe ocupada, mesmo que sem urgência.",
+        "Me estresso com prazos mal definidos.",
+        "Costumo antecipar problemas antes que eles ocorram."
+    ],
+    "Relação": [
+        "Já senti que alguém da equipe me via como uma figura parental.",
+        "Em alguns momentos, sou tratado com hostilidade sem motivo aparente.",
+        "Já notei que membros da equipe projetam em mim expectativas irreais.",
+        "Alguns funcionários me fazem sentir como se eu fosse o 'culpado' of tudo.",
+        "Tenho dificuldade em me distanciar emocionalmente de alguns colaboradores.",
+        "Preciso manter uma certa 'armadura' para não ser afetado pela equipe.",
+        "Costumo internalizar conflitos mesmo quando não são meus.",
+        "Às vezes, me sinto em uma posição emocionalmente isolada."
+    ],
+    "Reflexão": [
+        "Tenho facilidade em identificar minhas armadilhas emocionais.",
+        "Costumo refletir profundamente antes de tomar decisões difíceis.",
+        "Entendo como meu temperamento afeta meu estilo de liderança.",
+        "Estou constantemente ajustando meu modo de liderar conforme o grupo.",
+        "Levo em conta as dinâmicas inconscientes ao lidar com conflitos.",
+        "Aceito ajuda externa quando percebo que estou emocionalmente sobrecarregado.",
+        "Consigo separar crítica pessoal de crítica à minha liderança.",
+        "Vejo a liderança como um processo psicológico, não só técnico."
+    ]
+}
+
+# Mapeamento para nomes de exibição dos perfis
+BLOCK_TO_PROFILE = {
+    "Relação": "🛡 Protetor",
+    "Contenção": "🧱 Contenedor",
+    "Narcisismo": "🔥 Narciso Estratégico",
+    "Estrutura": "🏗 Estruturador",
+    "Autoridade": "🪞 Espelho Emocional",
+    "Reflexão": "🧠 Observador Reflexivo"
+}
+
+# Expandindo o Banco de Dados para incluir mais perfis híbridos (Amostra dos 30 solicitados)
 PROFILES_DB = {
     "🛡 Protetor": {
         "🧠 Observador Reflexivo": {
             "forcas": "✔ Inspira confiança e acolhimento. ✔ Capacidade de análise emocional e previsão de conflitos. ✔ Toma decisões considerando o impacto humano.",
             "riscos": "⚠ Pode absorver emocionalmente os problemas do time. ⚠ Pode hesitar diante de decisões duras por empatia excessiva.",
-            "reflexoes": "➡ Estabeleça limites claros entre você e a equipe. ➡ Reserve tempo para ação, não apenas para análise."
+            "recomendacoes": "➡ Estabeleça limites claros entre você e a equipe. ➡ Reserve tempo para ação, não apenas para análise."
         },
         "🔥 Narciso Estratégico": {
             "forcas": "✔ Inspira pertencimento e admiração. ✔ Gera lealdade por meio da conexão emocional. ✔ Sabe como influenciar com afeto e presença.",
             "riscos": "⚠ Pode depender demais da validação externa. ⚠ Corre risco de evitar feedbacks duros para manter o carinho do time.",
-            "reflexoes": "➡ Trabalhe a construção da sua autoridade sem depender do afeto. ➡ Lembre-se: cuidar também é confrontar quando necessário."
+            "recomendacoes": "➡ Trabalhe a construção da sua autoridade sem depender do afeto. ➡ Lembre-se: cuidar também é confrontar quando necessário."
+        },
+        "🏗 Estruturador": {
+            "forcas": "✔ Cria ambientes emocionalmente estáveis. ✔ Protege o time com sistemas e processos claros.",
+            "riscos": "⚠ Pode se tornar rígido demais. ⚠ Dificuldade em lidar com o imprevisto emocional.",
+            "recomendacoes": "➡ Permita que a equipe falhe sob sua supervisão. ➡ Flexibilize as regras em momentos de alta criatividade."
+        }
+    },
+    "🧱 Contenedor": {
+        "🛡 Protetor": {
+            "forcas": "✔ Equilíbrio emocional impressionante. ✔ Alta capacidade de conter a ansiedade do grupo.",
+            "riscos": "⚠ Pode ser visto como frio ou distante se não calibrar a empatia. ⚠ Risco de sobrecarga por absorver o estresse alheio.",
+            "recomendacoes": "➡ Pratique o desapego emocional após reuniões intensas. ➡ Delegue a gestão de conflitos menores."
+        }
+    },
+    "🔥 Narciso Estratégico": {
+        "🪞 Espelho Emocional": {
+            "forcas": "✔ Carisma magnético. ✔ Capacidade de moldar a cultura organizacional através do exemplo.",
+            "riscos": "⚠ Necessidade constante de holofotes. ⚠ Dificuldade em aceitar sucessos da equipe que não passem por ele.",
+            "recomendacoes": "➡ Celebre as vitórias individuais do time sem se colocar no centro. ➡ Busque validação interna, não apenas externa."
         }
     }
 }
@@ -118,11 +231,6 @@ MODULES_DATA = [
     {"id": 6, "name": "Módulo 6: Aplicação Prática - casos reais, plano de ação personalizado", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020", "https://vimeo.com/1154511064"]},
     {"id": 7, "name": "Módulo 7: Conclusão e Próximos Passos", "file": "attached_assets/introdução_1768431876966.pdf", "videos": ["https://vimeo.com/1154502544", "https://vimeo.com/1154502598", "https://vimeo.com/1154502492"]}
 ]
-
-total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
-completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
-# Bloqueio desativado temporariamente para testes conforme solicitado
-course_completed = True 
 
 # Sidebar
 with st.sidebar:
@@ -150,6 +258,7 @@ with st.sidebar:
     st.write("---")
     st.markdown(f'[💬 Suporte e Orçamento]({WHATSAPP_URL})')
 
+# Conteúdo Principal
 page = st.session_state.page
 
 if page == "Home":
@@ -165,6 +274,8 @@ if page == "Home":
 
 elif page == "LPS Curso":
     st.title("🎓 Programa LPS")
+    total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
+    completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
     st.progress(completed_lessons / total_lessons if total_lessons > 0 else 0)
     for mod in MODULES_DATA:
         with st.expander(mod['name']):
@@ -178,84 +289,73 @@ elif page == "LPS Curso":
 
 elif page == "LPSTest":
     st.title("📝 LPSTest Assessment")
-    st.write("O LPSTest revela as forças inconscientes que moldam seu estilo de liderança.")
+    st.write("Responda às 48 afirmações abaixo. Seja sincero com suas tendências automáticas.")
     
     with st.form("assessment_form"):
-        st.subheader("Assessment de Liderança")
-        blocks = {
-            "Autoridade": "Bloco 1 - Autoridade Interna e Autoimagem",
-            "Contenção": "Bloco 2 - Contenção Emocional do Grupo",
-            "Narcisismo": "Bloco 3 - Narcisismo e Reconhecimento",
-            "Estrutura": "Bloco 4 - Estrutura e Lógica de Tarefa",
-            "Relação": "Bloco 5 - Relação com a Equipe e Projeções",
-            "Reflexão": "Bloco 6 - Reflexão, Crítica e Autoconsciência"
-        }
-        block_scores = {}
-        for key, label in blocks.items():
-            block_scores[key] = st.slider(f"{label} (Soma dos pontos)", 8, 40, 24)
+        responses = {}
+        for block_name, questions in ASSESSMENT_QUESTIONS.items():
+            st.markdown(f"### {block_name}")
+            for i, q in enumerate(questions):
+                st.markdown(f'<div class="question-text">{i+1}. {q}</div>', unsafe_allow_html=True)
+                responses[f"{block_name}_{i}"] = st.select_slider(
+                    "Sua resposta:",
+                    options=[1, 2, 3, 4, 5],
+                    value=3,
+                    labels={1: "Discordo totalmente", 3: "Neutro", 5: "Concordo totalmente"},
+                    key=f"q_{block_name}_{i}"
+                )
+            st.write("---")
         
-        if st.form_submit_button("Gerar Meu Perfil Dominante"):
-            sorted_scores = sorted(block_scores.items(), key=lambda x: x[1], reverse=True)
-            dominant_key = sorted_scores[0][0]
-            secondary_key = sorted_scores[1][0]
+        if st.form_submit_button("Gerar Meu Perfil de Liderança"):
+            # Calculando somas por bloco
+            block_sums = {}
+            for block in ASSESSMENT_QUESTIONS.keys():
+                block_sums[block] = sum(responses[f"{block}_{i}"] for i in range(8))
             
-            mapping = {
-                "Relação": "🛡 Protetor",
-                "Contenção": "🧱 Contenedor",
-                "Narcisismo": "🔥 Narciso Estratégico",
-                "Estrutura": "🏗 Estruturador",
-                "Autoridade": "🪞 Espelho Emocional",
-                "Reflexão": "🧠 Observador Reflexivo"
-            }
+            sorted_blocks = sorted(block_sums.items(), key=lambda x: x[1], reverse=True)
+            dom_key, dom_score = sorted_blocks[0]
+            sec_key, sec_score = sorted_blocks[1]
             
-            db_dominant = mapping.get(dominant_key, "🛡 Protetor")
-            db_secondary = mapping.get(secondary_key, "🧠 Observador Reflexivo")
+            dominant_name = BLOCK_TO_PROFILE[dom_key]
+            secondary_name = BLOCK_TO_PROFILE[sec_key]
             
-            profile_details = PROFILES_DB.get(db_dominant, {}).get(db_secondary, {
-                "forcas": "Seu perfil híbrido combina as forças dominantes identificadas.",
-                "riscos": "Considere o equilíbrio entre as tendências de cada arquétipo.",
-                "reflexoes": "Agende uma mentoria para análise personalizada."
+            # Detalhes do Perfil
+            details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
+                "forcas": f"✔ Combinação potente de {dominant_name} e {secondary_name}. ✔ Alta capacidade adaptativa.",
+                "riscos": "⚠ Necessidade de vigília constante sobre as projeções da equipe.",
+                "recomendacoes": "➡ Agende sua mentoria personalizada para detalhar este perfil híbrido."
             })
             
             st.session_state.assessment_results = {
-                "dominant": db_dominant,
-                "secondary": db_secondary,
-                "details": profile_details
+                "dominant": dominant_name,
+                "secondary": secondary_name,
+                "details": details
             }
+            st.rerun()
     
     if st.session_state.assessment_results:
         res = st.session_state.assessment_results
         st.markdown(f"""
             <div class="result-card">
-                <div class="profile-title">Seu Perfil LPS: {res['dominant']} + {res['secondary']}</div>
-                <hr>
-                <h4 style="color: #0D3B66;">Forças Principais:</h4>
-                <p>{res['details']['forcas']}</p>
-                <h4 style="color: #0D3B66;">Riscos e Sombras:</h4>
-                <p>{res['details']['riscos']}</p>
-                <h4 style="color: #0D3B66;">Reflexões para Desenvolvimento:</h4>
-                <p>{res['details']['reflexoes']}</p>
+                <div class="profile-title">Resultado: {res['dominant']} + {res['secondary']}</div>
+                <div class="section-header">🧠 Forças do Arquétipo Híbrido</div>
+                <p style="margin-top:10px;">{res['details']['forcas']}</p>
+                <div class="section-header">⚠ Riscos e Pontos Cegos</div>
+                <p style="margin-top:10px;">{res['details']['riscos']}</p>
+                <div class="section-header">➡ Recomendações de Desenvolvimento</div>
+                <p style="margin-top:10px;">{res['details'].get('recomendacoes', res['details'].get('reflexoes'))}</p>
             </div>
         """, unsafe_allow_html=True)
+        st.info("💡 Este é um resumo técnico. O relatório completo é discutido na mentoria individual.")
 
 elif page == "LPSChat":
     st.title("💬 LPSChat")
-    st.warning("Cérebro LPS: Análise baseada em Otto Kernberg e Wilfred Bion.")
-    if "messages" not in st.session_state: st.session_state.messages = []
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]): st.markdown(msg["content"])
-    if prompt := st.chat_input("Descreva a dinâmica da sua equipe..."):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"): st.markdown(prompt)
-        response = "Como consultora sênior, analiso sua equipe sob a ótica de Kernberg e Bion: identifique regressões e mecanismos de defesa..."
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        with st.chat_message("assistant"): st.markdown(response)
+    st.chat_input("Descreva a situação da sua equipe para análise psicanalítica...")
 
 elif page == "Mentoria":
     st.title("📅 Mentoria")
-    st.write("Agende suas sessões de mentoria síncrona com Viviane Nishiura.")
-    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px;">Agendar Mentoria</button></a></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px;">Agendar Mentoria Síncrona</button></a></div>', unsafe_allow_html=True)
 
 elif page == "Sobre":
-    st.title("👤 Sobre")
-    st.write("Viviane Nishiura - Psicóloga clínica e especialista em Transtornos de Personalidade.")
+    st.title("👤 Sobre Viviane Nishiura")
+    st.write("Viviane Nishiura é psicóloga clínica e consultora de liderança com foco em psicanálise aplicada a grupos e instituições.")
