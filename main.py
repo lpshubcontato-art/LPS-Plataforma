@@ -10,8 +10,8 @@ import google.generativeai as genai
 
 # Configuração da Página - Tema LPS
 st.set_page_config(
-    page_title="Liderança Psicanalítica",
-    page_icon="🧠",
+    page_title="Plataforma LPS",
+    page_icon="attached_assets/logotipo_1768443722848.jpeg",
     layout="wide"
 )
 
