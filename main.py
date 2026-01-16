@@ -322,6 +322,143 @@ st.markdown("""
         display: inline-block;
         margin-top: 5px;
     }
+    
+    .module-card {
+        background: white;
+        border: 2px solid var(--accent-gold);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        height: 100%;
+    }
+    
+    .module-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(13, 59, 102, 0.2);
+    }
+    
+    .module-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .module-title {
+        color: var(--primary-blue);
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .module-desc {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .whatsapp-float {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        background-color: #25D366;
+        color: white;
+        border-radius: 50px;
+        padding: 15px 25px;
+        font-weight: bold;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: transform 0.2s;
+    }
+    
+    .whatsapp-float:hover {
+        transform: scale(1.05);
+        color: white;
+    }
+    
+    .header-bar {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, #1a5490 100%);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: -1rem -1rem 1rem -1rem;
+        border-radius: 0 0 15px 15px;
+    }
+    
+    .header-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .header-title {
+        color: var(--accent-gold);
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+    
+    .btn-area-aluno {
+        background-color: var(--accent-gold);
+        color: var(--primary-blue);
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .btn-area-aluno:hover {
+        transform: scale(1.05);
+    }
+    
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, #1a5490 100%);
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .hero-title {
+        color: var(--accent-gold);
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-subtitle {
+        color: white;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .restricted-modal {
+        background: linear-gradient(135deg, #0D3B66 0%, #1a5490 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 3px solid var(--accent-gold);
+    }
+    
+    .restricted-title {
+        color: var(--accent-gold);
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .restricted-text {
+        color: white;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -332,7 +469,7 @@ def vimeo_video(url):
 
 # Inicialização do Estado de Sessão
 if 'page' not in st.session_state:
-    st.session_state.page = "Login"
+    st.session_state.page = "Vitrine"
 if 'progress' not in st.session_state:
     st.session_state.progress = {}
 if 'assessment_results' not in st.session_state:
@@ -349,6 +486,10 @@ if 'login_mode' not in st.session_state:
     st.session_state.login_mode = "login"
 if 'show_test_form' not in st.session_state:
     st.session_state.show_test_form = False
+if 'show_login_modal' not in st.session_state:
+    st.session_state.show_login_modal = False
+if 'selected_module' not in st.session_state:
+    st.session_state.selected_module = None
 
 WHATSAPP_URL = "https://wa.me/5511971419453"
 LOGO_PATH = "attached_assets/logotipo_1768443722848.jpeg"
@@ -485,13 +626,13 @@ PROFILES_DB = {
 }
 
 MODULES_DATA = [
-    {"id": 1, "name": "Módulo 1: Neurociência da Liderança", "file": "attached_assets/Módulo_1_1768431876967.pdf", "videos": ["https://vimeo.com/1154503073", "https://vimeo.com/1154503122", "https://vimeo.com/1154503201"]},
-    {"id": 2, "name": "Módulo 2: Mergulho no Inconsciente", "file": "attached_assets/Módulo_2_1768431876968.pdf", "videos": ["https://vimeo.com/1154504282", "https://vimeo.com/1154503918"]},
-    {"id": 3, "name": "Módulo 3: Relações e Transferência", "file": "attached_assets/Módulo_3_1768431876969.pdf", "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577"]},
-    {"id": 4, "name": "Módulo 4: Autoconsciência", "file": "attached_assets/Módulo_5_1768431876971.pdf", "videos": ["https://vimeo.com/1154510241"]},
-    {"id": 5, "name": "Módulo 5: Entendendo a Equipe", "file": "attached_assets/Módulo_6_1768431876972.pdf", "videos": ["https://vimeo.com/1154510682"]},
-    {"id": 6, "name": "Módulo 6: Aplicação Prática", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]},
-    {"id": 7, "name": "Módulo 7: Conclusão", "file": "attached_assets/introdução_1768431876966.pdf", "videos": ["https://vimeo.com/1154502544"]}
+    {"id": 1, "name": "Módulo 1: Neurociência da Liderança", "description": "Entenda como o cérebro processa decisões e aprenda a usar a neurociência para liderar com mais eficácia.", "icon": "🧠", "file": "attached_assets/Módulo_1_1768431876967.pdf", "videos": ["https://vimeo.com/1154503073", "https://vimeo.com/1154503122", "https://vimeo.com/1154503201"]},
+    {"id": 2, "name": "Módulo 2: Mergulho no Inconsciente", "description": "Explore as camadas profundas da mente e descubra como padrões inconscientes influenciam sua liderança.", "icon": "🌊", "file": "attached_assets/Módulo_2_1768431876968.pdf", "videos": ["https://vimeo.com/1154504282", "https://vimeo.com/1154503918"]},
+    {"id": 3, "name": "Módulo 3: Relações e Transferência", "description": "Compreenda as dinâmicas de transferência e contratransferência nas relações profissionais.", "icon": "🔄", "file": "attached_assets/Módulo_3_1768431876969.pdf", "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577"]},
+    {"id": 4, "name": "Módulo 4: Autoconsciência", "description": "Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como líder.", "icon": "🪞", "file": "attached_assets/Módulo_5_1768431876971.pdf", "videos": ["https://vimeo.com/1154510241"]},
+    {"id": 5, "name": "Módulo 5: Entendendo a Equipe", "description": "Aprenda a mapear perfis e dinâmicas grupais usando conceitos psicanalíticos.", "icon": "👥", "file": "attached_assets/Módulo_6_1768431876972.pdf", "videos": ["https://vimeo.com/1154510682"]},
+    {"id": 6, "name": "Módulo 6: Aplicação Prática", "description": "Coloque em prática as ferramentas psicanalíticas no dia a dia da liderança.", "icon": "🛠️", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]},
+    {"id": 7, "name": "Módulo 7: Conclusão", "description": "Integre todo o aprendizado e trace seu plano de desenvolvimento como líder psicanalítico.", "icon": "🎓", "file": "attached_assets/introdução_1768431876966.pdf", "videos": ["https://vimeo.com/1154502544"]}
 ]
 
 # Check for employee token in URL (takes priority over auth)
@@ -501,6 +642,35 @@ if 'token' in query_params:
     st.session_state.employee_token = query_params['token']
     st.session_state.page = "EmployeeAssessment"
     is_employee_access = True
+
+# Floating WhatsApp Button (appears on all pages)
+st.markdown(f'''
+    <a href="{WHATSAPP_URL}" target="_blank" class="whatsapp-float">
+        <span style="font-size: 1.5rem;">💬</span>
+        Falar com Consultor
+    </a>
+''', unsafe_allow_html=True)
+
+# Public Header for non-authenticated users (Vitrine)
+def render_public_header():
+    col1, col2, col3 = st.columns([1, 4, 1])
+    with col1:
+        if os.path.exists(LOGO_PATH):
+            st.image(LOGO_PATH, width=80)
+    with col2:
+        st.markdown("""
+            <h1 style="color: #0D3B66; font-size: 1.8rem; margin: 0; text-align: center;">
+                Liderança Psicanalítica
+            </h1>
+            <p style="color: #666; text-align: center; margin: 0;">
+                Transforme Sua Liderança com a Ciência do Inconsciente
+            </p>
+        """, unsafe_allow_html=True)
+    with col3:
+        if st.button("👤 Área do Aluno", key="btn_area_aluno", use_container_width=True):
+            st.session_state.page = "Login"
+            st.rerun()
+    st.write("---")
 
 # Login Page Function
 def render_login_page():
@@ -567,6 +737,11 @@ def render_login_page():
                     else:
                         st.error("Preencha todos os campos.")
         
+        st.write("")
+        if st.button("⬅️ Voltar para Vitrine", key="back_to_vitrine", use_container_width=True):
+            st.session_state.page = "Vitrine"
+            st.rerun()
+        
         with tab2:
             with st.form("register_form"):
                 name = st.text_input("Nome Completo", key="reg_name")
@@ -626,7 +801,7 @@ if st.session_state.authenticated and not is_employee_access:
             st.session_state.authenticated = False
             st.session_state.user = None
             st.session_state.manager_data = None
-            st.session_state.page = "Login"
+            st.session_state.page = "Vitrine"
             st.rerun()
 
 page = st.session_state.page
@@ -670,7 +845,147 @@ def calculate_profile(responses):
     return dominant_name, secondary_name, details, bion_role, block_sums
 
 # Pages
-if page == "Login":
+if page == "Vitrine":
+    # Public showcase page - no authentication required
+    render_public_header()
+    
+    # Hero Section
+    st.markdown("""
+        <div class="hero-section">
+            <div class="hero-title">Programa de Liderança Psicanalítica</div>
+            <div class="hero-subtitle">
+                7 módulos exclusivos desenvolvidos por Viviane Nishiura para transformar<br>
+                sua forma de liderar através da ciência do inconsciente
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("### O Que Você Vai Aprender")
+    st.write("")
+    
+    # Module Cards Grid - First Row (4 modules)
+    row1 = st.columns(4)
+    for idx, col in enumerate(row1):
+        if idx < len(MODULES_DATA):
+            mod = MODULES_DATA[idx]
+            with col:
+                st.markdown(f"""
+                    <div class="module-card">
+                        <div class="module-icon">{mod['icon']}</div>
+                        <div class="module-title">{mod['name'].split(': ')[1]}</div>
+                        <div class="module-desc">{mod['description']}</div>
+                    </div>
+                """, unsafe_allow_html=True)
+                if st.button("Acessar", key=f"btn_mod_{mod['id']}", use_container_width=True):
+                    st.session_state.selected_module = mod['id']
+                    if not st.session_state.authenticated:
+                        st.session_state.show_login_modal = True
+                        st.rerun()
+                    else:
+                        st.session_state.page = "LPS Curso"
+                        st.rerun()
+    
+    # Second Row (3 modules)
+    row2 = st.columns(4)
+    for idx, col in enumerate(row2[:3]):
+        mod_idx = idx + 4
+        if mod_idx < len(MODULES_DATA):
+            mod = MODULES_DATA[mod_idx]
+            with col:
+                st.markdown(f"""
+                    <div class="module-card">
+                        <div class="module-icon">{mod['icon']}</div>
+                        <div class="module-title">{mod['name'].split(': ')[1]}</div>
+                        <div class="module-desc">{mod['description']}</div>
+                    </div>
+                """, unsafe_allow_html=True)
+                if st.button("Acessar", key=f"btn_mod_{mod['id']}", use_container_width=True):
+                    st.session_state.selected_module = mod['id']
+                    if not st.session_state.authenticated:
+                        st.session_state.show_login_modal = True
+                        st.rerun()
+                    else:
+                        st.session_state.page = "LPS Curso"
+                        st.rerun()
+    
+    # Display restriction modal if user clicked on module without login
+    if st.session_state.show_login_modal:
+        st.write("")
+        st.markdown("""
+            <div class="restricted-modal">
+                <div class="restricted-title">🔒 Conteúdo Exclusivo para Alunos</div>
+                <div class="restricted-text">
+                    Este conteúdo é exclusivo para alunos matriculados.<br>
+                    Faça login se já possui acesso ou entre em contato para adquirir.
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("👤 Fazer Login", use_container_width=True, key="modal_login"):
+                st.session_state.show_login_modal = False
+                st.session_state.page = "Login"
+                st.rerun()
+        with col2:
+            st.markdown(f"""
+                <a href="{WHATSAPP_URL}" target="_blank" style="display: block; text-align: center; background-color: #25D366; color: white; padding: 0.6rem 1rem; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                    💬 Adquirir Acesso via WhatsApp
+                </a>
+            """, unsafe_allow_html=True)
+        
+        if st.button("Fechar", key="close_modal"):
+            st.session_state.show_login_modal = False
+            st.rerun()
+    
+    # Features section
+    st.write("---")
+    st.markdown("### Por Que Escolher o LPS?")
+    
+    feat_cols = st.columns(3)
+    with feat_cols[0]:
+        st.markdown("""
+            <div style="text-align: center; padding: 1rem;">
+                <div style="font-size: 2.5rem;">🧠</div>
+                <h4 style="color: #0D3B66;">Neurociência + Psicanálise</h4>
+                <p style="color: #666;">Metodologia única que une ciência do cérebro com análise profunda do comportamento.</p>
+            </div>
+        """, unsafe_allow_html=True)
+    with feat_cols[1]:
+        st.markdown("""
+            <div style="text-align: center; padding: 1rem;">
+                <div style="font-size: 2.5rem;">📊</div>
+                <h4 style="color: #0D3B66;">Assessment Completo</h4>
+                <p style="color: #666;">Descubra seu perfil de liderança e mapeie sua equipe com ferramentas exclusivas.</p>
+            </div>
+        """, unsafe_allow_html=True)
+    with feat_cols[2]:
+        st.markdown("""
+            <div style="text-align: center; padding: 1rem;">
+                <div style="font-size: 2.5rem;">💬</div>
+                <h4 style="color: #0D3B66;">IA Consultora</h4>
+                <p style="color: #666;">Converse com a LPSChat para receber insights personalizados sobre sua equipe.</p>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    # CTA Section
+    st.write("")
+    st.markdown("""
+        <div style="background: linear-gradient(135deg, #F4D35E 0%, #E8C84A 100%); padding: 2rem; border-radius: 15px; text-align: center; margin-top: 1rem;">
+            <h3 style="color: #0D3B66; margin-bottom: 1rem;">Pronto para Transformar Sua Liderança?</h3>
+            <p style="color: #0D3B66; margin-bottom: 1.5rem;">Entre em contato e descubra como o LPS pode revolucionar sua forma de liderar.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    cta_cols = st.columns([1, 2, 1])
+    with cta_cols[1]:
+        st.markdown(f"""
+            <a href="{WHATSAPP_URL}" target="_blank" style="display: block; text-align: center; background-color: #25D366; color: white; padding: 1rem 2rem; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1.2rem; margin-top: 1rem;">
+                💬 Falar com Consultor / Adquirir Acesso
+            </a>
+        """, unsafe_allow_html=True)
+
+elif page == "Login":
     render_login_page()
 
 elif page == "Home":
