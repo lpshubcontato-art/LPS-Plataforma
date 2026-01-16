@@ -1146,8 +1146,15 @@ MODULES_DATA = [
 # Check for employee token in URL (takes priority over auth)
 query_params = st.query_params
 is_employee_access = False
+
+# Token in URL - set session state
 if 'token' in query_params:
     st.session_state.employee_token = query_params['token']
+    st.session_state.page = "EmployeeAssessment"
+    is_employee_access = True
+
+# Token already in session state - maintain employee access lock
+if st.session_state.get('employee_token') and not st.session_state.get('authenticated'):
     st.session_state.page = "EmployeeAssessment"
     is_employee_access = True
 
@@ -1411,6 +1418,12 @@ def render_paywall():
                 💬 Comprar Curso
             </a>
         """, unsafe_allow_html=True)
+
+# GLOBAL EMPLOYEE ACCESS GUARD - Force employees to stay on EmployeeAssessment
+# This runs before every page render to prevent any navigation
+if is_employee_access and page != "EmployeeAssessment":
+    st.session_state.page = "EmployeeAssessment"
+    page = "EmployeeAssessment"
 
 # Pages
 if page == "Home":
@@ -2090,119 +2103,221 @@ elif page == "TeamManagement":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
-    st.title("👥 Gestão de Equipe")
-    st.write("Gere links para seus colaboradores responderem ao assessment e veja o mapeamento completo.")
+    st.title("Gestao de Equipe")
     
     manager_data = st.session_state.manager_data
     if not manager_data:
-        st.error("Dados do gestor não encontrados. Por favor, faça login novamente.")
+        st.error("Dados do gestor nao encontrados. Por favor, faca login novamente.")
     else:
         manager_id = manager_data['id']
         manager_profile = manager_data if manager_data.get('dominant') else None
         
-        # Show Manager Profile First
-        if manager_profile:
-            st.markdown(f"""
-                <div class="result-card" style="margin-bottom: 20px;">
-                    <div class="profile-title">👤 Seu Perfil (Gestor)</div>
-                    <p style="text-align: center; font-size: 1.3rem;"><strong>{manager_profile['dominant']} + {manager_profile['secondary']}</strong></p>
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.warning("⚠️ Complete seu LPSTest primeiro para ver a comparação com sua equipe.")
-        
-        st.write("---")
-        
-        # Generate Links Section
-        st.subheader("🔗 Gerar Links para Funcionários")
-        st.write("Cada link é único. Copie e envie para cada colaborador.")
-        
-        base_url = get_app_url()
-        cols = st.columns(4)
-        
-        for i, col in enumerate(cols):
-            with col:
-                slot = i + 1
-                token = generate_employee_link(manager_id, slot)
-                full_link = f"{base_url}?token={token}" if base_url else f"?token={token}"
-                st.markdown(f"**Funcionário {slot}**")
-                st.code(full_link, language=None)
-                st.caption("Copie e envie este link")
-        
-        if not base_url:
-            st.info("Copie o link e adicione a URL do seu app publicado na frente.")
-        
-        st.write("---")
-        
-        # Team Dashboard with Comparative View
-        st.subheader("📊 Dashboard Comparativo da Equipe")
+        # Get employees data first
         employees = get_manager_employees(manager_id)
         
-        if employees:
-            completed_count = sum(1 for e in employees if e[10] == 1)
-            st.metric("Respostas Recebidas", f"{completed_count}/4")
-            
-            # Comparative table header
-            if manager_profile and completed_count > 0:
+        # Initialize session state for showing links
+        if 'show_employee_links' not in st.session_state:
+            st.session_state.show_employee_links = False
+        
+        has_existing_links = len(employees) > 0
+        
+        # Create tabs for organization
+        tab_convite, tab_resultados = st.tabs(["Gerar Convites", "Resultados da Equipe"])
+        
+        with tab_convite:
+            # Show Manager Profile First
+            if manager_profile:
                 st.markdown(f"""
-                    <div style="background-color: #0D3B66; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                        <strong>Comparacao:</strong> Seu perfil ({manager_profile['dominant']}) vs Equipe
+                    <div class="result-card" style="margin-bottom: 20px;">
+                        <div class="profile-title">Seu Perfil (Gestor)</div>
+                        <p style="text-align: center; font-size: 1.3rem;"><strong>{manager_profile['dominant']} + {manager_profile['secondary']}</strong></p>
                     </div>
                 """, unsafe_allow_html=True)
+            else:
+                st.warning("Complete seu LPSTest primeiro para ver a comparacao com sua equipe.")
             
-            for emp in employees:
-                if emp[10] == 1:  # completed
-                    emp_name = emp[4] or f'Funcionario {emp[3]}'
+            st.write("---")
+            st.subheader("Gerar Link de Convite para Equipe")
+            
+            if not st.session_state.show_employee_links and not has_existing_links:
+                st.markdown("""
+                    <div style='background-color: #e8f4f8; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;'>
+                        <p style='margin: 0; color: #0D3B66;'>
+                            <strong>Como funciona:</strong> Clique no botao abaixo para gerar links unicos para ate 4 funcionarios. 
+                            Envie cada link por WhatsApp ou e-mail. Ao clicar, eles responderao o assessment e voce recebera os resultados aqui.
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                if st.button("Gerar Link de Convite para Equipe", key="btn-generate-team-links", use_container_width=True, type="primary"):
+                    for slot in range(1, 5):
+                        generate_employee_link(manager_id, slot)
+                    st.session_state.show_employee_links = True
+                    st.rerun()
+            else:
+                st.session_state.show_employee_links = True
+                
+                st.markdown("""
+                    <div style='background-color: #d4edda; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;'>
+                        <p style='margin: 0; color: #155724;'>
+                            Links gerados! Copie cada link e envie para o funcionario correspondente.
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                base_url = get_app_url()
+                cols = st.columns(4)
+                
+                for i, col in enumerate(cols):
+                    with col:
+                        slot = i + 1
+                        token = generate_employee_link(manager_id, slot)
+                        full_link = f"{base_url}?token={token}" if base_url else f"?token={token}"
+                        
+                        slot_employee = next((e for e in employees if e[3] == slot), None)
+                        
+                        if slot_employee and slot_employee[10] == 1:
+                            st.markdown(f"**{slot_employee[4] or 'Funcionario ' + str(slot)}**")
+                            st.success("Concluido")
+                        else:
+                            st.markdown(f"**Funcionario {slot}**")
+                            st.code(full_link, language=None)
+                            if slot_employee:
+                                st.caption("Aguardando resposta")
+                            else:
+                                st.caption("Copie e envie")
+        
+        with tab_resultados:
+            st.subheader("Resultados da Equipe")
+            
+            if employees:
+                completed_count = sum(1 for e in employees if e[10] == 1)
+                
+                col_metric, col_export = st.columns([2, 2])
+                with col_metric:
+                    st.metric("Respostas Recebidas", f"{completed_count}/4")
+                
+                with col_export:
+                    if completed_count > 0:
+                        csv_data = "Nome,E-mail,Perfil Dominante,Perfil Secundario,Papel de Bion\n"
+                        for emp in employees:
+                            if emp[10] == 1:
+                                emp_name = emp[4] or f'Funcionario {emp[3]}'
+                                csv_data += f'"{emp_name}","{emp[5]}","{emp[6]}","{emp[7]}","{emp[9]}"\n'
+                        
+                        st.download_button(
+                            label="Baixar Todos (CSV)",
+                            data=csv_data,
+                            file_name="resultados_equipe_lps.csv",
+                            mime="text/csv",
+                            use_container_width=True
+                        )
+                
+                if manager_profile and completed_count > 0:
                     st.markdown(f"""
-                        <div class="employee-card">
-                            <h4 style="color: #0D3B66; margin:0;">{emp_name}</h4>
-                            <p><strong>Perfil:</strong> {emp[6]} + {emp[7]}</p>
-                            <span class="bion-badge">{emp[9]}</span>
-                            <p style="font-size: 0.9rem; color: #666; margin-top:10px;">
-                                {BION_DESCRIPTIONS.get(emp[9], '')}
-                            </p>
-                            <p style="font-size: 0.85rem; color: #0D3B66; margin-top: 8px;">
-                                Resultado enviado para: {emp[5]}
-                            </p>
+                        <div style="background-color: #0D3B66; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                            <strong>Comparacao:</strong> Seu perfil ({manager_profile['dominant']}) vs Equipe
                         </div>
                     """, unsafe_allow_html=True)
+                
+                # Only show completed employees in results tab
+                completed_employees = [emp for emp in employees if emp[10] == 1]
+                
+                if completed_employees:
+                    for emp in completed_employees:
+                        emp_name = emp[4] or f'Funcionario {emp[3]}'
+                        
+                        with st.container():
+                            col_info, col_download = st.columns([4, 1])
+                            
+                            with col_info:
+                                st.markdown(f"""
+                                    <div class="employee-card">
+                                        <h4 style="color: #0D3B66; margin:0;">{emp_name}</h4>
+                                        <p><strong>Perfil:</strong> {emp[6]} + {emp[7]}</p>
+                                        <span class="bion-badge">{emp[9]}</span>
+                                        <p style="font-size: 0.9rem; color: #666; margin-top:10px;">
+                                            {BION_DESCRIPTIONS.get(emp[9], '')}
+                                        </p>
+                                        <p style="font-size: 0.85rem; color: #0D3B66; margin-top: 8px;">
+                                            Resultado enviado para: {emp[5]}
+                                        </p>
+                                    </div>
+                                """, unsafe_allow_html=True)
+                            
+                            with col_download:
+                                individual_csv = f"Nome,E-mail,Perfil Dominante,Perfil Secundario,Papel de Bion\n"
+                                individual_csv += f'"{emp_name}","{emp[5]}","{emp[6]}","{emp[7]}","{emp[9]}"\n'
+                                
+                                safe_name = emp_name.replace(" ", "_").lower()[:20]
+                                st.download_button(
+                                    label="CSV",
+                                    data=individual_csv,
+                                    file_name=f"resultado_{safe_name}.csv",
+                                    mime="text/csv",
+                                    key=f"download_csv_{emp[0]}"
+                                )
                 else:
-                    st.markdown(f"""
-                        <div class="employee-card" style="opacity: 0.5;">
-                            <h4 style="color: #0D3B66; margin:0;">Funcionario {emp[3]}</h4>
-                            <p>Aguardando resposta...</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-        else:
-            st.info("Os links serao gerados automaticamente. Copie-os acima e envie para seus colaboradores.")
+                    st.info("Nenhum funcionario respondeu ainda. Os resultados aparecerao aqui assim que completarem o assessment.")
+            else:
+                st.info("Nenhum convite gerado ainda. Va para a aba 'Gerar Convites' para criar links.")
 
 elif page == "EmployeeAssessment":
     token = st.session_state.employee_token
     employee = get_employee_by_token(token)
     
     if not employee:
-        st.error("Link inválido ou expirado.")
-    elif employee[10] == 1:  # already completed
-        st.success("Você já respondeu ao assessment! Obrigado pela participação.")
+        st.error("Link invalido ou expirado.")
+        st.markdown("""
+            <div style='text-align: center; padding: 2rem;'>
+                <p>Se você recebeu este link do seu gestor, entre em contato para solicitar um novo link.</p>
+            </div>
+        """, unsafe_allow_html=True)
+    elif employee[10] == 1:  # already completed - Thank You page
+        st.markdown("""
+            <div style='text-align: center; padding: 2rem;'>
+                <h1 style='color: #0D3B66;'>Obrigado pela participacao!</h1>
+            </div>
+        """, unsafe_allow_html=True)
         st.markdown(f"""
-            <div class="result-card">
-                <div class="profile-title">Seu Perfil Registrado</div>
-                <p style="text-align: center;"><strong>{employee[6]} + {employee[7]}</strong></p>
-                <p style="text-align: center; font-size: 0.9rem; color: #666;">
+            <div class="result-card" style="max-width: 600px; margin: 0 auto;">
+                <div class="profile-title">Seu Perfil foi Registrado</div>
+                <p style="text-align: center; font-size: 1.4rem;"><strong>{employee[6]} + {employee[7]}</strong></p>
+                <div style="background-color: #F4D35E; padding: 10px; border-radius: 20px; text-align: center; margin: 15px auto; max-width: 200px;">
+                    <strong style="color: #0D3B66;">{employee[9]}</strong>
+                </div>
+                <p style="text-align: center; font-size: 0.95rem; color: #666; margin-top: 20px;">
                     Seu resultado foi salvo e enviado para seu e-mail ({employee[5]}).
+                </p>
+                <p style="text-align: center; font-size: 0.9rem; color: #888; margin-top: 10px;">
+                    Seu gestor recebera uma notificacao e podera discutir estrategias de desenvolvimento com voce em breve.
                 </p>
             </div>
         """, unsafe_allow_html=True)
+        st.markdown("""
+            <div style='text-align: center; margin-top: 2rem; padding: 1rem; background-color: #f5f5f5; border-radius: 10px;'>
+                <p style='color: #666; margin: 0;'>Voce pode fechar esta pagina. Obrigado por participar do LPS!</p>
+            </div>
+        """, unsafe_allow_html=True)
     else:
-        st.title("📝 Assessment de Equipe")
-        st.write("Responda às afirmações abaixo de forma honesta. Seus resultados individuais são confidenciais.")
+        # Assessment Form - clean page for employees
+        st.markdown("""
+            <div style='text-align: center; margin-bottom: 1rem;'>
+                <h1 style='color: #0D3B66;'>LPSTest - Assessment de Equipe</h1>
+                <p style='color: #666;'>Responda as afirmacoes abaixo de forma honesta. Seus resultados individuais sao confidenciais.</p>
+            </div>
+        """, unsafe_allow_html=True)
         
         with st.form("employee_assessment"):
-            name = st.text_input("Seu Nome")
-            email = st.text_input("Seu E-mail (receberá seu resultado individual)")
+            col1, col2 = st.columns(2)
+            with col1:
+                name = st.text_input("Seu Nome Completo", placeholder="Maria Silva")
+            with col2:
+                email = st.text_input("Seu E-mail (recebera seu resultado)", placeholder="maria@email.com")
+            
             st.write("---")
             responses = render_assessment_form("employee")
-            submit = st.form_submit_button("Enviar Minhas Respostas")
+            submit = st.form_submit_button("Concluir Avaliacao", use_container_width=True)
             
             if submit:
                 if not name or not email:
@@ -2211,20 +2326,7 @@ elif page == "EmployeeAssessment":
                     dominant, secondary, details, bion_role, _ = calculate_profile(responses)
                     save_employee_result(token, name, email, dominant, secondary, details, bion_role)
                     st.balloons()
-                    st.success("Obrigado! Suas respostas foram salvas com sucesso.")
-                    st.markdown(f"""
-                        <div class="result-card">
-                            <div class="profile-title">Seu Perfil de Liderança</div>
-                            <p style="text-align: center; font-size: 1.5rem;"><strong>{dominant} + {secondary}</strong></p>
-                            <div class="section-header">🧠 Suas Forças</div>
-                            <p>{details['forcas']}</p>
-                            <div class="section-header">⚠ Pontos de Atenção</div>
-                            <p>{details['riscos']}</p>
-                            <div class="section-header">➡ Recomendações</div>
-                            <p>{details.get('recomendacoes', 'Participe da mentoria para aprofundar.')}</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    st.info(f"📧 Uma cópia deste resultado será enviada para {email}. Apenas você e seu gestor terão acesso ao mapeamento completo da equipe.")
+                    st.rerun()
 
 elif page == "LPSChat":
     if not st.session_state.authenticated:
