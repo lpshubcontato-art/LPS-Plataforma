@@ -4,9 +4,259 @@ import sqlite3
 import uuid
 import json
 import hashlib
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import streamlit.components.v1 as components
 from datetime import datetime
 import google.generativeai as genai
+
+# ==========================================
+# EMAIL CONFIGURATION (SMTP)
+# ==========================================
+# Configure these values in Streamlit secrets or environment variables
+# Go to: Secrets tab -> Add the following keys:
+#   SMTP_HOST = "smtp.gmail.com"  (or your email provider)
+#   SMTP_PORT = "587"
+#   SMTP_USER = "your-email@gmail.com"
+#   SMTP_PASSWORD = "your-app-password"
+#   SMTP_FROM_NAME = "Liderança Psicanalítica"
+#   SMTP_FROM_EMAIL = "your-email@gmail.com"
+# ==========================================
+
+def get_smtp_config():
+    """Get SMTP configuration from secrets or environment"""
+    try:
+        return {
+            'host': st.secrets.get("SMTP_HOST", os.environ.get("SMTP_HOST", "")),
+            'port': int(st.secrets.get("SMTP_PORT", os.environ.get("SMTP_PORT", "587"))),
+            'user': st.secrets.get("SMTP_USER", os.environ.get("SMTP_USER", "")),
+            'password': st.secrets.get("SMTP_PASSWORD", os.environ.get("SMTP_PASSWORD", "")),
+            'from_name': st.secrets.get("SMTP_FROM_NAME", os.environ.get("SMTP_FROM_NAME", "Liderança Psicanalítica")),
+            'from_email': st.secrets.get("SMTP_FROM_EMAIL", os.environ.get("SMTP_FROM_EMAIL", ""))
+        }
+    except:
+        return None
+
+def is_email_configured():
+    """Check if email is properly configured"""
+    config = get_smtp_config()
+    if not config:
+        return False
+    return bool(config['host'] and config['user'] and config['password'] and config['from_email'])
+
+def send_email(to_email, subject, html_content):
+    """Send email using SMTP configuration"""
+    if not is_email_configured():
+        print(f"[EMAIL] SMTP not configured. Would send to: {to_email}")
+        print(f"[EMAIL] Subject: {subject}")
+        return False, "SMTP não configurado"
+    
+    config = get_smtp_config()
+    
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"{config['from_name']} <{config['from_email']}>"
+        msg['To'] = to_email
+        
+        html_part = MIMEText(html_content, 'html', 'utf-8')
+        msg.attach(html_part)
+        
+        with smtplib.SMTP(config['host'], config['port']) as server:
+            server.starttls()
+            server.login(config['user'], config['password'])
+            server.sendmail(config['from_email'], to_email, msg.as_string())
+        
+        return True, "Email enviado com sucesso"
+    except Exception as e:
+        print(f"[EMAIL ERROR] {str(e)}")
+        return False, str(e)
+
+def send_employee_result_email(employee_name, employee_email, dominant_profile, secondary_profile, bion_role, manager_name):
+    """Send assessment result to employee"""
+    subject = "Seu Resultado do LPSTest - Liderança Psicanalítica"
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; }}
+            .header {{ background-color: #0D3B66; color: white; padding: 30px; text-align: center; }}
+            .header h1 {{ margin: 0; color: #F4D35E; }}
+            .content {{ padding: 30px; }}
+            .result-box {{ background: linear-gradient(135deg, #0D3B66, #1a5490); color: white; padding: 25px; border-radius: 10px; text-align: center; margin: 20px 0; }}
+            .result-box h2 {{ margin: 0; color: #F4D35E; font-size: 1.8rem; }}
+            .bion-badge {{ display: inline-block; background-color: #F4D35E; color: #0D3B66; padding: 10px 20px; border-radius: 20px; font-weight: bold; margin-top: 15px; }}
+            .footer {{ background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 0.9rem; color: #666; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Liderança Psicanalítica</h1>
+                <p>Seu Mapeamento de Perfil</p>
+            </div>
+            <div class="content">
+                <p>Olá <strong>{employee_name}</strong>,</p>
+                <p>Você completou o LPSTest solicitado por <strong>{manager_name}</strong>. Confira seu resultado:</p>
+                
+                <div class="result-box">
+                    <h2>{dominant_profile} + {secondary_profile}</h2>
+                    <div class="bion-badge">{bion_role}</div>
+                </div>
+                
+                <p>Este resultado representa seu perfil comportamental no ambiente de trabalho, baseado em conceitos da psicanálise aplicada à liderança.</p>
+                
+                <p>Seu gestor terá acesso a este resultado para melhor compreender a dinâmica da equipe e otimizar a comunicação e produtividade do grupo.</p>
+                
+                <p>Em caso de dúvidas, entre em contato com seu gestor.</p>
+            </div>
+            <div class="footer">
+                <p>Este é um e-mail automático da Plataforma LPS.</p>
+                <p>Liderança Psicanalítica - Transformando gestores em líderes conscientes.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return send_email(employee_email, subject, html_content)
+
+def send_manager_notification_email(manager_email, manager_name, employee_name, employee_profile, bion_role):
+    """Notify manager when an employee completes assessment"""
+    subject = f"Novo Assessment Concluído - {employee_name}"
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; }}
+            .header {{ background-color: #0D3B66; color: white; padding: 30px; text-align: center; }}
+            .header h1 {{ margin: 0; color: #F4D35E; }}
+            .content {{ padding: 30px; }}
+            .alert-box {{ background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+            .employee-card {{ background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }}
+            .bion-badge {{ display: inline-block; background-color: #F4D35E; color: #0D3B66; padding: 8px 16px; border-radius: 15px; font-weight: bold; }}
+            .cta-button {{ display: inline-block; background-color: #0D3B66; color: white; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 20px; }}
+            .footer {{ background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 0.9rem; color: #666; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Liderança Psicanalítica</h1>
+                <p>Notificação de Assessment</p>
+            </div>
+            <div class="content">
+                <p>Olá <strong>{manager_name}</strong>,</p>
+                
+                <div class="alert-box">
+                    <strong>Novo membro mapeado!</strong> {employee_name} completou o LPSTest.
+                </div>
+                
+                <div class="employee-card">
+                    <h3 style="margin-top: 0; color: #0D3B66;">{employee_name}</h3>
+                    <p><strong>Perfil:</strong> {employee_profile}</p>
+                    <span class="bion-badge">{bion_role}</span>
+                </div>
+                
+                <p>Acesse sua área de gestor para ver o mapeamento completo da equipe e os insights da IA sobre a dinâmica do grupo.</p>
+                
+                <p style="text-align: center;">
+                    <a href="#" class="cta-button">Acessar Dashboard</a>
+                </p>
+            </div>
+            <div class="footer">
+                <p>Este é um e-mail automático da Plataforma LPS.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return send_email(manager_email, subject, html_content)
+
+def send_welcome_email(user_email, user_name, password):
+    """Send welcome email with login credentials (triggered manually after payment confirmation)"""
+    subject = "Acesso Liberado - Liderança Psicanalítica"
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; }}
+            .header {{ background-color: #0D3B66; color: white; padding: 30px; text-align: center; }}
+            .header h1 {{ margin: 0; color: #F4D35E; }}
+            .content {{ padding: 30px; }}
+            .credentials-box {{ background: linear-gradient(135deg, #0D3B66, #1a5490); color: white; padding: 25px; border-radius: 10px; margin: 20px 0; }}
+            .credentials-box h3 {{ margin-top: 0; color: #F4D35E; }}
+            .credential-item {{ background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 5px; margin: 10px 0; }}
+            .credential-label {{ font-size: 0.9rem; opacity: 0.8; }}
+            .credential-value {{ font-size: 1.1rem; font-weight: bold; }}
+            .cta-button {{ display: inline-block; background-color: #F4D35E; color: #0D3B66; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 20px; }}
+            .features {{ background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }}
+            .feature-item {{ padding: 8px 0; border-bottom: 1px solid #e0e0e0; }}
+            .feature-item:last-child {{ border-bottom: none; }}
+            .footer {{ background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 0.9rem; color: #666; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Bem-vindo(a) ao LPS!</h1>
+                <p>Seu acesso foi liberado</p>
+            </div>
+            <div class="content">
+                <p>Olá <strong>{user_name}</strong>,</p>
+                <p>Parabéns! Seu pagamento foi confirmado e seu acesso à plataforma Liderança Psicanalítica está liberado.</p>
+                
+                <div class="credentials-box">
+                    <h3>Seus Dados de Acesso</h3>
+                    <div class="credential-item">
+                        <div class="credential-label">E-mail:</div>
+                        <div class="credential-value">{user_email}</div>
+                    </div>
+                    <div class="credential-item">
+                        <div class="credential-label">Senha:</div>
+                        <div class="credential-value">{password}</div>
+                    </div>
+                </div>
+                
+                <p><strong>Importante:</strong> Recomendamos que você altere sua senha após o primeiro acesso.</p>
+                
+                <div class="features">
+                    <h4 style="margin-top: 0; color: #0D3B66;">O que você terá acesso:</h4>
+                    <div class="feature-item">Curso completo com 6 módulos de Liderança Psicanalítica</div>
+                    <div class="feature-item">LPSTest - Assessment de perfil de liderança</div>
+                    <div class="feature-item">Gestão de Equipe - Mapeie até 4 colaboradores</div>
+                    <div class="feature-item">LPSChat - Consultor de IA especializado</div>
+                    <div class="feature-item">Acesso à mentoria com Viviane Nishiura</div>
+                </div>
+                
+                <p style="text-align: center;">
+                    <a href="#" class="cta-button">Acessar a Plataforma</a>
+                </p>
+            </div>
+            <div class="footer">
+                <p>Dúvidas? Entre em contato via WhatsApp.</p>
+                <p>Liderança Psicanalítica - Transformando gestores em líderes conscientes.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return send_email(user_email, subject, html_content)
 
 # Definir diretório de trabalho como local do script
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -173,11 +423,29 @@ def get_manager_employees(manager_id):
 def save_employee_result(token, name, email, dominant, secondary, details, bion_role):
     conn = get_db()
     c = conn.cursor()
+    
+    # Get manager info for email notification
+    c.execute("""SELECT m.name, m.email, m.user_id FROM employees e 
+                 JOIN managers m ON e.manager_id = m.id 
+                 WHERE e.link_token = ?""", (token,))
+    manager_info = c.fetchone()
+    manager_name = manager_info[0] if manager_info else "Seu Gestor"
+    manager_email = manager_info[1] if manager_info else None
+    
+    # Update employee record
     c.execute("""UPDATE employees SET name = ?, email = ?, profile_dominant = ?, profile_secondary = ?, 
                  profile_details = ?, bion_role = ?, completed = 1 WHERE link_token = ?""",
               (name, email, dominant, secondary, json.dumps(details), bion_role, token))
     conn.commit()
     conn.close()
+    
+    # Send email to employee with their result
+    send_employee_result_email(name, email, dominant, secondary, bion_role, manager_name)
+    
+    # Send notification to manager
+    if manager_email:
+        employee_profile = f"{dominant} + {secondary}"
+        send_manager_notification_email(manager_email, manager_name, name, employee_profile, bion_role)
 
 def get_employee_by_token(token):
     conn = get_db()
@@ -1698,12 +1966,20 @@ elif page == "Dashboard":
             st.caption("Complete os módulos teóricos para liberar")
     
     st.write("---")
-    if st.button("Sair", key="btn-logout", use_container_width=True):
-        st.session_state.authenticated = False
-        st.session_state.user = None
-        st.session_state.manager_data = None
-        st.session_state.page = "Home"
-        st.rerun()
+    
+    # Admin section (only for administrators)
+    admin_col1, admin_col2 = st.columns([3, 1])
+    with admin_col1:
+        if st.button("Sair", key="btn-logout", use_container_width=True):
+            st.session_state.authenticated = False
+            st.session_state.user = None
+            st.session_state.manager_data = None
+            st.session_state.page = "Home"
+            st.rerun()
+    with admin_col2:
+        if st.button("Admin", key="btn-admin", use_container_width=True):
+            st.session_state.page = "AdminEmail"
+            st.rerun()
 
 elif page == "LPS Curso":
     if not st.session_state.authenticated:
@@ -2108,5 +2384,88 @@ elif page == "Sobre":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
-    st.title("👤 Sobre Viviane Nishiura")
+    st.title("Sobre Viviane Nishiura")
     st.write("Viviane Nishiura é psicóloga clínica e consultora de liderança.")
+
+elif page == "AdminEmail":
+    # Admin page for sending welcome emails after payment confirmation
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
+    
+    st.title("Administração - Envio de E-mails")
+    
+    # Check if email is configured
+    if is_email_configured():
+        st.success("SMTP configurado corretamente")
+    else:
+        st.warning("SMTP não configurado. Configure as credenciais nas variáveis de ambiente ou secrets.")
+        st.markdown("""
+        **Configuração necessária:**
+        - `SMTP_HOST` - Servidor SMTP (ex: smtp.gmail.com)
+        - `SMTP_PORT` - Porta (ex: 587)
+        - `SMTP_USER` - E-mail de envio
+        - `SMTP_PASSWORD` - Senha do app
+        - `SMTP_FROM_NAME` - Nome do remetente
+        - `SMTP_FROM_EMAIL` - E-mail do remetente
+        """)
+    
+    st.write("---")
+    
+    # Send Welcome Email Section
+    st.subheader("Enviar E-mail de Boas-Vindas (Acesso Liberado)")
+    st.write("Use este formulário para liberar o acesso de um novo aluno após confirmação de pagamento via WhatsApp.")
+    
+    with st.form("welcome_email_form"):
+        col1, col2 = st.columns(2)
+        with col1:
+            new_user_name = st.text_input("Nome completo do aluno", placeholder="Maria Silva")
+            new_user_email = st.text_input("E-mail do aluno", placeholder="maria@email.com")
+        with col2:
+            new_user_password = st.text_input("Senha temporária", placeholder="senha123", help="O aluno receberá esta senha no e-mail")
+            create_account = st.checkbox("Criar conta automaticamente", value=True, help="Se marcado, cria a conta do aluno no sistema")
+        
+        submit = st.form_submit_button("Enviar E-mail de Boas-Vindas", use_container_width=True)
+        
+        if submit:
+            if new_user_name and new_user_email and new_user_password:
+                can_send_email = True
+                
+                # Create account if requested
+                if create_account:
+                    user_id, error = register_user(new_user_email, new_user_password, new_user_name)
+                    if error:
+                        st.error(f"Erro ao criar conta: {error}")
+                        st.info("E-mail de boas-vindas não foi enviado. Corrija o erro acima ou desmarque 'Criar conta automaticamente' para reenviar credenciais existentes.")
+                        can_send_email = False
+                    else:
+                        st.success(f"Conta criada com sucesso para {new_user_name}")
+                
+                # Only send welcome email if account was created successfully or we're not creating a new account
+                if can_send_email:
+                    success, message = send_welcome_email(new_user_email, new_user_name, new_user_password)
+                    if success:
+                        st.success(f"E-mail de boas-vindas enviado para {new_user_email}")
+                    else:
+                        st.warning(f"E-mail não enviado: {message}")
+            else:
+                st.error("Preencha todos os campos obrigatórios")
+    
+    st.write("---")
+    
+    # Test Email Section
+    st.subheader("Testar Configuração de E-mail")
+    test_email = st.text_input("E-mail para teste", placeholder="seu-email@teste.com")
+    if st.button("Enviar E-mail de Teste"):
+        if test_email:
+            success, message = send_email(
+                test_email, 
+                "Teste de Configuração - LPS", 
+                "<h1>Teste de E-mail</h1><p>Se você recebeu este e-mail, a configuração SMTP está funcionando corretamente.</p>"
+            )
+            if success:
+                st.success("E-mail de teste enviado com sucesso!")
+            else:
+                st.error(f"Erro ao enviar: {message}")
+        else:
+            st.warning("Digite um e-mail para teste")
