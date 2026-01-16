@@ -75,7 +75,9 @@ def send_email(to_email, subject, html_content):
 
 def send_employee_result_email(employee_name, employee_email, dominant_profile, secondary_profile, bion_role, manager_name):
     """Send assessment result to employee"""
-    subject = "Seu Resultado do LPSTest - Liderança Psicanalítica"
+    subject = "Seu Perfil LPS: Insights sobre sua Lideranca e Comportamento"
+    
+    result_text = f"{dominant_profile} + {secondary_profile} ({bion_role})"
     
     html_content = f"""
     <!DOCTYPE html>
@@ -87,37 +89,42 @@ def send_employee_result_email(employee_name, employee_email, dominant_profile, 
             .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; }}
             .header {{ background-color: #0D3B66; color: white; padding: 30px; text-align: center; }}
             .header h1 {{ margin: 0; color: #F4D35E; }}
-            .content {{ padding: 30px; }}
-            .result-box {{ background: linear-gradient(135deg, #0D3B66, #1a5490); color: white; padding: 25px; border-radius: 10px; text-align: center; margin: 20px 0; }}
-            .result-box h2 {{ margin: 0; color: #F4D35E; font-size: 1.8rem; }}
-            .bion-badge {{ display: inline-block; background-color: #F4D35E; color: #0D3B66; padding: 10px 20px; border-radius: 20px; font-weight: bold; margin-top: 15px; }}
+            .content {{ padding: 30px; line-height: 1.7; color: #333; }}
+            .result-box {{ background: linear-gradient(135deg, #0D3B66, #1a5490); color: white; padding: 25px; border-radius: 10px; text-align: center; margin: 25px 0; }}
+            .result-box h2 {{ margin: 0; color: #F4D35E; font-size: 1.6rem; }}
+            .signature {{ margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }}
             .footer {{ background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 0.9rem; color: #666; }}
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">
-                <h1>Liderança Psicanalítica</h1>
-                <p>Seu Mapeamento de Perfil</p>
+                <h1>Lideranca Psicanalitica</h1>
+                <p>Seu Perfil LPS</p>
             </div>
             <div class="content">
-                <p>Olá <strong>{employee_name}</strong>,</p>
-                <p>Você completou o LPSTest solicitado por <strong>{manager_name}</strong>. Confira seu resultado:</p>
+                <p>Ola, <strong>{employee_name}</strong>!</p>
+                
+                <p>Voce acaba de concluir o LPSTest, uma etapa fundamental na sua jornada de desenvolvimento dentro da Plataforma LPS.</p>
+                
+                <p>A analise do seu perfil combina os fundamentos da Psicanalise com as descobertas da Neurociencia para mapear nao apenas suas habilidades tecnicas, mas as forcas invisiveis e os mecanismos de defesa que moldam como voce se relaciona com sua equipe e seus lideres.</p>
                 
                 <div class="result-box">
-                    <h2>{dominant_profile} + {secondary_profile}</h2>
-                    <div class="bion-badge">{bion_role}</div>
+                    <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: #ccc;">Seu Resultado Principal:</p>
+                    <h2>{result_text}</h2>
                 </div>
                 
-                <p>Este resultado representa seu perfil comportamental no ambiente de trabalho, baseado em conceitos da psicanálise aplicada à liderança.</p>
+                <p>Compreender o funcionamento do seu "eu" profissional e o primeiro passo para uma lideranca consciente e um ambiente psicologicamente seguro.</p>
                 
-                <p>Seu gestor terá acesso a este resultado para melhor compreender a dinâmica da equipe e otimizar a comunicação e produtividade do grupo.</p>
+                <p>O seu gestor ja recebeu o mapeamento completo e, em breve, voces poderao discutir estrategias de alocacao e desenvolvimento baseadas nesses dados estrategicos.</p>
                 
-                <p>Em caso de dúvidas, entre em contato com seu gestor.</p>
+                <div class="signature">
+                    <p>Atenciosamente,<br><strong>Viviane Nishiura & Equipe LPS</strong></p>
+                </div>
             </div>
             <div class="footer">
-                <p>Este é um e-mail automático da Plataforma LPS.</p>
-                <p>Liderança Psicanalítica - Transformando gestores em líderes conscientes.</p>
+                <p>Este e um e-mail automatico da Plataforma LPS.</p>
+                <p>Lideranca Psicanalitica - Transformando gestores em lideres conscientes.</p>
             </div>
         </div>
     </body>
