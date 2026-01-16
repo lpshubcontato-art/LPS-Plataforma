@@ -61,9 +61,17 @@ Preferred communication style: Simple, everyday language.
 
 ### LPSChat AI Integration
 - **Model**: Google Gemini (gemini-1.5-flash)
-- **Context**: System prompt includes manager profile, employee profiles with Bion roles
-- **Concepts**: Bion roles, Transferência/Contratransferência, Tarefa Real
-- **Behavior**: Analyzes team dynamics, suggests interventions based on psychoanalytic concepts
+- **Role**: Consultora especialista em Psicanálise e Neurociência aplicada à Liderança
+- **Data Access**: Loads complete employee assessment data from SQLite (profiles, Bion roles, emails)
+- **Privacy**: Only managers can access - employees blocked by global guard
+- **Capabilities**:
+  - Identify unconscious roles and archetypes in team members
+  - Map conflict points and synergies between employees
+  - Suggest profile-to-role adequacy for specific positions
+  - Explain transference/countertransference dynamics
+  - Apply neuroscience concepts (cortisol, amygdala, mirror neurons)
+- **Concepts**: Bion roles, Transferência/Contratransferência, Tarefa Real, Neurociência organizacional
+- **Interface**: Elegant blue (#0D3B66) and gold (#F4D35E) themed chat with team context cards and example questions
 - **API Key**: Uses st.secrets["GOOGLE_API_KEY"] for authentication
 
 ### Automated Email System
