@@ -36,9 +36,15 @@ Preferred communication style: Simple, everyday language.
 - **Dashboard**: Manager area with course progress bar, assessment stats, AI insights, mentoring CTA
 - **LPS Curso**: Full course content with 6 modules, progress saved to database
 - **LPSTest**: Leadership assessment (48 questions, Bion role mapping)
-- **TeamManagement**: Generate unique links for up to 4 employees, view team profiles
+- **TeamManagement**: Tabbed interface with "Gerar Convites" (link generation) and "Resultados da Equipe" (completed results + CSV exports)
 - **LPSChat**: AI consultant (gated behind theoretical module completion)
-- **EmployeeAssessment**: Token-based employee assessment page
+- **EmployeeAssessment**: Token-based employee assessment page with Thank You page after completion
+
+### Employee Access Guard
+- **Global Protection**: Runs before every page render to force employees to stay on EmployeeAssessment
+- **Token Persistence**: Employee token stored in session_state prevents navigation to other pages
+- **Sidebar Hidden**: Employees see a clean page with no sidebar/navigation
+- **Thank You Page**: Displays after assessment completion with profile summary
 
 ### Dashboard Features (Manager Area)
 - **Course Progress**: Visual progress bars for each of 6 modules with overall percentage
