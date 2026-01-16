@@ -1504,8 +1504,12 @@ MENU_SECTIONS = [
     {"key": "contato", "label": "Contato", "icon": "📧"}
 ]
 
-# Sidebar Navigation
+# Sidebar Navigation - Uses unique keys per page context
 def render_sidebar_navigation():
+    # Use page context for unique widget keys
+    page_ctx = st.session_state.get('page', 'Home')
+    key_prefix = f"sb_{page_ctx}_"
+    
     with st.sidebar:
         # Sidebar CSS styling - Premium Design
         st.markdown("""
@@ -1620,16 +1624,16 @@ def render_sidebar_navigation():
             st.markdown(f"""
                 <div class="user-badge">{st.session_state.user['name']}</div>
             """, unsafe_allow_html=True)
-            if st.button("Minha Area", key="sidebar_dashboard", use_container_width=True):
+            if st.button("Minha Area", key=f"{key_prefix}dashboard", use_container_width=True):
                 st.session_state.page = "Dashboard"
                 st.rerun()
-            if st.button("Sair", key="sidebar_logout", use_container_width=True):
+            if st.button("Sair", key=f"{key_prefix}logout", use_container_width=True):
                 st.session_state.authenticated = False
                 st.session_state.user = None
                 st.session_state.page = "Home"
                 st.rerun()
         else:
-            if st.button("Entrar", key="sidebar_login", use_container_width=True, type="primary"):
+            if st.button("Entrar", key=f"{key_prefix}login", use_container_width=True, type="primary"):
                 st.session_state.page = "Login"
                 st.rerun()
         
@@ -1640,7 +1644,7 @@ def render_sidebar_navigation():
         for item in MENU_SECTIONS:
             is_active = (current == item["key"])
             btn_label = f"{item['icon']}   {item['label']}"
-            if st.button(btn_label, key=f"nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
+            if st.button(btn_label, key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
                 st.session_state.section = item["key"]
                 st.session_state.show_login_modal = False
                 st.rerun()
