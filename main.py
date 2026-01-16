@@ -1320,7 +1320,7 @@ if 'selected_module' not in st.session_state:
     st.session_state.selected_module = None
 
 WHATSAPP_URL = "https://wa.me/5511971419453"
-LOGO_PATH = "attached_assets/logotipo_1768443722848.jpeg"
+LOGO_PATH = "attached_assets/logotipo_2__1768529013163.jpeg"
 
 # Definições das questões do Assessment (8 por bloco)
 ASSESSMENT_QUESTIONS = {
@@ -1556,18 +1556,26 @@ def render_sidebar_navigation():
             [data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
                 background-color: #e6c654 !important;
             }
-            /* Logo container */
+            /* Logo container - Full width, no borders */
             .sidebar-logo-container {
                 text-align: center;
-                padding: 1.5rem 0.5rem;
-                border-bottom: 1px solid rgba(255,255,255,0.15);
-                margin-bottom: 1.5rem;
-                background-color: rgba(0,0,0,0.1);
+                padding: 0;
+                margin: 0;
+                background-color: transparent;
+            }
+            .sidebar-logo-container img {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            /* Remove top padding from sidebar */
+            [data-testid="stSidebar"] > div:first-child > div:first-child {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
             }
             /* Sidebar divider */
             .sidebar-divider {
                 border-top: 1px solid rgba(255,255,255,0.15);
-                margin: 1.5rem 0;
+                margin: 1rem 0;
             }
             /* User badge */
             .user-badge {
@@ -1627,9 +1635,7 @@ def render_sidebar_navigation():
         
         st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
         
-        # Navigation Menu
-        st.markdown('<p class="nav-section-label">Menu</p>', unsafe_allow_html=True)
-        
+        # Navigation Menu (no label - clean design)
         current = st.session_state.section
         for item in MENU_SECTIONS:
             is_active = (current == item["key"])
