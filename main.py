@@ -4,7 +4,9 @@ import sqlite3
 import uuid
 import json
 import hashlib
+import bcrypt
 import smtplib
+import shutil
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import streamlit.components.v1 as components
@@ -286,12 +288,139 @@ st.set_page_config(
     layout="wide"
 )
 
-# Password hashing functions
+# Password hashing functions using bcrypt
 def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash password using bcrypt for secure storage."""
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
 def verify_password(password, hashed):
-    return hash_password(password) == hashed
+    """Verify password against hash. Supports bcrypt and legacy SHA-256."""
+    # Check if it's a bcrypt hash (starts with $2b$, $2a$, or $2y$)
+    if hashed.startswith('$2'):
+        try:
+            return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+        except Exception:
+            return False
+    else:
+        # Legacy SHA-256 hash support for existing users
+        legacy_hash = hashlib.sha256(password.encode()).hexdigest()
+        return legacy_hash == hashed
+
+def upgrade_password_hash(user_id, password):
+    """Upgrade legacy SHA-256 hash to bcrypt."""
+    new_hash = hash_password(password)
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    c.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hash, user_id))
+    conn.commit()
+    conn.close()
+    return new_hash
+
+# Database Backup System
+BACKUP_DIR = "backups"
+MAX_BACKUPS = 5  # Keep last 5 backups
+
+def ensure_backup_dir():
+    """Ensure backup directory exists."""
+    if not os.path.exists(BACKUP_DIR):
+        os.makedirs(BACKUP_DIR)
+
+def create_database_backup():
+    """Create a backup of the SQLite database."""
+    ensure_backup_dir()
+    
+    db_path = 'lps_data.db'
+    if not os.path.exists(db_path):
+        return None
+    
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    backup_filename = f"lps_data_backup_{timestamp}.db"
+    backup_path = os.path.join(BACKUP_DIR, backup_filename)
+    
+    try:
+        # Use shutil to copy the database file
+        shutil.copy2(db_path, backup_path)
+        
+        # Cleanup old backups (keep only MAX_BACKUPS most recent)
+        cleanup_old_backups()
+        
+        return backup_path
+    except Exception as e:
+        print(f"Backup error: {e}")
+        return None
+
+def cleanup_old_backups():
+    """Remove old backups, keeping only the most recent ones."""
+    ensure_backup_dir()
+    
+    backups = []
+    for f in os.listdir(BACKUP_DIR):
+        if f.startswith('lps_data_backup_') and f.endswith('.db'):
+            backup_path = os.path.join(BACKUP_DIR, f)
+            backups.append((backup_path, os.path.getmtime(backup_path)))
+    
+    # Sort by modification time (newest first)
+    backups.sort(key=lambda x: x[1], reverse=True)
+    
+    # Remove old backups beyond MAX_BACKUPS
+    for backup_path, _ in backups[MAX_BACKUPS:]:
+        try:
+            os.remove(backup_path)
+        except Exception:
+            pass
+
+def restore_from_backup(backup_filename):
+    """Restore database from a backup file."""
+    backup_path = os.path.join(BACKUP_DIR, backup_filename)
+    
+    if not os.path.exists(backup_path):
+        return False, "Arquivo de backup nao encontrado"
+    
+    try:
+        # Create backup of current db before restoring
+        current_backup = create_database_backup()
+        
+        # Restore
+        shutil.copy2(backup_path, 'lps_data.db')
+        return True, f"Banco restaurado com sucesso. Backup anterior: {current_backup}"
+    except Exception as e:
+        return False, f"Erro ao restaurar: {e}"
+
+def get_available_backups():
+    """Get list of available backups."""
+    ensure_backup_dir()
+    
+    backups = []
+    for f in os.listdir(BACKUP_DIR):
+        if f.startswith('lps_data_backup_') and f.endswith('.db'):
+            backup_path = os.path.join(BACKUP_DIR, f)
+            size_mb = os.path.getsize(backup_path) / (1024 * 1024)
+            mod_timestamp = os.path.getmtime(backup_path)
+            mod_time = datetime.fromtimestamp(mod_timestamp)
+            backups.append({
+                'filename': f,
+                'size_mb': round(size_mb, 2),
+                'created': mod_time.strftime('%d/%m/%Y %H:%M:%S'),
+                'timestamp': mod_timestamp  # Keep numeric timestamp for sorting
+            })
+    
+    # Sort by timestamp (newest first) - using numeric timestamp for correct ordering
+    backups.sort(key=lambda x: x['timestamp'], reverse=True)
+    return backups
+
+def auto_backup_on_startup():
+    """Create an automatic backup when the application starts."""
+    ensure_backup_dir()
+    
+    # Check if we already have a backup today
+    today = datetime.now().strftime('%Y%m%d')
+    for f in os.listdir(BACKUP_DIR):
+        if f.startswith(f'lps_data_backup_{today}'):
+            return None  # Already have today's backup
+    
+    # Create new backup
+    return create_database_backup()
 
 # Database Setup
 def init_db():
@@ -341,9 +470,19 @@ def init_db():
         profile_details TEXT,
         bion_role TEXT,
         completed INTEGER DEFAULT 0,
+        consent_given INTEGER DEFAULT 0,
+        consent_date TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (manager_id) REFERENCES managers(id)
     )''')
+    
+    # Migration: Add consent columns if they don't exist
+    c.execute("PRAGMA table_info(employees)")
+    columns = [col[1] for col in c.fetchall()]
+    if 'consent_given' not in columns:
+        c.execute("ALTER TABLE employees ADD COLUMN consent_given INTEGER DEFAULT 0")
+    if 'consent_date' not in columns:
+        c.execute("ALTER TABLE employees ADD COLUMN consent_date TIMESTAMP")
     
     # Course progress table
     c.execute('''CREATE TABLE IF NOT EXISTS course_progress (
@@ -358,6 +497,9 @@ def init_db():
     conn.close()
 
 init_db()
+
+# Run automatic backup on startup (once per day)
+auto_backup_on_startup()
 
 # Authentication functions
 def register_user(email, password, name):
@@ -385,6 +527,9 @@ def authenticate_user(email, password):
     result = c.fetchone()
     conn.close()
     if result and verify_password(password, result[1]):
+        # Upgrade legacy SHA-256 hash to bcrypt on successful login
+        if not result[1].startswith('$2'):
+            upgrade_password_hash(result[0], password)
         return {"id": result[0], "name": result[2], "email": email.lower()}
     return None
 
@@ -405,6 +550,23 @@ def get_manager_by_user(user_id):
 
 def get_db():
     return sqlite3.connect('lps_data.db')
+
+def validate_manager_ownership(user_id, manager_id):
+    """Validate that the manager_id belongs to the user_id (multitenancy check)."""
+    if not user_id or not manager_id:
+        return False
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id FROM managers WHERE id = ? AND user_id = ?", (manager_id, user_id))
+    result = c.fetchone()
+    conn.close()
+    return result is not None
+
+def get_secure_manager_employees(user_id, manager_id):
+    """Get employees for a manager with ownership validation (multitenancy safe)."""
+    if not validate_manager_ownership(user_id, manager_id):
+        return []
+    return get_manager_employees(manager_id)
 
 def generate_employee_link(manager_id, slot_number):
     conn = get_db()
@@ -472,6 +634,27 @@ def get_employee_by_token(token):
     employee = c.fetchone()
     conn.close()
     return employee
+
+def save_employee_consent(token):
+    """Save employee consent to database with timestamp."""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""UPDATE employees SET consent_given = 1, consent_date = ? 
+                 WHERE link_token = ?""", (datetime.now(), token))
+    conn.commit()
+    conn.close()
+    return True
+
+def get_employee_consent(token):
+    """Check if employee has given consent."""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT consent_given FROM employees WHERE link_token = ?", (token,))
+    result = c.fetchone()
+    conn.close()
+    if result:
+        return result[0] == 1
+    return False
 
 def get_manager_profile_by_user(user_id):
     conn = get_db()
@@ -559,8 +742,9 @@ def get_assessment_stats(manager_id):
     }
 
 def get_ai_insights(manager_id, user_id):
-    """Generate AI insights about the team"""
-    employees = get_manager_employees(manager_id)
+    """Generate AI insights about the team with multitenancy validation"""
+    # Use secure function to validate ownership
+    employees = get_secure_manager_employees(user_id, manager_id)
     manager_profile = get_manager_profile_by_user(user_id)
     
     insights = []
@@ -2466,10 +2650,11 @@ elif page == "TeamManagement":
         st.error("Dados do gestor nao encontrados. Por favor, faca login novamente.")
     else:
         manager_id = manager_data['id']
+        user_id = st.session_state.user['id']
         manager_profile = manager_data if manager_data.get('dominant') else None
         
-        # Get employees data first
-        employees = get_manager_employees(manager_id)
+        # Get employees data first with multitenancy validation
+        employees = get_secure_manager_employees(user_id, manager_id)
         
         # Initialize session state for showing links
         if 'show_employee_links' not in st.session_state:
@@ -2706,6 +2891,11 @@ elif page == "EmployeeAssessment":
             </div>
         """, unsafe_allow_html=True)
         
+        # Check consent from database (persistent storage)
+        consent_given = get_employee_consent(token)
+        
+        # Single unified form with consent + assessment
+        # Consent is validated and saved atomically with assessment results
         with st.form("employee_assessment"):
             col1, col2 = st.columns(2)
             with col1:
@@ -2714,13 +2904,41 @@ elif page == "EmployeeAssessment":
                 email = st.text_input("Seu E-mail (recebera seu resultado)", placeholder="maria@email.com")
             
             st.write("---")
+            
+            # Show consent terms if not yet consented
+            if not consent_given:
+                st.markdown("""
+                    <div style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #0D3B66; margin-bottom: 1.5rem;">
+                        <h4 style="color: #0D3B66; margin-top: 0;">Termo de Consentimento - LGPD</h4>
+                        <p style="color: #333; font-size: 0.9rem;">Ao concluir esta avaliacao, voce aceita que:</p>
+                        <ul style="color: #333; font-size: 0.85rem;">
+                            <li>Seus dados serao utilizados exclusivamente para fins de desenvolvimento profissional</li>
+                            <li>Os resultados serao compartilhados com seu gestor para analise de perfil de equipe</li>
+                            <li>Seus dados sao protegidos por sigilo e nao serao compartilhados com terceiros</li>
+                            <li>Voce pode solicitar a exclusao dos seus dados a qualquer momento</li>
+                        </ul>
+                    </div>
+                """, unsafe_allow_html=True)
+                consent = st.checkbox("Aceito que meus dados sejam processados para este mapeamento de perfil profissional", key="consent_checkbox")
+            else:
+                consent = True  # Already consented
+            
+            st.write("---")
             responses = render_assessment_form("employee")
             submit = st.form_submit_button("Concluir Avaliacao", use_container_width=True)
             
             if submit:
+                # Validation
                 if not name or not email:
                     st.error("Preencha seu nome e e-mail.")
+                elif not consent:
+                    st.error("Voce precisa aceitar os termos de consentimento para continuar.")
                 else:
+                    # Atomic operation: save consent (if new) + save results
+                    if not consent_given:
+                        save_employee_consent(token)
+                    
+                    # Calculate and save results
                     dominant, secondary, details, bion_role, _ = calculate_profile(responses)
                     save_employee_result(token, name, email, dominant, secondary, details, bion_role)
                     st.balloons()
@@ -2888,7 +3106,8 @@ elif page == "LPSChat":
         team_dynamics_analysis = ""
         
         if manager_data:
-            employees = get_manager_employees(manager_data['id'])
+            user_id = st.session_state.user['id']
+            employees = get_secure_manager_employees(user_id, manager_data['id'])
             if employees:
                 employees_list = []
                 bion_roles_count = {}
@@ -3227,3 +3446,126 @@ elif page == "AdminEmail":
                 st.error(f"Erro ao enviar: {message}")
         else:
             st.warning("Digite um e-mail para teste")
+
+elif page == "Privacy":
+    # Privacy and Terms page
+    st.markdown('<div class="section-title">Privacidade e Termos de Uso</div>', unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">Politica de Privacidade - LGPD</h3>
+            <p>A Plataforma LPS (Lideranca Psicanalitica) esta comprometida com a protecao dos dados pessoais de todos os usuarios, 
+            em conformidade com a Lei Geral de Protecao de Dados (LGPD - Lei 13.709/2018).</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">Dados Coletados</h3>
+            <p><strong>Para Gestores:</strong></p>
+            <ul style="color: #333;">
+                <li>Nome completo e e-mail para autenticacao</li>
+                <li>Resultados do assessment de perfil de lideranca</li>
+                <li>Progresso no curso e modulos acessados</li>
+            </ul>
+            <p><strong>Para Funcionarios:</strong></p>
+            <ul style="color: #333;">
+                <li>Nome e e-mail (opcional)</li>
+                <li>Respostas do assessment de perfil</li>
+                <li>Resultado do mapeamento de perfil e papel de Bion</li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">Finalidade do Tratamento</h3>
+            <p>Os dados coletados sao utilizados <strong>exclusivamente</strong> para:</p>
+            <ul style="color: #333;">
+                <li>Desenvolvimento profissional e autoconhecimento dos participantes</li>
+                <li>Geracao de insights sobre dinamicas de equipe para gestores</li>
+                <li>Personalizacao da experiencia de aprendizagem</li>
+                <li>Comunicacoes relacionadas ao programa LPS</li>
+            </ul>
+            <p style="color: #0D3B66;"><strong>Os dados NUNCA serao vendidos, compartilhados com terceiros ou utilizados para fins comerciais alem do programa.</strong></p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">Sigilo e Confidencialidade</h3>
+            <p>Todos os resultados de assessment sao tratados com <strong>sigilo absoluto</strong>:</p>
+            <ul style="color: #333;">
+                <li>Funcionarios: Seus resultados sao visiveis apenas para o gestor que enviou o convite</li>
+                <li>Gestores: Tem acesso somente aos dados de seus proprios funcionarios</li>
+                <li>Isolamento de dados: Cada gestor tem seu ambiente isolado, sem acesso a dados de outros gestores</li>
+                <li>Criptografia: Senhas sao armazenadas com criptografia bcrypt de alta seguranca</li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">Direitos do Usuario (LGPD)</h3>
+            <p>Voce tem direito a:</p>
+            <ul style="color: #333;">
+                <li><strong>Acesso:</strong> Solicitar copia de todos os seus dados</li>
+                <li><strong>Correcao:</strong> Retificar dados incorretos ou desatualizados</li>
+                <li><strong>Exclusao:</strong> Solicitar a remocao de seus dados do sistema</li>
+                <li><strong>Portabilidade:</strong> Receber seus dados em formato estruturado</li>
+                <li><strong>Revogacao:</strong> Retirar seu consentimento a qualquer momento</li>
+            </ul>
+            <p>Para exercer esses direitos, entre em contato via WhatsApp.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">Termos de Uso</h3>
+            <p>Ao utilizar a Plataforma LPS, voce concorda que:</p>
+            <ul style="color: #333;">
+                <li>Os conteudos do curso sao protegidos por direitos autorais</li>
+                <li>O acesso e pessoal e intransferivel</li>
+                <li>Nao e permitido compartilhar materiais ou credenciais de acesso</li>
+                <li>Os resultados de assessment sao para uso interno de desenvolvimento profissional</li>
+                <li>A plataforma reserva-se o direito de suspender acessos em caso de violacao</li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">Contato</h3>
+            <p>Para duvidas sobre privacidade e protecao de dados:</p>
+            <p><strong>Responsavel:</strong> Viviane Nishiura</p>
+            <p><strong>E-mail:</strong> contato@liderancapsicanalitica.com.br</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(f"""
+        <div style="text-align: center; margin-top: 2rem;">
+            <p style="color: #666; font-size: 0.9rem;">Ultima atualizacao: Janeiro/2026</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    if st.button("Voltar para Home", key="btn-privacy-home", use_container_width=True):
+        st.session_state.page = "Home"
+        st.rerun()
+
+# Footer for all pages (except employee assessment)
+if not is_employee_access:
+    st.markdown("""
+        <div style="margin-top: 3rem; padding: 1.5rem; background-color: #f5f5f5; border-radius: 8px; text-align: center;">
+            <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                Lideranca Psicanalitica - Viviane Nishiura & Equipe | 
+                <a href="#" onclick="return false;" style="color: #0D3B66; text-decoration: none;">Privacidade e Termos</a>
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Privacy link button
+    col_footer = st.columns([3, 1, 3])
+    with col_footer[1]:
+        if st.button("Privacidade e Termos", key="footer-privacy-link", use_container_width=True):
+            st.session_state.page = "Privacy"
+            st.rerun()
