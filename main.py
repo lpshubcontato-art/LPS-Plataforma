@@ -10,6 +10,17 @@ from email.mime.multipart import MIMEMultipart
 import streamlit.components.v1 as components
 from datetime import datetime
 import google.generativeai as genai
+import io
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.colors import HexColor
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+from reportlab.pdfgen import canvas
 
 # ==========================================
 # EMAIL CONFIGURATION (SMTP)
@@ -1384,6 +1395,296 @@ def get_profile_tendency(profile):
     }
     return tendencies.get(profile, "desenvolvimento da equipe")
 
+# ==========================================
+# PDF EXPORT FUNCTIONS
+# ==========================================
+
+def create_pdf_styles():
+    """Create custom styles for PDF reports with LPS branding."""
+    styles = getSampleStyleSheet()
+    
+    # Title style
+    styles.add(ParagraphStyle(
+        name='LPSTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        textColor=HexColor('#0D3B66'),
+        alignment=TA_CENTER,
+        spaceAfter=20
+    ))
+    
+    # Subtitle style
+    styles.add(ParagraphStyle(
+        name='LPSSubtitle',
+        parent=styles['Heading2'],
+        fontSize=14,
+        textColor=HexColor('#F4D35E'),
+        alignment=TA_CENTER,
+        spaceAfter=15
+    ))
+    
+    # Section header
+    styles.add(ParagraphStyle(
+        name='LPSSection',
+        parent=styles['Heading2'],
+        fontSize=14,
+        textColor=HexColor('#0D3B66'),
+        spaceAfter=10,
+        spaceBefore=15
+    ))
+    
+    # Body text
+    styles.add(ParagraphStyle(
+        name='LPSBody',
+        parent=styles['Normal'],
+        fontSize=11,
+        textColor=HexColor('#333333'),
+        alignment=TA_JUSTIFY,
+        spaceAfter=8
+    ))
+    
+    # Info text
+    styles.add(ParagraphStyle(
+        name='LPSInfo',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=HexColor('#666666'),
+        alignment=TA_LEFT
+    ))
+    
+    return styles
+
+def generate_team_pdf_report(manager_name, employees_data, include_date=True):
+    """Generate a PDF report with team assessment results."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    styles = create_pdf_styles()
+    elements = []
+    
+    # Header
+    elements.append(Paragraph("Plataforma LPS", styles['LPSTitle']))
+    elements.append(Paragraph("Lideranca Psicanalitica - Relatorio da Equipe", styles['LPSSubtitle']))
+    elements.append(Spacer(1, 20))
+    
+    # Manager info
+    date_str = datetime.now().strftime("%d/%m/%Y") if include_date else ""
+    elements.append(Paragraph(f"<b>Gestor:</b> {manager_name}", styles['LPSInfo']))
+    elements.append(Paragraph(f"<b>Data:</b> {date_str}", styles['LPSInfo']))
+    elements.append(Spacer(1, 20))
+    
+    # Table header
+    table_data = [["Nome", "E-mail", "Perfil Dominante", "Perfil Secundario", "Papel de Bion"]]
+    
+    # Add employee data
+    for emp in employees_data:
+        if emp[10] == 1:  # completed
+            emp_name = emp[4] or f'Funcionario {emp[3]}'
+            table_data.append([
+                emp_name,
+                emp[5] or "N/A",
+                emp[6] or "N/A",
+                emp[7] or "N/A",
+                emp[9] or "N/A"
+            ])
+    
+    if len(table_data) > 1:
+        table = Table(table_data, colWidths=[1.3*inch, 1.6*inch, 1.2*inch, 1.2*inch, 1.2*inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), HexColor('#0D3B66')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#FFFFFF')),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('TOPPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), HexColor('#F5F5F5')),
+            ('GRID', (0, 0), (-1, -1), 1, HexColor('#CCCCCC')),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [HexColor('#FFFFFF'), HexColor('#F5F5F5')])
+        ]))
+        elements.append(table)
+    else:
+        elements.append(Paragraph("Nenhum funcionario completou o assessment ainda.", styles['LPSBody']))
+    
+    # Footer
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph("_" * 60, styles['LPSInfo']))
+    elements.append(Paragraph("Gerado pela Plataforma LPS - Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def generate_individual_pdf_report(employee_data, manager_name):
+    """Generate a PDF report for an individual employee."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    styles = create_pdf_styles()
+    elements = []
+    
+    emp_name = employee_data[4] or f'Funcionario {employee_data[3]}'
+    
+    # Header
+    elements.append(Paragraph("Plataforma LPS", styles['LPSTitle']))
+    elements.append(Paragraph("Relatorio Individual de Assessment", styles['LPSSubtitle']))
+    elements.append(Spacer(1, 20))
+    
+    # Employee info
+    elements.append(Paragraph(f"<b>Funcionario:</b> {emp_name}", styles['LPSInfo']))
+    elements.append(Paragraph(f"<b>E-mail:</b> {employee_data[5] or 'N/A'}", styles['LPSInfo']))
+    elements.append(Paragraph(f"<b>Gestor:</b> {manager_name}", styles['LPSInfo']))
+    elements.append(Paragraph(f"<b>Data:</b> {datetime.now().strftime('%d/%m/%Y')}", styles['LPSInfo']))
+    elements.append(Spacer(1, 25))
+    
+    # Profile section
+    elements.append(Paragraph("Perfil de Lideranca", styles['LPSSection']))
+    elements.append(Paragraph(f"<b>Perfil Dominante:</b> {employee_data[6] or 'N/A'}", styles['LPSBody']))
+    elements.append(Paragraph(f"<b>Perfil Secundario:</b> {employee_data[7] or 'N/A'}", styles['LPSBody']))
+    elements.append(Spacer(1, 15))
+    
+    # Bion role section
+    elements.append(Paragraph("Dinamica Grupal (Bion)", styles['LPSSection']))
+    bion_role = employee_data[9] or 'N/A'
+    elements.append(Paragraph(f"<b>Papel de Bion:</b> {bion_role}", styles['LPSBody']))
+    
+    # Bion role description
+    bion_descriptions = {
+        "Porta-voz": "Expressa o que o grupo sente mas nao consegue dizer. Captam tensoes inconscientes do grupo.",
+        "Bode Expiatorio": "Absorve projecoes negativas do grupo. Frequentemente culpado por problemas sistemicos.",
+        "Dependente": "Busca protecao constante no lider, evita autonomia. Requer contencao e orientacao.",
+        "Lider de Luta-Fuga": "Reativo a ameacas reais ou imaginarias, mobiliza o grupo para ataque ou fuga.",
+        "Sabotador Silencioso": "Resiste passivamente as mudancas. Concordancia superficial, boicote sutil."
+    }
+    if bion_role in bion_descriptions:
+        elements.append(Paragraph(f"<i>{bion_descriptions[bion_role]}</i>", styles['LPSBody']))
+    
+    # Footer
+    elements.append(Spacer(1, 40))
+    elements.append(Paragraph("_" * 60, styles['LPSInfo']))
+    elements.append(Paragraph("Gerado pela Plataforma LPS - Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
+    """Generate a PDF report from AI analysis with LPS branding."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    styles = create_pdf_styles()
+    elements = []
+    
+    # Header
+    elements.append(Paragraph("Plataforma LPS", styles['LPSTitle']))
+    elements.append(Paragraph("Analise de IA - Dinamicas de Equipe", styles['LPSSubtitle']))
+    elements.append(Spacer(1, 20))
+    
+    # Manager info
+    elements.append(Paragraph(f"<b>Gestor:</b> {manager_name}", styles['LPSInfo']))
+    elements.append(Paragraph(f"<b>Data da Analise:</b> {datetime.now().strftime('%d/%m/%Y as %H:%M')}", styles['LPSInfo']))
+    elements.append(Spacer(1, 20))
+    
+    # Team summary
+    elements.append(Paragraph("Composicao da Equipe Analisada", styles['LPSSection']))
+    completed_count = sum(1 for emp in employees_data if emp[10] == 1)
+    elements.append(Paragraph(f"<b>Funcionarios mapeados:</b> {completed_count}", styles['LPSBody']))
+    
+    # Bion distribution
+    bion_roles = {}
+    for emp in employees_data:
+        if emp[10] == 1 and emp[9]:
+            bion_roles[emp[9]] = bion_roles.get(emp[9], 0) + 1
+    if bion_roles:
+        elements.append(Paragraph("<b>Distribuicao de Papeis de Bion:</b>", styles['LPSBody']))
+        for role, count in bion_roles.items():
+            elements.append(Paragraph(f"  - {role}: {count} funcionario(s)", styles['LPSBody']))
+    
+    elements.append(Spacer(1, 20))
+    
+    # AI Analysis
+    elements.append(Paragraph("Analise da Consultora de IA", styles['LPSSection']))
+    
+    # Split analysis into paragraphs
+    paragraphs = analysis_text.split('\n\n')
+    for para in paragraphs:
+        if para.strip():
+            clean_para = para.replace('\n', ' ').strip()
+            clean_para = clean_para.replace('**', '')
+            clean_para = clean_para.replace('*', '')
+            elements.append(Paragraph(clean_para, styles['LPSBody']))
+            elements.append(Spacer(1, 5))
+    
+    # Footer
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph("_" * 60, styles['LPSInfo']))
+    elements.append(Paragraph("Analise gerada pela LPSChat - Consultora de IA em Psicanalise e Neurociencia", styles['LPSInfo']))
+    elements.append(Paragraph("Plataforma LPS - Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def generate_team_chart(employees_data, manager_name):
+    """Generate a team profile distribution chart as PNG."""
+    # Count profiles
+    profile_counts = {}
+    bion_counts = {}
+    
+    for emp in employees_data:
+        if emp[10] == 1:  # completed
+            # Count dominant profiles
+            if emp[6]:
+                profile_counts[emp[6]] = profile_counts.get(emp[6], 0) + 1
+            # Count Bion roles
+            if emp[9]:
+                bion_counts[emp[9]] = bion_counts.get(emp[9], 0) + 1
+    
+    if not profile_counts and not bion_counts:
+        return None
+    
+    # Create figure with two subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    fig.suptitle(f'Perfil da Equipe - {manager_name}', fontsize=16, color='#0D3B66', fontweight='bold')
+    
+    # Colors matching LPS brand
+    colors_profile = ['#0D3B66', '#1a4f7a', '#2d6a9f', '#4080b5', '#5596c9', '#6aabdc']
+    colors_bion = ['#F4D35E', '#e6c54e', '#d9b83e', '#ccab2e', '#bf9e1e', '#b2910e']
+    
+    # Profile distribution pie chart
+    if profile_counts:
+        labels1 = list(profile_counts.keys())
+        sizes1 = list(profile_counts.values())
+        ax1.pie(sizes1, labels=labels1, colors=colors_profile[:len(labels1)], autopct='%1.0f%%', startangle=90)
+        ax1.set_title('Perfis de Lideranca', fontsize=12, color='#0D3B66')
+    else:
+        ax1.text(0.5, 0.5, 'Sem dados', ha='center', va='center')
+        ax1.set_title('Perfis de Lideranca', fontsize=12, color='#0D3B66')
+    
+    # Bion roles bar chart
+    if bion_counts:
+        labels2 = list(bion_counts.keys())
+        sizes2 = list(bion_counts.values())
+        bars = ax2.barh(labels2, sizes2, color=colors_bion[:len(labels2)])
+        ax2.set_xlabel('Quantidade')
+        ax2.set_title('Papeis de Bion', fontsize=12, color='#0D3B66')
+        ax2.set_xlim(0, max(sizes2) + 1)
+        for bar, size in zip(bars, sizes2):
+            ax2.text(bar.get_width() + 0.1, bar.get_y() + bar.get_height()/2, str(size), va='center')
+    else:
+        ax2.text(0.5, 0.5, 'Sem dados', ha='center', va='center')
+        ax2.set_title('Papeis de Bion', fontsize=12, color='#0D3B66')
+    
+    plt.tight_layout()
+    
+    # Save to buffer
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', dpi=150, bbox_inches='tight', facecolor='white')
+    plt.close()
+    buffer.seek(0)
+    return buffer.getvalue()
+
 def calculate_profile(responses):
     block_sums = {}
     for block in ASSESSMENT_QUESTIONS.keys():
@@ -2204,13 +2505,16 @@ elif page == "TeamManagement":
             
             if employees:
                 completed_count = sum(1 for e in employees if e[10] == 1)
+                manager_name = st.session_state.user['name'] if st.session_state.user else "Gestor"
                 
-                col_metric, col_export = st.columns([2, 2])
-                with col_metric:
-                    st.metric("Respostas Recebidas", f"{completed_count}/4")
+                st.metric("Respostas Recebidas", f"{completed_count}/4")
                 
-                with col_export:
-                    if completed_count > 0:
+                if completed_count > 0:
+                    st.markdown("#### Exportar Relatorios")
+                    
+                    col_csv, col_pdf, col_chart = st.columns(3)
+                    
+                    with col_csv:
                         csv_data = "Nome,E-mail,Perfil Dominante,Perfil Secundario,Papel de Bion\n"
                         for emp in employees:
                             if emp[10] == 1:
@@ -2218,16 +2522,45 @@ elif page == "TeamManagement":
                                 csv_data += f'"{emp_name}","{emp[5]}","{emp[6]}","{emp[7]}","{emp[9]}"\n'
                         
                         st.download_button(
-                            label="Baixar Todos (CSV)",
+                            label="Baixar CSV",
                             data=csv_data,
                             file_name="resultados_equipe_lps.csv",
                             mime="text/csv",
                             use_container_width=True
                         )
+                    
+                    with col_pdf:
+                        pdf_data = generate_team_pdf_report(manager_name, employees)
+                        st.download_button(
+                            label="Baixar PDF",
+                            data=pdf_data,
+                            file_name="relatorio_equipe_lps.pdf",
+                            mime="application/pdf",
+                            use_container_width=True
+                        )
+                    
+                    with col_chart:
+                        chart_data = generate_team_chart(employees, manager_name)
+                        if chart_data:
+                            st.download_button(
+                                label="Baixar Grafico",
+                                data=chart_data,
+                                file_name="grafico_perfil_equipe.png",
+                                mime="image/png",
+                                use_container_width=True
+                            )
+                    
+                    st.write("---")
+                    
+                    # Display team chart preview
+                    st.markdown("#### Grafico do Perfil da Equipe")
+                    chart_preview = generate_team_chart(employees, manager_name)
+                    if chart_preview:
+                        st.image(chart_preview, use_container_width=True)
                 
                 if manager_profile and completed_count > 0:
                     st.markdown(f"""
-                        <div style="background-color: #0D3B66; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="background-color: #0D3B66; color: white; padding: 10px; border-radius: 8px; margin: 20px 0 10px 0;">
                             <strong>Comparacao:</strong> Seu perfil ({manager_profile['dominant']}) vs Equipe
                         </div>
                     """, unsafe_allow_html=True)
@@ -2240,7 +2573,7 @@ elif page == "TeamManagement":
                         emp_name = emp[4] or f'Funcionario {emp[3]}'
                         
                         with st.container():
-                            col_info, col_download = st.columns([4, 1])
+                            col_info, col_csv_ind, col_pdf_ind = st.columns([4, 1, 1])
                             
                             with col_info:
                                 st.markdown(f"""
@@ -2257,7 +2590,7 @@ elif page == "TeamManagement":
                                     </div>
                                 """, unsafe_allow_html=True)
                             
-                            with col_download:
+                            with col_csv_ind:
                                 individual_csv = f"Nome,E-mail,Perfil Dominante,Perfil Secundario,Papel de Bion\n"
                                 individual_csv += f'"{emp_name}","{emp[5]}","{emp[6]}","{emp[7]}","{emp[9]}"\n'
                                 
@@ -2268,6 +2601,16 @@ elif page == "TeamManagement":
                                     file_name=f"resultado_{safe_name}.csv",
                                     mime="text/csv",
                                     key=f"download_csv_{emp[0]}"
+                                )
+                            
+                            with col_pdf_ind:
+                                individual_pdf = generate_individual_pdf_report(emp, manager_name)
+                                st.download_button(
+                                    label="PDF",
+                                    data=individual_pdf,
+                                    file_name=f"resultado_{safe_name}.pdf",
+                                    mime="application/pdf",
+                                    key=f"download_pdf_{emp[0]}"
                                 )
                 else:
                     st.info("Nenhum funcionario respondeu ainda. Os resultados aparecerao aqui assim que completarem o assessment.")
@@ -2713,9 +3056,33 @@ FORMATO DE RESPOSTA:
                         else:
                             st.error(f"Erro ao conectar com a IA: {error_msg}")
         
-        # Clear chat button with styling
+        # Export and Clear buttons with styling
         if st.session_state.chat_messages:
+            # Get the last AI response for export
+            last_ai_response = ""
+            for msg in reversed(st.session_state.chat_messages):
+                if msg["role"] == "assistant":
+                    last_ai_response = msg["content"]
+                    break
+            
             col1, col2, col3 = st.columns([1, 1, 1])
+            
+            with col1:
+                if last_ai_response and employees_list_display:
+                    # Generate PDF from last AI analysis
+                    analysis_pdf = generate_ai_analysis_pdf(
+                        user_name,
+                        last_ai_response,
+                        employees if manager_data else []
+                    )
+                    st.download_button(
+                        label="Exportar Analise (PDF)",
+                        data=analysis_pdf,
+                        file_name=f"analise_ia_lps_{datetime.now().strftime('%Y%m%d')}.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
+            
             with col2:
                 if st.button("Limpar Conversa", key="btn-clear-chat", use_container_width=True):
                     st.session_state.chat_messages = []
