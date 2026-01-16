@@ -1454,6 +1454,40 @@ def create_pdf_styles():
     
     return styles
 
+def create_pdf_header_table():
+    """Create a styled header table with LPS logo and branding."""
+    logo_path = "attached_assets/logotipo_1768443722848.jpeg"
+    
+    # Check if logo exists
+    if os.path.exists(logo_path):
+        logo = Image(logo_path, width=1.2*inch, height=1.2*inch)
+        header_data = [[
+            logo,
+            Paragraph("<font color='white' size='14'><b>Lideranca Psicanalitica</b></font><br/><font color='#F4D35E' size='10'>Viviane Nishiura & Equipe LPS</font>", getSampleStyleSheet()['Normal'])
+        ]]
+    else:
+        # Fallback to text-based header if logo not found
+        header_data = [[
+            Paragraph("<font color='#F4D35E' size='28'><b>LPS</b></font>", getSampleStyleSheet()['Normal']),
+            Paragraph("<font color='white' size='12'>Lideranca Psicanalitica<br/><font size='9'>Viviane Nishiura & Equipe</font></font>", getSampleStyleSheet()['Normal'])
+        ]]
+    
+    header_table = Table(header_data, colWidths=[1.5*inch, 4*inch])
+    header_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), HexColor('#0D3B66')),
+        ('TEXTCOLOR', (0, 0), (0, 0), HexColor('#F4D35E')),
+        ('TEXTCOLOR', (1, 0), (1, 0), HexColor('#FFFFFF')),
+        ('ALIGN', (0, 0), (0, 0), 'CENTER'),
+        ('ALIGN', (1, 0), (1, 0), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('TOPPADDING', (0, 0), (-1, -1), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+        ('LEFTPADDING', (0, 0), (-1, -1), 12),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+        ('BOX', (0, 0), (-1, -1), 1, HexColor('#0D3B66')),
+    ]))
+    return header_table
+
 def generate_team_pdf_report(manager_name, employees_data, include_date=True):
     """Generate a PDF report with team assessment results."""
     buffer = io.BytesIO()
@@ -1461,9 +1495,12 @@ def generate_team_pdf_report(manager_name, employees_data, include_date=True):
     styles = create_pdf_styles()
     elements = []
     
-    # Header
-    elements.append(Paragraph("Plataforma LPS", styles['LPSTitle']))
-    elements.append(Paragraph("Lideranca Psicanalitica - Relatorio da Equipe", styles['LPSSubtitle']))
+    # Styled header with LPS branding
+    elements.append(create_pdf_header_table())
+    elements.append(Spacer(1, 20))
+    
+    # Report title
+    elements.append(Paragraph("Relatorio da Equipe", styles['LPSSection']))
     elements.append(Spacer(1, 20))
     
     # Manager info
@@ -1525,10 +1562,13 @@ def generate_individual_pdf_report(employee_data, manager_name):
     
     emp_name = employee_data[4] or f'Funcionario {employee_data[3]}'
     
-    # Header
-    elements.append(Paragraph("Plataforma LPS", styles['LPSTitle']))
-    elements.append(Paragraph("Relatorio Individual de Assessment", styles['LPSSubtitle']))
+    # Styled header with LPS branding
+    elements.append(create_pdf_header_table())
     elements.append(Spacer(1, 20))
+    
+    # Report title
+    elements.append(Paragraph("Relatorio Individual de Assessment", styles['LPSSection']))
+    elements.append(Spacer(1, 15))
     
     # Employee info
     elements.append(Paragraph(f"<b>Funcionario:</b> {emp_name}", styles['LPSInfo']))
@@ -1576,10 +1616,13 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     styles = create_pdf_styles()
     elements = []
     
-    # Header
-    elements.append(Paragraph("Plataforma LPS", styles['LPSTitle']))
-    elements.append(Paragraph("Analise de IA - Dinamicas de Equipe", styles['LPSSubtitle']))
+    # Styled header with LPS branding
+    elements.append(create_pdf_header_table())
     elements.append(Spacer(1, 20))
+    
+    # Report title
+    elements.append(Paragraph("Analise de IA - Dinamicas de Equipe", styles['LPSSection']))
+    elements.append(Spacer(1, 15))
     
     # Manager info
     elements.append(Paragraph(f"<b>Gestor:</b> {manager_name}", styles['LPSInfo']))
