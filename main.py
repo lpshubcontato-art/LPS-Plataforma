@@ -10,7 +10,7 @@ import shutil
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import streamlit.components.v1 as components
-from datetime import datetime
+from datetime import datetime, timedelta
 import google.generativeai as genai
 import io
 import matplotlib
@@ -493,6 +493,50 @@ def init_db():
         FOREIGN KEY (user_id) REFERENCES users(id)
     )''')
     
+    # Payments table for subscription/access control
+    c.execute('''CREATE TABLE IF NOT EXISTS payments (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        plan_type TEXT DEFAULT 'basic',
+        status TEXT DEFAULT 'pending',
+        amount REAL,
+        payment_date TIMESTAMP,
+        expiry_date TIMESTAMP,
+        payment_method TEXT,
+        transaction_id TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    )''')
+    
+    # AI Chat logs table
+    c.execute('''CREATE TABLE IF NOT EXISTS ai_chat_logs (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        manager_id TEXT,
+        message_type TEXT,
+        message_content TEXT,
+        response_content TEXT,
+        tokens_used INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (manager_id) REFERENCES managers(id)
+    )''')
+    
+    # Mentorship scheduling table
+    c.execute('''CREATE TABLE IF NOT EXISTS mentorship_sessions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        manager_id TEXT,
+        session_date TIMESTAMP,
+        session_type TEXT DEFAULT 'individual',
+        status TEXT DEFAULT 'scheduled',
+        notes TEXT,
+        meeting_link TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (manager_id) REFERENCES managers(id)
+    )''')
+    
     conn.commit()
     conn.close()
 
@@ -740,6 +784,86 @@ def get_assessment_stats(manager_id):
         'total_slots': total_slots,
         'max_employees': max_employees
     }
+
+def get_user_payment_status(user_id):
+    """Check if user has an active payment/subscription"""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""SELECT id, plan_type, status, expiry_date 
+                 FROM payments 
+                 WHERE user_id = ? AND status = 'active'
+                 ORDER BY created_at DESC LIMIT 1""", (user_id,))
+    result = c.fetchone()
+    conn.close()
+    
+    if result:
+        # Check if payment is still valid (not expired)
+        if result[3]:  # expiry_date
+            try:
+                # Use fromisoformat for robust parsing (handles microseconds)
+                expiry = datetime.fromisoformat(result[3]) if isinstance(result[3], str) else result[3]
+            except (ValueError, TypeError):
+                # Fallback: try common format without microseconds
+                try:
+                    expiry = datetime.strptime(result[3], '%Y-%m-%d %H:%M:%S')
+                except:
+                    expiry = datetime.now()  # Safe fallback
+            if expiry > datetime.now():
+                return {'active': True, 'plan': result[1], 'expiry': result[3]}
+        else:
+            # No expiry date = lifetime access
+            return {'active': True, 'plan': result[1], 'expiry': None}
+    
+    return {'active': False, 'plan': None, 'expiry': None}
+
+def activate_user_payment(user_id, plan_type='premium', amount=997.0, days_valid=365):
+    """Activate a payment for a user (called after WhatsApp confirmation)"""
+    conn = get_db()
+    c = conn.cursor()
+    payment_id = str(uuid.uuid4())
+    payment_date = datetime.now()
+    expiry_date = payment_date + timedelta(days=days_valid)
+    
+    c.execute("""INSERT INTO payments (id, user_id, plan_type, status, amount, payment_date, expiry_date, payment_method)
+                 VALUES (?, ?, ?, 'active', ?, ?, ?, 'whatsapp')""",
+              (payment_id, user_id, plan_type, amount, payment_date, expiry_date))
+    conn.commit()
+    conn.close()
+    return payment_id
+
+def can_access_premium_features(user_id):
+    """Check if user can access premium features (LPSChat, Mentoria)
+    Requires: Active payment AND completed theoretical course modules"""
+    payment_status = get_user_payment_status(user_id)
+    course_completed = is_course_completed(user_id)
+    
+    return {
+        'can_access': payment_status['active'] and course_completed,
+        'payment_active': payment_status['active'],
+        'course_completed': course_completed,
+        'plan': payment_status['plan'],
+        'message': get_access_message(payment_status['active'], course_completed)
+    }
+
+def get_access_message(payment_active, course_completed):
+    """Generate appropriate message for access status"""
+    if not payment_active:
+        return "Acesso liberado após confirmação de pagamento via WhatsApp."
+    if not course_completed:
+        return "Complete os módulos teóricos do curso para liberar este recurso."
+    return None
+
+def log_ai_chat(user_id, manager_id, message_type, message_content, response_content, tokens_used=0):
+    """Log AI chat interactions"""
+    conn = get_db()
+    c = conn.cursor()
+    log_id = str(uuid.uuid4())
+    c.execute("""INSERT INTO ai_chat_logs (id, user_id, manager_id, message_type, message_content, response_content, tokens_used)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)""",
+              (log_id, user_id, manager_id, message_type, message_content, response_content, tokens_used))
+    conn.commit()
+    conn.close()
+    return log_id
 
 def get_ai_insights(manager_id, user_id):
     """Generate AI insights about the team with multitenancy validation"""
@@ -1362,7 +1486,7 @@ st.markdown(f'''
 ''', unsafe_allow_html=True)
 
 # Navigation Menu Sections
-MENU_SECTIONS = ["Sobre", "Curso", "LPSTest", "LPSChat", "Mentoria", "Soluções", "Contato"]
+MENU_SECTIONS = ["Sobre", "Curso", "LPSTest", "LPSChat", "Mentoria", "Soluções", "Insights", "Contato"]
 
 # Public Header with Navigation Menu
 def render_public_header():
@@ -2407,6 +2531,86 @@ if page == "Home":
             </div>
         """, unsafe_allow_html=True)
     
+    # INSIGHTS/BLOG SECTION (SEO)
+    elif current_section == "insights":
+        st.markdown('<div class="section-title">Insights de Lideranca</div>', unsafe_allow_html=True)
+        st.markdown("""
+            <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+                Artigos e conteudos semanais sobre Psicanalise, Neurociencia e Lideranca Consciente
+            </p>
+        """, unsafe_allow_html=True)
+        
+        # Featured Articles
+        blog_posts = [
+            {
+                "title": "Os 5 Arquetipos Inconscientes que Todo Lider Possui",
+                "excerpt": "Descubra como padroes ocultos influenciam suas decisoes e o comportamento da sua equipe. Aprenda a identificar seu arquetipo dominante.",
+                "category": "Psicanalise",
+                "date": "Janeiro 2025"
+            },
+            {
+                "title": "Neurociencia do Estresse: Como o Cortisol Afeta sua Lideranca",
+                "excerpt": "Entenda os mecanismos cerebrais por tras do estresse cronico e como gestores podem criar ambientes que promovem produtividade.",
+                "category": "Neurociencia",
+                "date": "Janeiro 2025"
+            },
+            {
+                "title": "Transferencia e Contratransferencia no Ambiente Corporativo",
+                "excerpt": "Por que alguns funcionarios 'ativam' reacoes intensas em voce? A resposta esta nas dinamicas inconscientes de transferencia.",
+                "category": "Psicanalise",
+                "date": "Dezembro 2024"
+            },
+            {
+                "title": "Como Reduzir Turnover com Mapeamento de Perfis",
+                "excerpt": "Estudo de caso: empresa reduziu rotatividade em 40% apos aplicar LPSTest e realocar funcionarios por perfil.",
+                "category": "Gestao",
+                "date": "Dezembro 2024"
+            },
+            {
+                "title": "Os Papeis de Bion: Entenda as Dinamicas Ocultas do Seu Time",
+                "excerpt": "Porta-voz, Bode Expiatorio, Lider de Luta-Fuga... Descubra quem esta exercendo cada papel na sua equipe.",
+                "category": "Dinamica Grupal",
+                "date": "Novembro 2024"
+            },
+            {
+                "title": "Neuronios-Espelho e Empatia: A Base Neurologica da Lideranca",
+                "excerpt": "Como seu cerebro 'espelha' emocoes da equipe e por que isso e crucial para liderar com autenticidade.",
+                "category": "Neurociencia",
+                "date": "Novembro 2024"
+            }
+        ]
+        
+        for i, post in enumerate(blog_posts):
+            if i % 2 == 0:
+                cols = st.columns(2)
+            
+            with cols[i % 2]:
+                category_color = {
+                    "Psicanalise": "#0D3B66",
+                    "Neurociencia": "#28a745",
+                    "Gestao": "#F4D35E",
+                    "Dinamica Grupal": "#6c757d"
+                }.get(post["category"], "#0D3B66")
+                
+                st.markdown(f"""
+                    <div style="background: white; border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid {category_color};">
+                        <span style="background: {category_color}; color: white; padding: 3px 10px; border-radius: 15px; font-size: 0.75rem; margin-bottom: 0.5rem; display: inline-block;">{post['category']}</span>
+                        <h3 style="color: #0D3B66; margin: 0.5rem 0; font-size: 1.1rem;">{post['title']}</h3>
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{post['excerpt']}</p>
+                        <span style="color: #999; font-size: 0.8rem;">{post['date']}</span>
+                    </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+            <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); border-radius: 15px;">
+                <h3 style="color: #F4D35E; margin-bottom: 1rem;">Receba Conteudos Semanais</h3>
+                <p style="color: white; margin-bottom: 1.5rem;">Insights exclusivos sobre lideranca psicanalitica direto no seu WhatsApp</p>
+                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
+                    Receber Insights
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
+    
     # CONTATO SECTION
     elif current_section == "contato":
         st.markdown('<div class="section-title">Entre em Contato</div>', unsafe_allow_html=True)
@@ -2633,6 +2837,18 @@ elif page == "Dashboard":
             </a>
         """, unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Team Chart Preview (if team is mapped)
+    if manager_id:
+        employees = get_secure_manager_employees(user_id, manager_id)
+        completed_employees = [e for e in employees if e[10] == 1]
+        if len(completed_employees) >= 2:
+            st.markdown("<div class='dashboard-card'><h3>Mapeamento da Equipe</h3>", unsafe_allow_html=True)
+            manager_name = st.session_state.user['name'] if st.session_state.user else "Gestor"
+            chart_data = generate_team_chart(employees, manager_name)
+            if chart_data:
+                st.image(chart_data, use_container_width=True)
+            st.markdown("</div>", unsafe_allow_html=True)
     
     st.write("---")
     
@@ -3088,9 +3304,10 @@ elif page == "LPSChat":
         st.rerun()
     
     # PRIVACY: Only managers can access - employees are blocked globally
-    # Access control: check if theoretical modules are completed
+    # Access control: check payment status AND course completion
     user_id = st.session_state.user['id']
-    course_completed = is_course_completed(user_id)
+    access_status = can_access_premium_features(user_id)
+    course_completed = access_status['course_completed']
     
     # Custom chat styling with brand colors
     st.markdown("""
@@ -3199,36 +3416,52 @@ elif page == "LPSChat":
         </div>
     """, unsafe_allow_html=True)
     
-    if not course_completed:
-        st.warning("Acesso Temporario Bloqueado")
-        st.markdown("""
-            <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
-                <h3 style='color: #856404; margin-top: 0;'>Complete os modulos teoricos para liberar o LPSChat</h3>
-                <p style='color: #856404;'>
-                    O acesso ao consultor de IA e liberado apos a conclusao dos 5 primeiros modulos do curso.
-                    Isso garante que voce tenha a base teorica necessaria para aproveitar ao maximo as analises da IA.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+    if not access_status['can_access']:
+        st.warning("Acesso Bloqueado")
         
-        # Show progress
-        module_status = get_module_completion_status(user_id)
-        st.markdown("<h4 style='color: #0D3B66; margin-top: 2rem;'>Seu progresso nos modulos teoricos:</h4>", unsafe_allow_html=True)
-        
-        theoretical_modules = [1, 2, 3, 4, 5]
-        for mod_id in theoretical_modules:
-            if mod_id in module_status:
-                status = module_status[mod_id]
-                progress_pct = int(status['percentage'])
-                if progress_pct == 100:
-                    st.markdown(f"[Completo] **{status['name']}**: {progress_pct}%")
-                else:
-                    st.markdown(f"[Em andamento] **{status['name']}**: {progress_pct}%")
-        
-        st.write("---")
-        if st.button("Ir para o Curso", key="btn-goto-curso"):
-            st.session_state.page = "LPS Curso"
-            st.rerun()
+        # Show different message based on what's missing
+        if not access_status['payment_active']:
+            st.markdown(f"""
+                <div style='background-color: #f8d7da; padding: 2rem; border-radius: 10px; border-left: 4px solid #dc3545;'>
+                    <h3 style='color: #721c24; margin-top: 0;'>Conteudo Exclusivo para Alunos</h3>
+                    <p style='color: #721c24;'>
+                        O acesso ao LPSChat e liberado apos a confirmacao do pagamento.
+                        Entre em contato via WhatsApp para adquirir seu acesso.
+                    </p>
+                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
+                        Falar com Suporte
+                    </a>
+                </div>
+            """, unsafe_allow_html=True)
+        elif not access_status['course_completed']:
+            st.markdown("""
+                <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
+                    <h3 style='color: #856404; margin-top: 0;'>Complete os modulos teoricos para liberar o LPSChat</h3>
+                    <p style='color: #856404;'>
+                        O acesso ao consultor de IA e liberado apos a conclusao dos 5 primeiros modulos do curso.
+                        Isso garante que voce tenha a base teorica necessaria para aproveitar ao maximo as analises da IA.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Show progress
+            module_status = get_module_completion_status(user_id)
+            st.markdown("<h4 style='color: #0D3B66; margin-top: 2rem;'>Seu progresso nos modulos teoricos:</h4>", unsafe_allow_html=True)
+            
+            theoretical_modules = [1, 2, 3, 4, 5]
+            for mod_id in theoretical_modules:
+                if mod_id in module_status:
+                    status = module_status[mod_id]
+                    progress_pct = int(status['percentage'])
+                    if progress_pct == 100:
+                        st.markdown(f"[Completo] **{status['name']}**: {progress_pct}%")
+                    else:
+                        st.markdown(f"[Em andamento] **{status['name']}**: {progress_pct}%")
+            
+            st.write("---")
+            if st.button("Ir para o Curso", key="btn-goto-curso"):
+                st.session_state.page = "LPS Curso"
+                st.rerun()
     else:
         # Initialize chat history
         if 'chat_messages' not in st.session_state:
@@ -3492,8 +3725,86 @@ elif page == "Mentoria":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
-    st.title("📅 Mentoria")
-    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold;">Agendar Mentoria</button></a></div>', unsafe_allow_html=True)
+    
+    render_public_header()
+    
+    # Access control for Mentoria
+    user_id = st.session_state.user['id']
+    access_status = can_access_premium_features(user_id)
+    
+    st.markdown("""
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="color: #0D3B66;">Mentoria com Viviane Nishiura</h1>
+            <p style="color: #666;">Sessoes individuais para aprofundar sua jornada de lideranca consciente</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    if not access_status['can_access']:
+        # Show paywall
+        if not access_status['payment_active']:
+            st.markdown(f"""
+                <div style='background-color: #f8d7da; padding: 2rem; border-radius: 10px; border-left: 4px solid #dc3545; margin-bottom: 2rem;'>
+                    <h3 style='color: #721c24; margin-top: 0;'>Conteudo Exclusivo para Alunos</h3>
+                    <p style='color: #721c24;'>
+                        O agendamento de mentoria e liberado apos a confirmacao do pagamento.
+                        Entre em contato via WhatsApp para adquirir seu acesso.
+                    </p>
+                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
+                        Falar com Suporte
+                    </a>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+                <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107; margin-bottom: 2rem;'>
+                    <h3 style='color: #856404; margin-top: 0;'>Complete o curso para liberar a Mentoria</h3>
+                    <p style='color: #856404;'>
+                        O acesso a mentoria e liberado apos a conclusao dos modulos teoricos do curso.
+                        Isso garante uma base solida para aproveitar ao maximo sua sessao.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+            if st.button("Ir para o Curso", key="mentoria-goto-curso"):
+                st.session_state.page = "LPS Curso"
+                st.rerun()
+    else:
+        # Full mentoria content for paying users
+        st.markdown("""
+            <div class="about-card">
+                <h3 style="color: #0D3B66;">O que esperar da Mentoria</h3>
+                <ul>
+                    <li><strong>Sessao individual de 1 hora</strong> com Viviane Nishiura</li>
+                    <li>Analise aprofundada do seu perfil de lideranca</li>
+                    <li>Discussao sobre dinamicas de equipe e conflitos inconscientes</li>
+                    <li>Estrategias praticas baseadas em psicanalise e neurociencia</li>
+                    <li>Acompanhamento personalizado para seu desenvolvimento</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div class="about-card">
+                <h3 style="color: #0D3B66;">Como se preparar</h3>
+                <ol>
+                    <li>Revise seu perfil de lideranca no Dashboard</li>
+                    <li>Analise os resultados do mapeamento de equipe</li>
+                    <li>Identifique 2-3 desafios especificos que deseja abordar</li>
+                    <li>Anote situacoes concretas para discutir</li>
+                </ol>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); padding: 2rem; border-radius: 15px; text-align: center; margin-top: 2rem;">
+                <h2 style="color: #F4D35E; margin-bottom: 1rem;">Agende sua Sessao</h2>
+                <p style="color: white; margin-bottom: 1.5rem;">Entre em contato via WhatsApp para agendar sua mentoria individual.</p>
+                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 1rem 3rem; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 1.1rem;">
+                    Agendar Mentoria
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    render_public_footer()
 
 elif page == "Sobre":
     if not st.session_state.authenticated:
