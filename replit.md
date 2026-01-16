@@ -36,13 +36,13 @@ Preferred communication style: Simple, everyday language.
 - **Managers**: Register/login via "Entrar" button, access Dashboard with course progress and team management
 - **Employees**: Access via unique token URL (?token=xxx), see only Assessment page
 - **Content Gating**: Protected content shows paywall message "Conteúdo exclusivo para alunos. Liberação apenas após confirmação de pagamento"
-- **LPSChat Access**: Only available after completing 5 theoretical modules (first 5 of 6)
+- **LPSChat Access**: Only available after completing all course modules and having active payment
 
 ### Page Structure
 - **Home**: Public landing page with hero section and navigation menu (8 sections)
 - **Login**: Authentication page accessible via "Entrar" button
 - **Dashboard**: Manager area with course progress bar, assessment stats, AI insights, mentoring CTA
-- **LPS Curso**: Full course content with 6 modules, progress saved to database
+- **LPS Curso**: Full course content with 8 modules (Introduction + 7 Modules), progress saved to database
 - **LPSTest**: Leadership assessment (48 questions, Bion role mapping)
 - **TeamManagement**: Tabbed interface with "Gerar Convites" (link generation) and "Resultados da Equipe" (completed results + CSV exports)
 - **LPSChat**: AI consultant (gated behind theoretical module completion)
@@ -55,7 +55,7 @@ Preferred communication style: Simple, everyday language.
 - **Thank You Page**: Displays after assessment completion with profile summary
 
 ### Dashboard Features (Manager Area)
-- **Course Progress**: Visual progress bars for each of 6 modules with overall percentage
+- **Course Progress**: Visual progress bars for each of 8 modules with overall percentage
 - **Assessment Stats**: Counter showing "Aplicados" vs "Restantes" (4-employee package limit)
 - **AI Insights**: Automated alerts about team (Bion role distribution, manager profile status)
 - **Mentoring CTA**: Button to schedule with Viviane Nishiura via WhatsApp

@@ -256,7 +256,7 @@ def send_welcome_email(user_email, user_name, password):
                 
                 <div class="features">
                     <h4 style="margin-top: 0; color: #0D3B66;">O que você terá acesso:</h4>
-                    <div class="feature-item">Curso completo com 6 módulos de Liderança Psicanalítica</div>
+                    <div class="feature-item">Curso completo com 8 modulos de Lideranca Psicanalitica</div>
                     <div class="feature-item">LPSTest - Assessment de perfil de liderança</div>
                     <div class="feature-item">Gestão de Equipe - Mapeie até 4 colaboradores</div>
                     <div class="feature-item">LPSChat - Consultor de IA especializado</div>
@@ -1454,12 +1454,14 @@ PROFILES_DB = {
 }
 
 MODULES_DATA = [
+    {"id": 0, "name": "Introducao: A Jornada LPS", "title": "A Jornada LPS", "description": "Apresentacao da metodologia, boas-vindas da Viviane Nishiura e o mapa da jornada entre Neurociencia e Psicanalise. Conheca o caminho que vai transformar sua lideranca.", "icon": "🚀", "file": "", "videos": []},
     {"id": 1, "name": "Modulo 1: Neurociencia da Lideranca", "title": "Neurociencia da Lideranca", "description": "Foco em quimicos cerebrais (dopamina, ocitocina) e o Circulo de Seguranca. Entenda como o cerebro processa decisoes e aprenda a usar a neurociencia para liderar com mais eficacia.", "icon": "🧠", "file": "attached_assets/Módulo_1_1768431876967.pdf", "videos": ["https://vimeo.com/1154503073", "https://vimeo.com/1154503122", "https://vimeo.com/1154503201"]},
     {"id": 2, "name": "Modulo 2: Mergulho no Inconsciente", "title": "Mergulho no Inconsciente", "description": "Estudo do Id, Ego, Superego e mecanismos de defesa. Explore as camadas profundas da mente e descubra como padroes inconscientes influenciam sua lideranca.", "icon": "🌊", "file": "attached_assets/Módulo_2_1768431876968.pdf", "videos": ["https://vimeo.com/1154504282", "https://vimeo.com/1154503918"]},
     {"id": 3, "name": "Modulo 3: Relacoes e Transferencia", "title": "Relacoes e Transferencia", "description": "Dinamicas lider-liderado e manejo de contratransferencia. Compreenda as dinamicas de transferencia nas relacoes profissionais e como usa-las a seu favor.", "icon": "🔄", "file": "attached_assets/Módulo_3_1768431876969.pdf", "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577"]},
     {"id": 4, "name": "Modulo 4: Autoconsciencia", "title": "Autoconsciencia", "description": "Identificacao do seu arquetipo de lideranca psicanalitica. Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como lider.", "icon": "🪞", "file": "attached_assets/Módulo_5_1768431876971.pdf", "videos": ["https://vimeo.com/1154510241"]},
     {"id": 5, "name": "Modulo 5: Entendendo a Equipe", "title": "Entendendo a Equipe", "description": "Mapeamento com assessments e os papeis grupais de Bion. Aprenda a mapear perfis e dinamicas grupais usando conceitos psicanaliticos.", "icon": "👥", "file": "attached_assets/Módulo_6_1768431876972.pdf", "videos": ["https://vimeo.com/1154510682"]},
-    {"id": 6, "name": "Modulo 6: Aplicacao Pratica", "title": "Aplicacao Pratica", "description": "Analise de casos reais e construcao do plano de acao personalizado. Coloque em pratica as ferramentas psicanaliticas no dia a dia da lideranca.", "icon": "🛠️", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]}
+    {"id": 6, "name": "Modulo 6: Aplicacao Pratica", "title": "Aplicacao Pratica", "description": "Analise de casos reais e construcao do plano de acao personalizado. Coloque em pratica as ferramentas psicanaliticas no dia a dia da lideranca.", "icon": "🛠️", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]},
+    {"id": 7, "name": "Modulo 7: Lideranca de Alta Performance", "title": "Lideranca de Alta Performance e Sustentabilidade", "description": "Como manter os resultados a longo prazo, gestao da cultura organizacional e o fechamento do ciclo de desenvolvimento. Consolide sua transformacao como lider.", "icon": "🏆", "file": "", "videos": []}
 ]
 
 # Check for employee token in URL (takes priority over auth)
@@ -2496,8 +2498,8 @@ if page == "Home":
             </style>
         """, unsafe_allow_html=True)
         
-        # Module Cards Grid - 2 rows of 3
-        row1 = st.columns(3)
+        # Module Cards Grid - 2 rows of 4 for 8 modules
+        row1 = st.columns(4)
         for idx, col in enumerate(row1):
             if idx < len(MODULES_DATA):
                 mod = MODULES_DATA[idx]
@@ -2519,9 +2521,9 @@ if page == "Home":
                             st.rerun()
         
         st.write("")
-        row2 = st.columns(3)
+        row2 = st.columns(4)
         for idx, col in enumerate(row2):
-            mod_idx = idx + 3
+            mod_idx = idx + 4
             if mod_idx < len(MODULES_DATA):
                 mod = MODULES_DATA[mod_idx]
                 with col:
