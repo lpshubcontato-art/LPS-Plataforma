@@ -1538,8 +1538,11 @@ if st.session_state.authenticated and not is_employee_access:
         if st.button("👤 Sobre", key="nav_sobre"):
             st.session_state.page = "Sobre"
             st.rerun()
+        if st.button("📚 Guia e Suporte", key="nav_guia"):
+            st.session_state.page = "GuiaSuporte"
+            st.rerun()
         st.write("---")
-        st.markdown(f'[💬 Suporte]({WHATSAPP_URL})')
+        st.markdown(f'[💬 Suporte via WhatsApp]({WHATSAPP_URL})')
         st.write("---")
         if st.button("🚪 Sair", key="nav_logout"):
             st.session_state.authenticated = False
@@ -1848,6 +1851,141 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     elements.append(Paragraph("_" * 60, styles['LPSInfo']))
     elements.append(Paragraph("Analise gerada pela LPSChat - Consultora de IA em Psicanalise e Neurociencia", styles['LPSInfo']))
     elements.append(Paragraph("Plataforma LPS - Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def generate_manager_guide_pdf():
+    """Generate the Manager's Guide PDF with LPS methodology."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    styles = create_pdf_styles()
+    elements = []
+    
+    # Styled header with LPS branding
+    elements.append(create_pdf_header_table())
+    elements.append(Spacer(1, 20))
+    
+    # Title
+    elements.append(Paragraph("Manual do Gestor LPS", styles['LPSTitle']))
+    elements.append(Paragraph("Guia Pratico para Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Spacer(1, 30))
+    
+    # Section 1: Como interpretar seu Perfil
+    elements.append(Paragraph("1. Como Interpretar seu Perfil", styles['LPSSection']))
+    elements.append(Spacer(1, 10))
+    elements.append(Paragraph(
+        "Seu perfil de lideranca revela seus arquetipos inconscientes dominantes - padroes de comportamento "
+        "que operam abaixo da consciencia e influenciam como voce lidera sua equipe.",
+        styles['LPSBody']))
+    elements.append(Spacer(1, 8))
+    
+    # Profile descriptions
+    profiles = [
+        ("Protetor", "Voce tende a acolher e cuidar da equipe. Seu ponto forte e criar ambientes seguros. "
+         "Atencao: pode haver dificuldade em cobrar resultados ou dar feedbacks dificeis."),
+        ("Contenedor", "Voce absorve tensoes do grupo e mantem estabilidade emocional. Essencial em crises. "
+         "Atencao: risco de sobrecarga emocional e esgotamento."),
+        ("Narciso Estrategico", "Voce inspira e motiva atraves de visao e carisma. Mobiliza a equipe para grandes objetivos. "
+         "Atencao: pode centralizar demais e dificultar a autonomia."),
+        ("Estruturador", "Voce organiza processos e garante previsibilidade. Equipes bem estruturadas. "
+         "Atencao: rigidez excessiva pode inibir criatividade e inovacao."),
+        ("Espelho Emocional", "Voce valida emocoes e cria conexao empatica. Equipes se sentem ouvidas. "
+         "Atencao: pode absorver problemas alheios e perder objetividade."),
+        ("Observador Reflexivo", "Voce analisa profundamente antes de agir. Decisoes ponderadas e estrategicas. "
+         "Atencao: pode parecer distante ou demorar demais para decidir.")
+    ]
+    
+    for name, desc in profiles:
+        elements.append(Paragraph(f"<b>{name}:</b> {desc}", styles['LPSBody']))
+        elements.append(Spacer(1, 5))
+    
+    elements.append(Spacer(1, 20))
+    
+    # Section 2: Mapeamento de Equipe
+    elements.append(Paragraph("2. Mapeamento de Equipe", styles['LPSSection']))
+    elements.append(Spacer(1, 10))
+    elements.append(Paragraph(
+        "O LPSTest mapeia os perfis inconscientes de sua equipe, permitindo entender dinamicas grupais "
+        "que impactam produtividade, conflitos e turnover.",
+        styles['LPSBody']))
+    elements.append(Spacer(1, 8))
+    
+    elements.append(Paragraph("<b>Como usar para reduzir turnover:</b>", styles['LPSBody']))
+    elements.append(Paragraph(
+        "- Identifique funcionarios cujo perfil nao se adequa ao cargo atual", styles['LPSBody']))
+    elements.append(Paragraph(
+        "- Realoque pessoas com base em suas tendencias naturais", styles['LPSBody']))
+    elements.append(Paragraph(
+        "- Crie pares complementares (ex: Estruturador + Criativo)", styles['LPSBody']))
+    elements.append(Spacer(1, 8))
+    
+    elements.append(Paragraph("<b>Como usar para reduzir conflitos:</b>", styles['LPSBody']))
+    elements.append(Paragraph(
+        "- Identifique Bodes Expiatorios e proteja-os de projecoes negativas", styles['LPSBody']))
+    elements.append(Paragraph(
+        "- Reconheca Porta-Vozes como sensores do clima organizacional", styles['LPSBody']))
+    elements.append(Paragraph(
+        "- Transforme Lideres de Luta-Fuga em agentes de mudanca construtiva", styles['LPSBody']))
+    
+    elements.append(Spacer(1, 20))
+    
+    # Section 3: Uso Estratégico do LPSChat
+    elements.append(Paragraph("3. Uso Estrategico do LPSChat", styles['LPSSection']))
+    elements.append(Spacer(1, 10))
+    elements.append(Paragraph(
+        "O LPSChat e sua consultora de IA especializada em psicanalise e neurociencia aplicada a lideranca. "
+        "Para obter os melhores insights, faca perguntas especificas sobre sua equipe.",
+        styles['LPSBody']))
+    elements.append(Spacer(1, 8))
+    
+    elements.append(Paragraph("<b>Perguntas recomendadas:</b>", styles['LPSBody']))
+    questions = [
+        "Quais conflitos inconscientes podem surgir entre [Funcionario A] e [Funcionario B]?",
+        "Qual funcionario seria ideal para liderar o projeto X, considerando os perfis mapeados?",
+        "Como posso dar feedback construtivo para um Dependente sem gerar mais dependencia?",
+        "Quais dinamicas de transferencia podem estar afetando minha relacao com a equipe?",
+        "Como aplicar conceitos de neurociencia para reduzir o estresse no time?"
+    ]
+    for q in questions:
+        elements.append(Paragraph(f"- {q}", styles['LPSBody']))
+    
+    elements.append(Spacer(1, 20))
+    
+    # Section 4: Passo a Passo da Mentoria
+    elements.append(Paragraph("4. Passo a Passo da Mentoria", styles['LPSSection']))
+    elements.append(Spacer(1, 10))
+    elements.append(Paragraph(
+        "A mentoria com Viviane Nishiura e o momento de aprofundar sua jornada de lideranca consciente. "
+        "Prepare-se adequadamente para maximizar os resultados.",
+        styles['LPSBody']))
+    elements.append(Spacer(1, 8))
+    
+    elements.append(Paragraph("<b>Antes da sessao:</b>", styles['LPSBody']))
+    elements.append(Paragraph("1. Revise seu perfil de lideranca no Dashboard", styles['LPSBody']))
+    elements.append(Paragraph("2. Analise os resultados do mapeamento de equipe", styles['LPSBody']))
+    elements.append(Paragraph("3. Identifique 2-3 desafios especificos que deseja abordar", styles['LPSBody']))
+    elements.append(Paragraph("4. Anote situacoes concretas para discutir", styles['LPSBody']))
+    elements.append(Spacer(1, 8))
+    
+    elements.append(Paragraph("<b>Durante a sessao:</b>", styles['LPSBody']))
+    elements.append(Paragraph("- Compartilhe abertamente seus desafios", styles['LPSBody']))
+    elements.append(Paragraph("- Pergunte sobre padroes inconscientes que nao consegue ver", styles['LPSBody']))
+    elements.append(Paragraph("- Solicite exercicios praticos para aplicar no dia-a-dia", styles['LPSBody']))
+    elements.append(Spacer(1, 8))
+    
+    elements.append(Paragraph("<b>Como agendar:</b>", styles['LPSBody']))
+    elements.append(Paragraph(
+        "Acesse o menu 'Mentoria' no Dashboard ou envie mensagem via WhatsApp para agendar sua sessao.",
+        styles['LPSBody']))
+    
+    # Footer
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph("_" * 60, styles['LPSInfo']))
+    elements.append(Paragraph("Plataforma LPS - Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
+    elements.append(Paragraph(f"Versao: {datetime.now().strftime('%m/%Y')}", styles['LPSInfo']))
     
     doc.build(elements)
     buffer.seek(0)
@@ -3446,6 +3584,138 @@ elif page == "AdminEmail":
                 st.error(f"Erro ao enviar: {message}")
         else:
             st.warning("Digite um e-mail para teste")
+
+elif page == "GuiaSuporte":
+    # Guide and Support page for managers - Authentication required
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
+    
+    render_public_header()
+    
+    st.markdown("""
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="color: #0D3B66;">Guia e Suporte</h1>
+            <p style="color: #666;">Materiais de apoio para maximizar sua experiencia com a plataforma LPS</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Download Manual Button
+    st.markdown("""
+        <div style="background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
+            <h2 style="color: #F4D35E; margin-bottom: 1rem;">Manual do Gestor LPS</h2>
+            <p style="color: white; margin-bottom: 1.5rem;">Guia completo com tudo que voce precisa saber para aplicar a Lideranca Psicanalitica na sua equipe.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Generate and offer PDF download
+    pdf_data = generate_manager_guide_pdf()
+    st.download_button(
+        label="📥 Baixar Manual do Gestor (PDF)",
+        data=pdf_data,
+        file_name="Manual_do_Gestor_LPS.pdf",
+        mime="application/pdf",
+        use_container_width=True,
+        type="primary"
+    )
+    
+    st.write("---")
+    
+    # Section 1: Como interpretar seu Perfil
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">1. Como Interpretar seu Perfil</h3>
+            <p>Seu perfil de lideranca revela seus <strong>arquetipos inconscientes dominantes</strong> - padroes de comportamento 
+            que operam abaixo da consciencia e influenciam como voce lidera sua equipe.</p>
+            <p>Os 6 perfis de lideranca do LPS sao:</p>
+            <ul>
+                <li><strong>Protetor:</strong> Acolhimento e cuidado da equipe</li>
+                <li><strong>Contenedor:</strong> Estabilidade emocional e gestao de crises</li>
+                <li><strong>Narciso Estrategico:</strong> Inspiracao e motivacao atraves de visao</li>
+                <li><strong>Estruturador:</strong> Organizacao e controle de processos</li>
+                <li><strong>Espelho Emocional:</strong> Empatia e validacao emocional</li>
+                <li><strong>Observador Reflexivo:</strong> Analise profunda e decisoes ponderadas</li>
+            </ul>
+            <p><em>Cada perfil tem seus pontos fortes e areas de atencao. O LPSTest mostra seu perfil dominante e secundario.</em></p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Section 2: Mapeamento de Equipe
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">2. Mapeamento de Equipe</h3>
+            <p>O LPSTest mapeia os perfis inconscientes de sua equipe, permitindo entender dinamicas grupais 
+            que impactam produtividade, conflitos e turnover.</p>
+            <h4 style="color: #0D3B66;">Como usar para reduzir turnover:</h4>
+            <ul>
+                <li>Identifique funcionarios cujo perfil nao se adequa ao cargo atual</li>
+                <li>Realoque pessoas com base em suas tendencias naturais</li>
+                <li>Crie pares complementares (ex: Estruturador + Criativo)</li>
+            </ul>
+            <h4 style="color: #0D3B66;">Como usar para reduzir conflitos:</h4>
+            <ul>
+                <li>Identifique <strong>Bodes Expiatorios</strong> e proteja-os de projecoes negativas</li>
+                <li>Reconheca <strong>Porta-Vozes</strong> como sensores do clima organizacional</li>
+                <li>Transforme <strong>Lideres de Luta-Fuga</strong> em agentes de mudanca construtiva</li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Section 3: Uso Estratégico do LPSChat
+    st.markdown("""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">3. Uso Estrategico do LPSChat</h3>
+            <p>O LPSChat e sua <strong>consultora de IA especializada</strong> em psicanalise e neurociencia aplicada a lideranca. 
+            Para obter os melhores insights, faca perguntas especificas sobre sua equipe.</p>
+            <h4 style="color: #0D3B66;">Perguntas recomendadas:</h4>
+            <ul>
+                <li>"Quais conflitos inconscientes podem surgir entre [Funcionario A] e [Funcionario B]?"</li>
+                <li>"Qual funcionario seria ideal para liderar o projeto X, considerando os perfis mapeados?"</li>
+                <li>"Como posso dar feedback construtivo para um Dependente sem gerar mais dependencia?"</li>
+                <li>"Quais dinamicas de transferencia podem estar afetando minha relacao com a equipe?"</li>
+                <li>"Como aplicar conceitos de neurociencia para reduzir o estresse no time?"</li>
+            </ul>
+            <p><em>Dica: Quanto mais especifica a pergunta, melhor sera a resposta da IA.</em></p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Section 4: Passo a Passo da Mentoria
+    st.markdown(f"""
+        <div class="about-card">
+            <h3 style="color: #0D3B66;">4. Passo a Passo da Mentoria</h3>
+            <p>A mentoria com <strong>Viviane Nishiura</strong> e o momento de aprofundar sua jornada de lideranca consciente. 
+            Prepare-se adequadamente para maximizar os resultados.</p>
+            <h4 style="color: #0D3B66;">Antes da sessao:</h4>
+            <ol>
+                <li>Revise seu perfil de lideranca no Dashboard</li>
+                <li>Analise os resultados do mapeamento de equipe</li>
+                <li>Identifique 2-3 desafios especificos que deseja abordar</li>
+                <li>Anote situacoes concretas para discutir</li>
+            </ol>
+            <h4 style="color: #0D3B66;">Durante a sessao:</h4>
+            <ul>
+                <li>Compartilhe abertamente seus desafios</li>
+                <li>Pergunte sobre padroes inconscientes que nao consegue ver</li>
+                <li>Solicite exercicios praticos para aplicar no dia-a-dia</li>
+            </ul>
+            <h4 style="color: #0D3B66;">Como agendar:</h4>
+            <p>Acesse o menu <strong>Mentoria</strong> no Dashboard ou envie mensagem via 
+            <a href="{WHATSAPP_URL}" target="_blank" style="color: #0D3B66;">WhatsApp</a> para agendar sua sessao.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Contact Support
+    st.markdown(f"""
+        <div style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 10px; text-align: center; margin-top: 2rem;">
+            <h3 style="color: #0D3B66;">Precisa de Ajuda?</h3>
+            <p>Entre em contato com nossa equipe via WhatsApp para suporte personalizado.</p>
+            <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold;">
+                Falar com Suporte
+            </a>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    render_public_footer()
 
 elif page == "Privacy":
     # Privacy and Terms page

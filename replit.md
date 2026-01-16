@@ -61,6 +61,15 @@ Preferred communication style: Simple, everyday language.
 - **Mentoring CTA**: Button to schedule with Viviane Nishiura via WhatsApp
 - **Quick Access**: Buttons to Curso, LPSTest, Equipe, LPSChat (locked until course complete)
 
+### Guia e Suporte (Support Materials)
+- **Manager's Guide PDF**: Downloadable PDF with complete LPS methodology
+- **Guide Contents**:
+  - Como interpretar seu Perfil: Explanation of unconscious archetypes
+  - Mapeamento de Equipe: How to use LPSTest to reduce turnover and conflicts
+  - Uso Estratégico do LPSChat: How to ask the right questions to get insights about group roles
+  - Passo a Passo da Mentoria: How to schedule and what to prepare for sessions with Viviane
+- **WhatsApp Support**: Direct link to contact support team
+
 ### Database Tables
 - **users**: id, email, password_hash, name, user_type, created_at
 - **managers**: id, user_id, session_id, name, email, profile data, created_at
