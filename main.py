@@ -1372,6 +1372,18 @@ def render_assessment_form(form_key, is_employee=False):
         st.write("---")
     return responses
 
+def get_profile_tendency(profile):
+    """Return the leadership tendency for a given profile."""
+    tendencies = {
+        "Protetor": "acolhimento e cuidado da equipe",
+        "Contenedor": "estabilidade emocional e gestao de crises",
+        "Narciso Estrategico": "inspiracao e motivacao da equipe",
+        "Estruturador": "organizacao e controle de processos",
+        "Espelho Emocional": "empatia e validacao emocional",
+        "Observador Reflexivo": "analise profunda e decisoes ponderadas"
+    }
+    return tendencies.get(profile, "desenvolvimento da equipe")
+
 def calculate_profile(responses):
     block_sums = {}
     for block in ASSESSMENT_QUESTIONS.keys():
@@ -2333,44 +2345,149 @@ elif page == "LPSChat":
         st.session_state.page = "Login"
         st.rerun()
     
+    # PRIVACY: Only managers can access - employees are blocked globally
     # Access control: check if theoretical modules are completed
     user_id = st.session_state.user['id']
     course_completed = is_course_completed(user_id)
     
-    st.title("LPSChat - Consultor de Liderança Psicanalítica")
+    # Custom chat styling with brand colors
+    st.markdown("""
+        <style>
+        .chat-header {
+            background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(13, 59, 102, 0.3);
+        }
+        .chat-header h1 {
+            color: #F4D35E;
+            margin: 0;
+            font-size: 2rem;
+        }
+        .chat-header p {
+            color: rgba(255,255,255,0.9);
+            margin: 0.5rem 0 0 0;
+        }
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px solid #e9ecef;
+        }
+        .example-questions {
+            background: linear-gradient(135deg, rgba(244, 211, 94, 0.15) 0%, rgba(244, 211, 94, 0.05) 100%);
+            border: 1px solid #F4D35E;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .example-questions h4 {
+            color: #0D3B66;
+            margin: 0 0 1rem 0;
+        }
+        .example-q {
+            background: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            border-left: 3px solid #F4D35E;
+            color: #333;
+            font-style: italic;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .example-q:hover {
+            background: #fffef5;
+            transform: translateX(5px);
+        }
+        .team-context-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .team-context-card h4 {
+            color: #0D3B66;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #F4D35E;
+        }
+        .team-member {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        .team-member-icon {
+            width: 40px;
+            height: 40px;
+            background: #0D3B66;
+            color: #F4D35E;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+        .bion-badge {
+            background: #F4D35E;
+            color: #0D3B66;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    # Chat header with brand styling
+    st.markdown("""
+        <div class="chat-header">
+            <h1>LPSChat</h1>
+            <p>Consultora de IA em Psicanalise e Neurociencia aplicada a Lideranca</p>
+        </div>
+    """, unsafe_allow_html=True)
     
     if not course_completed:
-        st.warning("Acesso Temporário Bloqueado")
+        st.warning("Acesso Temporario Bloqueado")
         st.markdown("""
             <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
-                <h3 style='color: #856404; margin-top: 0;'>Complete os módulos teóricos para liberar o LPSChat</h3>
+                <h3 style='color: #856404; margin-top: 0;'>Complete os modulos teoricos para liberar o LPSChat</h3>
                 <p style='color: #856404;'>
-                    O acesso ao consultor de IA é liberado após a conclusão dos 5 primeiros módulos do curso.
-                    Isso garante que você tenha a base teórica necessária para aproveitar ao máximo as análises da IA.
+                    O acesso ao consultor de IA e liberado apos a conclusao dos 5 primeiros modulos do curso.
+                    Isso garante que voce tenha a base teorica necessaria para aproveitar ao maximo as analises da IA.
                 </p>
             </div>
         """, unsafe_allow_html=True)
         
         # Show progress
         module_status = get_module_completion_status(user_id)
-        st.markdown("<h4 style='color: #0D3B66; margin-top: 2rem;'>Seu progresso nos módulos teóricos:</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color: #0D3B66; margin-top: 2rem;'>Seu progresso nos modulos teoricos:</h4>", unsafe_allow_html=True)
         
         theoretical_modules = [1, 2, 3, 4, 5]
         for mod_id in theoretical_modules:
             if mod_id in module_status:
                 status = module_status[mod_id]
                 progress_pct = int(status['percentage'])
-                icon = "✅" if progress_pct == 100 else "⏳"
-                st.markdown(f"{icon} **{status['name']}**: {progress_pct}%")
+                if progress_pct == 100:
+                    st.markdown(f"[Completo] **{status['name']}**: {progress_pct}%")
+                else:
+                    st.markdown(f"[Em andamento] **{status['name']}**: {progress_pct}%")
         
         st.write("---")
         if st.button("Ir para o Curso", key="btn-goto-curso"):
             st.session_state.page = "LPS Curso"
             st.rerun()
     else:
-        st.success("Acesso liberado! Converse com a IA sobre sua equipe.")
-        st.write("A IA tem acesso aos perfis dos seus funcionários e pode oferecer insights personalizados.")
-        
         # Initialize chat history
         if 'chat_messages' not in st.session_state:
             st.session_state.chat_messages = []
@@ -2379,76 +2496,192 @@ elif page == "LPSChat":
         manager_data = st.session_state.manager_data
         user_name = st.session_state.user['name'] if st.session_state.user else "Gestor"
         
-        # Fetch employees data
+        # Fetch complete employees data from database
         employees_context = ""
+        employees_list_display = []
+        team_dynamics_analysis = ""
+        
         if manager_data:
             employees = get_manager_employees(manager_data['id'])
             if employees:
                 employees_list = []
+                bion_roles_count = {}
+                
                 for emp in employees:
                     if emp[10] == 1:  # completed
-                        emp_info = f"- {emp[4] or 'Funcionário ' + str(emp[3])}: Perfil {emp[6]} + {emp[7]}, Papel de Bion: {emp[9]}"
+                        emp_name = emp[4] or f'Funcionario {emp[3]}'
+                        dominant = emp[6] or "N/A"
+                        secondary = emp[7] or "N/A"
+                        bion_role = emp[9] or "N/A"
+                        
+                        # Track Bion roles for team dynamics
+                        if bion_role and bion_role != "N/A":
+                            bion_roles_count[bion_role] = bion_roles_count.get(bion_role, 0) + 1
+                        
+                        emp_info = f"""- Nome: {emp_name}
+  Perfil Dominante: {dominant}
+  Perfil Secundario: {secondary}
+  Papel de Bion (dinamica grupal): {bion_role}
+  Email: {emp[5] or 'N/A'}"""
                         employees_list.append(emp_info)
+                        employees_list_display.append({
+                            'name': emp_name,
+                            'dominant': dominant,
+                            'secondary': secondary,
+                            'bion': bion_role
+                        })
+                
                 if employees_list:
-                    employees_context = "\n".join(employees_list)
+                    employees_context = "\n\n".join(employees_list)
+                    
+                    # Generate team dynamics summary
+                    dynamics_parts = []
+                    if bion_roles_count:
+                        dynamics_parts.append(f"Distribuicao de Papeis de Bion na equipe: {bion_roles_count}")
+                        
+                        # Identify potential risks
+                        if bion_roles_count.get('Bode Expiatorio', 0) > 0:
+                            dynamics_parts.append("ALERTA: Ha um Bode Expiatorio na equipe - risco de projecoes negativas")
+                        if bion_roles_count.get('Sabotador Silencioso', 0) > 0:
+                            dynamics_parts.append("ATENCAO: Ha um Sabotador Silencioso - resistencia passiva as mudancas")
+                        if bion_roles_count.get('Lider de Luta-Fuga', 0) > 1:
+                            dynamics_parts.append("RISCO: Multiplos Lideres de Luta-Fuga podem gerar conflitos de poder")
+                    
+                    team_dynamics_analysis = "\n".join(dynamics_parts)
         
-        # Manager profile context
+        # Manager profile context with details
         manager_profile = ""
         if manager_data and manager_data.get('dominant'):
-            manager_profile = f"Perfil do Gestor: {manager_data['dominant']} + {manager_data['secondary']}"
+            manager_profile = f"""Perfil do Gestor:
+- Perfil Dominante: {manager_data['dominant']}
+- Perfil Secundario: {manager_data['secondary']}
+- Implicacoes: O gestor com perfil {manager_data['dominant']} tende a liderar com foco em {get_profile_tendency(manager_data['dominant'])}"""
         
-        # System prompt with psychoanalytic concepts
-        system_prompt = f"""Você é um consultor especialista em Liderança Psicanalítica, baseado na metodologia LPS de Viviane Nishiura.
+        # Enhanced system prompt with Psychoanalysis and Neuroscience
+        system_prompt = f"""Voce e uma CONSULTORA ESPECIALISTA em Psicanalise e Neurociencia aplicada a Lideranca, desenvolvida pela metodologia LPS de Viviane Nishiura.
 
-CONTEXTO DO GESTOR:
+PAPEL E IDENTIDADE:
+- Voce e uma consultora senior com profundo conhecimento em psicanalise de grupos (Bion, Pichon-Riviere) e neurociencia organizacional
+- Sua funcao e ajudar gestores a compreender as dinamicas inconscientes de suas equipes
+- Voce analisa padroes de comportamento, identificando papeis inconscientes e arquetipos
+- PRIVACIDADE: Seus insights sao EXCLUSIVOS para o gestor - nunca compartilhados com funcionarios
+
+============ DADOS DA EQUIPE (CONFIDENCIAL) ============
+
+GESTOR:
 Nome: {user_name}
-{manager_profile if manager_profile else "O gestor ainda não completou o LPSTest."}
+{manager_profile if manager_profile else "O gestor ainda nao completou o LPSTest."}
 
-EQUIPE DO GESTOR:
-{employees_context if employees_context else "Nenhum funcionário completou o assessment ainda."}
+FUNCIONARIOS DA EQUIPE:
+{employees_context if employees_context else "Nenhum funcionario completou o assessment ainda."}
 
-CONCEITOS-CHAVE QUE VOCÊ DEVE USAR:
+ANALISE AUTOMATICA DA DINAMICA GRUPAL:
+{team_dynamics_analysis if team_dynamics_analysis else "Dados insuficientes para analise de dinamica."}
 
-1. PAPÉIS DE BION (Dinâmica Grupal):
-- Porta-voz: Expressa o que o grupo sente mas não consegue dizer
-- Bode Expiatório: Absorve projeções negativas do grupo
-- Dependente: Busca proteção no líder, evita autonomia
-- Líder de Luta-Fuga: Reativo a ameaças, mobiliza ataque ou fuga
-- Sabotador Silencioso: Resiste passivamente às mudanças
+============ BASE TEORICA ============
 
-2. TRANSFERÊNCIA E CONTRATRANSFERÊNCIA:
-- Transferência: Quando funcionários projetam no líder expectativas de figuras parentais
-- Contratransferência: Quando o líder reage emocionalmente às projeções (irritação, bloqueio, fadiga)
-- Use esses conceitos para explicar POR QUE o líder se sente irritado ou bloqueado
+1. PAPEIS DE BION (Dinamica Grupal Inconsciente):
+- Porta-voz: Expressa o que o grupo sente mas nao consegue dizer. Captam tensoes inconscientes.
+- Bode Expiatorio: Absorve projecoes negativas do grupo. Frequentemente culpado por problemas sistemicos.
+- Dependente: Busca protecao constante no lider, evita autonomia. Requer contencao.
+- Lider de Luta-Fuga: Reativo a ameacas reais ou imaginarias, mobiliza o grupo para ataque ou fuga.
+- Sabotador Silencioso: Resiste passivamente as mudancas. Concordancia superficial, boicote sutil.
 
-3. TAREFA REAL vs REGRESSÃO EMOCIONAL:
-- Quando o grupo está em regressão (ansiedade, conflito, paralisia), sugira SEMPRE focar na Tarefa Real
-- A Tarefa Real é o objetivo concreto do trabalho que traz o grupo de volta à racionalidade
-- Pergunte: "Qual é a tarefa que vocês precisam entregar?" para tirar o grupo da regressão
+2. NEUROCIENCIA DA LIDERANCA:
+- Sistema Limbico: Emocoes primitivas (medo, raiva) podem sequestrar o cortex pre-frontal em situacoes de estresse
+- Neuronios Espelho: Lideres regulam emocionalmente suas equipes - a calma ou ansiedade sao "contagiosas"
+- Cortisol vs Oxitocina: Ambientes de ameaca elevam cortisol (paralisia); seguranca psicologica libera oxitocina (cooperacao)
+- Amigdala: O "detector de ameacas" dispara em conflitos interpessoais - funcionarios em modo de defesa
 
-4. PERFIS DE LIDERANÇA:
-- Protetor: Acolhe mas pode absorver demais
-- Contenedor: Mantém calma em crises
-- Narciso Estratégico: Inspira mas precisa de validação
-- Estruturador: Organiza mas pode controlar demais
-- Espelho Emocional: Reflete o grupo mas pode ser afetado
-- Observador Reflexivo: Analisa mas pode hesitar
+3. TRANSFERENCIA E CONTRATRANSFERENCIA:
+- Transferencia: Funcionarios projetam no lider figuras parentais (pai protetor, mae acolhedora, autoridade punitiva)
+- Contratransferencia: Reacoes emocionais do lider as projecoes (irritacao inexplicavel, fadiga, bloqueio)
+- Neurociencia: A amigdala do lider reage as projecoes antes da consciencia - por isso lideres "sentem" antes de "pensar"
 
-INSTRUÇÕES DE RESPOSTA:
-- Analise sempre os dados reais da equipe do gestor
-- Identifique riscos dinâmicos (ex: presença de Bode Expiatório)
-- Sugira intervenções práticas baseadas nos conceitos psicanalíticos
-- Sempre termine sugerindo foco na Tarefa Real para resolver regressões
-- Seja empático mas direto nas recomendações
-- Use português brasileiro"""
+4. TAREFA REAL vs REGRESSAO EMOCIONAL:
+- Quando ha ansiedade grupal, o grupo REGRIDE para padroes primitivos (ataque, fuga, dependencia)
+- A TAREFA REAL (objetivo concreto do trabalho) ancora o grupo na racionalidade
+- Pergunte sempre: "Qual e a tarefa que voces precisam entregar?" para retirar o grupo da regressao
 
-        # Display chat history
+5. PERFIS DE LIDERANCA E SEUS ARQUETIPOS:
+- Protetor: Acolhe mas pode absorver demais (risco de burnout)
+- Contenedor: Mantem calma em crises, metaboliza ansiedade grupal
+- Narciso Estrategico: Inspira e motiva, mas precisa de validacao constante
+- Estruturador: Organiza e da forma, mas pode controlar demais
+- Espelho Emocional: Reflete e valida emocoes, mas pode ser afetado
+- Observador Reflexivo: Analisa profundamente, mas pode hesitar na acao
+
+6. ADEQUACAO DE PERFIS A FUNCOES:
+- Cargos de Lideranca Operacional: Estruturador ou Contenedor
+- Cargos Criativos: Narciso Estrategico ou Espelho Emocional
+- Cargos de Mediacao/RH: Protetor ou Espelho Emocional
+- Cargos Analiticos: Observador Reflexivo
+- Gestao de Crises: Contenedor ou Lider de Luta-Fuga (canalizado)
+
+============ INSTRUCOES DE RESPOSTA ============
+
+1. SEMPRE analise os dados REAIS da equipe do gestor (acima)
+2. Identifique papeis inconscientes e arquetipos nos funcionarios
+3. Mapeie pontos de CONFLITO potencial entre perfis incompativeis
+4. Identifique SINERGIAS entre perfis complementares
+5. Sugira adequacao de perfis para cargos especificos quando perguntado
+6. Use conceitos de neurociencia para explicar comportamentos (ex: "O cortisol elevado dele explica a reatividade")
+7. Identifique padroes de TRANSFERENCIA na relacao gestor-funcionario
+8. Sempre termine sugerindo foco na TAREFA REAL para resolver regressoes
+9. Seja empatica mas direta nas recomendacoes
+10. Use portugues brasileiro
+
+FORMATO DE RESPOSTA:
+- Inicie com uma analise breve da situacao
+- Use os dados reais da equipe para fundamentar
+- Ofereca insights psicoanaliticos e neurocientificos
+- Termine com recomendacoes praticas de intervencao"""
+
+        # Display team context card
+        if employees_list_display:
+            st.markdown('<div class="team-context-card">', unsafe_allow_html=True)
+            st.markdown('<h4>Sua Equipe Mapeada</h4>', unsafe_allow_html=True)
+            for emp in employees_list_display:
+                initial = emp['name'][0].upper() if emp['name'] else "?"
+                st.markdown(f"""
+                    <div class="team-member">
+                        <div class="team-member-icon">{initial}</div>
+                        <div>
+                            <strong>{emp['name']}</strong><br>
+                            <small style="color: #666;">{emp['dominant']} + {emp['secondary']}</small>
+                        </div>
+                        <span class="bion-badge">{emp['bion']}</span>
+                    </div>
+                """, unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        else:
+            st.info("Nenhum funcionario completou o assessment ainda. Gere links de convite na area de Equipe.")
+        
+        # Example questions section
+        st.markdown("""
+            <div class="example-questions">
+                <h4>Exemplos de perguntas que voce pode fazer:</h4>
+                <div class="example-q">"Quais sao as principais dinamicas de transferencia no meu time?"</div>
+                <div class="example-q">"Como posso melhorar a produtividade deste grupo?"</div>
+                <div class="example-q">"Existe algum Bode Expiatorio na minha equipe?"</div>
+                <div class="example-q">"Qual funcionario seria mais adequado para liderar o novo projeto?"</div>
+                <div class="example-q">"Por que me sinto tao irritado com o Joao? (contratransferencia)"</div>
+                <div class="example-q">"Como lidar com a resistencia passiva da Maria?"</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Chat container
+        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+        
+        # Display chat history with custom styling
         for message in st.session_state.chat_messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
         
+        st.markdown('</div>', unsafe_allow_html=True)
+        
         # Chat input
-        if prompt := st.chat_input("Descreva a situação da sua equipe ou faça uma pergunta..."):
+        if prompt := st.chat_input("Descreva a situacao da sua equipe ou faca uma pergunta..."):
             # Add user message to history
             st.session_state.chat_messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
@@ -2456,7 +2689,7 @@ INSTRUÇÕES DE RESPOSTA:
             
             # Generate AI response
             with st.chat_message("assistant"):
-                with st.spinner("Analisando..."):
+                with st.spinner("Analisando dinamicas da equipe..."):
                     try:
                         genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
                         model = genai.GenerativeModel('gemini-1.5-flash')
@@ -2464,7 +2697,7 @@ INSTRUÇÕES DE RESPOSTA:
                         # Build conversation history for Gemini
                         chat_history = f"{system_prompt}\n\n"
                         for msg in st.session_state.chat_messages:
-                            role = "Gestor" if msg["role"] == "user" else "Consultor"
+                            role = "Gestor" if msg["role"] == "user" else "Consultora LPS"
                             chat_history += f"{role}: {msg['content']}\n\n"
                         
                         response = model.generate_content(chat_history)
@@ -2474,13 +2707,19 @@ INSTRUÇÕES DE RESPOSTA:
                         st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
                     
                     except Exception as e:
-                        st.error(f"Erro ao conectar com a IA: {str(e)}")
+                        error_msg = str(e)
+                        if "GOOGLE_API_KEY" in error_msg or "API key" in error_msg.lower():
+                            st.error("Chave da API do Google Gemini nao configurada. Configure GOOGLE_API_KEY nos secrets.")
+                        else:
+                            st.error(f"Erro ao conectar com a IA: {error_msg}")
         
-        # Clear chat button
+        # Clear chat button with styling
         if st.session_state.chat_messages:
-            if st.button("Limpar Conversa", key="btn-clear-chat"):
-                st.session_state.chat_messages = []
-                st.rerun()
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col2:
+                if st.button("Limpar Conversa", key="btn-clear-chat", use_container_width=True):
+                    st.session_state.chat_messages = []
+                    st.rerun()
 
 elif page == "Mentoria":
     if not st.session_state.authenticated:
