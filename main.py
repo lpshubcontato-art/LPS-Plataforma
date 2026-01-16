@@ -459,6 +459,119 @@ st.markdown("""
         font-size: 1.1rem;
         margin-bottom: 1.5rem;
     }
+    
+    .nav-menu {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    
+    .nav-btn {
+        background: transparent;
+        border: none;
+        color: var(--primary-blue);
+        font-weight: 600;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 20px;
+        transition: all 0.2s;
+    }
+    
+    .nav-btn:hover {
+        background-color: var(--light-gold);
+    }
+    
+    .nav-btn.active {
+        background-color: var(--primary-blue);
+        color: white;
+    }
+    
+    .btn-entrar {
+        background-color: var(--accent-gold) !important;
+        color: var(--primary-blue) !important;
+        font-weight: bold !important;
+        border-radius: 25px !important;
+        padding: 10px 25px !important;
+    }
+    
+    .section-title {
+        color: var(--primary-blue);
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+        margin: 2rem 0 1rem 0;
+        border-bottom: 3px solid var(--accent-gold);
+        padding-bottom: 0.5rem;
+    }
+    
+    .about-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        border-left: 5px solid var(--accent-gold);
+        margin: 1rem 0;
+    }
+    
+    .solution-card {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, #1a5490 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        color: white;
+    }
+    
+    .solution-title {
+        color: var(--accent-gold);
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-button {
+        display: inline-block;
+        background-color: var(--accent-gold);
+        color: var(--primary-blue);
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-weight: bold;
+        text-decoration: none;
+        margin-top: 1rem;
+        transition: transform 0.2s;
+    }
+    
+    .cta-button:hover {
+        transform: scale(1.05);
+        color: var(--primary-blue);
+    }
+    
+    .paywall-box {
+        background: linear-gradient(135deg, #0D3B66 0%, #1a5490 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 3px solid var(--accent-gold);
+        margin: 1rem 0;
+    }
+    
+    .paywall-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .paywall-title {
+        color: var(--accent-gold);
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .paywall-text {
+        color: white;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -469,7 +582,9 @@ def vimeo_video(url):
 
 # Inicialização do Estado de Sessão
 if 'page' not in st.session_state:
-    st.session_state.page = "Vitrine"
+    st.session_state.page = "Home"
+if 'section' not in st.session_state:
+    st.session_state.section = "home"
 if 'progress' not in st.session_state:
     st.session_state.progress = {}
 if 'assessment_results' not in st.session_state:
@@ -631,8 +746,7 @@ MODULES_DATA = [
     {"id": 3, "name": "Módulo 3: Relações e Transferência", "description": "Compreenda as dinâmicas de transferência e contratransferência nas relações profissionais.", "icon": "🔄", "file": "attached_assets/Módulo_3_1768431876969.pdf", "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577"]},
     {"id": 4, "name": "Módulo 4: Autoconsciência", "description": "Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como líder.", "icon": "🪞", "file": "attached_assets/Módulo_5_1768431876971.pdf", "videos": ["https://vimeo.com/1154510241"]},
     {"id": 5, "name": "Módulo 5: Entendendo a Equipe", "description": "Aprenda a mapear perfis e dinâmicas grupais usando conceitos psicanalíticos.", "icon": "👥", "file": "attached_assets/Módulo_6_1768431876972.pdf", "videos": ["https://vimeo.com/1154510682"]},
-    {"id": 6, "name": "Módulo 6: Aplicação Prática", "description": "Coloque em prática as ferramentas psicanalíticas no dia a dia da liderança.", "icon": "🛠️", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]},
-    {"id": 7, "name": "Módulo 7: Conclusão", "description": "Integre todo o aprendizado e trace seu plano de desenvolvimento como líder psicanalítico.", "icon": "🎓", "file": "attached_assets/introdução_1768431876966.pdf", "videos": ["https://vimeo.com/1154502544"]}
+    {"id": 6, "name": "Módulo 6: Aplicação Prática", "description": "Coloque em prática as ferramentas psicanalíticas no dia a dia da liderança.", "icon": "🛠️", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]}
 ]
 
 # Check for employee token in URL (takes priority over auth)
@@ -651,25 +765,59 @@ st.markdown(f'''
     </a>
 ''', unsafe_allow_html=True)
 
-# Public Header for non-authenticated users (Vitrine)
+# Navigation Menu Sections
+MENU_SECTIONS = ["Sobre", "Curso", "LPSTest", "LPSChat", "Mentoria", "Soluções", "Contato"]
+
+# Public Header with Navigation Menu
 def render_public_header():
+    # Logo and Title Row
     col1, col2, col3 = st.columns([1, 4, 1])
     with col1:
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=80)
+            st.image(LOGO_PATH, width=100)
     with col2:
         st.markdown("""
-            <h1 style="color: #0D3B66; font-size: 1.8rem; margin: 0; text-align: center;">
+            <h1 style="color: #0D3B66; font-size: 2rem; margin: 0; text-align: center;">
                 Liderança Psicanalítica
             </h1>
-            <p style="color: #666; text-align: center; margin: 0;">
-                Transforme Sua Liderança com a Ciência do Inconsciente
-            </p>
         """, unsafe_allow_html=True)
     with col3:
-        if st.button("👤 Área do Aluno", key="btn_area_aluno", use_container_width=True):
-            st.session_state.page = "Login"
-            st.rerun()
+        if st.session_state.authenticated:
+            st.markdown(f"""
+                <div style="background-color: #0D3B66; color: #F4D35E; padding: 10px 20px; border-radius: 25px; text-align: center; font-weight: bold;">
+                    👤 {st.session_state.user['name'][:12]}
+                </div>
+            """, unsafe_allow_html=True)
+            if st.button("Minha Área", key="btn_dashboard", use_container_width=True):
+                st.session_state.page = "Dashboard"
+                st.rerun()
+        else:
+            if st.button("Entrar", key="button-entrar", use_container_width=True):
+                st.session_state.page = "Login"
+                st.rerun()
+    
+    # Navigation Menu using selectbox for reliability
+    st.write("")
+    current = st.session_state.section
+    
+    # Create styled navigation tabs
+    nav_options = ["home"] + [s.lower() for s in MENU_SECTIONS]
+    nav_labels = ["Home"] + MENU_SECTIONS
+    
+    # Display current section indicator
+    current_idx = nav_options.index(current) if current in nav_options else 0
+    
+    # Use columns for navigation buttons with visual feedback
+    nav_cols = st.columns(len(nav_labels))
+    for idx, (opt, label) in enumerate(zip(nav_options, nav_labels)):
+        with nav_cols[idx]:
+            is_active = (current == opt)
+            btn_style = "primary" if is_active else "secondary"
+            if st.button(label, key=f"nav_{opt}_btn", use_container_width=True, type=btn_style if is_active else "secondary"):
+                st.session_state.section = opt
+                st.session_state.show_login_modal = False
+                st.rerun()
+    
     st.write("---")
 
 # Login Page Function
@@ -801,7 +949,8 @@ if st.session_state.authenticated and not is_employee_access:
             st.session_state.authenticated = False
             st.session_state.user = None
             st.session_state.manager_data = None
-            st.session_state.page = "Vitrine"
+            st.session_state.page = "Home"
+            st.session_state.section = "home"
             st.rerun()
 
 page = st.session_state.page
@@ -844,158 +993,404 @@ def calculate_profile(responses):
     
     return dominant_name, secondary_name, details, bion_role, block_sums
 
-# Pages
-if page == "Vitrine":
-    # Public showcase page - no authentication required
-    render_public_header()
-    
-    # Hero Section
+# Render Paywall Box
+def render_paywall():
     st.markdown("""
-        <div class="hero-section">
-            <div class="hero-title">Programa de Liderança Psicanalítica</div>
-            <div class="hero-subtitle">
-                7 módulos exclusivos desenvolvidos por Viviane Nishiura para transformar<br>
-                sua forma de liderar através da ciência do inconsciente
+        <div class="paywall-box">
+            <div class="paywall-icon">🔒</div>
+            <div class="paywall-title">Conteúdo Exclusivo para Alunos</div>
+            <div class="paywall-text">
+                Liberação apenas após confirmação de pagamento.<br>
+                Entre em contato para adquirir seu acesso.
             </div>
         </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("### O Que Você Vai Aprender")
-    st.write("")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("👤 Já sou aluno - Entrar", use_container_width=True, key="paywall_login"):
+            st.session_state.page = "Login"
+            st.rerun()
+    with col2:
+        st.markdown(f"""
+            <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; background-color: #25D366; color: white;">
+                💬 Comprar Curso
+            </a>
+        """, unsafe_allow_html=True)
+
+# Pages
+if page == "Home":
+    # Public landing page with sections
+    render_public_header()
     
-    # Module Cards Grid - First Row (4 modules)
-    row1 = st.columns(4)
-    for idx, col in enumerate(row1):
-        if idx < len(MODULES_DATA):
-            mod = MODULES_DATA[idx]
-            with col:
-                st.markdown(f"""
-                    <div class="module-card">
-                        <div class="module-icon">{mod['icon']}</div>
-                        <div class="module-title">{mod['name'].split(': ')[1]}</div>
-                        <div class="module-desc">{mod['description']}</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                if st.button("Acessar", key=f"btn_mod_{mod['id']}", use_container_width=True):
-                    st.session_state.selected_module = mod['id']
-                    if not st.session_state.authenticated:
-                        st.session_state.show_login_modal = True
-                        st.rerun()
-                    else:
-                        st.session_state.page = "LPS Curso"
-                        st.rerun()
+    current_section = st.session_state.section
     
-    # Second Row (3 modules)
-    row2 = st.columns(4)
-    for idx, col in enumerate(row2[:3]):
-        mod_idx = idx + 4
-        if mod_idx < len(MODULES_DATA):
-            mod = MODULES_DATA[mod_idx]
-            with col:
-                st.markdown(f"""
-                    <div class="module-card">
-                        <div class="module-icon">{mod['icon']}</div>
-                        <div class="module-title">{mod['name'].split(': ')[1]}</div>
-                        <div class="module-desc">{mod['description']}</div>
-                    </div>
-                """, unsafe_allow_html=True)
-                if st.button("Acessar", key=f"btn_mod_{mod['id']}", use_container_width=True):
-                    st.session_state.selected_module = mod['id']
-                    if not st.session_state.authenticated:
-                        st.session_state.show_login_modal = True
-                        st.rerun()
-                    else:
-                        st.session_state.page = "LPS Curso"
-                        st.rerun()
-    
-    # Display restriction modal if user clicked on module without login
-    if st.session_state.show_login_modal:
-        st.write("")
+    # HOME SECTION - Hero
+    if current_section == "home":
+        # Hero Section
         st.markdown("""
-            <div class="restricted-modal">
-                <div class="restricted-title">🔒 Conteúdo Exclusivo para Alunos</div>
-                <div class="restricted-text">
-                    Este conteúdo é exclusivo para alunos matriculados.<br>
-                    Faça login se já possui acesso ou entre em contato para adquirir.
+            <div class="hero-section">
+                <div class="hero-title">Transforme Sua Liderança com a Ciência do Inconsciente</div>
+                <div class="hero-subtitle">
+                    Uma metodologia inovadora que une <strong>Psicanálise</strong> e <strong>Neurociência</strong><br>
+                    para desenvolver líderes mais conscientes, empáticos e eficazes.
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("👤 Fazer Login", use_container_width=True, key="modal_login"):
-                st.session_state.show_login_modal = False
-                st.session_state.page = "Login"
-                st.rerun()
-        with col2:
-            st.markdown(f"""
-                <a href="{WHATSAPP_URL}" target="_blank" style="display: block; text-align: center; background-color: #25D366; color: white; padding: 0.6rem 1rem; border-radius: 8px; text-decoration: none; font-weight: bold;">
-                    💬 Adquirir Acesso via WhatsApp
-                </a>
+        # Video Intro
+        st.write("")
+        vimeo_video("https://vimeo.com/1154502544")
+        
+        # Features
+        st.write("---")
+        st.markdown("### Por Que Escolher o LPS?")
+        
+        feat_cols = st.columns(3)
+        with feat_cols[0]:
+            st.markdown("""
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2.5rem;">🧠</div>
+                    <h4 style="color: #0D3B66;">Neurociência + Psicanálise</h4>
+                    <p style="color: #666;">Metodologia única que une ciência do cérebro com análise profunda do comportamento.</p>
+                </div>
+            """, unsafe_allow_html=True)
+        with feat_cols[1]:
+            st.markdown("""
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2.5rem;">📊</div>
+                    <h4 style="color: #0D3B66;">Assessment Completo</h4>
+                    <p style="color: #666;">Descubra seu perfil de liderança e mapeie sua equipe com ferramentas exclusivas.</p>
+                </div>
+            """, unsafe_allow_html=True)
+        with feat_cols[2]:
+            st.markdown("""
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2.5rem;">💬</div>
+                    <h4 style="color: #0D3B66;">IA Consultora</h4>
+                    <p style="color: #666;">Converse com a LPSChat para receber insights personalizados sobre sua equipe.</p>
+                </div>
             """, unsafe_allow_html=True)
         
-        if st.button("Fechar", key="close_modal"):
-            st.session_state.show_login_modal = False
-            st.rerun()
+        # CTA
+        st.write("")
+        cta_cols = st.columns([1, 2, 1])
+        with cta_cols[1]:
+            st.markdown(f"""
+                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.2rem;">
+                    💬 Comprar Curso / Solicitar Orçamento
+                </a>
+            """, unsafe_allow_html=True)
     
-    # Features section
-    st.write("---")
-    st.markdown("### Por Que Escolher o LPS?")
-    
-    feat_cols = st.columns(3)
-    with feat_cols[0]:
+    # SOBRE SECTION
+    elif current_section == "sobre":
+        st.markdown('<div class="section-title">Sobre o Programa LPS</div>', unsafe_allow_html=True)
+        
         st.markdown("""
-            <div style="text-align: center; padding: 1rem;">
-                <div style="font-size: 2.5rem;">🧠</div>
-                <h4 style="color: #0D3B66;">Neurociência + Psicanálise</h4>
-                <p style="color: #666;">Metodologia única que une ciência do cérebro com análise profunda do comportamento.</p>
+            <div class="about-card">
+                <h3 style="color: #0D3B66;">O que é Liderança Psicanalítica?</h3>
+                <p>A Liderança Psicanalítica é uma abordagem inovadora que integra conceitos da psicanálise com práticas de gestão moderna. 
+                Desenvolvida por <strong>Viviane Nishiura</strong>, esta metodologia ajuda líderes a compreenderem as dinâmicas 
+                inconscientes que influenciam suas equipes e tomadas de decisão.</p>
             </div>
         """, unsafe_allow_html=True)
-    with feat_cols[1]:
+        
         st.markdown("""
-            <div style="text-align: center; padding: 1rem;">
-                <div style="font-size: 2.5rem;">📊</div>
-                <h4 style="color: #0D3B66;">Assessment Completo</h4>
-                <p style="color: #666;">Descubra seu perfil de liderança e mapeie sua equipe com ferramentas exclusivas.</p>
+            <div class="about-card">
+                <h3 style="color: #0D3B66;">Quem é Viviane Nishiura?</h3>
+                <p>Psicóloga clínica e consultora organizacional com mais de 15 anos de experiência em desenvolvimento de líderes. 
+                Especialista em psicanálise aplicada às organizações, Viviane criou o método LPS para ajudar gestores 
+                a transformarem suas relações de trabalho através do autoconhecimento.</p>
             </div>
         """, unsafe_allow_html=True)
-    with feat_cols[2]:
+        
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            st.markdown(f"""
+                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center;">
+                    💬 Falar com a Consultora
+                </a>
+            """, unsafe_allow_html=True)
+    
+    # CURSO SECTION - Module Cards with Paywall
+    elif current_section == "curso":
+        st.markdown('<div class="section-title">Programa de Formação LPS</div>', unsafe_allow_html=True)
+        st.write("6 módulos completos para transformar sua liderança")
+        st.write("")
+        
+        # Module Cards Grid - 2 rows of 3
+        row1 = st.columns(3)
+        for idx, col in enumerate(row1):
+            if idx < len(MODULES_DATA):
+                mod = MODULES_DATA[idx]
+                with col:
+                    st.markdown(f"""
+                        <div class="module-card">
+                            <div class="module-icon">{mod['icon']}</div>
+                            <div class="module-title">{mod['name'].split(': ')[1]}</div>
+                            <div class="module-desc">{mod['description']}</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Ver Conteúdo", key=f"btn_mod_{mod['id']}", use_container_width=True):
+                        st.session_state.selected_module = mod['id']
+                        if not st.session_state.authenticated:
+                            st.session_state.show_login_modal = True
+                            st.rerun()
+                        else:
+                            st.session_state.page = "LPS Curso"
+                            st.rerun()
+        
+        st.write("")
+        row2 = st.columns(3)
+        for idx, col in enumerate(row2):
+            mod_idx = idx + 3
+            if mod_idx < len(MODULES_DATA):
+                mod = MODULES_DATA[mod_idx]
+                with col:
+                    st.markdown(f"""
+                        <div class="module-card">
+                            <div class="module-icon">{mod['icon']}</div>
+                            <div class="module-title">{mod['name'].split(': ')[1]}</div>
+                            <div class="module-desc">{mod['description']}</div>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Ver Conteúdo", key=f"btn_mod_{mod['id']}", use_container_width=True):
+                        st.session_state.selected_module = mod['id']
+                        if not st.session_state.authenticated:
+                            st.session_state.show_login_modal = True
+                            st.rerun()
+                        else:
+                            st.session_state.page = "LPS Curso"
+                            st.rerun()
+        
+        # Paywall Modal
+        if st.session_state.show_login_modal:
+            st.write("")
+            render_paywall()
+            if st.button("Fechar", key="close_modal"):
+                st.session_state.show_login_modal = False
+                st.rerun()
+        
+        # CTA
+        st.write("---")
+        cta_cols = st.columns([1, 2, 1])
+        with cta_cols[1]:
+            st.markdown(f"""
+                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.1rem;">
+                    💬 Comprar Curso Completo
+                </a>
+            """, unsafe_allow_html=True)
+    
+    # LPSTEST SECTION - Preview with Paywall
+    elif current_section == "lpstest":
+        st.markdown('<div class="section-title">LPSTest - Assessment de Liderança</div>', unsafe_allow_html=True)
+        
         st.markdown("""
-            <div style="text-align: center; padding: 1rem;">
-                <div style="font-size: 2.5rem;">💬</div>
-                <h4 style="color: #0D3B66;">IA Consultora</h4>
-                <p style="color: #666;">Converse com a LPSChat para receber insights personalizados sobre sua equipe.</p>
+            <div class="about-card">
+                <h3 style="color: #0D3B66;">Descubra Seu Perfil de Liderança</h3>
+                <p>O LPSTest é um assessment exclusivo com <strong>48 questões</strong> desenvolvidas para mapear 
+                seu perfil de liderança através de 6 dimensões psicanalíticas:</p>
+                <ul style="color: #666;">
+                    <li><strong>Autoridade</strong> - Como você exerce e percebe sua autoridade</li>
+                    <li><strong>Contenção</strong> - Sua capacidade de manter a calma em crises</li>
+                    <li><strong>Narcisismo</strong> - Sua relação com reconhecimento e validação</li>
+                    <li><strong>Estrutura</strong> - Sua necessidade de controle e organização</li>
+                    <li><strong>Relação</strong> - Suas dinâmicas de transferência com a equipe</li>
+                    <li><strong>Reflexão</strong> - Sua capacidade de autoconhecimento</li>
+                </ul>
             </div>
         """, unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 4rem;">📊</div>
+                <h3 style="color: #0D3B66;">Receba Seu Perfil Híbrido</h3>
+                <p style="color: #666;">Ao completar o assessment, você recebe um relatório com seu perfil dominante, 
+                perfil secundário e papel grupal segundo Bion.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        if st.session_state.authenticated:
+            if st.button("Fazer o LPSTest Agora", use_container_width=True, type="primary"):
+                st.session_state.page = "LPSTest"
+                st.rerun()
+        else:
+            render_paywall()
     
-    # CTA Section
-    st.write("")
-    st.markdown("""
-        <div style="background: linear-gradient(135deg, #F4D35E 0%, #E8C84A 100%); padding: 2rem; border-radius: 15px; text-align: center; margin-top: 1rem;">
-            <h3 style="color: #0D3B66; margin-bottom: 1rem;">Pronto para Transformar Sua Liderança?</h3>
-            <p style="color: #0D3B66; margin-bottom: 1.5rem;">Entre em contato e descubra como o LPS pode revolucionar sua forma de liderar.</p>
-        </div>
-    """, unsafe_allow_html=True)
+    # LPSCHAT SECTION - Preview with Paywall
+    elif current_section == "lpschat":
+        st.markdown('<div class="section-title">LPSChat - Consultor de IA</div>', unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div class="about-card">
+                <h3 style="color: #0D3B66;">Sua Consultora Psicanalítica 24/7</h3>
+                <p>O LPSChat é uma inteligência artificial treinada com os conceitos da metodologia LPS. 
+                Ela tem acesso ao seu perfil e da sua equipe, oferecendo:</p>
+                <ul style="color: #666;">
+                    <li>Análise das dinâmicas grupais da sua equipe</li>
+                    <li>Identificação de padrões de transferência</li>
+                    <li>Sugestões de intervenções baseadas em Bion</li>
+                    <li>Orientações para gestão de conflitos</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div style="background-color: #F5F5F5; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
+                <p style="color: #666; font-style: italic;">"Minha equipe está em conflito constante. O João parece 
+                sempre ser culpado por tudo. Como posso intervir?"</p>
+                <p style="color: #0D3B66; margin-top: 1rem;"><strong>LPSChat:</strong> Pelo que descreve, João pode 
+                estar assumindo o papel de <em>Bode Expiatório</em> do grupo - uma dinâmica comum quando há ansiedade 
+                não processada. Sugiro focar na <em>Tarefa Real</em> para resgatar a racionalidade...</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        if st.session_state.authenticated:
+            if st.button("Acessar LPSChat", use_container_width=True, type="primary"):
+                st.session_state.page = "LPSChat"
+                st.rerun()
+        else:
+            render_paywall()
     
-    cta_cols = st.columns([1, 2, 1])
-    with cta_cols[1]:
+    # MENTORIA SECTION
+    elif current_section == "mentoria":
+        st.markdown('<div class="section-title">Mentoria Individual</div>', unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div class="about-card">
+                <h3 style="color: #0D3B66;">Acompanhamento Personalizado</h3>
+                <p>Sessões individuais com Viviane Nishiura para aprofundar seu desenvolvimento como líder psicanalítico:</p>
+                <ul style="color: #666;">
+                    <li>Análise do seu perfil LPSTest</li>
+                    <li>Supervisão de casos da sua equipe</li>
+                    <li>Desenvolvimento de estratégias personalizadas</li>
+                    <li>Acompanhamento mensal do seu progresso</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+        
         st.markdown(f"""
-            <a href="{WHATSAPP_URL}" target="_blank" style="display: block; text-align: center; background-color: #25D366; color: white; padding: 1rem 2rem; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1.2rem; margin-top: 1rem;">
-                💬 Falar com Consultor / Adquirir Acesso
-            </a>
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="font-size: 1.2rem;">
+                    📅 Agendar Mentoria
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    # SOLUÇÕES SECTION
+    elif current_section == "soluções":
+        st.markdown('<div class="section-title">Soluções Corporativas</div>', unsafe_allow_html=True)
+        
+        sol_cols = st.columns(2)
+        with sol_cols[0]:
+            st.markdown("""
+                <div class="solution-card">
+                    <div class="solution-title">Treinamento In-Company</div>
+                    <p>Formação completa para sua equipe de líderes com conteúdo personalizado para sua empresa.</p>
+                </div>
+            """, unsafe_allow_html=True)
+        with sol_cols[1]:
+            st.markdown("""
+                <div class="solution-card">
+                    <div class="solution-title">Consultoria Organizacional</div>
+                    <p>Diagnóstico e intervenção em dinâmicas grupais problemáticas na sua organização.</p>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        st.write("")
+        sol_cols2 = st.columns(2)
+        with sol_cols2[0]:
+            st.markdown("""
+                <div class="solution-card">
+                    <div class="solution-title">Assessment de Equipes</div>
+                    <p>Mapeamento completo de perfis e dinâmicas da sua equipe com relatório executivo.</p>
+                </div>
+            """, unsafe_allow_html=True)
+        with sol_cols2[1]:
+            st.markdown("""
+                <div class="solution-card">
+                    <div class="solution-title">Palestras e Workshops</div>
+                    <p>Eventos sobre liderança psicanalítica para convenções e encontros corporativos.</p>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="font-size: 1.2rem;">
+                    💼 Solicitar Orçamento
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    # CONTATO SECTION
+    elif current_section == "contato":
+        st.markdown('<div class="section-title">Entre em Contato</div>', unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div style="text-align: center; padding: 2rem;">
+                <div style="font-size: 4rem;">📱</div>
+                <h3 style="color: #0D3B66;">Fale Diretamente Conosco</h3>
+                <p style="color: #666; font-size: 1.1rem;">
+                    Tire suas dúvidas, solicite orçamentos ou agende sua mentoria.<br>
+                    Atendimento personalizado via WhatsApp.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+            <div style="text-align: center;">
+                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 20px 50px; border-radius: 50px; font-weight: bold; font-size: 1.3rem; text-decoration: none;">
+                    💬 Iniciar Conversa no WhatsApp
+                </a>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.write("")
+        st.markdown("""
+            <div style="text-align: center; color: #666; margin-top: 2rem;">
+                <p><strong>E-mail:</strong> contato@liderancapsicanalitica.com.br</p>
+                <p><strong>Instagram:</strong> @liderancapsicanalitica</p>
+            </div>
         """, unsafe_allow_html=True)
 
 elif page == "Login":
     render_login_page()
 
-elif page == "Home":
+elif page == "Dashboard":
+    # Authenticated user dashboard - redirect to old Home logic
     if not st.session_state.authenticated:
-        st.session_state.page = "Login"
+        st.session_state.page = "Home"
         st.rerun()
-    st.markdown("<h1 style='text-align: center; color: #0D3B66;'>Plataforma de Liderança Psicanalítica (LPS)</h1>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align: center; color: #0D3B66;'>Transforme Sua Liderança com a Ciência do Inconsciente</h2>", unsafe_allow_html=True)
-    vimeo_video("https://vimeo.com/1154502544")
-    st.markdown(f'<div style="text-align: center;"><a href="{WHATSAPP_URL}" target="_blank"><button style="background-color:#25D366; color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:bold;">Falar com a Consultora</button></a></div>', unsafe_allow_html=True)
+    
+    render_public_header()
+    st.markdown("<h2 style='color: #0D3B66;'>Bem-vindo(a), " + st.session_state.user['name'] + "!</h2>", unsafe_allow_html=True)
+    
+    # Quick access cards
+    dash_cols = st.columns(4)
+    with dash_cols[0]:
+        if st.button("🎓 Curso", use_container_width=True):
+            st.session_state.page = "LPS Curso"
+            st.rerun()
+    with dash_cols[1]:
+        if st.button("📝 LPSTest", use_container_width=True):
+            st.session_state.page = "LPSTest"
+            st.rerun()
+    with dash_cols[2]:
+        if st.button("👥 Equipe", use_container_width=True):
+            st.session_state.page = "TeamManagement"
+            st.rerun()
+    with dash_cols[3]:
+        if st.button("💬 LPSChat", use_container_width=True):
+            st.session_state.page = "LPSChat"
+            st.rerun()
+    
+    st.write("---")
+    if st.button("🚪 Sair", use_container_width=True):
+        st.session_state.authenticated = False
+        st.session_state.user = None
+        st.session_state.manager_data = None
+        st.session_state.page = "Home"
+        st.rerun()
 
 elif page == "LPS Curso":
     if not st.session_state.authenticated:
