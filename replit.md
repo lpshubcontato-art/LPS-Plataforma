@@ -24,8 +24,20 @@ Preferred communication style: Simple, everyday language.
 - **Session Variables**: authenticated, user (id/name/email), manager_data, login_mode
 
 ### Access Control
-- **Managers**: Register/login, see full sidebar with course and team management
+- **Public Visitors**: Can view the Vitrine (showcase) page with all course modules displayed as cards
+- **Managers**: Register/login via "Área do Aluno" button, see full sidebar with course and team management
 - **Employees**: Access via unique token URL (?token=xxx), see only Assessment page
+- **Content Gating**: Clicking module cards without login shows restriction modal with login/WhatsApp options
+
+### Page Structure
+- **Vitrine**: Public landing page showing 7 course modules in styled cards (4+3 grid layout)
+- **Login**: Authentication page accessible via "Área do Aluno" button
+- **Home**: Dashboard for logged-in managers
+- **LPS Curso**: Full course content (authenticated only)
+- **LPSTest**: Leadership assessment (authenticated only)
+- **Gestão de Equipe**: Team management with employee links (authenticated only)
+- **LPSChat**: AI consultant integration (authenticated only)
+- **EmployeeAssessment**: Token-based employee assessment page
 
 ### Database Tables
 - **users**: id, email, password_hash, name, user_type, created_at
@@ -34,10 +46,11 @@ Preferred communication style: Simple, everyday language.
 - **course_progress**: id, user_id, progress_data, updated_at
 
 ### LPSChat AI Integration
-- **Model**: OpenAI gpt-4o-mini
+- **Model**: Google Gemini (gemini-1.5-flash)
 - **Context**: System prompt includes manager profile, employee profiles with Bion roles
 - **Concepts**: Bion roles, Transferência/Contratransferência, Tarefa Real
 - **Behavior**: Analyzes team dynamics, suggests interventions based on psychoanalytic concepts
+- **API Key**: Uses st.secrets["GOOGLE_API_KEY"] for authentication
 
 ### Legacy/Dormant TypeScript Stack
 The repository contains configuration for a full-stack TypeScript application that is not currently active:
