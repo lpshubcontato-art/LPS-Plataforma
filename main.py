@@ -201,6 +201,125 @@ def get_manager_profile_by_user(user_id):
         }
     return None
 
+# Course Progress Functions
+def get_course_progress(user_id):
+    """Get course progress for a user"""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT progress_data FROM course_progress WHERE user_id = ?", (user_id,))
+    result = c.fetchone()
+    conn.close()
+    if result and result[0]:
+        return json.loads(result[0])
+    return {}
+
+def save_course_progress(user_id, progress_data):
+    """Save course progress for a user"""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id FROM course_progress WHERE user_id = ?", (user_id,))
+    existing = c.fetchone()
+    if existing:
+        c.execute("UPDATE course_progress SET progress_data = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+                  (json.dumps(progress_data), user_id))
+    else:
+        progress_id = str(uuid.uuid4())
+        c.execute("INSERT INTO course_progress (id, user_id, progress_data) VALUES (?, ?, ?)",
+                  (progress_id, user_id, json.dumps(progress_data)))
+    conn.commit()
+    conn.close()
+
+def get_module_completion_status(user_id):
+    """Get completion status for each module"""
+    progress = get_course_progress(user_id)
+    module_status = {}
+    for mod in MODULES_DATA:
+        module_lessons = [f"m{mod['id']}_v{v_idx}" for v_idx in range(len(mod['videos']))]
+        completed = sum(1 for lesson in module_lessons if progress.get(lesson, False))
+        total = len(module_lessons)
+        module_status[mod['id']] = {
+            'name': mod['name'],
+            'completed': completed,
+            'total': total,
+            'percentage': (completed / total * 100) if total > 0 else 0
+        }
+    return module_status
+
+def is_course_completed(user_id):
+    """Check if user has completed all theoretical modules (first 5 modules)"""
+    module_status = get_module_completion_status(user_id)
+    theoretical_modules = [1, 2, 3, 4, 5]  # First 5 modules are theoretical
+    for mod_id in theoretical_modules:
+        if mod_id in module_status and module_status[mod_id]['percentage'] < 100:
+            return False
+    return True
+
+def get_assessment_stats(manager_id):
+    """Get assessment statistics for a manager"""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM employees WHERE manager_id = ? AND completed = 1", (manager_id,))
+    applied = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM employees WHERE manager_id = ?", (manager_id,))
+    total_slots = c.fetchone()[0]
+    conn.close()
+    max_employees = 4  # Package limit
+    remaining = max(0, max_employees - applied)  # Remaining based on completed assessments
+    return {
+        'applied': applied,
+        'remaining': remaining,
+        'total_slots': total_slots,
+        'max_employees': max_employees
+    }
+
+def get_ai_insights(manager_id, user_id):
+    """Generate AI insights about the team"""
+    employees = get_manager_employees(manager_id)
+    manager_profile = get_manager_profile_by_user(user_id)
+    
+    insights = []
+    
+    # Check if manager has taken the assessment
+    if not manager_profile or not manager_profile.get('dominant'):
+        insights.append({
+            'type': 'warning',
+            'message': 'Complete seu LPSTest para receber insights personalizados sobre sua liderança.'
+        })
+    
+    # Check team size
+    completed_employees = [e for e in employees if e[10] == 1]  # completed column
+    if len(completed_employees) == 0:
+        insights.append({
+            'type': 'info',
+            'message': 'Envie os links de assessment para sua equipe para começar a receber insights.'
+        })
+    elif len(completed_employees) < 3:
+        insights.append({
+            'type': 'info',
+            'message': f'Você tem {len(completed_employees)} funcionário(s) mapeado(s). Mapeie mais membros para análises mais completas.'
+        })
+    else:
+        # Analyze Bion roles distribution
+        bion_roles = [e[9] for e in completed_employees if e[9]]  # bion_role column
+        if bion_roles:
+            role_counts = {}
+            for role in bion_roles:
+                role_counts[role] = role_counts.get(role, 0) + 1
+            
+            most_common = max(role_counts, key=role_counts.get)
+            if role_counts[most_common] > len(bion_roles) / 2:
+                insights.append({
+                    'type': 'alert',
+                    'message': f'Concentração de papéis: {role_counts[most_common]} membros com papel "{most_common}". Considere diversificar.'
+                })
+            else:
+                insights.append({
+                    'type': 'success',
+                    'message': 'Boa diversidade de papéis na equipe! Isso favorece a dinâmica grupal.'
+                })
+    
+    return insights[:3]  # Return max 3 insights
+
 def get_app_url():
     """Get the current app URL for generating employee links"""
     try:
@@ -1357,35 +1476,229 @@ elif page == "Login":
     render_login_page()
 
 elif page == "Dashboard":
-    # Authenticated user dashboard - redirect to old Home logic
+    # Authenticated user dashboard
     if not st.session_state.authenticated:
         st.session_state.page = "Home"
         st.rerun()
     
     render_public_header()
-    st.markdown("<h2 style='color: #0D3B66;'>Bem-vindo(a), " + st.session_state.user['name'] + "!</h2>", unsafe_allow_html=True)
     
-    # Quick access cards
+    # Get manager data
+    manager_data = get_manager_by_user(st.session_state.user['id'])
+    user_id = st.session_state.user['id']
+    manager_id = manager_data['id'] if manager_data else None
+    
+    st.markdown(f"<h2 style='color: #0D3B66;'>Bem-vindo(a), {st.session_state.user['name']}!</h2>", unsafe_allow_html=True)
+    
+    # Dashboard CSS
+    st.markdown("""
+        <style>
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #F4D35E;
+            margin-bottom: 1rem;
+        }
+        .dashboard-card h3 {
+            color: #0D3B66;
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+        }
+        .progress-module {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .progress-module-name {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        .progress-module-bar {
+            flex: 2;
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 0 10px;
+        }
+        .progress-module-fill {
+            background: linear-gradient(90deg, #0D3B66, #F4D35E);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .progress-module-percent {
+            font-size: 0.85rem;
+            color: #666;
+            min-width: 40px;
+            text-align: right;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0D3B66;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .insight-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .insight-warning {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+        }
+        .insight-info {
+            background: #cce5ff;
+            border-left: 3px solid #0d6efd;
+        }
+        .insight-alert {
+            background: #f8d7da;
+            border-left: 3px solid #dc3545;
+        }
+        .insight-success {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+        }
+        .mentoring-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #0D3B66, #1a5490);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .mentoring-btn:hover {
+            opacity: 0.9;
+            color: white;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    # Main Dashboard Grid
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        # Course Progress Card
+        st.markdown("<div class='dashboard-card'><h3>Progresso do Curso</h3>", unsafe_allow_html=True)
+        
+        module_status = get_module_completion_status(user_id)
+        total_completed = 0
+        total_lessons = 0
+        
+        for mod_id, status in module_status.items():
+            total_completed += status['completed']
+            total_lessons += status['total']
+            percentage = int(status['percentage'])
+            st.markdown(f"""
+                <div class='progress-module'>
+                    <span class='progress-module-name'>{status['name'][:25]}...</span>
+                    <div class='progress-module-bar'>
+                        <div class='progress-module-fill' style='width: {percentage}%'></div>
+                    </div>
+                    <span class='progress-module-percent'>{percentage}%</span>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        overall_progress = (total_completed / total_lessons * 100) if total_lessons > 0 else 0
+        st.markdown(f"<p style='text-align: center; margin-top: 1rem; color: #0D3B66; font-weight: bold;'>Progresso Total: {overall_progress:.0f}%</p></div>", unsafe_allow_html=True)
+        
+        # AI Insights Card
+        if manager_id:
+            st.markdown("<div class='dashboard-card'><h3>Insights da IA sobre sua Equipe</h3>", unsafe_allow_html=True)
+            
+            insights = get_ai_insights(manager_id, user_id)
+            if insights:
+                for insight in insights:
+                    insight_class = f"insight-{insight['type']}"
+                    icon = {'warning': 'O', 'info': 'i', 'alert': '!', 'success': '✓'}.get(insight['type'], 'i')
+                    st.markdown(f"<div class='insight-item {insight_class}'>{insight['message']}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown("<p style='color: #666;'>Nenhum insight disponível ainda. Complete o LPSTest e mapeie sua equipe.</p>", unsafe_allow_html=True)
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+    
+    with col2:
+        # Assessment Stats Card
+        if manager_id:
+            st.markdown("<div class='dashboard-card'><h3>Gestão de LPSTest</h3>", unsafe_allow_html=True)
+            
+            stats = get_assessment_stats(manager_id)
+            
+            stat_cols = st.columns(2)
+            with stat_cols[0]:
+                st.markdown(f"""
+                    <div class='stat-box'>
+                        <div class='stat-number'>{stats['applied']}</div>
+                        <div class='stat-label'>Aplicados</div>
+                    </div>
+                """, unsafe_allow_html=True)
+            with stat_cols[1]:
+                st.markdown(f"""
+                    <div class='stat-box'>
+                        <div class='stat-number'>{stats['remaining']}</div>
+                        <div class='stat-label'>Restantes</div>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Mentoring Card
+        st.markdown("<div class='dashboard-card'><h3>Mentoria Individual</h3>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 0.9rem; color: #666;'>Agende uma sessão exclusiva com Viviane Nishiura para aprofundar seus insights de liderança.</p>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <a href='{WHATSAPP_URL}' target='_blank' class='mentoring-btn' data-testid='button-agendar-mentoria'>
+                Agendar Mentoria
+            </a>
+        """, unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.write("---")
+    
+    # Quick Access Buttons
+    st.markdown("<h4 style='color: #0D3B66;'>Acesso Rápido</h4>", unsafe_allow_html=True)
     dash_cols = st.columns(4)
     with dash_cols[0]:
-        if st.button("🎓 Curso", use_container_width=True):
+        if st.button("Curso", key="btn-dash-curso", use_container_width=True):
             st.session_state.page = "LPS Curso"
             st.rerun()
     with dash_cols[1]:
-        if st.button("📝 LPSTest", use_container_width=True):
+        if st.button("LPSTest", key="btn-dash-test", use_container_width=True):
             st.session_state.page = "LPSTest"
             st.rerun()
     with dash_cols[2]:
-        if st.button("👥 Equipe", use_container_width=True):
+        if st.button("Equipe", key="btn-dash-equipe", use_container_width=True):
             st.session_state.page = "TeamManagement"
             st.rerun()
     with dash_cols[3]:
-        if st.button("💬 LPSChat", use_container_width=True):
-            st.session_state.page = "LPSChat"
-            st.rerun()
+        # LPSChat with access control
+        course_completed = is_course_completed(user_id)
+        if course_completed:
+            if st.button("LPSChat", key="btn-dash-chat", use_container_width=True):
+                st.session_state.page = "LPSChat"
+                st.rerun()
+        else:
+            if st.button("LPSChat (Bloqueado)", key="btn-dash-chat-locked", use_container_width=True, disabled=True):
+                pass
+            st.caption("Complete os módulos teóricos para liberar")
     
     st.write("---")
-    if st.button("🚪 Sair", use_container_width=True):
+    if st.button("Sair", key="btn-logout", use_container_width=True):
         st.session_state.authenticated = False
         st.session_state.user = None
         st.session_state.manager_data = None
@@ -1396,19 +1709,36 @@ elif page == "LPS Curso":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
-    st.title("🎓 Programa LPS")
+    
+    st.title("Programa LPS")
+    
+    # Load progress from database
+    user_id = st.session_state.user['id']
+    db_progress = get_course_progress(user_id)
+    if db_progress:
+        st.session_state.progress = db_progress
+    
     total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
     completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
+    
+    # Overall progress bar
+    st.markdown(f"<p style='color: #0D3B66; font-weight: bold;'>Progresso Geral: {completed_lessons}/{total_lessons} aulas concluídas</p>", unsafe_allow_html=True)
     st.progress(completed_lessons / total_lessons if total_lessons > 0 else 0)
+    
+    st.write("---")
+    
     for mod in MODULES_DATA:
         with st.expander(mod['name']):
             for v_idx, v_url in enumerate(mod['videos']):
                 lesson_id = f"m{mod['id']}_v{v_idx}"
                 vimeo_video(v_url)
-                st.session_state.progress[lesson_id] = st.checkbox("Concluí", value=st.session_state.progress.get(lesson_id, False), key=lesson_id)
+                new_value = st.checkbox("Concluí esta aula", value=st.session_state.progress.get(lesson_id, False), key=lesson_id)
+                if new_value != st.session_state.progress.get(lesson_id, False):
+                    st.session_state.progress[lesson_id] = new_value
+                    save_course_progress(user_id, st.session_state.progress)
             if os.path.exists(mod['file']):
                 with open(mod['file'], "rb") as f:
-                    st.download_button("⬇️ Material", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
+                    st.download_button("Material de Apoio", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
 
 elif page == "LPSTest":
     if not st.session_state.authenticated:
@@ -1618,37 +1948,72 @@ elif page == "LPSChat":
         st.session_state.page = "Login"
         st.rerun()
     
-    st.title("💬 LPSChat - Consultor de Liderança Psicanalítica")
-    st.write("Converse com a IA sobre sua equipe. Ela tem acesso aos perfis dos seus funcionários.")
+    # Access control: check if theoretical modules are completed
+    user_id = st.session_state.user['id']
+    course_completed = is_course_completed(user_id)
     
-    # Initialize chat history
-    if 'chat_messages' not in st.session_state:
-        st.session_state.chat_messages = []
+    st.title("LPSChat - Consultor de Liderança Psicanalítica")
     
-    # Get manager and employee data for context
-    manager_data = st.session_state.manager_data
-    user_name = st.session_state.user['name'] if st.session_state.user else "Gestor"
-    
-    # Fetch employees data
-    employees_context = ""
-    if manager_data:
-        employees = get_manager_employees(manager_data['id'])
-        if employees:
-            employees_list = []
-            for emp in employees:
-                if emp[10] == 1:  # completed
-                    emp_info = f"- {emp[4] or 'Funcionário ' + str(emp[3])}: Perfil {emp[6]} + {emp[7]}, Papel de Bion: {emp[9]}"
-                    employees_list.append(emp_info)
-            if employees_list:
-                employees_context = "\n".join(employees_list)
-    
-    # Manager profile context
-    manager_profile = ""
-    if manager_data and manager_data.get('dominant'):
-        manager_profile = f"Perfil do Gestor: {manager_data['dominant']} + {manager_data['secondary']}"
-    
-    # System prompt with psychoanalytic concepts
-    system_prompt = f"""Você é um consultor especialista em Liderança Psicanalítica, baseado na metodologia LPS de Viviane Nishiura.
+    if not course_completed:
+        st.warning("Acesso Temporário Bloqueado")
+        st.markdown("""
+            <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
+                <h3 style='color: #856404; margin-top: 0;'>Complete os módulos teóricos para liberar o LPSChat</h3>
+                <p style='color: #856404;'>
+                    O acesso ao consultor de IA é liberado após a conclusão dos 5 primeiros módulos do curso.
+                    Isso garante que você tenha a base teórica necessária para aproveitar ao máximo as análises da IA.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Show progress
+        module_status = get_module_completion_status(user_id)
+        st.markdown("<h4 style='color: #0D3B66; margin-top: 2rem;'>Seu progresso nos módulos teóricos:</h4>", unsafe_allow_html=True)
+        
+        theoretical_modules = [1, 2, 3, 4, 5]
+        for mod_id in theoretical_modules:
+            if mod_id in module_status:
+                status = module_status[mod_id]
+                progress_pct = int(status['percentage'])
+                icon = "✅" if progress_pct == 100 else "⏳"
+                st.markdown(f"{icon} **{status['name']}**: {progress_pct}%")
+        
+        st.write("---")
+        if st.button("Ir para o Curso", key="btn-goto-curso"):
+            st.session_state.page = "LPS Curso"
+            st.rerun()
+    else:
+        st.success("Acesso liberado! Converse com a IA sobre sua equipe.")
+        st.write("A IA tem acesso aos perfis dos seus funcionários e pode oferecer insights personalizados.")
+        
+        # Initialize chat history
+        if 'chat_messages' not in st.session_state:
+            st.session_state.chat_messages = []
+        
+        # Get manager and employee data for context
+        manager_data = st.session_state.manager_data
+        user_name = st.session_state.user['name'] if st.session_state.user else "Gestor"
+        
+        # Fetch employees data
+        employees_context = ""
+        if manager_data:
+            employees = get_manager_employees(manager_data['id'])
+            if employees:
+                employees_list = []
+                for emp in employees:
+                    if emp[10] == 1:  # completed
+                        emp_info = f"- {emp[4] or 'Funcionário ' + str(emp[3])}: Perfil {emp[6]} + {emp[7]}, Papel de Bion: {emp[9]}"
+                        employees_list.append(emp_info)
+                if employees_list:
+                    employees_context = "\n".join(employees_list)
+        
+        # Manager profile context
+        manager_profile = ""
+        if manager_data and manager_data.get('dominant'):
+            manager_profile = f"Perfil do Gestor: {manager_data['dominant']} + {manager_data['secondary']}"
+        
+        # System prompt with psychoanalytic concepts
+        system_prompt = f"""Você é um consultor especialista em Liderança Psicanalítica, baseado na metodologia LPS de Viviane Nishiura.
 
 CONTEXTO DO GESTOR:
 Nome: {user_name}
@@ -1692,45 +2057,45 @@ INSTRUÇÕES DE RESPOSTA:
 - Seja empático mas direto nas recomendações
 - Use português brasileiro"""
 
-    # Display chat history
-    for message in st.session_state.chat_messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-    
-    # Chat input
-    if prompt := st.chat_input("Descreva a situação da sua equipe ou faça uma pergunta..."):
-        # Add user message to history
-        st.session_state.chat_messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+        # Display chat history
+        for message in st.session_state.chat_messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
         
-        # Generate AI response
-        with st.chat_message("assistant"):
-            with st.spinner("Analisando..."):
-                try:
-                    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-                    model = genai.GenerativeModel('gemini-1.5-flash')
+        # Chat input
+        if prompt := st.chat_input("Descreva a situação da sua equipe ou faça uma pergunta..."):
+            # Add user message to history
+            st.session_state.chat_messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            
+            # Generate AI response
+            with st.chat_message("assistant"):
+                with st.spinner("Analisando..."):
+                    try:
+                        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+                        model = genai.GenerativeModel('gemini-1.5-flash')
+                        
+                        # Build conversation history for Gemini
+                        chat_history = f"{system_prompt}\n\n"
+                        for msg in st.session_state.chat_messages:
+                            role = "Gestor" if msg["role"] == "user" else "Consultor"
+                            chat_history += f"{role}: {msg['content']}\n\n"
+                        
+                        response = model.generate_content(chat_history)
+                        
+                        assistant_message = response.text
+                        st.markdown(assistant_message)
+                        st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
                     
-                    # Build conversation history for Gemini
-                    chat_history = f"{system_prompt}\n\n"
-                    for msg in st.session_state.chat_messages:
-                        role = "Gestor" if msg["role"] == "user" else "Consultor"
-                        chat_history += f"{role}: {msg['content']}\n\n"
-                    
-                    response = model.generate_content(chat_history)
-                    
-                    assistant_message = response.text
-                    st.markdown(assistant_message)
-                    st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
-                
-                except Exception as e:
-                    st.error(f"Erro ao conectar com a IA: {str(e)}")
-    
-    # Clear chat button
-    if st.session_state.chat_messages:
-        if st.button("🗑️ Limpar Conversa"):
-            st.session_state.chat_messages = []
-            st.rerun()
+                    except Exception as e:
+                        st.error(f"Erro ao conectar com a IA: {str(e)}")
+        
+        # Clear chat button
+        if st.session_state.chat_messages:
+            if st.button("Limpar Conversa", key="btn-clear-chat"):
+                st.session_state.chat_messages = []
+                st.rerun()
 
 elif page == "Mentoria":
     if not st.session_state.authenticated:
