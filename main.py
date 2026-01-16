@@ -1485,60 +1485,170 @@ st.markdown(f'''
     </a>
 ''', unsafe_allow_html=True)
 
-# Navigation Menu Sections
-MENU_SECTIONS = ["Sobre", "Curso", "LPSTest", "LPSChat", "Mentoria", "Soluções", "Insights", "Contato"]
+# Navigation Menu Sections with Icons
+MENU_SECTIONS = [
+    {"key": "home", "label": "Home", "icon": "🏠"},
+    {"key": "sobre", "label": "Sobre", "icon": "👤"},
+    {"key": "curso", "label": "Curso", "icon": "📚"},
+    {"key": "lpstest", "label": "LPSTest", "icon": "🧠"},
+    {"key": "lpschat", "label": "LPSChat", "icon": "💬"},
+    {"key": "mentoria", "label": "Mentoria", "icon": "📅"},
+    {"key": "soluções", "label": "Soluções", "icon": "💼"},
+    {"key": "insights", "label": "Insights", "icon": "📰"},
+    {"key": "contato", "label": "Contato", "icon": "📧"}
+]
 
-# Public Header with Navigation Menu
-def render_public_header():
-    # Logo and Title Row
-    col1, col2, col3 = st.columns([1, 4, 1])
-    with col1:
-        if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=100)
-    with col2:
+# Sidebar Navigation
+def render_sidebar_navigation():
+    with st.sidebar:
+        # Sidebar CSS styling
         st.markdown("""
-            <h1 style="color: #0D3B66; font-size: 2rem; margin: 0; text-align: center;">
-                Liderança Psicanalítica
-            </h1>
+            <style>
+            [data-testid="stSidebar"] {
+                background: linear-gradient(180deg, #0D3B66 0%, #1a4f7a 100%);
+                padding-top: 0;
+            }
+            [data-testid="stSidebar"] .stButton > button {
+                background-color: transparent;
+                color: white;
+                border: none;
+                text-align: left;
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+                width: 100%;
+                border-radius: 8px;
+                margin-bottom: 0.25rem;
+                transition: background-color 0.2s ease;
+            }
+            [data-testid="stSidebar"] .stButton > button:hover {
+                background-color: rgba(244, 211, 94, 0.2);
+            }
+            [data-testid="stSidebar"] .stButton > button[data-active="true"] {
+                background-color: rgba(244, 211, 94, 0.3);
+                border-left: 3px solid #F4D35E;
+            }
+            .sidebar-logo {
+                text-align: center;
+                padding: 1rem 0;
+                border-bottom: 1px solid rgba(255,255,255,0.2);
+                margin-bottom: 1rem;
+            }
+            .sidebar-logo h2 {
+                color: #F4D35E;
+                font-size: 1.3rem;
+                margin: 0.5rem 0 0 0;
+            }
+            .sidebar-login-btn {
+                background-color: #F4D35E !important;
+                color: #0D3B66 !important;
+                font-weight: bold !important;
+                border-radius: 25px !important;
+                padding: 0.75rem 1.5rem !important;
+                margin-bottom: 1.5rem !important;
+            }
+            .nav-item {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem 1rem;
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                margin-bottom: 0.25rem;
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+            }
+            .nav-item:hover {
+                background-color: rgba(244, 211, 94, 0.2);
+            }
+            .nav-item.active {
+                background-color: rgba(244, 211, 94, 0.3);
+                border-left: 3px solid #F4D35E;
+            }
+            .nav-icon {
+                font-size: 1.2rem;
+            }
+            .nav-label {
+                font-size: 1rem;
+            }
+            .sidebar-divider {
+                border-top: 1px solid rgba(255,255,255,0.2);
+                margin: 1rem 0;
+            }
+            .user-badge {
+                background-color: rgba(244, 211, 94, 0.2);
+                border: 1px solid #F4D35E;
+                color: #F4D35E;
+                padding: 0.5rem 1rem;
+                border-radius: 25px;
+                text-align: center;
+                font-weight: bold;
+                margin-bottom: 0.5rem;
+            }
+            </style>
         """, unsafe_allow_html=True)
-    with col3:
+        
+        # Logo and Brand
+        st.markdown('<div class="sidebar-logo">', unsafe_allow_html=True)
+        if os.path.exists(LOGO_PATH):
+            st.image(LOGO_PATH, width=80)
+        st.markdown('<h2>Liderança Psicanalítica</h2>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Login/User Section at Top
         if st.session_state.authenticated:
             st.markdown(f"""
-                <div style="background-color: #0D3B66; color: #F4D35E; padding: 10px 20px; border-radius: 25px; text-align: center; font-weight: bold;">
-                    👤 {st.session_state.user['name'][:12]}
-                </div>
+                <div class="user-badge">👤 {st.session_state.user['name']}</div>
             """, unsafe_allow_html=True)
-            if st.button("Minha Área", key="btn_dashboard", use_container_width=True):
+            if st.button("📊 Minha Área", key="sidebar_dashboard", use_container_width=True):
                 st.session_state.page = "Dashboard"
                 st.rerun()
+            if st.button("🚪 Sair", key="sidebar_logout", use_container_width=True):
+                st.session_state.authenticated = False
+                st.session_state.user = None
+                st.session_state.page = "Home"
+                st.rerun()
         else:
-            if st.button("Entrar", key="button-entrar", use_container_width=True):
+            if st.button("🔐 Entrar", key="sidebar_login", use_container_width=True, type="primary"):
                 st.session_state.page = "Login"
                 st.rerun()
-    
-    # Navigation Menu using selectbox for reliability
-    st.write("")
-    current = st.session_state.section
-    
-    # Create styled navigation tabs
-    nav_options = ["home"] + [s.lower() for s in MENU_SECTIONS]
-    nav_labels = ["Home"] + MENU_SECTIONS
-    
-    # Display current section indicator
-    current_idx = nav_options.index(current) if current in nav_options else 0
-    
-    # Use columns for navigation buttons with visual feedback
-    nav_cols = st.columns(len(nav_labels))
-    for idx, (opt, label) in enumerate(zip(nav_options, nav_labels)):
-        with nav_cols[idx]:
-            is_active = (current == opt)
-            btn_style = "primary" if is_active else "secondary"
-            if st.button(label, key=f"nav_{opt}_btn", use_container_width=True, type=btn_style if is_active else "secondary"):
-                st.session_state.section = opt
+        
+        st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+        
+        # Navigation Menu
+        st.markdown('<p style="color: rgba(255,255,255,0.7); font-size: 0.8rem; padding-left: 1rem; margin-bottom: 0.5rem;">NAVEGAÇÃO</p>', unsafe_allow_html=True)
+        
+        current = st.session_state.section
+        for item in MENU_SECTIONS:
+            is_active = (current == item["key"])
+            btn_type = "primary" if is_active else "secondary"
+            if st.button(f"{item['icon']}  {item['label']}", key=f"nav_{item['key']}", use_container_width=True, type=btn_type if is_active else "secondary"):
+                st.session_state.section = item["key"]
                 st.session_state.show_login_modal = False
                 st.rerun()
-    
-    st.write("---")
+        
+        # Footer in sidebar
+        st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+        st.markdown("""
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.7rem; text-align: center; padding: 0.5rem;">
+                © 2026 Viviane Nishiura<br>
+                Todos os direitos reservados
+            </p>
+        """, unsafe_allow_html=True)
+
+# Public Header (simplified - navigation moved to sidebar)
+def render_public_header():
+    # Just show a clean header with page title
+    st.markdown("""
+        <div style="background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+            <h1 style="color: #F4D35E; font-size: 1.8rem; margin: 0; text-align: center;">
+                Liderança Psicanalítica
+            </h1>
+            <p style="color: rgba(255,255,255,0.8); text-align: center; margin: 0.5rem 0 0 0; font-size: 0.95rem;">
+                Transforme sua gestão com Psicanálise e Neurociência
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
 # Login Page Function
 def render_login_page():
@@ -2230,6 +2340,7 @@ if is_employee_access and page != "EmployeeAssessment":
 # Pages
 if page == "Home":
     # Public landing page with sections
+    render_sidebar_navigation()
     render_public_header()
     
     current_section = st.session_state.section
@@ -2580,6 +2691,7 @@ if page == "Home":
             }
         ]
         
+        cols = st.columns(2)  # Initialize columns outside loop
         for i, post in enumerate(blog_posts):
             if i % 2 == 0:
                 cols = st.columns(2)
@@ -2651,6 +2763,7 @@ elif page == "Dashboard":
         st.session_state.page = "Home"
         st.rerun()
     
+    render_sidebar_navigation()
     render_public_header()
     
     # Get manager data
@@ -3726,6 +3839,7 @@ elif page == "Mentoria":
         st.session_state.page = "Login"
         st.rerun()
     
+    render_sidebar_navigation()
     render_public_header()
     
     # Access control for Mentoria
@@ -3803,8 +3917,6 @@ elif page == "Mentoria":
                 </a>
             </div>
         """, unsafe_allow_html=True)
-    
-    render_public_footer()
 
 elif page == "Sobre":
     if not st.session_state.authenticated:
@@ -3902,6 +4014,7 @@ elif page == "GuiaSuporte":
         st.session_state.page = "Login"
         st.rerun()
     
+    render_sidebar_navigation()
     render_public_header()
     
     st.markdown("""
@@ -4025,8 +4138,6 @@ elif page == "GuiaSuporte":
             </a>
         </div>
     """, unsafe_allow_html=True)
-    
-    render_public_footer()
 
 elif page == "Privacy":
     # Privacy and Terms page
