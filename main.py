@@ -1477,9 +1477,15 @@ if st.session_state.get('employee_token') and not st.session_state.get('authenti
     st.session_state.page = "EmployeeAssessment"
     is_employee_access = True
 
-# Floating WhatsApp Button (appears on all pages)
+# Floating WhatsApp Button (appears on all pages) - Black text for readability
 st.markdown(f'''
-    <a href="{WHATSAPP_URL}" target="_blank" class="whatsapp-float">
+    <style>
+    .whatsapp-float {{
+        color: #000000 !important;
+        font-weight: bold;
+    }}
+    </style>
+    <a href="{WHATSAPP_URL}" target="_blank" class="whatsapp-float" style="color: #000000 !important;">
         <span style="font-size: 1.5rem;">💬</span>
         Falar com Consultor
     </a>
@@ -1501,128 +1507,134 @@ MENU_SECTIONS = [
 # Sidebar Navigation
 def render_sidebar_navigation():
     with st.sidebar:
-        # Sidebar CSS styling
+        # Sidebar CSS styling - Premium Design
         st.markdown("""
             <style>
+            /* Global page background */
+            .stApp {
+                background-color: #F5F5F5 !important;
+            }
+            .stApp > header {
+                background-color: #F5F5F5 !important;
+            }
+            /* Main content text color */
+            .stApp .stMarkdown p, .stApp .stMarkdown li, .stApp .stMarkdown span {
+                color: #000000;
+            }
+            /* Sidebar styling */
             [data-testid="stSidebar"] {
-                background: linear-gradient(180deg, #0D3B66 0%, #1a4f7a 100%);
+                background-color: #0D3B66 !important;
                 padding-top: 0;
             }
+            [data-testid="stSidebar"] > div:first-child {
+                background-color: #0D3B66 !important;
+            }
+            /* Sidebar buttons */
             [data-testid="stSidebar"] .stButton > button {
                 background-color: transparent;
-                color: white;
+                color: #FFFFFF !important;
                 border: none;
                 text-align: left;
-                padding: 0.75rem 1rem;
-                font-size: 1rem;
+                padding: 1rem 1.25rem;
+                font-size: 1.05rem;
+                font-weight: 500;
                 width: 100%;
                 border-radius: 8px;
-                margin-bottom: 0.25rem;
-                transition: background-color 0.2s ease;
+                margin-bottom: 0.5rem;
+                transition: all 0.2s ease;
+                white-space: nowrap;
             }
             [data-testid="stSidebar"] .stButton > button:hover {
-                background-color: rgba(244, 211, 94, 0.2);
+                background-color: rgba(244, 211, 94, 0.25) !important;
+                color: #F4D35E !important;
             }
-            [data-testid="stSidebar"] .stButton > button[data-active="true"] {
-                background-color: rgba(244, 211, 94, 0.3);
-                border-left: 3px solid #F4D35E;
-            }
-            .sidebar-logo {
-                text-align: center;
-                padding: 1rem 0;
-                border-bottom: 1px solid rgba(255,255,255,0.2);
-                margin-bottom: 1rem;
-            }
-            .sidebar-logo h2 {
-                color: #F4D35E;
-                font-size: 1.3rem;
-                margin: 0.5rem 0 0 0;
-            }
-            .sidebar-login-btn {
+            [data-testid="stSidebar"] .stButton > button[kind="primary"] {
                 background-color: #F4D35E !important;
                 color: #0D3B66 !important;
-                font-weight: bold !important;
-                border-radius: 25px !important;
-                padding: 0.75rem 1.5rem !important;
-                margin-bottom: 1.5rem !important;
+                font-weight: bold;
             }
-            .nav-item {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                padding: 0.75rem 1rem;
-                color: white;
-                text-decoration: none;
-                border-radius: 8px;
-                margin-bottom: 0.25rem;
-                cursor: pointer;
-                transition: background-color 0.2s ease;
+            [data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
+                background-color: #e6c654 !important;
             }
-            .nav-item:hover {
-                background-color: rgba(244, 211, 94, 0.2);
+            /* Logo container */
+            .sidebar-logo-container {
+                text-align: center;
+                padding: 1.5rem 0.5rem;
+                border-bottom: 1px solid rgba(255,255,255,0.15);
+                margin-bottom: 1.5rem;
+                background-color: rgba(0,0,0,0.1);
             }
-            .nav-item.active {
-                background-color: rgba(244, 211, 94, 0.3);
-                border-left: 3px solid #F4D35E;
-            }
-            .nav-icon {
-                font-size: 1.2rem;
-            }
-            .nav-label {
-                font-size: 1rem;
-            }
+            /* Sidebar divider */
             .sidebar-divider {
-                border-top: 1px solid rgba(255,255,255,0.2);
-                margin: 1rem 0;
+                border-top: 1px solid rgba(255,255,255,0.15);
+                margin: 1.5rem 0;
             }
+            /* User badge */
             .user-badge {
-                background-color: rgba(244, 211, 94, 0.2);
-                border: 1px solid #F4D35E;
+                background-color: rgba(244, 211, 94, 0.15);
+                border: 2px solid #F4D35E;
                 color: #F4D35E;
-                padding: 0.5rem 1rem;
+                padding: 0.75rem 1rem;
                 border-radius: 25px;
                 text-align: center;
                 font-weight: bold;
-                margin-bottom: 0.5rem;
+                margin-bottom: 1rem;
+                font-size: 0.95rem;
+            }
+            /* Navigation label */
+            .nav-section-label {
+                color: #F4D35E;
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding-left: 1.25rem;
+                margin-bottom: 0.75rem;
+            }
+            /* WhatsApp buttons - Black text */
+            .whatsapp-float {
+                color: #000000 !important;
+            }
+            a[href*="wa.me"], a[href*="whatsapp"] {
+                color: #000000 !important;
             }
             </style>
         """, unsafe_allow_html=True)
         
-        # Logo and Brand
-        st.markdown('<div class="sidebar-logo">', unsafe_allow_html=True)
+        # Logo Only (Full Width, No Text Title)
+        st.markdown('<div class="sidebar-logo-container">', unsafe_allow_html=True)
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=80)
-        st.markdown('<h2>Liderança Psicanalítica</h2>', unsafe_allow_html=True)
+            st.image(LOGO_PATH, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
         # Login/User Section at Top
         if st.session_state.authenticated:
             st.markdown(f"""
-                <div class="user-badge">👤 {st.session_state.user['name']}</div>
+                <div class="user-badge">{st.session_state.user['name']}</div>
             """, unsafe_allow_html=True)
-            if st.button("📊 Minha Área", key="sidebar_dashboard", use_container_width=True):
+            if st.button("Minha Area", key="sidebar_dashboard", use_container_width=True):
                 st.session_state.page = "Dashboard"
                 st.rerun()
-            if st.button("🚪 Sair", key="sidebar_logout", use_container_width=True):
+            if st.button("Sair", key="sidebar_logout", use_container_width=True):
                 st.session_state.authenticated = False
                 st.session_state.user = None
                 st.session_state.page = "Home"
                 st.rerun()
         else:
-            if st.button("🔐 Entrar", key="sidebar_login", use_container_width=True, type="primary"):
+            if st.button("Entrar", key="sidebar_login", use_container_width=True, type="primary"):
                 st.session_state.page = "Login"
                 st.rerun()
         
         st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
         
         # Navigation Menu
-        st.markdown('<p style="color: rgba(255,255,255,0.7); font-size: 0.8rem; padding-left: 1rem; margin-bottom: 0.5rem;">NAVEGAÇÃO</p>', unsafe_allow_html=True)
+        st.markdown('<p class="nav-section-label">Menu</p>', unsafe_allow_html=True)
         
         current = st.session_state.section
         for item in MENU_SECTIONS:
             is_active = (current == item["key"])
-            btn_type = "primary" if is_active else "secondary"
-            if st.button(f"{item['icon']}  {item['label']}", key=f"nav_{item['key']}", use_container_width=True, type=btn_type if is_active else "secondary"):
+            btn_label = f"{item['icon']}   {item['label']}"
+            if st.button(btn_label, key=f"nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
                 st.session_state.section = item["key"]
                 st.session_state.show_login_modal = False
                 st.rerun()
@@ -1630,8 +1642,8 @@ def render_sidebar_navigation():
         # Footer in sidebar
         st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
         st.markdown("""
-            <p style="color: rgba(255,255,255,0.5); font-size: 0.7rem; text-align: center; padding: 0.5rem;">
-                © 2026 Viviane Nishiura<br>
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.7rem; text-align: center; padding: 0.5rem;">
+                2026 Viviane Nishiura<br>
                 Todos os direitos reservados
             </p>
         """, unsafe_allow_html=True)
@@ -2326,7 +2338,7 @@ def render_paywall():
             st.rerun()
     with col2:
         st.markdown(f"""
-            <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; background-color: #25D366; color: white;">
+            <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; background-color: #25D366; color: #000000;">
                 💬 Comprar Curso
             </a>
         """, unsafe_allow_html=True)
@@ -2717,7 +2729,7 @@ if page == "Home":
             <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); border-radius: 15px;">
                 <h3 style="color: #F4D35E; margin-bottom: 1rem;">Receba Conteudos Semanais</h3>
                 <p style="color: white; margin-bottom: 1.5rem;">Insights exclusivos sobre lideranca psicanalitica direto no seu WhatsApp</p>
-                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
+                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
                     Receber Insights
                 </a>
             </div>
@@ -2740,7 +2752,7 @@ if page == "Home":
         
         st.markdown(f"""
             <div style="text-align: center;">
-                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 20px 50px; border-radius: 50px; font-weight: bold; font-size: 1.3rem; text-decoration: none;">
+                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 20px 50px; border-radius: 50px; font-weight: bold; font-size: 1.3rem; text-decoration: none;">
                     💬 Iniciar Conversa no WhatsApp
                 </a>
             </div>
@@ -3541,7 +3553,7 @@ elif page == "LPSChat":
                         O acesso ao LPSChat e liberado apos a confirmacao do pagamento.
                         Entre em contato via WhatsApp para adquirir seu acesso.
                     </p>
-                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
+                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
                         Falar com Suporte
                     </a>
                 </div>
@@ -3863,7 +3875,7 @@ elif page == "Mentoria":
                         O agendamento de mentoria e liberado apos a confirmacao do pagamento.
                         Entre em contato via WhatsApp para adquirir seu acesso.
                     </p>
-                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
+                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
                         Falar com Suporte
                     </a>
                 </div>
@@ -3912,7 +3924,7 @@ elif page == "Mentoria":
             <div style="background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); padding: 2rem; border-radius: 15px; text-align: center; margin-top: 2rem;">
                 <h2 style="color: #F4D35E; margin-bottom: 1rem;">Agende sua Sessao</h2>
                 <p style="color: white; margin-bottom: 1.5rem;">Entre em contato via WhatsApp para agendar sua mentoria individual.</p>
-                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 1rem 3rem; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 1.1rem;">
+                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 1rem 3rem; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 1.1rem;">
                     Agendar Mentoria
                 </a>
             </div>
@@ -4133,7 +4145,7 @@ elif page == "GuiaSuporte":
         <div style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 10px; text-align: center; margin-top: 2rem;">
             <h3 style="color: #0D3B66;">Precisa de Ajuda?</h3>
             <p>Entre em contato com nossa equipe via WhatsApp para suporte personalizado.</p>
-            <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold;">
+            <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold;">
                 Falar com Suporte
             </a>
         </div>
