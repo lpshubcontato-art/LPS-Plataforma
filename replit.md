@@ -60,6 +60,17 @@ Preferred communication style: Simple, everyday language.
 - **Behavior**: Analyzes team dynamics, suggests interventions based on psychoanalytic concepts
 - **API Key**: Uses st.secrets["GOOGLE_API_KEY"] for authentication
 
+### Automated Email System
+- **SMTP Configuration**: Uses placeholders for later configuration (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM_NAME, SMTP_FROM_EMAIL)
+- **Email Triggers**:
+  - Employee completes assessment → Employee receives result email + Manager receives notification
+  - Admin sends welcome email → New user receives login credentials after payment confirmation
+- **AdminEmail Page**: Accessible via Dashboard "Admin" button for:
+  - Sending welcome emails with login credentials
+  - Creating user accounts automatically
+  - Testing SMTP configuration
+- **Security**: Employees only receive their own results; admin functions require authenticated manager
+
 ### Legacy/Dormant TypeScript Stack
 The repository contains configuration for a full-stack TypeScript application that is not currently active:
 - **Frontend**: React with Vite, TypeScript, Tailwind CSS, and shadcn/ui components
