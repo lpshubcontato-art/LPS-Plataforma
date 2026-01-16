@@ -1454,12 +1454,12 @@ PROFILES_DB = {
 }
 
 MODULES_DATA = [
-    {"id": 1, "name": "Módulo 1: Neurociência da Liderança", "description": "Entenda como o cérebro processa decisões e aprenda a usar a neurociência para liderar com mais eficácia.", "icon": "🧠", "file": "attached_assets/Módulo_1_1768431876967.pdf", "videos": ["https://vimeo.com/1154503073", "https://vimeo.com/1154503122", "https://vimeo.com/1154503201"]},
-    {"id": 2, "name": "Módulo 2: Mergulho no Inconsciente", "description": "Explore as camadas profundas da mente e descubra como padrões inconscientes influenciam sua liderança.", "icon": "🌊", "file": "attached_assets/Módulo_2_1768431876968.pdf", "videos": ["https://vimeo.com/1154504282", "https://vimeo.com/1154503918"]},
-    {"id": 3, "name": "Módulo 3: Relações e Transferência", "description": "Compreenda as dinâmicas de transferência e contratransferência nas relações profissionais.", "icon": "🔄", "file": "attached_assets/Módulo_3_1768431876969.pdf", "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577"]},
-    {"id": 4, "name": "Módulo 4: Autoconsciência", "description": "Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como líder.", "icon": "🪞", "file": "attached_assets/Módulo_5_1768431876971.pdf", "videos": ["https://vimeo.com/1154510241"]},
-    {"id": 5, "name": "Módulo 5: Entendendo a Equipe", "description": "Aprenda a mapear perfis e dinâmicas grupais usando conceitos psicanalíticos.", "icon": "👥", "file": "attached_assets/Módulo_6_1768431876972.pdf", "videos": ["https://vimeo.com/1154510682"]},
-    {"id": 6, "name": "Módulo 6: Aplicação Prática", "description": "Coloque em prática as ferramentas psicanalíticas no dia a dia da liderança.", "icon": "🛠️", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]}
+    {"id": 1, "name": "Modulo 1: Neurociencia da Lideranca", "title": "Neurociencia da Lideranca", "description": "Foco em quimicos cerebrais (dopamina, ocitocina) e o Circulo de Seguranca. Entenda como o cerebro processa decisoes e aprenda a usar a neurociencia para liderar com mais eficacia.", "icon": "🧠", "file": "attached_assets/Módulo_1_1768431876967.pdf", "videos": ["https://vimeo.com/1154503073", "https://vimeo.com/1154503122", "https://vimeo.com/1154503201"]},
+    {"id": 2, "name": "Modulo 2: Mergulho no Inconsciente", "title": "Mergulho no Inconsciente", "description": "Estudo do Id, Ego, Superego e mecanismos de defesa. Explore as camadas profundas da mente e descubra como padroes inconscientes influenciam sua lideranca.", "icon": "🌊", "file": "attached_assets/Módulo_2_1768431876968.pdf", "videos": ["https://vimeo.com/1154504282", "https://vimeo.com/1154503918"]},
+    {"id": 3, "name": "Modulo 3: Relacoes e Transferencia", "title": "Relacoes e Transferencia", "description": "Dinamicas lider-liderado e manejo de contratransferencia. Compreenda as dinamicas de transferencia nas relacoes profissionais e como usa-las a seu favor.", "icon": "🔄", "file": "attached_assets/Módulo_3_1768431876969.pdf", "videos": ["https://vimeo.com/1154508629", "https://vimeo.com/1154508577"]},
+    {"id": 4, "name": "Modulo 4: Autoconsciencia", "title": "Autoconsciencia", "description": "Identificacao do seu arquetipo de lideranca psicanalitica. Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como lider.", "icon": "🪞", "file": "attached_assets/Módulo_5_1768431876971.pdf", "videos": ["https://vimeo.com/1154510241"]},
+    {"id": 5, "name": "Modulo 5: Entendendo a Equipe", "title": "Entendendo a Equipe", "description": "Mapeamento com assessments e os papeis grupais de Bion. Aprenda a mapear perfis e dinamicas grupais usando conceitos psicanaliticos.", "icon": "👥", "file": "attached_assets/Módulo_6_1768431876972.pdf", "videos": ["https://vimeo.com/1154510682"]},
+    {"id": 6, "name": "Modulo 6: Aplicacao Pratica", "title": "Aplicacao Pratica", "description": "Analise de casos reais e construcao do plano de acao personalizado. Coloque em pratica as ferramentas psicanaliticas no dia a dia da lideranca.", "icon": "🛠️", "file": "attached_assets/Módulo_7_1768431876973.pdf", "videos": ["https://vimeo.com/1154511020"]}
 ]
 
 # Check for employee token in URL (takes priority over auth)
@@ -2446,9 +2446,45 @@ if page == "Home":
     
     # CURSO SECTION - Module Cards with Paywall
     elif current_section == "curso":
-        st.markdown('<div class="section-title">Programa de Formação LPS</div>', unsafe_allow_html=True)
-        st.write("6 módulos completos para transformar sua liderança")
-        st.write("")
+        st.markdown('<div class="section-title">Programa de Formacao LPS</div>', unsafe_allow_html=True)
+        st.markdown('<p style="text-align: center; color: #000000; font-size: 1.1rem; margin-bottom: 2rem;">6 modulos completos para transformar sua lideranca</p>', unsafe_allow_html=True)
+        
+        # Premium Module Card CSS
+        st.markdown("""
+            <style>
+            .premium-module-card {
+                background-color: #0D3B66;
+                border-radius: 12px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                min-height: 280px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            .premium-module-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            }
+            .premium-module-icon {
+                font-size: 2.5rem;
+                text-align: center;
+                margin-bottom: 0.75rem;
+            }
+            .premium-module-title {
+                color: #F4D35E;
+                font-size: 1.15rem;
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 0.75rem;
+            }
+            .premium-module-desc {
+                color: #FFFFFF;
+                font-size: 0.9rem;
+                line-height: 1.5;
+                text-align: center;
+            }
+            </style>
+        """, unsafe_allow_html=True)
         
         # Module Cards Grid - 2 rows of 3
         row1 = st.columns(3)
@@ -2457,18 +2493,18 @@ if page == "Home":
                 mod = MODULES_DATA[idx]
                 with col:
                     st.markdown(f"""
-                        <div class="module-card">
-                            <div class="module-icon">{mod['icon']}</div>
-                            <div class="module-title">{mod['name'].split(': ')[1]}</div>
-                            <div class="module-desc">{mod['description']}</div>
+                        <div class="premium-module-card">
+                            <div class="premium-module-icon">{mod['icon']}</div>
+                            <div class="premium-module-title">{mod['title']}</div>
+                            <div class="premium-module-desc">{mod['description']}</div>
                         </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Ver Conteúdo", key=f"btn_mod_{mod['id']}", use_container_width=True):
-                        st.session_state.selected_module = mod['id']
+                    if st.button("Saiba Mais", key=f"btn_mod_{mod['id']}", use_container_width=True):
                         if not st.session_state.authenticated:
                             st.session_state.show_login_modal = True
                             st.rerun()
                         else:
+                            st.session_state.selected_module = mod['id']
                             st.session_state.page = "LPS Curso"
                             st.rerun()
         
@@ -2480,25 +2516,33 @@ if page == "Home":
                 mod = MODULES_DATA[mod_idx]
                 with col:
                     st.markdown(f"""
-                        <div class="module-card">
-                            <div class="module-icon">{mod['icon']}</div>
-                            <div class="module-title">{mod['name'].split(': ')[1]}</div>
-                            <div class="module-desc">{mod['description']}</div>
+                        <div class="premium-module-card">
+                            <div class="premium-module-icon">{mod['icon']}</div>
+                            <div class="premium-module-title">{mod['title']}</div>
+                            <div class="premium-module-desc">{mod['description']}</div>
                         </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Ver Conteúdo", key=f"btn_mod_{mod['id']}", use_container_width=True):
-                        st.session_state.selected_module = mod['id']
+                    if st.button("Saiba Mais", key=f"btn_mod_{mod['id']}", use_container_width=True):
                         if not st.session_state.authenticated:
                             st.session_state.show_login_modal = True
                             st.rerun()
                         else:
+                            st.session_state.selected_module = mod['id']
                             st.session_state.page = "LPS Curso"
                             st.rerun()
         
-        # Paywall Modal
+        # Paywall Modal for non-logged users
         if st.session_state.show_login_modal:
             st.write("")
-            render_paywall()
+            st.markdown(f"""
+                <div style="background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #F4D35E; margin: 1rem 0;">
+                    <h3 style="color: #0D3B66; margin-top: 0;">Conteudo Exclusivo para Alunos</h3>
+                    <p style="color: #333;">O acesso ao curso completo e liberado apos a confirmacao do pagamento. Entre em contato via WhatsApp para adquirir seu acesso.</p>
+                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 0.5rem;">
+                        Falar com Consultor
+                    </a>
+                </div>
+            """, unsafe_allow_html=True)
             if st.button("Fechar", key="close_modal"):
                 st.session_state.show_login_modal = False
                 st.rerun()
@@ -2508,8 +2552,8 @@ if page == "Home":
         cta_cols = st.columns([1, 2, 1])
         with cta_cols[1]:
             st.markdown(f"""
-                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.1rem;">
-                    💬 Comprar Curso Completo
+                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.1rem; background-color: #F4D35E; color: #0D3B66;">
+                    Comprar Curso Completo
                 </a>
             """, unsafe_allow_html=True)
     
