@@ -74,6 +74,20 @@ Preferred communication style: Simple, everyday language.
 - **Interface**: Elegant blue (#0D3B66) and gold (#F4D35E) themed chat with team context cards and example questions
 - **API Key**: Uses st.secrets["GOOGLE_API_KEY"] for authentication
 
+### Export System
+- **PDF Generation**: Uses ReportLab library with custom LPS branding
+- **Logo Integration**: Official LPS logo (attached_assets/logotipo_1768443722848.jpeg) in PDF header
+- **PDF Types**:
+  - Team Report: Complete team assessment with employee table and Bion role distribution
+  - Individual Report: Single employee profile with detailed assessment results
+  - AI Analysis Report: LPSChat conversation insights with team composition
+- **Chart Export**: Matplotlib PNG with pie/bar charts showing profile distribution
+- **CSV Export**: Team data in spreadsheet format
+- **Export Locations**:
+  - Team Management "Resultados da Equipe" tab: CSV, PDF, and Chart buttons
+  - Individual employee cards: CSV and PDF buttons
+  - LPSChat: "Exportar Analise (PDF)" button for AI insights
+
 ### Automated Email System
 - **SMTP Configuration**: Uses placeholders for later configuration (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM_NAME, SMTP_FROM_EMAIL)
 - **Email Triggers**:
