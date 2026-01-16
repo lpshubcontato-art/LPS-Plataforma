@@ -18,10 +18,18 @@ Preferred communication style: Simple, everyday language.
 - **Database**: SQLite (lps_data.db) with users, managers, employees, course_progress tables
 
 ### Authentication System
-- **Password Hashing**: SHA-256 for credential storage
+- **Password Hashing**: bcrypt with 12 rounds for secure credential storage
+- **Legacy Support**: verify_password() handles both bcrypt and legacy SHA-256 hashes
+- **Auto-Upgrade**: upgrade_password_hash() migrates SHA-256 to bcrypt on login
 - **Session Management**: Streamlit session_state for authenticated sessions
 - **User Types**: Managers (full access via login) and Employees (token-based access)
 - **Session Variables**: authenticated, user (id/name/email), manager_data, login_mode
+
+### Data Isolation (Multitenancy)
+- **Ownership Validation**: validate_manager_ownership(user_id, manager_id) checks manager belongs to user
+- **Secure Access**: get_secure_manager_employees(user_id, manager_id) wraps all data access
+- **Protected Functions**: TeamManagement, LPSChat, and AI insights use secure functions
+- **Isolation Guarantee**: Managers can only see their own team data
 
 ### Access Control
 - **Public Visitors**: Can view the Home page with sections (Sobre, Curso, LPSTest, LPSChat, Mentoria, Soluções, Contato)
@@ -56,8 +64,22 @@ Preferred communication style: Simple, everyday language.
 ### Database Tables
 - **users**: id, email, password_hash, name, user_type, created_at
 - **managers**: id, user_id, session_id, name, email, profile data, created_at
-- **employees**: id, manager_id, link_token, slot_number, profile data, bion_role
+- **employees**: id, manager_id, link_token, slot_number, profile data, bion_role, consent_given, consent_date
 - **course_progress**: id, user_id, progress_data, updated_at
+
+### Database Backup System
+- **Backup Directory**: backups/ folder with timestamped SQLite copies
+- **Auto-Backup**: auto_backup_on_startup() creates daily backups on application start
+- **Retention**: cleanup_old_backups() keeps the 5 newest backups, removes oldest
+- **Restore**: restore_from_backup() allows recovery to any available checkpoint
+- **Sorting**: Uses numeric timestamps for correct chronological ordering
+
+### LGPD Compliance
+- **Privacy Page**: Dedicated page explaining data collection, processing, and user rights
+- **Footer Link**: Privacy link accessible from all pages
+- **Consent Capture**: Checkbox in employee assessment form, required before submission
+- **Atomic Save**: Consent and assessment results saved together in single transaction
+- **User Rights**: Access, correction, deletion, and portability rights documented
 
 ### LPSChat AI Integration
 - **Model**: Google Gemini (gemini-1.5-flash)
