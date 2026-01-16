@@ -24,20 +24,28 @@ Preferred communication style: Simple, everyday language.
 - **Session Variables**: authenticated, user (id/name/email), manager_data, login_mode
 
 ### Access Control
-- **Public Visitors**: Can view the Vitrine (showcase) page with all course modules displayed as cards
-- **Managers**: Register/login via "Área do Aluno" button, see full sidebar with course and team management
+- **Public Visitors**: Can view the Home page with sections (Sobre, Curso, LPSTest, LPSChat, Mentoria, Soluções, Contato)
+- **Managers**: Register/login via "Entrar" button, access Dashboard with course progress and team management
 - **Employees**: Access via unique token URL (?token=xxx), see only Assessment page
-- **Content Gating**: Clicking module cards without login shows restriction modal with login/WhatsApp options
+- **Content Gating**: Protected content shows paywall message "Conteúdo exclusivo para alunos. Liberação apenas após confirmação de pagamento"
+- **LPSChat Access**: Only available after completing 5 theoretical modules (first 5 of 6)
 
 ### Page Structure
-- **Vitrine**: Public landing page showing 7 course modules in styled cards (4+3 grid layout)
-- **Login**: Authentication page accessible via "Área do Aluno" button
-- **Home**: Dashboard for logged-in managers
-- **LPS Curso**: Full course content (authenticated only)
-- **LPSTest**: Leadership assessment (authenticated only)
-- **Gestão de Equipe**: Team management with employee links (authenticated only)
-- **LPSChat**: AI consultant integration (authenticated only)
+- **Home**: Public landing page with hero section and navigation menu (8 sections)
+- **Login**: Authentication page accessible via "Entrar" button
+- **Dashboard**: Manager area with course progress bar, assessment stats, AI insights, mentoring CTA
+- **LPS Curso**: Full course content with 6 modules, progress saved to database
+- **LPSTest**: Leadership assessment (48 questions, Bion role mapping)
+- **TeamManagement**: Generate unique links for up to 4 employees, view team profiles
+- **LPSChat**: AI consultant (gated behind theoretical module completion)
 - **EmployeeAssessment**: Token-based employee assessment page
+
+### Dashboard Features (Manager Area)
+- **Course Progress**: Visual progress bars for each of 6 modules with overall percentage
+- **Assessment Stats**: Counter showing "Aplicados" vs "Restantes" (4-employee package limit)
+- **AI Insights**: Automated alerts about team (Bion role distribution, manager profile status)
+- **Mentoring CTA**: Button to schedule with Viviane Nishiura via WhatsApp
+- **Quick Access**: Buttons to Curso, LPSTest, Equipe, LPSChat (locked until course complete)
 
 ### Database Tables
 - **users**: id, email, password_hash, name, user_type, created_at
