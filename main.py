@@ -3065,20 +3065,33 @@ if page == "Home":
     
     # HOME SECTION - Hero
     if current_section == "home":
-        # Hero Section
+        # Banner 1 - Hero Section (Azure background)
         st.markdown("""
-            <div class="hero-section">
-                <div class="hero-title">Transforme Sua Liderança com a Ciência do Inconsciente</div>
-                <div class="hero-subtitle">
-                    Uma metodologia inovadora que une <strong>Psicanálise</strong> e <strong>Neurociência</strong><br>
-                    para desenvolver líderes mais conscientes, empáticos e eficazes.
-                </div>
+            <div style="background-color: #18738c; padding: 4rem 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
+                <h1 style="color: white; font-size: 3rem; margin: 0; font-family: 'Open Sans', sans-serif; font-weight: 800;">
+                    Lideranca Psicanalitica
+                </h1>
+                <p style="color: #d19f09; font-size: 1.5rem; margin-top: 1rem; font-family: 'Ubuntu', sans-serif;">
+                    A ciencia por tras da gestao de pessoas
+                </p>
             </div>
         """, unsafe_allow_html=True)
         
         # Video Intro
         st.write("")
         vimeo_video("https://vimeo.com/1154882598")
+        
+        # Banner 2 - Second Hero (Yellow accent)
+        st.markdown("""
+            <div style="background: linear-gradient(135deg, #d19f09 0%, #e6b82e 100%); padding: 3rem 2rem; border-radius: 15px; margin: 2rem 0; text-align: center;">
+                <h2 style="color: #18738c; font-size: 2.2rem; margin: 0; font-family: 'Open Sans', sans-serif; font-weight: 700;">
+                    Transforme sua Lideranca
+                </h2>
+                <p style="color: #18738c; font-size: 1.2rem; margin-top: 1rem; font-family: 'Ubuntu', sans-serif; opacity: 0.9;">
+                    Entenda as dinamicas invisiveis que travam sua equipe
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
         
         # Features
         st.write("---")
@@ -3087,24 +3100,30 @@ if page == "Home":
         feat_cols = st.columns(3)
         with feat_cols[0]:
             st.markdown("""
-                <div style="text-align: center; padding: 1rem;">
-                    <div style="font-size: 2.5rem;">🧠</div>
-                    <h4 style="color: #18738c;">Neurociência + Psicanálise</h4>
-                    <p style="color: #666;">Metodologia única que une ciência do cérebro com análise profunda do comportamento.</p>
+                <div style="text-align: center; padding: 1rem; background-color: #f8f9fa; border-radius: 10px; border: 2px solid #18738c;">
+                    <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background-color: #18738c; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; font-weight: bold; font-size: 1.5rem;">N+P</span>
+                    </div>
+                    <h4 style="color: #18738c;">Neurociencia + Psicanalise</h4>
+                    <p style="color: #666;">Metodologia unica que une ciencia do cerebro com analise profunda do comportamento.</p>
                 </div>
             """, unsafe_allow_html=True)
         with feat_cols[1]:
             st.markdown("""
-                <div style="text-align: center; padding: 1rem;">
-                    <div style="font-size: 2.5rem;">📊</div>
+                <div style="text-align: center; padding: 1rem; background-color: #f8f9fa; border-radius: 10px; border: 2px solid #18738c;">
+                    <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background-color: #d19f09; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; font-weight: bold; font-size: 1.2rem;">48Q</span>
+                    </div>
                     <h4 style="color: #18738c;">Assessment Completo</h4>
-                    <p style="color: #666;">Descubra seu perfil de liderança e mapeie sua equipe com ferramentas exclusivas.</p>
+                    <p style="color: #666;">Descubra seu perfil de lideranca e mapeie sua equipe com ferramentas exclusivas.</p>
                 </div>
             """, unsafe_allow_html=True)
         with feat_cols[2]:
             st.markdown("""
-                <div style="text-align: center; padding: 1rem;">
-                    <div style="font-size: 2.5rem;">💬</div>
+                <div style="text-align: center; padding: 1rem; background-color: #f8f9fa; border-radius: 10px; border: 2px solid #18738c;">
+                    <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background-color: #18738c; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: white; font-weight: bold; font-size: 1.2rem;">IA</span>
+                    </div>
                     <h4 style="color: #18738c;">IA Consultora</h4>
                     <p style="color: #666;">Converse com a LPChat para receber insights personalizados sobre sua equipe.</p>
                 </div>
@@ -3116,7 +3135,7 @@ if page == "Home":
         with cta_cols[1]:
             st.markdown(f"""
                 <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.2rem;">
-                    💬 Comprar Curso / Solicitar Orçamento
+                    Comprar Curso / Solicitar Orcamento
                 </a>
             """, unsafe_allow_html=True)
     
