@@ -1462,7 +1462,9 @@ MODULES_DATA = [
         "icon": "🚀", 
         "file": "attached_assets/introdução_1768431876966.pdf", 
         "videos": [
-            "https://vimeo.com/1154502995"
+            "https://vimeo.com/1154502544",
+            "https://vimeo.com/1154502598",
+            "https://vimeo.com/1154502492"
         ]
     },
     {
@@ -1476,10 +1478,10 @@ MODULES_DATA = [
             "https://vimeo.com/1154503073",
             "https://vimeo.com/1154503122",
             "https://vimeo.com/1154503201",
-            "https://vimeo.com/1154503289",
-            "https://vimeo.com/1154503354",
-            "https://vimeo.com/1154503431",
-            "https://vimeo.com/1154503512"
+            "https://vimeo.com/1154503286",
+            "https://vimeo.com/1154503332",
+            "https://vimeo.com/1154502907",
+            "https://vimeo.com/1154502997"
         ]
     },
     {
@@ -1490,8 +1492,12 @@ MODULES_DATA = [
         "icon": "🌊", 
         "file": "attached_assets/Módulo_2_1768431876968.pdf", 
         "videos": [
+            "https://vimeo.com/1154504282",
             "https://vimeo.com/1154503918",
-            "https://vimeo.com/1154504282"
+            "https://vimeo.com/1154503996",
+            "https://vimeo.com/1154504129",
+            "https://vimeo.com/1154504216",
+            "https://vimeo.com/1154504054"
         ]
     },
     {
@@ -1502,8 +1508,11 @@ MODULES_DATA = [
         "icon": "🔄", 
         "file": "attached_assets/Módulo_3_1768431876969.pdf", 
         "videos": [
+            "https://vimeo.com/1154508629",
             "https://vimeo.com/1154508577",
-            "https://vimeo.com/1154508629"
+            "https://vimeo.com/1154508688",
+            "https://vimeo.com/1154508745",
+            "https://vimeo.com/1154508530"
         ]
     },
     {
@@ -1514,7 +1523,10 @@ MODULES_DATA = [
         "icon": "🪞", 
         "file": "attached_assets/Módulo_4_1768431876970.pdf", 
         "videos": [
-            "https://vimeo.com/1154510241"
+            "https://vimeo.com/1154509566",
+            "https://vimeo.com/1154509679",
+            "https://vimeo.com/1154509769",
+            "https://vimeo.com/1154509511"
         ]
     },
     {
@@ -1525,7 +1537,9 @@ MODULES_DATA = [
         "icon": "👥", 
         "file": "attached_assets/Módulo_5_1768431876971.pdf", 
         "videos": [
-            "https://vimeo.com/1154510682"
+            "https://vimeo.com/1154510241",
+            "https://vimeo.com/1154510404",
+            "https://vimeo.com/1154510309"
         ]
     },
     {
@@ -1536,8 +1550,10 @@ MODULES_DATA = [
         "icon": "🛠️", 
         "file": "attached_assets/Módulo_6_1768431876972.pdf", 
         "videos": [
-            "https://vimeo.com/1154510860",
-            "https://vimeo.com/1154511020"
+            "https://vimeo.com/1154510682",
+            "https://vimeo.com/1154510710",
+            "https://vimeo.com/1154510729",
+            "https://vimeo.com/1154510816"
         ]
     },
     {
@@ -1548,7 +1564,8 @@ MODULES_DATA = [
         "icon": "🏆", 
         "file": "attached_assets/Módulo_7_1768431876973.pdf", 
         "videos": [
-            "https://vimeo.com/1154511180"
+            "https://vimeo.com/1154511020",
+            "https://vimeo.com/1154511064"
         ]
     }
 ]
