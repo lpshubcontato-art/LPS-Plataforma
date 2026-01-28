@@ -1380,7 +1380,7 @@ if 'selected_module' not in st.session_state:
 WHATSAPP_URL = "https://wa.me/5511971419453"
 LOGO_PATH = "attached_assets/logotipo_2__1768529013163.jpeg"
 
-# Definições das questões do Assessment (8 por bloco)
+# Definições das questões do Assessment (10 por bloco = 70 questões totais)
 ASSESSMENT_QUESTIONS = {
     "Bloco 1 – Autoridade Interna e Autoimagem": [
         "Sinto que a equipe me observa de forma idealizada.",
@@ -1390,7 +1390,9 @@ ASSESSMENT_QUESTIONS = {
         "Às vezes, não sei se sou respeitado ou apenas temido.",
         "Quando recebo críticas, demoro a me recuperar internamente.",
         "Me esforço para parecer emocionalmente estável, mesmo quando não estou.",
-        "A percepção da equipe sobre mim influencia minhas decisões."
+        "A percepção da equipe sobre mim influencia minhas decisões.",
+        "Tenho dificuldade em aceitar elogios sem questionar sua sinceridade.",
+        "Minha autoimagem como líder oscila dependendo do feedback que recebo."
     ],
     "Bloco 2 – Contenção Emocional do Grupo": [
         "Em situações de crise, sou o primeiro a manter a calma.",
@@ -1400,7 +1402,9 @@ ASSESSMENT_QUESTIONS = {
         "Me preocupo com o impacto emocional das mudanças.",
         "Sei como evitar que o pânico da equipe tome conta.",
         "Tenho habilidade para resgatar a racionalidade do grupo.",
-        "Sinto que absorvo emocionalmente o clima da equipe."
+        "Sinto que absorvo emocionalmente o clima da equipe.",
+        "Consigo transmitir segurança mesmo em momentos de incerteza.",
+        "Minha presença ajuda a estabilizar o ambiente emocional do grupo."
     ],
     "Bloco 3 – Narcisismo e Reconhecimento": [
         "Me incomodo quando não sou reconhecido pelo meu esforço.",
@@ -1410,7 +1414,9 @@ ASSESSMENT_QUESTIONS = {
         "Preciso de reconhecimento frequente para me manter motivado.",
         "Evito demonstrar insegurança para não comprometer minha autoridade.",
         "Comparo minha liderança com a de outros colegas frequentemente.",
-        "Às vezes exagero meu valor para manter respeito."
+        "Às vezes exagero meu valor para manter respeito.",
+        "Fico incomodado quando alguém recebe mais destaque do que eu.",
+        "Minha motivação depende fortemente de como sou percebido pelos outros."
     ],
     "Bloco 4 – Estrutura e Lógica de Tarefa": [
         "Preciso de metas e estruturas bem definidas para funcionar.",
@@ -1420,7 +1426,9 @@ ASSESSMENT_QUESTIONS = {
         "Acredito que sem controle, as pessoas tendem ao caos.",
         "Prefiro manter a equipe ocupada, mesmo que sem urgência.",
         "Me estresso com prazos mal definidos.",
-        "Costumo antecipar problemas antes que eles ocorram."
+        "Costumo antecipar problemas antes que eles ocorram.",
+        "Sinto necessidade de ter tudo documentado e organizado.",
+        "Fico ansioso quando os processos fogem do planejado."
     ],
     "Bloco 5 – Relação com a Equipe e Projeções": [
         "Já senti que alguém da equipe me via como uma figura parental.",
@@ -1430,7 +1438,9 @@ ASSESSMENT_QUESTIONS = {
         "Tenho dificuldade em me distanciar emocionalmente de alguns colaboradores.",
         "Preciso manter uma certa 'armadura' para não ser afetado pela equipe.",
         "Costumo internalizar conflitos mesmo quando não são meus.",
-        "Às vezes, me sinto em uma posição emocionalmente isolada."
+        "Às vezes, me sinto em uma posição emocionalmente isolada.",
+        "Percebo que alguns me tratam como salvador ou como vilão.",
+        "Sinto que carrego o peso emocional das expectativas da equipe."
     ],
     "Bloco 6 – Reflexão, Crítica e Autoconsciência": [
         "Tenho facilidade em identificar minhas armadilhas emocionais.",
@@ -1440,7 +1450,21 @@ ASSESSMENT_QUESTIONS = {
         "Levo em conta as dinâmicas inconscientes ao lidar com conflitos.",
         "Aceito ajuda externa quando percebo que estou emocionalmente sobrecarregado.",
         "Consigo separar crítica pessoal de crítica à minha liderança.",
-        "Vejo a liderança como um processo psicológico, não só técnico."
+        "Vejo a liderança como um processo psicológico, não só técnico.",
+        "Busco feedback regularmente para melhorar minha atuação.",
+        "Reconheço quando meus vieses pessoais influenciam minhas decisões."
+    ],
+    "Bloco 7 – Relacional Reativo": [
+        "Evito conflitos mesmo quando seria necessário enfrentá-los.",
+        "Mudo de opinião facilmente para manter a harmonia no grupo.",
+        "Tenho medo de ser rejeitado ou criticado pela equipe.",
+        "Busco constantemente a aprovação de todos ao meu redor.",
+        "Tenho dificuldade em dizer 'não' para pedidos da equipe.",
+        "Me sinto ansioso quando percebo que alguém está insatisfeito comigo.",
+        "Adapto meu comportamento excessivamente para agradar os outros.",
+        "Evito dar feedback negativo por medo de magoar as pessoas.",
+        "Minha identidade como líder depende da aceitação do grupo.",
+        "Tenho dificuldade em manter uma posição firme sob pressão social."
     ]
 }
 
@@ -1450,7 +1474,8 @@ BLOCK_SHORT_NAMES = {
     "Bloco 3 – Narcisismo e Reconhecimento": "Narcisismo",
     "Bloco 4 – Estrutura e Lógica de Tarefa": "Estrutura",
     "Bloco 5 – Relação com a Equipe e Projeções": "Relação",
-    "Bloco 6 – Reflexão, Crítica e Autoconsciência": "Reflexão"
+    "Bloco 6 – Reflexão, Crítica e Autoconsciência": "Reflexão",
+    "Bloco 7 – Relacional Reativo": "Reativo"
 }
 
 BLOCK_TO_PROFILE = {
@@ -1459,7 +1484,8 @@ BLOCK_TO_PROFILE = {
     "Bloco 3 – Narcisismo e Reconhecimento": "🔥 Narciso Estratégico",
     "Bloco 4 – Estrutura e Lógica de Tarefa": "🏗 Estruturador",
     "Bloco 1 – Autoridade Interna e Autoimagem": "🪞 Espelho Emocional",
-    "Bloco 6 – Reflexão, Crítica e Autoconsciência": "🧠 Observador Reflexivo"
+    "Bloco 6 – Reflexão, Crítica e Autoconsciência": "🧠 Observador Reflexivo",
+    "Bloco 7 – Relacional Reativo": "🎭 Relacional Reativo"
 }
 
 # Mapeamento de Papéis de Bion baseado nas respostas
@@ -1471,19 +1497,23 @@ def classify_bion_role(block_sums):
     - Dependente: Alta Contenção + Baixa Autoridade (busca proteção no líder)
     - Líder de Luta-Fuga: Alto Narcisismo + Alta Estrutura (reativo a ameaças)
     - Sabotador Silencioso: Alta Estrutura + Baixa Reflexão (resiste passivamente)
+    - Harmonizador Ansioso: Alto Reativo + Alta Relação (evita conflitos a todo custo)
     """
-    autoridade = block_sums.get("Autoridade", 24)
-    contencao = block_sums.get("Contenção", 24)
-    narcisismo = block_sums.get("Narcisismo", 24)
-    estrutura = block_sums.get("Estrutura", 24)
-    relacao = block_sums.get("Relação", 24)
-    reflexao = block_sums.get("Reflexão", 24)
+    autoridade = block_sums.get("Autoridade", 25)
+    contencao = block_sums.get("Contenção", 25)
+    narcisismo = block_sums.get("Narcisismo", 25)
+    estrutura = block_sums.get("Estrutura", 25)
+    relacao = block_sums.get("Relação", 25)
+    reflexao = block_sums.get("Reflexão", 25)
+    reativo = block_sums.get("Reativo", 25)
     
-    # Thresholds
-    high = 30
-    low = 20
+    # Thresholds ajustados para 10 questões x 5 pontos = 50 max por bloco
+    high = 35
+    low = 25
     
-    if autoridade >= high and reflexao >= high:
+    if reativo >= high and relacao >= high:
+        return "🕊️ Harmonizador Ansioso"
+    elif autoridade >= high and reflexao >= high:
         return "🎤 Porta-voz"
     elif relacao >= high and contencao <= low:
         return "🐐 Bode Expiatório"
@@ -1502,6 +1532,7 @@ BION_DESCRIPTIONS = {
     "🤝 Dependente": "Busca proteção e direção no líder. Evita autonomia e delega responsabilidade emocional.",
     "⚔️ Líder de Luta-Fuga": "Reativo a ameaças reais ou imaginárias. Mobiliza o grupo para atacar ou fugir.",
     "🔇 Sabotador Silencioso": "Resiste passivamente às mudanças. Cumpre tarefas sem engajamento emocional.",
+    "🕊️ Harmonizador Ansioso": "Evita conflitos a todo custo. Busca manter harmonia mesmo sacrificando a autenticidade.",
     "⚖️ Neutro/Adaptável": "Perfil equilibrado. Adapta-se às necessidades do grupo sem assumir papel fixo."
 }
 
@@ -1531,6 +1562,11 @@ PROFILES_DB = {
             "forcas": "✔ Capacidade ímpar de adaptação ao grupo. ✔ Constrói confiança e acolhimento rapidamente. ✔ Sensível às dinâmicas invisíveis da equipe.",
             "riscos": "⚠ Pode perder autenticidade tentando corresponder a todas as expectativas. ⚠ Pode se frustrar com rejeições ou incompreensões sutis.",
             "recomendacoes": "➡ Mantenha contato com sua identidade, além da imagem percebida. ➡ Fortaleça a liderança com base em valores, não só em aceitação."
+        },
+        "🎭 Relacional Reativo": {
+            "forcas": "✔ Combinação de proteção com diplomacia. ✔ Excelente em criar ambientes seguros e harmoniosos. ✔ Sabe quando intervir e quando deixar fluir.",
+            "riscos": "⚠ Pode evitar conflitos necessários para manter a paz. ⚠ Tendência a proteger demais, sufocando o crescimento.",
+            "recomendacoes": "➡ Permita que conflitos saudáveis ocorram. ➡ Confie na capacidade do grupo de se autorregular."
         }
     },
     "🧱 Contenedor": {
@@ -1558,6 +1594,11 @@ PROFILES_DB = {
             "forcas": "✔ Capacidade empática refinada. ✔ Leitura intuitiva das emoções do grupo. ✔ Inspira confiança e conexão não verbal.",
             "riscos": "⚠ Pode internalizar dores que não são suas. ⚠ Pode moldar seu comportamento em excesso para evitar desarmonia.",
             "recomendacoes": "➡ Cuide da sua identidade enquanto cuida dos outros. ➡ Use sua empatia como ferramenta, não como identidade central."
+        },
+        "🎭 Relacional Reativo": {
+            "forcas": "✔ Combinação de contenção com diplomacia. ✔ Excelente em manter a estabilidade enquanto navega conflitos. ✔ Capacidade de absorver tensões mantendo a harmonia.",
+            "riscos": "⚠ Pode reprimir demais as próprias emoções para manter o grupo. ⚠ Tendência a evitar posições firmes.",
+            "recomendacoes": "➡ Expresse suas necessidades sem medo de desagradar. ➡ Lembre-se que sua autenticidade fortalece o grupo."
         }
     },
     "🔥 Narciso Estratégico": {
@@ -1585,6 +1626,11 @@ PROFILES_DB = {
             "forcas": "✔ Carisma adaptável e leitura refinada do ambiente. ✔ Conecta-se facilmente com diferentes públicos. ✔ Usa a percepção social para influenciar positivamente.",
             "riscos": "⚠ Pode se perder entre a imagem que projeta e quem realmente é. ⚠ Vulnerável à manipulação por buscar aprovação excessiva.",
             "recomendacoes": "➡ Mantenha uma âncora interna de valores além da aprovação. ➡ Reflita sobre suas motivações mais profundas."
+        },
+        "🎭 Relacional Reativo": {
+            "forcas": "✔ Combinação de carisma com sensibilidade relacional. ✔ Excelente em criar conexões e manter harmonia. ✔ Influência positiva através da diplomacia.",
+            "riscos": "⚠ Pode buscar aprovação de forma excessiva. ⚠ Tendência a evitar posições que possam gerar rejeição.",
+            "recomendacoes": "➡ Construa sua identidade independente do feedback externo. ➡ Aceite que nem todos vão aprová-lo sempre."
         }
     },
     "🏗 Estruturador": {
@@ -1612,6 +1658,11 @@ PROFILES_DB = {
             "forcas": "✔ Cria processos que promovem colaboração e minimizam atritos. ✔ Comunica regras de forma clara e diplomática. ✔ Ambiente organizado, previsível e com baixo conflito.",
             "riscos": "⚠ Pode criar regras para evitar conversas difíceis. ⚠ Pode sacrificar agilidade em nome da harmonia e ordem.",
             "recomendacoes": "➡ Use a clareza dos processos para abordar conflitos de forma construtiva. ➡ Equilibre ordem com flexibilidade."
+        },
+        "🎭 Relacional Reativo": {
+            "forcas": "✔ Combinação de organização com sensibilidade relacional. ✔ Cria estruturas que acomodam diferentes estilos. ✔ Processos desenhados para minimizar conflitos.",
+            "riscos": "⚠ Pode usar estruturas para evitar conversas difíceis. ⚠ Tendência a criar regras demais para manter a paz.",
+            "recomendacoes": "➡ Use a estrutura para facilitar conversas, não para evitá-las. ➡ Aceite que alguma incerteza é saudável."
         }
     },
     "🪞 Espelho Emocional": {
@@ -1639,6 +1690,11 @@ PROFILES_DB = {
             "forcas": "✔ Excepcional inteligência emocional e interpessoal. ✔ Habilidade de ler entrelinhas e compreender motivações ocultas. ✔ Pode ser excelente coach ou mentor.",
             "riscos": "⚠ Risco de paralisia por análise nas relações. ⚠ Pode usar compreensão para evitar confrontos necessários.",
             "recomendacoes": "➡ Use sua compreensão para agir com coragem e autenticidade. ➡ Equilibre observação com expressão genuína."
+        },
+        "🎭 Relacional Reativo": {
+            "forcas": "✔ Altíssima capacidade de leitura emocional e adaptação. ✔ Excelente em navegar dinâmicas complexas. ✔ Cria ambientes de alta conexão e empatia.",
+            "riscos": "⚠ Risco extremo de perder a própria identidade. ⚠ Pode se moldar tanto que perde autenticidade.",
+            "recomendacoes": "➡ Fortaleça sua identidade central independente do grupo. ➡ Pratique manter posições mesmo sob pressão social."
         }
     },
     "🧠 Observador Reflexivo": {
@@ -1666,6 +1722,43 @@ PROFILES_DB = {
             "forcas": "✔ Excepcional inteligência emocional e interpessoal. ✔ Habilidade de ler entrelinhas e compreender motivações ocultas. ✔ Adapta-se às necessidades do grupo com consciência.",
             "riscos": "⚠ Risco de paralisia pela análise das relações. ⚠ Pode usar a compreensão para evitar confrontos ou manipular sutilmente.",
             "recomendacoes": "➡ Use sua compreensão para construir relações autênticas, mesmo que envolvam conflito. ➡ Equilibre a cabeça e o coração."
+        },
+        "🎭 Relacional Reativo": {
+            "forcas": "✔ Combinação de profundidade analítica com sensibilidade relacional. ✔ Excelente em compreender dinâmicas de grupo. ✔ Capacidade de mediar e harmonizar conflitos.",
+            "riscos": "⚠ Pode usar a análise para evitar posições firmes. ⚠ Tende a sobre-analisar reações dos outros antes de agir.",
+            "recomendacoes": "➡ Use sua análise para agir, não para evitar. ➡ Confie em suas percepções e tome posição."
+        }
+    },
+    "🎭 Relacional Reativo": {
+        "🛡 Protetor": {
+            "forcas": "✔ Alta sensibilidade às necessidades emocionais do grupo. ✔ Excelente em criar ambientes acolhedores. ✔ Capacidade de antecipar conflitos antes que explodam.",
+            "riscos": "⚠ Pode evitar confrontos necessários para manter a paz. ⚠ Tendência a absorver as emoções negativas do grupo.",
+            "recomendacoes": "➡ Aprenda que conflito saudável fortalece relacionamentos. ➡ Estabeleça limites claros para proteger sua energia."
+        },
+        "🧱 Contenedor": {
+            "forcas": "✔ Combinação de diplomacia com estabilidade emocional. ✔ Excelente em acalmar situações tensas. ✔ Capacidade de absorver ansiedade sem desestabilizar.",
+            "riscos": "⚠ Pode se tornar refém das expectativas do grupo. ⚠ Risco de reprimir suas próprias necessidades para manter harmonia.",
+            "recomendacoes": "➡ Equilibre a contenção com a expressão de suas necessidades. ➡ Lembre-se que sua estabilidade não precisa ser perfeita."
+        },
+        "🔥 Narciso Estratégico": {
+            "forcas": "✔ Habilidade diplomática aliada a carisma natural. ✔ Excelente em criar conexões e gerar admiração. ✔ Sabe como influenciar mantendo a harmonia.",
+            "riscos": "⚠ Pode buscar aprovação de forma excessiva. ⚠ Frustração quando não recebe o reconhecimento esperado.",
+            "recomendacoes": "➡ Construa sua identidade independente da aprovação externa. ➡ Reconheça seu valor além das validações do grupo."
+        },
+        "🏗 Estruturador": {
+            "forcas": "✔ Capacidade de criar estruturas que promovem harmonia. ✔ Excelente em organizar equipes de forma que minimize conflitos. ✔ Processos desenhados para acolher diferentes perfis.",
+            "riscos": "⚠ Pode criar estruturas rígidas para evitar a incerteza relacional. ⚠ Tendência a controlar para evitar desaprovação.",
+            "recomendacoes": "➡ Permita flexibilidade nas estruturas para acomodar o humano. ➡ Aceite que nem todos os processos podem evitar conflitos."
+        },
+        "🪞 Espelho Emocional": {
+            "forcas": "✔ Altíssima sensibilidade emocional e adaptabilidade. ✔ Excelente em ler ambientes e ajustar comportamento. ✔ Cria conexões rápidas e profundas.",
+            "riscos": "⚠ Risco extremo de perder autenticidade. ⚠ Pode se moldar tanto que perde identidade própria.",
+            "recomendacoes": "➡ Fortaleça sua identidade central independente do grupo. ➡ Pratique manter posições mesmo sob pressão social."
+        },
+        "🧠 Observador Reflexivo": {
+            "forcas": "✔ Combinação de análise profunda com sensibilidade relacional. ✔ Excelente em compreender dinâmicas ocultas. ✔ Capacidade de insight sobre o funcionamento do grupo.",
+            "riscos": "⚠ Pode usar análise como defesa contra a ação. ⚠ Tendência a hesitar por medo de errar nas relações.",
+            "recomendacoes": "➡ Transforme insights em ações concretas. ➡ Aceite que errar faz parte do crescimento relacional."
         }
     }
 }
@@ -1836,7 +1929,7 @@ def render_sidebar_navigation():
     key_prefix = f"sb_{page_ctx}_"
     
     with st.sidebar:
-        # Sidebar CSS styling - Premium Design + Toggle Button Styles
+        # Sidebar CSS styling - Premium Design with Native Toggle Styled
         st.markdown("""
             <style>
             /* Global page background */
@@ -1850,12 +1943,25 @@ def render_sidebar_navigation():
             .stApp .stMarkdown p, .stApp .stMarkdown li, .stApp .stMarkdown span {
                 color: #000000;
             }
-            /* Hide default Streamlit sidebar toggle button */
-            button[kind="header"] {
-                display: none !important;
-            }
+            /* Style the native Streamlit sidebar toggle button - Azure color */
             [data-testid="collapsedControl"] {
-                display: none !important;
+                background-color: #18738c !important;
+                border-radius: 8px !important;
+                border: none !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+            }
+            [data-testid="collapsedControl"] svg {
+                fill: white !important;
+                stroke: white !important;
+            }
+            [data-testid="collapsedControl"]:hover {
+                background-color: #1a8ba6 !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+            }
+            /* Also style any header buttons */
+            button[kind="header"] {
+                background-color: #18738c !important;
+                color: white !important;
             }
             /* Sidebar styling */
             [data-testid="stSidebar"] {
@@ -1864,6 +1970,29 @@ def render_sidebar_navigation():
             }
             [data-testid="stSidebar"] > div:first-child {
                 background-color: #18738c !important;
+            }
+            /* Sidebar close button (X) - Yellow styling */
+            [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] button,
+            [data-testid="stSidebar"] button[aria-label="Close sidebar"] {
+                background-color: transparent !important;
+                border: 2px solid #d19f09 !important;
+                color: #d19f09 !important;
+                border-radius: 8px !important;
+            }
+            [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] button:hover,
+            [data-testid="stSidebar"] button[aria-label="Close sidebar"]:hover {
+                background-color: #d19f09 !important;
+                color: #18738c !important;
+            }
+            [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] svg,
+            [data-testid="stSidebar"] button[aria-label="Close sidebar"] svg {
+                fill: #d19f09 !important;
+                stroke: #d19f09 !important;
+            }
+            [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"]:hover svg,
+            [data-testid="stSidebar"] button[aria-label="Close sidebar"]:hover svg {
+                fill: #18738c !important;
+                stroke: #18738c !important;
             }
             /* Sidebar buttons */
             [data-testid="stSidebar"] .stButton > button {
@@ -1891,26 +2020,6 @@ def render_sidebar_navigation():
             }
             [data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
                 background-color: #e6c654 !important;
-            }
-            /* Close button inside sidebar - Yellow styling */
-            .sidebar-close-btn {
-                background-color: transparent;
-                border: 2px solid #d19f09;
-                color: #d19f09;
-                padding: 0.5rem 1rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 1rem;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin: 0.75rem auto 1rem auto;
-                transition: all 0.2s ease;
-            }
-            .sidebar-close-btn:hover {
-                background-color: #d19f09;
-                color: #18738c;
             }
             /* Logo container - Full width, no borders */
             .sidebar-logo-container {
@@ -1962,155 +2071,18 @@ def render_sidebar_navigation():
             a[href*="wa.me"], a[href*="whatsapp"] {
                 color: #000000 !important;
             }
-            /* Hamburger menu button in header - Azure styling */
-            .hamburger-menu-btn {
-                position: fixed;
-                top: 0.75rem;
-                left: 1rem;
-                z-index: 999999;
-                background-color: #18738c;
-                border: none;
-                color: white;
-                padding: 0.6rem 0.8rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 1.3rem;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                transition: all 0.2s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .hamburger-menu-btn:hover {
-                background-color: #1a8ba6;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            }
-            /* Dark mode support */
-            @media (prefers-color-scheme: dark) {
-                .hamburger-menu-btn {
-                    background-color: #18738c;
-                    color: white;
-                    box-shadow: 0 2px 8px rgba(255,255,255,0.1);
-                }
-                .hamburger-menu-btn:hover {
-                    background-color: #1a8ba6;
-                }
+            /* Ensure banner doesn't overlap toggle button */
+            .main .block-container {
+                padding-top: 3rem !important;
             }
             </style>
         """, unsafe_allow_html=True)
-        
-        # Inject JavaScript for hamburger button via components.html
-        components.html("""
-            <script>
-            // Create hamburger menu button in header
-            (function() {
-                const parentDoc = window.parent.document;
-                
-                // Check if hamburger already exists
-                if (parentDoc.querySelector('.hamburger-menu-btn')) return;
-                
-                // Create hamburger button
-                const hamburger = parentDoc.createElement('button');
-                hamburger.className = 'hamburger-menu-btn';
-                hamburger.innerHTML = '&#9776;';
-                hamburger.title = 'Abrir Menu';
-                
-                // Apply inline styles for reliability
-                hamburger.style.cssText = `
-                    position: fixed;
-                    top: 0.75rem;
-                    left: 1rem;
-                    z-index: 999999;
-                    background-color: #18738c;
-                    border: none;
-                    color: white;
-                    padding: 0.6rem 0.8rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-size: 1.3rem;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                `;
-                
-                hamburger.onmouseover = function() {
-                    this.style.backgroundColor = '#1a8ba6';
-                    this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-                };
-                hamburger.onmouseout = function() {
-                    this.style.backgroundColor = '#18738c';
-                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-                };
-                
-                // Click handler to open sidebar
-                hamburger.onclick = function() {
-                    const sidebar = parentDoc.querySelector('[data-testid="stSidebar"]');
-                    const collapseBtn = parentDoc.querySelector('[data-testid="collapsedControl"]');
-                    
-                    if (collapseBtn) {
-                        collapseBtn.click();
-                    } else if (sidebar) {
-                        sidebar.setAttribute('data-expanded', 'true');
-                        sidebar.style.marginLeft = '0';
-                        sidebar.style.width = '21rem';
-                        window.parent.dispatchEvent(new Event('resize'));
-                    }
-                };
-                
-                // Append to body
-                parentDoc.body.appendChild(hamburger);
-            })();
-            </script>
-        """, height=0)
         
         # Logo Only (Full Width, No Text Title)
         st.markdown('<div class="sidebar-logo-container">', unsafe_allow_html=True)
         if os.path.exists(LOGO_PATH):
             st.image(LOGO_PATH, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
-        
-        # Close button inside sidebar (Yellow accent) - using components.html for JavaScript execution
-        components.html("""
-            <style>
-                .sidebar-close-btn {
-                    background-color: transparent;
-                    border: 2px solid #d19f09;
-                    color: #d19f09;
-                    padding: 0.5rem 1rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                    font-weight: bold;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    margin: 0.5rem auto;
-                    transition: all 0.2s ease;
-                    font-family: 'Ubuntu', sans-serif;
-                }
-                .sidebar-close-btn:hover {
-                    background-color: #d19f09;
-                    color: #18738c;
-                }
-            </style>
-            <button class="sidebar-close-btn" onclick="
-                const parentDoc = window.parent.document;
-                const collapseBtn = parentDoc.querySelector('[data-testid=&quot;collapsedControl&quot;]');
-                if (collapseBtn) {
-                    collapseBtn.click();
-                } else {
-                    const sidebar = parentDoc.querySelector('[data-testid=&quot;stSidebar&quot;]');
-                    if (sidebar) {
-                        sidebar.style.marginLeft = '-21rem';
-                        window.parent.dispatchEvent(new Event('resize'));
-                    }
-                }
-            ">
-                <span style="font-size: 1.2rem;">&#8592;</span> Fechar Menu
-            </button>
-        """, height=50)
         
         # Login/User Section at Top
         if st.session_state.authenticated:
@@ -2792,17 +2764,18 @@ def generate_team_chart(employees_data, manager_name):
     return buffer.getvalue()
 
 def generate_radar_chart(block_sums, profile_name=""):
-    """Generate a radar chart showing the 6 axes of the assessment."""
+    """Generate a radar chart showing the 7 axes of the assessment."""
     import numpy as np
     
-    # Define the 6 axes with short names
+    # Define the 7 axes with short names
     categories = [
         'Autoridade\nInterna',
         'Contencao\nEmocional',
         'Narcisismo\nReconhecimento',
         'Estrutura\nOrdem',
         'Relacao\nEmpatia',
-        'Reflexao\nObservacao'
+        'Reflexao\nObservacao',
+        'Relacional\nReativo'
     ]
     
     # Map full block names to short names for data extraction
@@ -2812,15 +2785,16 @@ def generate_radar_chart(block_sums, profile_name=""):
         "Bloco 3 – Narcisismo e Reconhecimento",
         "Bloco 4 – Estrutura e Lógica de Tarefa",
         "Bloco 5 – Relação com a Equipe e Projeções",
-        "Bloco 6 – Reflexão, Crítica e Autoconsciência"
+        "Bloco 6 – Reflexão, Crítica e Autoconsciência",
+        "Bloco 7 – Relacional Reativo"
     ]
     
-    # Get values (max is 40 for each block - 8 questions x 5 points)
+    # Get values (max is 50 for each block - 10 questions x 5 points)
     values = []
     for key in block_keys:
-        val = block_sums.get(key, 24)  # Default to midpoint if not found
+        val = block_sums.get(key, 25)  # Default to midpoint if not found
         # Normalize to percentage (0-100)
-        normalized = (val / 40) * 100
+        normalized = (val / 50) * 100
         values.append(normalized)
     
     # Number of variables

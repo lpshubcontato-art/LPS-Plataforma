@@ -43,7 +43,7 @@ Preferred communication style: Simple, everyday language.
 - **Login**: Authentication page accessible via "Entrar" button
 - **Dashboard**: Manager area with course progress bar, assessment stats, AI insights, mentoring CTA
 - **LPS Curso**: Full course content with 8 modules (Introduction + 7 Modules), progress saved to database
-- **LPSTest**: Leadership assessment (48 questions, Bion role mapping)
+- **LPSTest**: Leadership assessment (70 questions in 7 blocks, 7-axis radar chart, Bion role mapping)
 - **TeamManagement**: Tabbed interface with "Gerar Convites" (link generation) and "Resultados da Equipe" (completed results + CSV exports)
 - **LPSChat**: AI consultant (gated behind theoretical module completion)
 - **EmployeeAssessment**: Token-based employee assessment page with Thank You page after completion
@@ -71,13 +71,13 @@ Preferred communication style: Simple, everyday language.
 - **WhatsApp Support**: Direct link to contact support team
 
 ### Profile System (PROFILES_DB)
-- **30 Profile Combinations**: 6 archetypes × 5 secondary profiles each
-- **Archetypes**: 🛡 Protetor, 🧱 Contenedor, 🔥 Narciso Estratégico, 🏗 Estruturador, 🪞 Espelho Emocional, 🧠 Observador Reflexivo
+- **42 Profile Combinations**: 7 archetypes × 6 secondary profiles each
+- **Archetypes**: 🛡 Protetor, 🧱 Contenedor, 🔥 Narciso Estratégico, 🏗 Estruturador, 🪞 Espelho Emocional, 🧠 Observador Reflexivo, 🎭 Relacional Reativo
 - **Each Combination Contains**: Forças (strengths), Riscos (risks), Recomendações (recommendations)
 
 ### Radar Chart Visualization
-- **6 Axes**: Autoridade Interna, Contenção Emocional, Narcisismo/Reconhecimento, Estrutura/Ordem, Relação/Empatia, Reflexão/Observação
-- **Data Source**: Assessment responses aggregated by block (max 40 points per block, 8 questions × 5 points)
+- **7 Axes**: Autoridade Interna, Contenção Emocional, Narcisismo/Reconhecimento, Estrutura/Ordem, Relação/Empatia, Reflexão/Observação, Relacional Reativo
+- **Data Source**: Assessment responses aggregated by block (max 50 points per block, 10 questions × 5 points)
 - **Normalization**: Percentages 0-100% for visual display
 - **Colors**: Navy Blue (#0D3B66) fill, Gold (#F4D35E) markers
 
