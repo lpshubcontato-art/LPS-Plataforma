@@ -1,0 +1,44 @@
+Agent, acabei de carregar os documentos técnicos (.docx e .pdf) na pasta do projeto. Eles contêm a metodologia oficial da Liderança Psicanalítica. Siga estas instruções para configurar o Cérebro Analítico da plataforma agora:
+
+1. Instrução de Leitura e Base de Conhecimento
+Leia todos os arquivos carregados (Especialmente: 'Assessment Psicanalítico do Líder', 'Resumo Kernberg/Bion', 'Transferência', 'Neurociência' e 'Definição de Liderança'). Estes documentos são a sua única fonte de verdade para análises.
+
+2. Configuração do Sistema de Laudos (LPSTest)
+Implemente a lógica de cálculo dos Arquétipos baseada nos 6 blocos do PDF:
+
+Cálculo: O bloco com maior pontuação média define o Arquétipo Dominante. O segundo maior define o Arquétipo Secundário.
+
+Conteúdo: Use as descrições exatas do arquivo '✅ Assessment Psicanalítico do Líder' para compor o texto do relatório final, incluindo Forças, Riscos e Recomendações.
+
+3. Inteligência do LPSChat (System Prompt)
+Configure a IA (Gemini) para atuar como uma consultora sênior que utiliza:
+
+Círculo de Segurança (Sinek): Analisar níveis de Cortisol vs. EDSO (Oxitocina, etc).
+
+Pressupostos Básicos (Bion): Identificar se o grupo está em 'Tarefa' ou 'Dependência/Luta e Fuga'.
+
+Transferência: Interpretar comportamentos da equipe como deslocamentos de figuras parentais para o líder.
+
+Bloqueios Mentais: Se o gestor relatar dificuldades (ex: feedback, falar em público), sugira soluções baseadas nos conceitos de Narcisismo Sadio e Estrutura Administrativa contidos nos documentos.
+
+4. Visual do Dashboard
+No painel do Gestor, crie um Gráfico de Radar (Radar Chart) que exiba o desempenho nos 6 eixos:
+
+Autoridade Interna
+
+Contenção Emocional
+
+Narcisismo e Reconhecimento
+
+Estrutura e Ordem
+
+Relação e Empatia
+
+Reflexão e Observação
+
+5. Regras Finais
+Remova qualquer menção a pagamentos automáticos; mantenha o botão de suporte via WhatsApp.
+
+Garanta que os laudos gerados possam ser visualizados na tela e exportados para PDF com a paleta Azul (#0D3B66) e Dourado (#F4D35E).
+
+Confirme quando terminar de processar esses documentos e as novas funcionalidades estiverem ativas."
