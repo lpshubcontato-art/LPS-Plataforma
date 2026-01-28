@@ -285,7 +285,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 st.set_page_config(
     page_title="Plataforma LPS",
     page_icon="🧠",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 # Password hashing functions using bcrypt
@@ -1835,7 +1836,7 @@ def render_sidebar_navigation():
     key_prefix = f"sb_{page_ctx}_"
     
     with st.sidebar:
-        # Sidebar CSS styling - Premium Design
+        # Sidebar CSS styling - Premium Design + Toggle Button Styles
         st.markdown("""
             <style>
             /* Global page background */
@@ -1848,6 +1849,13 @@ def render_sidebar_navigation():
             /* Main content text color */
             .stApp .stMarkdown p, .stApp .stMarkdown li, .stApp .stMarkdown span {
                 color: #000000;
+            }
+            /* Hide default Streamlit sidebar toggle button */
+            button[kind="header"] {
+                display: none !important;
+            }
+            [data-testid="collapsedControl"] {
+                display: none !important;
             }
             /* Sidebar styling */
             [data-testid="stSidebar"] {
@@ -1883,6 +1891,26 @@ def render_sidebar_navigation():
             }
             [data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
                 background-color: #e6c654 !important;
+            }
+            /* Close button inside sidebar - Yellow styling */
+            .sidebar-close-btn {
+                background-color: transparent;
+                border: 2px solid #d19f09;
+                color: #d19f09;
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1rem;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin: 0.75rem auto 1rem auto;
+                transition: all 0.2s ease;
+            }
+            .sidebar-close-btn:hover {
+                background-color: #d19f09;
+                color: #18738c;
             }
             /* Logo container - Full width, no borders */
             .sidebar-logo-container {
@@ -1934,14 +1962,155 @@ def render_sidebar_navigation():
             a[href*="wa.me"], a[href*="whatsapp"] {
                 color: #000000 !important;
             }
+            /* Hamburger menu button in header - Azure styling */
+            .hamburger-menu-btn {
+                position: fixed;
+                top: 0.75rem;
+                left: 1rem;
+                z-index: 999999;
+                background-color: #18738c;
+                border: none;
+                color: white;
+                padding: 0.6rem 0.8rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1.3rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .hamburger-menu-btn:hover {
+                background-color: #1a8ba6;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+            /* Dark mode support */
+            @media (prefers-color-scheme: dark) {
+                .hamburger-menu-btn {
+                    background-color: #18738c;
+                    color: white;
+                    box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+                }
+                .hamburger-menu-btn:hover {
+                    background-color: #1a8ba6;
+                }
+            }
             </style>
         """, unsafe_allow_html=True)
+        
+        # Inject JavaScript for hamburger button via components.html
+        components.html("""
+            <script>
+            // Create hamburger menu button in header
+            (function() {
+                const parentDoc = window.parent.document;
+                
+                // Check if hamburger already exists
+                if (parentDoc.querySelector('.hamburger-menu-btn')) return;
+                
+                // Create hamburger button
+                const hamburger = parentDoc.createElement('button');
+                hamburger.className = 'hamburger-menu-btn';
+                hamburger.innerHTML = '&#9776;';
+                hamburger.title = 'Abrir Menu';
+                
+                // Apply inline styles for reliability
+                hamburger.style.cssText = `
+                    position: fixed;
+                    top: 0.75rem;
+                    left: 1rem;
+                    z-index: 999999;
+                    background-color: #18738c;
+                    border: none;
+                    color: white;
+                    padding: 0.6rem 0.8rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 1.3rem;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                `;
+                
+                hamburger.onmouseover = function() {
+                    this.style.backgroundColor = '#1a8ba6';
+                    this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                };
+                hamburger.onmouseout = function() {
+                    this.style.backgroundColor = '#18738c';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+                };
+                
+                // Click handler to open sidebar
+                hamburger.onclick = function() {
+                    const sidebar = parentDoc.querySelector('[data-testid="stSidebar"]');
+                    const collapseBtn = parentDoc.querySelector('[data-testid="collapsedControl"]');
+                    
+                    if (collapseBtn) {
+                        collapseBtn.click();
+                    } else if (sidebar) {
+                        sidebar.setAttribute('data-expanded', 'true');
+                        sidebar.style.marginLeft = '0';
+                        sidebar.style.width = '21rem';
+                        window.parent.dispatchEvent(new Event('resize'));
+                    }
+                };
+                
+                // Append to body
+                parentDoc.body.appendChild(hamburger);
+            })();
+            </script>
+        """, height=0)
         
         # Logo Only (Full Width, No Text Title)
         st.markdown('<div class="sidebar-logo-container">', unsafe_allow_html=True)
         if os.path.exists(LOGO_PATH):
             st.image(LOGO_PATH, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Close button inside sidebar (Yellow accent) - using components.html for JavaScript execution
+        components.html("""
+            <style>
+                .sidebar-close-btn {
+                    background-color: transparent;
+                    border: 2px solid #d19f09;
+                    color: #d19f09;
+                    padding: 0.5rem 1rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    font-weight: bold;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin: 0.5rem auto;
+                    transition: all 0.2s ease;
+                    font-family: 'Ubuntu', sans-serif;
+                }
+                .sidebar-close-btn:hover {
+                    background-color: #d19f09;
+                    color: #18738c;
+                }
+            </style>
+            <button class="sidebar-close-btn" onclick="
+                const parentDoc = window.parent.document;
+                const collapseBtn = parentDoc.querySelector('[data-testid=&quot;collapsedControl&quot;]');
+                if (collapseBtn) {
+                    collapseBtn.click();
+                } else {
+                    const sidebar = parentDoc.querySelector('[data-testid=&quot;stSidebar&quot;]');
+                    if (sidebar) {
+                        sidebar.style.marginLeft = '-21rem';
+                        window.parent.dispatchEvent(new Event('resize'));
+                    }
+                }
+            ">
+                <span style="font-size: 1.2rem;">&#8592;</span> Fechar Menu
+            </button>
+        """, height=50)
         
         # Login/User Section at Top
         if st.session_state.authenticated:
