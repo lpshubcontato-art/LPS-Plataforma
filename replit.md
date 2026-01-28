@@ -70,11 +70,29 @@ Preferred communication style: Simple, everyday language.
   - Passo a Passo da Mentoria: How to schedule and what to prepare for sessions with Viviane
 - **WhatsApp Support**: Direct link to contact support team
 
+### Profile System (PROFILES_DB)
+- **30 Profile Combinations**: 6 archetypes × 5 secondary profiles each
+- **Archetypes**: 🛡 Protetor, 🧱 Contenedor, 🔥 Narciso Estratégico, 🏗 Estruturador, 🪞 Espelho Emocional, 🧠 Observador Reflexivo
+- **Each Combination Contains**: Forças (strengths), Riscos (risks), Recomendações (recommendations)
+
+### Radar Chart Visualization
+- **6 Axes**: Autoridade Interna, Contenção Emocional, Narcisismo/Reconhecimento, Estrutura/Ordem, Relação/Empatia, Reflexão/Observação
+- **Data Source**: Assessment responses aggregated by block (max 40 points per block, 8 questions × 5 points)
+- **Normalization**: Percentages 0-100% for visual display
+- **Colors**: Navy Blue (#0D3B66) fill, Gold (#F4D35E) markers
+
+### Assessment Response Storage
+- **Table**: assessment_responses
+- **Storage**: Each individual response (1-5) saved for future AI analysis
+- **Functions**: save_assessment_responses() for storage, get_assessment_block_sums() for retrieval
+- **Types**: Both managers and employees store responses
+
 ### Database Tables
 - **users**: id, email, password_hash, name, user_type, created_at
 - **managers**: id, user_id, session_id, name, email, profile data, created_at
 - **employees**: id, manager_id, link_token, slot_number, profile data, bion_role, consent_given, consent_date
 - **course_progress**: id, user_id, progress_data, updated_at
+- **assessment_responses**: id, respondent_id, respondent_type, block_name, question_index, question_text, response_value
 
 ### Database Backup System
 - **Backup Directory**: backups/ folder with timestamped SQLite copies
@@ -90,11 +108,17 @@ Preferred communication style: Simple, everyday language.
 - **Atomic Save**: Consent and assessment results saved together in single transaction
 - **User Rights**: Access, correction, deletion, and portability rights documented
 
-### LPSChat AI Integration
+### LPSChat AI Integration ("Analytical Brain")
 - **Model**: Google Gemini (gemini-1.5-flash)
 - **Role**: Consultora especialista em Psicanálise e Neurociência aplicada à Liderança
 - **Data Access**: Loads complete employee assessment data from SQLite (profiles, Bion roles, emails)
 - **Privacy**: Only managers can access - employees blocked by global guard
+- **Methodology Integrated**:
+  - Kernberg: Rational leader characteristics (intelligence, integrity, object relations, healthy narcissism, healthy paranoid attitude)
+  - Bion: Basic Assumptions (Dependency, Fight-Flight, Pairing) vs Work Group
+  - Sinek: Circle of Safety with EDSO chemicals (Endorphin, Dopamine, Serotonin, Oxytocin)
+  - Neuroscience: Cortisol vs Oxytocin, Amygdala, Mirror Neurons, Prefrontal Cortex
+  - Transference & Countertransference dynamics
 - **Capabilities**:
   - Identify unconscious roles and archetypes in team members
   - Map conflict points and synergies between employees
