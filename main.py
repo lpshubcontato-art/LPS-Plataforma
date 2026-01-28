@@ -537,6 +537,18 @@ def init_db():
         FOREIGN KEY (manager_id) REFERENCES managers(id)
     )''')
     
+    # Assessment responses table - stores each individual response (1-5) for future AI analysis
+    c.execute('''CREATE TABLE IF NOT EXISTS assessment_responses (
+        id TEXT PRIMARY KEY,
+        respondent_id TEXT,
+        respondent_type TEXT,
+        block_name TEXT,
+        question_index INTEGER,
+        question_text TEXT,
+        response_value INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+    
     conn.commit()
     conn.close()
 
@@ -594,6 +606,24 @@ def get_manager_by_user(user_id):
 
 def get_db():
     return sqlite3.connect('lps_data.db')
+
+def get_manager_by_id(manager_id):
+    """Get manager info by manager ID."""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id, user_id, name, email, profile_dominant, profile_secondary FROM managers WHERE id = ?", (manager_id,))
+    result = c.fetchone()
+    conn.close()
+    if result:
+        return {
+            "id": result[0],
+            "user_id": result[1],
+            "name": result[2],
+            "email": result[3],
+            "dominant": result[4],
+            "secondary": result[5]
+        }
+    return None
 
 def validate_manager_ownership(user_id, manager_id):
     """Validate that the manager_id belongs to the user_id (multitenancy check)."""
@@ -1324,7 +1354,7 @@ LOGO_PATH = "attached_assets/logotipo_2__1768529013163.jpeg"
 
 # Definições das questões do Assessment (8 por bloco)
 ASSESSMENT_QUESTIONS = {
-    "Autoridade": [
+    "Bloco 1 – Autoridade Interna e Autoimagem": [
         "Sinto que a equipe me observa de forma idealizada.",
         "Tenho clareza sobre minhas forças e fraquezas como líder.",
         "Me sinto desconfortável quando sou admirado demais.",
@@ -1334,7 +1364,7 @@ ASSESSMENT_QUESTIONS = {
         "Me esforço para parecer emocionalmente estável, mesmo quando não estou.",
         "A percepção da equipe sobre mim influencia minhas decisões."
     ],
-    "Contenção": [
+    "Bloco 2 – Contenção Emocional do Grupo": [
         "Em situações de crise, sou o primeiro a manter a calma.",
         "Sei conter a ansiedade coletiva mesmo sem dizer uma palavra.",
         "Percebo rapidamente quando a equipe está emocionalmente instável.",
@@ -1344,7 +1374,7 @@ ASSESSMENT_QUESTIONS = {
         "Tenho habilidade para resgatar a racionalidade do grupo.",
         "Sinto que absorvo emocionalmente o clima da equipe."
     ],
-    "Narcisismo": [
+    "Bloco 3 – Narcisismo e Reconhecimento": [
         "Me incomodo quando não sou reconhecido pelo meu esforço.",
         "Gosto de ser o centro das atenções nas reuniões.",
         "A opinião da liderança acima de mim afeta meu desempenho.",
@@ -1354,7 +1384,7 @@ ASSESSMENT_QUESTIONS = {
         "Comparo minha liderança com a de outros colegas frequentemente.",
         "Às vezes exagero meu valor para manter respeito."
     ],
-    "Estrutura": [
+    "Bloco 4 – Estrutura e Lógica de Tarefa": [
         "Preciso de metas e estruturas bem definidas para funcionar.",
         "Me incomodo com mudanças frequentes nas prioridades.",
         "Gosto de controlar todos os processos para evitar erros.",
@@ -1364,7 +1394,7 @@ ASSESSMENT_QUESTIONS = {
         "Me estresso com prazos mal definidos.",
         "Costumo antecipar problemas antes que eles ocorram."
     ],
-    "Relação": [
+    "Bloco 5 – Relação com a Equipe e Projeções": [
         "Já senti que alguém da equipe me via como uma figura parental.",
         "Em alguns momentos, sou tratado com hostilidade sem motivo aparente.",
         "Já notei que membros da equipe projetam em mim expectativas irreais.",
@@ -1374,7 +1404,7 @@ ASSESSMENT_QUESTIONS = {
         "Costumo internalizar conflitos mesmo quando não são meus.",
         "Às vezes, me sinto em uma posição emocionalmente isolada."
     ],
-    "Reflexão": [
+    "Bloco 6 – Reflexão, Crítica e Autoconsciência": [
         "Tenho facilidade em identificar minhas armadilhas emocionais.",
         "Costumo refletir profundamente antes de tomar decisões difíceis.",
         "Entendo como meu temperamento afeta meu estilo de liderança.",
@@ -1386,13 +1416,22 @@ ASSESSMENT_QUESTIONS = {
     ]
 }
 
+BLOCK_SHORT_NAMES = {
+    "Bloco 1 – Autoridade Interna e Autoimagem": "Autoridade",
+    "Bloco 2 – Contenção Emocional do Grupo": "Contenção",
+    "Bloco 3 – Narcisismo e Reconhecimento": "Narcisismo",
+    "Bloco 4 – Estrutura e Lógica de Tarefa": "Estrutura",
+    "Bloco 5 – Relação com a Equipe e Projeções": "Relação",
+    "Bloco 6 – Reflexão, Crítica e Autoconsciência": "Reflexão"
+}
+
 BLOCK_TO_PROFILE = {
-    "Relação": "🛡 Protetor",
-    "Contenção": "🧱 Contenedor",
-    "Narcisismo": "🔥 Narciso Estratégico",
-    "Estrutura": "🏗 Estruturador",
-    "Autoridade": "🪞 Espelho Emocional",
-    "Reflexão": "🧠 Observador Reflexivo"
+    "Bloco 5 – Relação com a Equipe e Projeções": "🛡 Protetor",
+    "Bloco 2 – Contenção Emocional do Grupo": "🧱 Contenedor",
+    "Bloco 3 – Narcisismo e Reconhecimento": "🔥 Narciso Estratégico",
+    "Bloco 4 – Estrutura e Lógica de Tarefa": "🏗 Estruturador",
+    "Bloco 1 – Autoridade Interna e Autoimagem": "🪞 Espelho Emocional",
+    "Bloco 6 – Reflexão, Crítica e Autoconsciência": "🧠 Observador Reflexivo"
 }
 
 # Mapeamento de Papéis de Bion baseado nas respostas
@@ -2414,6 +2453,25 @@ def generate_team_chart(employees_data, manager_name):
     buffer.seek(0)
     return buffer.getvalue()
 
+def save_assessment_responses(respondent_id, respondent_type, responses):
+    """Save each individual response (1-5) to the database for future AI analysis."""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    
+    for block_name, questions in ASSESSMENT_QUESTIONS.items():
+        for q_idx, question_text in enumerate(questions):
+            response_key = f"{block_name}_{q_idx}"
+            response_value = responses.get(response_key, 3)
+            
+            response_id = str(uuid.uuid4())
+            c.execute("""INSERT INTO assessment_responses 
+                        (id, respondent_id, respondent_type, block_name, question_index, question_text, response_value)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                     (response_id, respondent_id, respondent_type, block_name, q_idx, question_text, response_value))
+    
+    conn.commit()
+    conn.close()
+
 def calculate_profile(responses):
     block_sums = {}
     for block in ASSESSMENT_QUESTIONS.keys():
@@ -2432,7 +2490,13 @@ def calculate_profile(responses):
         "recomendacoes": "➡ Agende mentoria personalizada."
     })
     
-    bion_role = classify_bion_role(block_sums)
+    # Convert full block names to short names for Bion classification
+    short_block_sums = {}
+    for full_name, value in block_sums.items():
+        short_name = BLOCK_SHORT_NAMES.get(full_name, full_name)
+        short_block_sums[short_name] = value
+    
+    bion_role = classify_bion_role(short_block_sums)
     
     return dominant_name, secondary_name, details, bion_role, block_sums
 
@@ -3256,6 +3320,10 @@ elif page == "LPSTest":
                 dominant, secondary, details, bion_role, block_sums = calculate_profile(responses)
                 user_id = st.session_state.user['id']
                 save_manager_profile(user_id, dominant, secondary, details)
+                
+                # Save individual responses for future AI analysis
+                save_assessment_responses(user_id, "manager", responses)
+                
                 st.session_state.manager_data = get_manager_by_user(user_id)
                 st.session_state.show_test_form = False
                 st.session_state.assessment_results = {
@@ -3580,8 +3648,28 @@ elif page == "EmployeeAssessment":
                         save_employee_consent(token)
                     
                     # Calculate and save results
-                    dominant, secondary, details, bion_role, _ = calculate_profile(responses)
+                    dominant, secondary, details, bion_role, block_sums = calculate_profile(responses)
                     save_employee_result(token, name, email, dominant, secondary, details, bion_role)
+                    
+                    # Save individual responses for future AI analysis
+                    employee_id = employee[0]  # Get employee ID
+                    save_assessment_responses(employee_id, "employee", responses)
+                    
+                    # Send email notifications (if SMTP configured)
+                    # Get manager info for notification
+                    manager_id = employee[1]
+                    manager_info = get_manager_by_id(manager_id)
+                    if manager_info:
+                        manager_name = manager_info.get('name', 'Gestor')
+                        manager_email = manager_info.get('email', '')
+                        
+                        # Send result to employee
+                        send_employee_result_email(name, email, dominant, secondary, bion_role, manager_name)
+                        
+                        # Notify manager
+                        if manager_email:
+                            send_manager_notification_email(manager_email, manager_name, name, f"{dominant} + {secondary}", bion_role)
+                    
                     st.balloons()
                     st.rerun()
 
