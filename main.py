@@ -744,6 +744,25 @@ def get_manager_profile_by_user(user_id):
         }
     return None
 
+def get_assessment_block_sums(respondent_id, respondent_type="manager"):
+    """Calculate block sums from saved assessment responses for radar chart."""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""SELECT block_name, SUM(response_value) as block_sum
+                 FROM assessment_responses 
+                 WHERE respondent_id = ? AND respondent_type = ?
+                 GROUP BY block_name""", (respondent_id, respondent_type))
+    results = c.fetchall()
+    conn.close()
+    
+    if not results:
+        return None
+    
+    block_sums = {}
+    for row in results:
+        block_sums[row[0]] = row[1]
+    return block_sums
+
 # Course Progress Functions
 def get_course_progress(user_id):
     """Get course progress for a user"""
@@ -1480,14 +1499,164 @@ BION_DESCRIPTIONS = {
 PROFILES_DB = {
     "🛡 Protetor": {
         "🧠 Observador Reflexivo": {
-            "forcas": "✔ Inspira confiança e acolhimento. ✔ Capacidade de análise emocional e previsão de conflitos.",
-            "riscos": "⚠ Pode absorver emocionalmente os problemas do time. ⚠ Pode hesitar diante de decisões duras.",
-            "recomendacoes": "➡ Estabeleça limites claros. ➡ Reserve tempo para ação, não apenas análise."
+            "forcas": "✔ Inspira confiança e acolhimento. ✔ Capacidade de análise emocional e previsão de conflitos. ✔ Toma decisões considerando o impacto humano.",
+            "riscos": "⚠ Pode absorver emocionalmente os problemas do time. ⚠ Pode hesitar diante de decisões duras por empatia excessiva.",
+            "recomendacoes": "➡ Estabeleça limites claros entre você e a equipe. ➡ Reserve tempo para ação, não apenas para análise."
         },
         "🔥 Narciso Estratégico": {
-            "forcas": "✔ Inspira pertencimento e admiração. ✔ Gera lealdade por conexão emocional.",
-            "riscos": "⚠ Pode depender demais da validação externa. ⚠ Evita feedbacks duros.",
-            "recomendacoes": "➡ Construa autoridade sem depender do afeto. ➡ Cuidar também é confrontar."
+            "forcas": "✔ Inspira pertencimento e admiração. ✔ Gera lealdade por meio da conexão emocional. ✔ Sabe como influenciar com afeto e presença.",
+            "riscos": "⚠ Pode depender demais da validação externa. ⚠ Corre risco de evitar feedbacks duros para manter o carinho do time.",
+            "recomendacoes": "➡ Trabalhe a construção da sua autoridade sem depender do afeto. ➡ Lembre-se: cuidar também é confrontar quando necessário."
+        },
+        "🏗 Estruturador": {
+            "forcas": "✔ Cria ambientes emocionalmente estáveis. ✔ Protege o time com sistemas e processos claros. ✔ Excelente para liderar equipes em ambientes caóticos.",
+            "riscos": "⚠ Pode se tornar rígido(a) demais tentando 'salvar' todos. ⚠ Pode controlar excessivamente para evitar conflitos.",
+            "recomendacoes": "➡ Confie mais na maturidade emocional do time. ➡ Flexibilize regras quando perceber crescimento autônomo."
+        },
+        "🧱 Contenedor": {
+            "forcas": "✔ Equilíbrio emocional impressionante. ✔ Alta capacidade de empatia sem perder o centro. ✔ Inspira respeito e lealdade.",
+            "riscos": "⚠ Pode assumir a responsabilidade emocional de todos. ⚠ Pode ser visto como 'pai' ou 'mãe', gerando dependência excessiva.",
+            "recomendacoes": "➡ Incentive autonomia emocional na equipe. ➡ Crie momentos de autorreflexão para não se sobrecarregar."
+        },
+        "🪞 Espelho Emocional": {
+            "forcas": "✔ Capacidade ímpar de adaptação ao grupo. ✔ Constrói confiança e acolhimento rapidamente. ✔ Sensível às dinâmicas invisíveis da equipe.",
+            "riscos": "⚠ Pode perder autenticidade tentando corresponder a todas as expectativas. ⚠ Pode se frustrar com rejeições ou incompreensões sutis.",
+            "recomendacoes": "➡ Mantenha contato com sua identidade, além da imagem percebida. ➡ Fortaleça a liderança com base em valores, não só em aceitação."
+        }
+    },
+    "🧱 Contenedor": {
+        "🛡 Protetor": {
+            "forcas": "✔ Regula emoções do grupo com estabilidade. ✔ Transmite confiança emocional e acolhimento. ✔ Excelente para liderar momentos de crise ou transformação.",
+            "riscos": "⚠ Pode atrair dependência emocional dos colaboradores. ⚠ Pode evitar confrontos para manter a harmonia.",
+            "recomendacoes": "➡ Incentive responsabilidade emocional na equipe. ➡ Lembre-se: firmeza também é uma forma de cuidado."
+        },
+        "🔥 Narciso Estratégico": {
+            "forcas": "✔ Mistura inteligência emocional com carisma. ✔ Inspira e acalma ao mesmo tempo. ✔ Alta performance em contextos de tensão.",
+            "riscos": "⚠ Pode internalizar tensões em silêncio até esgotar-se. ⚠ Pode buscar reconhecimento como forma de compensar o peso de conter tudo.",
+            "recomendacoes": "➡ Divida responsabilidades emocionais. ➡ Cultive o reconhecimento interno, não só o externo."
+        },
+        "🧠 Observador Reflexivo": {
+            "forcas": "✔ Altíssimo nível de percepção emocional e racional. ✔ Sabe esperar o momento certo de agir. ✔ Traz clareza e estabilidade para grupos confusos.",
+            "riscos": "⚠ Pode se distanciar demais do grupo tentando manter neutralidade. ⚠ Pode cair em análise excessiva e postergar decisões importantes.",
+            "recomendacoes": "➡ Confie no seu timing emocional e decida com coragem. ➡ Mantenha-se presente mesmo quando estiver processando internamente."
+        },
+        "🏗 Estruturador": {
+            "forcas": "✔ Excelente para liderar ambientes de caos e incerteza. ✔ Gera segurança por meio de sistemas claros e postura firme. ✔ Constrói uma cultura emocionalmente sólida.",
+            "riscos": "⚠ Pode se tornar inflexível com processos ou resistir a mudanças. ⚠ Pode achar que 'segurar tudo' é seu papel, sem delegar.",
+            "recomendacoes": "➡ Desenvolva flexibilidade estratégica. ➡ Ensine sua equipe a segurar junto com você — não sozinho(a)."
+        },
+        "🪞 Espelho Emocional": {
+            "forcas": "✔ Capacidade empática refinada. ✔ Leitura intuitiva das emoções do grupo. ✔ Inspira confiança e conexão não verbal.",
+            "riscos": "⚠ Pode internalizar dores que não são suas. ⚠ Pode moldar seu comportamento em excesso para evitar desarmonia.",
+            "recomendacoes": "➡ Cuide da sua identidade enquanto cuida dos outros. ➡ Use sua empatia como ferramenta, não como identidade central."
+        }
+    },
+    "🔥 Narciso Estratégico": {
+        "🛡 Protetor": {
+            "forcas": "✔ Mobiliza com empatia e energia. ✔ Cria laços emocionais com facilidade. ✔ Inspira performance e pertencimento.",
+            "riscos": "⚠ Pode se sentir sobrecarregado(a) por expectativas emocionais da equipe. ⚠ Pode adiar confrontos difíceis para preservar a imagem carinhosa.",
+            "recomendacoes": "➡ Equilibre empatia com assertividade. ➡ Reforce sua autoridade para além da simpatia."
+        },
+        "🧱 Contenedor": {
+            "forcas": "✔ Presença forte e magnética. ✔ Sabe conter o caos emocional da equipe com calma, liderando com presença e impacto. ✔ Impõe respeito e mobiliza corações.",
+            "riscos": "⚠ Pode internalizar tensões em silêncio até esgotar-se. ⚠ Pode buscar reconhecimento para compensar o peso de conter tudo.",
+            "recomendacoes": "➡ Divida responsabilidades emocionais com a equipe. ➡ Cultive o reconhecimento interno, não só o externo."
+        },
+        "🧠 Observador Reflexivo": {
+            "forcas": "✔ Combinação de profundidade intelectual com carisma. ✔ Excelente comunicador estratégico. ✔ Habilidade de ler o ambiente e adaptar a abordagem para máxima influência.",
+            "riscos": "⚠ Risco de usar a inteligência para manipular ou justificar ações egoístas. ⚠ A autoanálise pode focar apenas em otimizar a imagem.",
+            "recomendacoes": "➡ Use sua capacidade de análise para construir relações mais genuínas. ➡ Separe seu valor da admiração que recebe."
+        },
+        "🏗 Estruturador": {
+            "forcas": "✔ Combina energia carismática com organização metódica. ✔ Transforma visão em processos claros. ✔ Motiva a equipe enquanto mantém o controle.",
+            "riscos": "⚠ Pode usar a estrutura para controlar e manter a centralidade. ⚠ Pode resistir a delegar para não perder o holofote.",
+            "recomendacoes": "➡ Deixe a equipe brilhar também. ➡ Use a estrutura para empoderar, não para controlar."
+        },
+        "🪞 Espelho Emocional": {
+            "forcas": "✔ Carisma adaptável e leitura refinada do ambiente. ✔ Conecta-se facilmente com diferentes públicos. ✔ Usa a percepção social para influenciar positivamente.",
+            "riscos": "⚠ Pode se perder entre a imagem que projeta e quem realmente é. ⚠ Vulnerável à manipulação por buscar aprovação excessiva.",
+            "recomendacoes": "➡ Mantenha uma âncora interna de valores além da aprovação. ➡ Reflita sobre suas motivações mais profundas."
+        }
+    },
+    "🏗 Estruturador": {
+        "🛡 Protetor": {
+            "forcas": "✔ Une firmeza com sensibilidade. ✔ A equipe se sente segura porque você oferece direção, clareza e acolhimento. ✔ Protege através da organização.",
+            "riscos": "⚠ Pode se tornar rígido(a) tentando 'salvar' todos. ⚠ Pode controlar excessivamente para evitar conflitos.",
+            "recomendacoes": "➡ Confie mais na maturidade emocional do time. ➡ Flexibilize regras quando perceber crescimento autônomo."
+        },
+        "🧱 Contenedor": {
+            "forcas": "✔ Líder de ferro com coração equilibrado. ✔ Organiza para proteger, cria rotinas para estabilizar. ✔ Conduz com tranquilidade firme.",
+            "riscos": "⚠ Pode se tornar inflexível com processos. ⚠ Pode achar que 'segurar tudo' é seu papel, sem delegar.",
+            "recomendacoes": "➡ Desenvolva flexibilidade estratégica. ➡ Ensine sua equipe a segurar junto com você."
+        },
+        "🔥 Narciso Estratégico": {
+            "forcas": "✔ Combina visão estratégica com presença marcante. ✔ Usa a estrutura para amplificar seu impacto. ✔ Inspira confiança pela competência e carisma.",
+            "riscos": "⚠ Pode usar a estrutura para manter controle e centralidade. ⚠ Pode resistir a mudanças que ameacem sua posição.",
+            "recomendacoes": "➡ Deixe a equipe brilhar também. ➡ Use sua influência para desenvolver outros líderes."
+        },
+        "🧠 Observador Reflexivo": {
+            "forcas": "✔ Excepcional capacidade de análise sistêmica e pensamento estratégico. ✔ Criação de estruturas lógicas, eficientes e otimizadas. ✔ Tomada de decisão baseada em dados e análise crítica.",
+            "riscos": "⚠ Risco extremo de paralisia por análise, buscando a solução 'perfeita'. ⚠ Pode parecer excessivamente técnico ou desconectado da realidade prática.",
+            "recomendacoes": "➡ Integre a intuição e o fator humano em suas análises. ➡ Torne-se mais confortável com a incerteza e a adaptação."
+        },
+        "🪞 Espelho Emocional": {
+            "forcas": "✔ Cria processos que promovem colaboração e minimizam atritos. ✔ Comunica regras de forma clara e diplomática. ✔ Ambiente organizado, previsível e com baixo conflito.",
+            "riscos": "⚠ Pode criar regras para evitar conversas difíceis. ⚠ Pode sacrificar agilidade em nome da harmonia e ordem.",
+            "recomendacoes": "➡ Use a clareza dos processos para abordar conflitos de forma construtiva. ➡ Equilibre ordem com flexibilidade."
+        }
+    },
+    "🪞 Espelho Emocional": {
+        "🛡 Protetor": {
+            "forcas": "✔ Capacidade ímpar de adaptação e acolhimento. ✔ Percebe e responde às necessidades emocionais da equipe. ✔ Constrói conexões profundas e segurança psicológica.",
+            "riscos": "⚠ Pode perder autenticidade tentando corresponder a expectativas. ⚠ Pode se frustrar com rejeições sutis.",
+            "recomendacoes": "➡ Mantenha contato com sua identidade, além da imagem percebida. ➡ Fortaleça a liderança com base em valores."
+        },
+        "🧱 Contenedor": {
+            "forcas": "✔ Absorve o ambiente como uma esponja refinada. ✔ Sensibilidade rara para o emocional coletivo. ✔ Atua como espelho silencioso da equipe.",
+            "riscos": "⚠ Pode internalizar dores que não são suas. ⚠ Pode moldar comportamento em excesso para evitar desarmonia.",
+            "recomendacoes": "➡ Cuide da sua identidade enquanto cuida dos outros. ➡ Use empatia como ferramenta, não como identidade central."
+        },
+        "🔥 Narciso Estratégico": {
+            "forcas": "✔ Carisma adaptável e leitura refinada do ambiente. ✔ Conecta-se facilmente com diferentes públicos. ✔ Usa a percepção social para influenciar positivamente.",
+            "riscos": "⚠ Pode se perder entre a imagem que projeta e quem é. ⚠ Vulnerável à manipulação por buscar aprovação excessiva.",
+            "recomendacoes": "➡ Mantenha uma âncora interna de valores. ➡ Reflita sobre suas motivações mais profundas."
+        },
+        "🏗 Estruturador": {
+            "forcas": "✔ Cria processos que acomodam necessidades relacionais. ✔ Sensível para ajustar estruturas de forma diplomática. ✔ Liderança equilibrada, justa e cuidadosa.",
+            "riscos": "⚠ Pode criar burocracia para evitar conversas difíceis. ⚠ Pode sacrificar agilidade em nome da harmonia.",
+            "recomendacoes": "➡ Use estrutura para abordar conflitos construtivamente. ➡ Equilibre ordem com flexibilidade e autenticidade."
+        },
+        "🧠 Observador Reflexivo": {
+            "forcas": "✔ Excepcional inteligência emocional e interpessoal. ✔ Habilidade de ler entrelinhas e compreender motivações ocultas. ✔ Pode ser excelente coach ou mentor.",
+            "riscos": "⚠ Risco de paralisia por análise nas relações. ⚠ Pode usar compreensão para evitar confrontos necessários.",
+            "recomendacoes": "➡ Use sua compreensão para agir com coragem e autenticidade. ➡ Equilibre observação com expressão genuína."
+        }
+    },
+    "🧠 Observador Reflexivo": {
+        "🛡 Protetor": {
+            "forcas": "✔ Inspira confiança e acolhimento. ✔ Capacidade de análise emocional e previsão de conflitos. ✔ Toma decisões considerando o impacto humano.",
+            "riscos": "⚠ Pode absorver emocionalmente os problemas do time. ⚠ Pode hesitar diante de decisões duras por empatia excessiva.",
+            "recomendacoes": "➡ Estabeleça limites claros entre você e a equipe. ➡ Reserve tempo para ação, não apenas para análise."
+        },
+        "🧱 Contenedor": {
+            "forcas": "✔ Excepcional combinação de inteligência emocional e racional. ✔ Profunda estabilidade e capacidade de análise, mesmo sob pressão. ✔ Excelente em gerenciar crises e conflitos delicados.",
+            "riscos": "⚠ Risco de distanciamento excessivo, parecendo frio ou analítico demais. ⚠ Pode intelectualizar excessivamente as emoções.",
+            "recomendacoes": "➡ Compartilhe mais da sua humanidade sem perder sua força. ➡ Equilibre a observação com a participação ativa."
+        },
+        "🔥 Narciso Estratégico": {
+            "forcas": "✔ Combinação de profundidade intelectual com carisma. ✔ Excelente comunicador estratégico, capaz de persuadir com lógica e emoção. ✔ Capaz de gerar admiração tanto pelo conteúdo quanto pela forma.",
+            "riscos": "⚠ Risco de cinismo ou de usar a inteligência para manipular. ⚠ Pode se tornar excessivamente calculista.",
+            "recomendacoes": "➡ Use sua inteligência a serviço da conexão genuína e do propósito maior. ➡ Separe seu valor da admiração que recebe."
+        },
+        "🏗 Estruturador": {
+            "forcas": "✔ Excepcional capacidade de análise sistêmica e pensamento estratégico. ✔ Criação de estruturas lógicas e otimizadas. ✔ Liderança percebida como altamente inteligente e metódica.",
+            "riscos": "⚠ Risco extremo de paralisia por análise. ⚠ Pode supervalorizar a lógica, negligenciando fatores humanos e emocionais.",
+            "recomendacoes": "➡ Integre a intuição, a emoção e o fator humano em suas análises. ➡ Torne-se mais confortável com a incerteza."
+        },
+        "🪞 Espelho Emocional": {
+            "forcas": "✔ Excepcional inteligência emocional e interpessoal. ✔ Habilidade de ler entrelinhas e compreender motivações ocultas. ✔ Adapta-se às necessidades do grupo com consciência.",
+            "riscos": "⚠ Risco de paralisia pela análise das relações. ⚠ Pode usar a compreensão para evitar confrontos ou manipular sutilmente.",
+            "recomendacoes": "➡ Use sua compreensão para construir relações autênticas, mesmo que envolvam conflito. ➡ Equilibre a cabeça e o coração."
         }
     }
 }
@@ -2453,6 +2622,80 @@ def generate_team_chart(employees_data, manager_name):
     buffer.seek(0)
     return buffer.getvalue()
 
+def generate_radar_chart(block_sums, profile_name=""):
+    """Generate a radar chart showing the 6 axes of the assessment."""
+    import numpy as np
+    
+    # Define the 6 axes with short names
+    categories = [
+        'Autoridade\nInterna',
+        'Contencao\nEmocional',
+        'Narcisismo\nReconhecimento',
+        'Estrutura\nOrdem',
+        'Relacao\nEmpatia',
+        'Reflexao\nObservacao'
+    ]
+    
+    # Map full block names to short names for data extraction
+    block_keys = [
+        "Bloco 1 – Autoridade Interna e Autoimagem",
+        "Bloco 2 – Contenção Emocional do Grupo",
+        "Bloco 3 – Narcisismo e Reconhecimento",
+        "Bloco 4 – Estrutura e Lógica de Tarefa",
+        "Bloco 5 – Relação com a Equipe e Projeções",
+        "Bloco 6 – Reflexão, Crítica e Autoconsciência"
+    ]
+    
+    # Get values (max is 40 for each block - 8 questions x 5 points)
+    values = []
+    for key in block_keys:
+        val = block_sums.get(key, 24)  # Default to midpoint if not found
+        # Normalize to percentage (0-100)
+        normalized = (val / 40) * 100
+        values.append(normalized)
+    
+    # Number of variables
+    N = len(categories)
+    
+    # Compute angle for each category
+    angles = [n / float(N) * 2 * np.pi for n in range(N)]
+    values_plot = values + [values[0]]  # Complete the loop
+    angles += angles[:1]  # Complete the loop
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
+    
+    # Plot data
+    ax.fill(angles, values_plot, color='#0D3B66', alpha=0.25)
+    ax.plot(angles, values_plot, color='#0D3B66', linewidth=2)
+    
+    # Add markers
+    ax.scatter(angles[:-1], values, color='#F4D35E', s=100, zorder=5)
+    
+    # Set category labels
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(categories, size=10, color='#0D3B66')
+    
+    # Set y-axis limits
+    ax.set_ylim(0, 100)
+    ax.set_yticks([20, 40, 60, 80, 100])
+    ax.set_yticklabels(['20%', '40%', '60%', '80%', '100%'], size=8, color='gray')
+    
+    # Title
+    title = f'Perfil de Lideranca: {profile_name}' if profile_name else 'Perfil de Lideranca'
+    ax.set_title(title, size=14, color='#0D3B66', fontweight='bold', pad=20)
+    
+    # Style
+    ax.grid(True, color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
+    ax.spines['polar'].set_color('#0D3B66')
+    
+    # Save to buffer
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', dpi=150, bbox_inches='tight', facecolor='white')
+    plt.close()
+    buffer.seek(0)
+    return buffer.getvalue()
+
 def save_assessment_responses(respondent_id, respondent_type, responses):
     """Save each individual response (1-5) to the database for future AI analysis."""
     conn = sqlite3.connect(DB_PATH)
@@ -2524,6 +2767,279 @@ def render_paywall():
                 💬 Comprar Curso
             </a>
         """, unsafe_allow_html=True)
+
+# PDF Generation Functions with LPS Branding
+def generate_individual_pdf(employee_data, manager_name=""):
+    """Generate individual employee PDF report with LPS branding."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    # Colors
+    navy_blue = HexColor('#0D3B66')
+    gold = HexColor('#F4D35E')
+    light_gray = HexColor('#F5F5F5')
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'LPSTitle',
+        parent=styles['Title'],
+        fontName='Helvetica-Bold',
+        fontSize=18,
+        textColor=navy_blue,
+        alignment=TA_CENTER,
+        spaceAfter=20
+    )
+    subtitle_style = ParagraphStyle(
+        'LPSSubtitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=14,
+        textColor=navy_blue,
+        spaceAfter=10,
+        spaceBefore=15
+    )
+    body_style = ParagraphStyle(
+        'LPSBody',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=11,
+        textColor=HexColor('#333333'),
+        alignment=TA_JUSTIFY,
+        spaceAfter=8
+    )
+    
+    elements = []
+    
+    # Title
+    elements.append(Paragraph("Liderança Psicanalítica - Laudo Individual", title_style))
+    elements.append(Spacer(1, 20))
+    
+    # Employee Info Table
+    name = employee_data.get('name', 'Não informado')
+    email = employee_data.get('email', 'Não informado')
+    profile_dom = employee_data.get('profile_dominant', 'Não realizado')
+    profile_sec = employee_data.get('profile_secondary', 'Não realizado')
+    bion_role = employee_data.get('bion_role', 'Não classificado')
+    
+    info_data = [
+        ['Nome:', name],
+        ['Email:', email],
+        ['Perfil Dominante:', profile_dom],
+        ['Perfil Secundário:', profile_sec],
+        ['Papel de Bion:', bion_role]
+    ]
+    
+    info_table = Table(info_data, colWidths=[2*inch, 4*inch])
+    info_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), light_gray),
+        ('TEXTCOLOR', (0, 0), (0, -1), navy_blue),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 11),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('GRID', (0, 0), (-1, -1), 0.5, navy_blue),
+    ]))
+    elements.append(info_table)
+    elements.append(Spacer(1, 20))
+    
+    # Profile Details
+    profile_details = employee_data.get('profile_details', {})
+    if profile_details:
+        elements.append(Paragraph("Análise do Perfil", subtitle_style))
+        
+        if 'forcas' in profile_details:
+            elements.append(Paragraph("<b>Forças:</b>", body_style))
+            elements.append(Paragraph(profile_details['forcas'], body_style))
+        
+        if 'riscos' in profile_details:
+            elements.append(Paragraph("<b>Riscos:</b>", body_style))
+            elements.append(Paragraph(profile_details['riscos'], body_style))
+        
+        if 'recomendacoes' in profile_details:
+            elements.append(Paragraph("<b>Recomendações:</b>", body_style))
+            elements.append(Paragraph(profile_details['recomendacoes'], body_style))
+    
+    # Footer
+    elements.append(Spacer(1, 30))
+    footer_style = ParagraphStyle(
+        'Footer',
+        parent=styles['Normal'],
+        fontSize=9,
+        textColor=HexColor('#666666'),
+        alignment=TA_CENTER
+    )
+    elements.append(Paragraph(f"Relatório gerado em {datetime.now().strftime('%d/%m/%Y %H:%M')}", footer_style))
+    elements.append(Paragraph("Liderança Psicanalítica - Todos os direitos reservados", footer_style))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
+
+def generate_team_pdf(employees_list, manager_name=""):
+    """Generate team PDF report with all employees."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    # Colors
+    navy_blue = HexColor('#0D3B66')
+    gold = HexColor('#F4D35E')
+    light_gray = HexColor('#F5F5F5')
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'LPSTitle',
+        parent=styles['Title'],
+        fontName='Helvetica-Bold',
+        fontSize=18,
+        textColor=navy_blue,
+        alignment=TA_CENTER,
+        spaceAfter=20
+    )
+    subtitle_style = ParagraphStyle(
+        'LPSSubtitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=14,
+        textColor=navy_blue,
+        spaceAfter=10,
+        spaceBefore=15
+    )
+    
+    elements = []
+    
+    # Title
+    elements.append(Paragraph("Liderança Psicanalítica - Relatório da Equipe", title_style))
+    if manager_name:
+        elements.append(Paragraph(f"Gestor: {manager_name}", ParagraphStyle(
+            'ManagerName',
+            parent=styles['Normal'],
+            fontSize=12,
+            textColor=navy_blue,
+            alignment=TA_CENTER
+        )))
+    elements.append(Spacer(1, 20))
+    
+    # Team Summary Table
+    elements.append(Paragraph("Membros da Equipe", subtitle_style))
+    
+    # Table headers
+    table_data = [['Nome', 'Perfil Dominante', 'Perfil Secundário', 'Papel de Bion']]
+    
+    for emp in employees_list:
+        name = emp.get('name', 'Não informado')
+        profile_dom = emp.get('profile_dominant', '-')
+        profile_sec = emp.get('profile_secondary', '-')
+        bion_role = emp.get('bion_role', '-')
+        table_data.append([name, profile_dom, profile_sec, bion_role])
+    
+    team_table = Table(table_data, colWidths=[1.8*inch, 1.8*inch, 1.8*inch, 1.5*inch])
+    team_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), navy_blue),
+        ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#FFFFFF')),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BACKGROUND', (0, 1), (-1, -1), light_gray),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('GRID', (0, 0), (-1, -1), 0.5, navy_blue),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+    ]))
+    elements.append(team_table)
+    elements.append(Spacer(1, 20))
+    
+    # Bion Role Distribution
+    bion_counts = {}
+    for emp in employees_list:
+        role = emp.get('bion_role', 'Não classificado')
+        if role and role != '-':
+            bion_counts[role] = bion_counts.get(role, 0) + 1
+    
+    if bion_counts:
+        elements.append(Paragraph("Distribuição de Papéis de Bion", subtitle_style))
+        dist_data = [[role, str(count)] for role, count in bion_counts.items()]
+        dist_table = Table(dist_data, colWidths=[4*inch, 1*inch])
+        dist_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), light_gray),
+            ('TEXTCOLOR', (0, 0), (0, -1), navy_blue),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('GRID', (0, 0), (-1, -1), 0.5, navy_blue),
+            ('ALIGN', (1, 0), (1, -1), 'CENTER'),
+        ]))
+        elements.append(dist_table)
+    
+    # Footer
+    elements.append(Spacer(1, 30))
+    footer_style = ParagraphStyle(
+        'Footer',
+        parent=styles['Normal'],
+        fontSize=9,
+        textColor=HexColor('#666666'),
+        alignment=TA_CENTER
+    )
+    elements.append(Paragraph(f"Relatório gerado em {datetime.now().strftime('%d/%m/%Y %H:%M')}", footer_style))
+    elements.append(Paragraph("Liderança Psicanalítica - Todos os direitos reservados", footer_style))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
+
+def generate_csv_data(employees_list):
+    """Generate CSV string from employee data."""
+    import csv
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Headers
+    writer.writerow(['Nome', 'Email', 'Perfil Dominante', 'Perfil Secundário', 'Papel de Bion', 'Data'])
+    
+    for emp in employees_list:
+        writer.writerow([
+            emp.get('name', ''),
+            emp.get('email', ''),
+            emp.get('profile_dominant', ''),
+            emp.get('profile_secondary', ''),
+            emp.get('bion_role', ''),
+            emp.get('created_at', '')
+        ])
+    
+    return output.getvalue()
+
+def generate_team_pdf_report(manager_name, employees):
+    """Generate team PDF report from employee tuple list."""
+    # Convert tuples to dict format for the PDF generator
+    employees_list = []
+    for emp in employees:
+        if emp[10] == 1:  # completed
+            employees_list.append({
+                'name': emp[4] or f'Funcionario {emp[3]}',
+                'email': emp[5] or '',
+                'profile_dominant': emp[6] or '',
+                'profile_secondary': emp[7] or '',
+                'bion_role': emp[9] or ''
+            })
+    
+    return generate_team_pdf(employees_list, manager_name).getvalue()
+
+def generate_individual_pdf_report(employee_tuple, manager_name=""):
+    """Generate individual PDF report from employee tuple."""
+    employee_data = {
+        'name': employee_tuple[4] or f'Funcionario {employee_tuple[3]}',
+        'email': employee_tuple[5] or '',
+        'profile_dominant': employee_tuple[6] or '',
+        'profile_secondary': employee_tuple[7] or '',
+        'bion_role': employee_tuple[9] or '',
+        'profile_details': json.loads(employee_tuple[8]) if employee_tuple[8] else {}
+    }
+    
+    return generate_individual_pdf(employee_data, manager_name).getvalue()
 
 # GLOBAL EMPLOYEE ACCESS GUARD - Force employees to stay on EmployeeAssessment
 # This runs before every page render to prevent any navigation
@@ -3138,6 +3654,34 @@ elif page == "Dashboard":
         
         overall_progress = (total_completed / total_lessons * 100) if total_lessons > 0 else 0
         st.markdown(f"<p style='text-align: center; margin-top: 1rem; color: #0D3B66; font-weight: bold;'>Progresso Total: {overall_progress:.0f}%</p></div>", unsafe_allow_html=True)
+        
+        # Radar Chart Card - Manager Profile
+        manager_profile = get_manager_profile_by_user(user_id)
+        if manager_profile:
+            st.markdown("<div class='dashboard-card'><h3>Seu Perfil de Lideranca</h3>", unsafe_allow_html=True)
+            
+            # Try to get block sums from assessment responses
+            block_sums = get_assessment_block_sums(user_id, "manager")
+            if block_sums:
+                profile_name = f"{manager_profile['dominant']} + {manager_profile['secondary']}"
+                radar_chart = generate_radar_chart(block_sums, profile_name)
+                if radar_chart:
+                    st.image(radar_chart, use_container_width=True)
+                    st.markdown(f"""
+                        <div style='text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-top: 1rem;'>
+                            <strong style='color: #0D3B66;'>Perfil Dominante:</strong> {manager_profile['dominant']}<br>
+                            <strong style='color: #0D3B66;'>Perfil Secundario:</strong> {manager_profile['secondary']}
+                        </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                    <div style='text-align: center; padding: 1rem;'>
+                        <strong style='color: #0D3B66;'>{manager_profile['dominant']} + {manager_profile['secondary']}</strong>
+                        <p style='color: #666; font-size: 0.9rem; margin-top: 0.5rem;'>Refaca o LPSTest para visualizar seu grafico radar</p>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown("</div>", unsafe_allow_html=True)
         
         # AI Insights Card
         if manager_id:
@@ -3912,9 +4456,10 @@ elif page == "LPSChat":
         system_prompt = f"""Voce e uma CONSULTORA ESPECIALISTA em Psicanalise e Neurociencia aplicada a Lideranca, desenvolvida pela metodologia LPS de Viviane Nishiura.
 
 PAPEL E IDENTIDADE:
-- Voce e uma consultora senior com profundo conhecimento em psicanalise de grupos (Bion, Pichon-Riviere) e neurociencia organizacional
+- Voce e uma consultora senior com profundo conhecimento em psicanalise de grupos (Bion, Kernberg, Pichon-Riviere) e neurociencia organizacional
 - Sua funcao e ajudar gestores a compreender as dinamicas inconscientes de suas equipes
 - Voce analisa padroes de comportamento, identificando papeis inconscientes e arquetipos
+- Voce aplica o conceito de Circulo de Seguranca (Sinek) para avaliar o ambiente emocional
 - PRIVACIDADE: Seus insights sao EXCLUSIVOS para o gestor - nunca compartilhados com funcionarios
 
 ============ DADOS DA EQUIPE (CONFIDENCIAL) ============
@@ -3953,6 +4498,28 @@ ANALISE AUTOMATICA DA DINAMICA GRUPAL:
 - Quando ha ansiedade grupal, o grupo REGRIDE para padroes primitivos (ataque, fuga, dependencia)
 - A TAREFA REAL (objetivo concreto do trabalho) ancora o grupo na racionalidade
 - Pergunte sempre: "Qual e a tarefa que voces precisam entregar?" para retirar o grupo da regressao
+
+4.1 PRESSUPOSTOS BASICOS DE BION:
+- Grupo de Trabalho: envolvido com a tarefa real, focado na realizacao
+- Grupo de Suposicao Basica: fantasias inconscientes que atrapalham a tarefa
+  * Dependencia: grupo espera que o lider seja onipotente e tenha todas as respostas (mae idealizada)
+  * Luta e Fuga: grupo projeta o mal para fora, prepara-se para lutar ou fugir (irreflexivo, so acao)
+  * Acasalamento: crenca de que um messias salvador surgira (defesa contra odio e destrutividade)
+
+4.2 CIRCULO DE SEGURANCA (SINEK):
+- EDSO: Endorfina, Dopamina (individuais) + Serotonina, Oxitocina (coletivos)
+- Ambiente seguro: baixo Cortisol, alta Oxitocina = cooperacao e confianca
+- Ambiente toxico: alto Cortisol = modo de sobrevivencia, paralisia, conflitos
+- O lider CRIA o circulo de seguranca, protegendo a equipe de ameacas externas
+- Quando o circulo esta forte: funcionarios tomam riscos, inovam, colaboram
+- Quando o circulo esta fraco: funcionarios se protegem, competem, escondem erros
+
+4.3 KERNBERG - CARACTERISTICAS DO LIDER RACIONAL:
+- Inteligencia
+- Honestidade e incorruptibilidade
+- Capacidade de estabelecer relacoes objetais profundas
+- Narcisismo sadio (para nao depender excessivamente da aprovacao)
+- Atitude paranoide sadia (alerta aos perigos da corrupcao e regressao)
 
 5. PERFIS DE LIDERANCA E SEUS ARQUETIPOS:
 - Protetor: Acolhe mas pode absorver demais (risco de burnout)
