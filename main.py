@@ -100,11 +100,11 @@ def send_employee_result_email(employee_name, employee_email, dominant_profile, 
         <style>
             body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
             .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; }}
-            .header {{ background-color: #0D3B66; color: white; padding: 30px; text-align: center; }}
-            .header h1 {{ margin: 0; color: #F4D35E; }}
+            .header {{ background-color: #18738c; color: white; padding: 30px; text-align: center; }}
+            .header h1 {{ margin: 0; color: #d19f09; }}
             .content {{ padding: 30px; line-height: 1.7; color: #333; }}
-            .result-box {{ background: linear-gradient(135deg, #0D3B66, #1a5490); color: white; padding: 25px; border-radius: 10px; text-align: center; margin: 25px 0; }}
-            .result-box h2 {{ margin: 0; color: #F4D35E; font-size: 1.6rem; }}
+            .result-box {{ background: linear-gradient(135deg, #18738c, #1a5490); color: white; padding: 25px; border-radius: 10px; text-align: center; margin: 25px 0; }}
+            .result-box h2 {{ margin: 0; color: #d19f09; font-size: 1.6rem; }}
             .signature {{ margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }}
             .footer {{ background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 0.9rem; color: #666; }}
         </style>
@@ -118,7 +118,7 @@ def send_employee_result_email(employee_name, employee_email, dominant_profile, 
             <div class="content">
                 <p>Ola, <strong>{employee_name}</strong>!</p>
                 
-                <p>Voce acaba de concluir o LPSTest, uma etapa fundamental na sua jornada de desenvolvimento dentro da Plataforma LPS.</p>
+                <p>Voce acaba de concluir o LPTest, uma etapa fundamental na sua jornada de desenvolvimento dentro da Plataforma LPS.</p>
                 
                 <p>A analise do seu perfil combina os fundamentos da Psicanalise com as descobertas da Neurociencia para mapear nao apenas suas habilidades tecnicas, mas as forcas invisiveis e os mecanismos de defesa que moldam como voce se relaciona com sua equipe e seus lideres.</p>
                 
@@ -158,13 +158,13 @@ def send_manager_notification_email(manager_email, manager_name, employee_name, 
         <style>
             body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
             .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; }}
-            .header {{ background-color: #0D3B66; color: white; padding: 30px; text-align: center; }}
-            .header h1 {{ margin: 0; color: #F4D35E; }}
+            .header {{ background-color: #18738c; color: white; padding: 30px; text-align: center; }}
+            .header h1 {{ margin: 0; color: #d19f09; }}
             .content {{ padding: 30px; }}
             .alert-box {{ background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 5px; margin: 20px 0; }}
             .employee-card {{ background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }}
-            .bion-badge {{ display: inline-block; background-color: #F4D35E; color: #0D3B66; padding: 8px 16px; border-radius: 15px; font-weight: bold; }}
-            .cta-button {{ display: inline-block; background-color: #0D3B66; color: white; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 20px; }}
+            .bion-badge {{ display: inline-block; background-color: #d19f09; color: #18738c; padding: 8px 16px; border-radius: 15px; font-weight: bold; }}
+            .cta-button {{ display: inline-block; background-color: #18738c; color: white; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 20px; }}
             .footer {{ background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 0.9rem; color: #666; }}
         </style>
     </head>
@@ -178,11 +178,11 @@ def send_manager_notification_email(manager_email, manager_name, employee_name, 
                 <p>Olá <strong>{manager_name}</strong>,</p>
                 
                 <div class="alert-box">
-                    <strong>Novo membro mapeado!</strong> {employee_name} completou o LPSTest.
+                    <strong>Novo membro mapeado!</strong> {employee_name} completou o LPTest.
                 </div>
                 
                 <div class="employee-card">
-                    <h3 style="margin-top: 0; color: #0D3B66;">{employee_name}</h3>
+                    <h3 style="margin-top: 0; color: #18738c;">{employee_name}</h3>
                     <p><strong>Perfil:</strong> {employee_profile}</p>
                     <span class="bion-badge">{bion_role}</span>
                 </div>
@@ -215,15 +215,15 @@ def send_welcome_email(user_email, user_name, password):
         <style>
             body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
             .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; }}
-            .header {{ background-color: #0D3B66; color: white; padding: 30px; text-align: center; }}
-            .header h1 {{ margin: 0; color: #F4D35E; }}
+            .header {{ background-color: #18738c; color: white; padding: 30px; text-align: center; }}
+            .header h1 {{ margin: 0; color: #d19f09; }}
             .content {{ padding: 30px; }}
-            .credentials-box {{ background: linear-gradient(135deg, #0D3B66, #1a5490); color: white; padding: 25px; border-radius: 10px; margin: 20px 0; }}
-            .credentials-box h3 {{ margin-top: 0; color: #F4D35E; }}
+            .credentials-box {{ background: linear-gradient(135deg, #18738c, #1a5490); color: white; padding: 25px; border-radius: 10px; margin: 20px 0; }}
+            .credentials-box h3 {{ margin-top: 0; color: #d19f09; }}
             .credential-item {{ background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 5px; margin: 10px 0; }}
             .credential-label {{ font-size: 0.9rem; opacity: 0.8; }}
             .credential-value {{ font-size: 1.1rem; font-weight: bold; }}
-            .cta-button {{ display: inline-block; background-color: #F4D35E; color: #0D3B66; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 20px; }}
+            .cta-button {{ display: inline-block; background-color: #d19f09; color: #18738c; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 20px; }}
             .features {{ background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }}
             .feature-item {{ padding: 8px 0; border-bottom: 1px solid #e0e0e0; }}
             .feature-item:last-child {{ border-bottom: none; }}
@@ -255,11 +255,11 @@ def send_welcome_email(user_email, user_name, password):
                 <p><strong>Importante:</strong> Recomendamos que você altere sua senha após o primeiro acesso.</p>
                 
                 <div class="features">
-                    <h4 style="margin-top: 0; color: #0D3B66;">O que você terá acesso:</h4>
+                    <h4 style="margin-top: 0; color: #18738c;">O que você terá acesso:</h4>
                     <div class="feature-item">Curso completo com 8 modulos de Lideranca Psicanalitica</div>
-                    <div class="feature-item">LPSTest - Assessment de perfil de liderança</div>
+                    <div class="feature-item">LPTest - Assessment de perfil de liderança</div>
                     <div class="feature-item">Gestão de Equipe - Mapeie até 4 colaboradores</div>
-                    <div class="feature-item">LPSChat - Consultor de IA especializado</div>
+                    <div class="feature-item">LPChat - Consultor de IA especializado</div>
                     <div class="feature-item">Acesso à mentoria com Viviane Nishiura</div>
                 </div>
                 
@@ -881,7 +881,7 @@ def activate_user_payment(user_id, plan_type='premium', amount=997.0, days_valid
     return payment_id
 
 def can_access_premium_features(user_id):
-    """Check if user can access premium features (LPSChat, Mentoria)
+    """Check if user can access premium features (LPChat, Mentoria)
     Requires: Active payment AND completed theoretical course modules"""
     payment_status = get_user_payment_status(user_id)
     course_completed = is_course_completed(user_id)
@@ -926,7 +926,7 @@ def get_ai_insights(manager_id, user_id):
     if not manager_profile or not manager_profile.get('dominant'):
         insights.append({
             'type': 'warning',
-            'message': 'Complete seu LPSTest para receber insights personalizados sobre sua liderança.'
+            'message': 'Complete seu LPTest para receber insights personalizados sobre sua liderança.'
         })
     
     # Check team size
@@ -982,15 +982,23 @@ def get_app_url():
 # Estilização Customizada
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Ubuntu:wght@300;400;500;700&display=swap');
+    
     :root {
-        --primary-blue: #0D3B66;
-        --accent-gold: #F4D35E;
+        --primary-blue: #18738c;
+        --accent-gold: #d19f09;
         --bg-gray: #F5F5F5;
         --light-gold: #FFF9E6;
     }
     
     .main { background-color: var(--bg-gray); }
-    h1, h2, h3 { color: var(--primary-blue) !important; }
+    h1, h2, h3 { 
+        color: var(--primary-blue) !important;
+        font-family: 'Open Sans', sans-serif !important;
+    }
+    body, p, span, div, label {
+        font-family: 'Ubuntu', sans-serif !important;
+    }
     
     .stButton>button {
         background-color: var(--primary-blue);
@@ -1202,7 +1210,7 @@ st.markdown("""
     }
     
     .restricted-modal {
-        background: linear-gradient(135deg, #0D3B66 0%, #1a5490 100%);
+        background: linear-gradient(135deg, #18738c 0%, #1a5490 100%);
         padding: 2rem;
         border-radius: 15px;
         text-align: center;
@@ -1309,7 +1317,7 @@ st.markdown("""
     }
     
     .paywall-box {
-        background: linear-gradient(135deg, #0D3B66 0%, #1a5490 100%);
+        background: linear-gradient(135deg, #18738c 0%, #1a5490 100%);
         padding: 2rem;
         border-radius: 15px;
         text-align: center;
@@ -1812,8 +1820,8 @@ MENU_SECTIONS = [
     {"key": "home", "label": "Home", "icon": "🏠"},
     {"key": "sobre", "label": "Sobre", "icon": "👤"},
     {"key": "curso", "label": "Curso", "icon": "📚"},
-    {"key": "lpstest", "label": "LPSTest", "icon": "🧠"},
-    {"key": "lpschat", "label": "LPSChat", "icon": "💬"},
+    {"key": "lpstest", "label": "LPTest", "icon": "🧠"},
+    {"key": "lpschat", "label": "LPChat", "icon": "💬"},
     {"key": "mentoria", "label": "Mentoria", "icon": "📅"},
     {"key": "soluções", "label": "Soluções", "icon": "💼"},
     {"key": "insights", "label": "Insights", "icon": "📰"},
@@ -1843,11 +1851,11 @@ def render_sidebar_navigation():
             }
             /* Sidebar styling */
             [data-testid="stSidebar"] {
-                background-color: #0D3B66 !important;
+                background-color: #18738c !important;
                 padding-top: 0;
             }
             [data-testid="stSidebar"] > div:first-child {
-                background-color: #0D3B66 !important;
+                background-color: #18738c !important;
             }
             /* Sidebar buttons */
             [data-testid="stSidebar"] .stButton > button {
@@ -1865,12 +1873,12 @@ def render_sidebar_navigation():
                 white-space: nowrap;
             }
             [data-testid="stSidebar"] .stButton > button:hover {
-                background-color: rgba(244, 211, 94, 0.25) !important;
-                color: #F4D35E !important;
+                background-color: rgba(209, 159, 9, 0.25) !important;
+                color: #d19f09 !important;
             }
             [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-                background-color: #F4D35E !important;
-                color: #0D3B66 !important;
+                background-color: #d19f09 !important;
+                color: #18738c !important;
                 font-weight: bold;
             }
             [data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
@@ -1899,9 +1907,9 @@ def render_sidebar_navigation():
             }
             /* User badge */
             .user-badge {
-                background-color: rgba(244, 211, 94, 0.15);
-                border: 2px solid #F4D35E;
-                color: #F4D35E;
+                background-color: rgba(209, 159, 9, 0.15);
+                border: 2px solid #d19f09;
+                color: #d19f09;
                 padding: 0.75rem 1rem;
                 border-radius: 25px;
                 text-align: center;
@@ -1911,7 +1919,7 @@ def render_sidebar_navigation():
             }
             /* Navigation label */
             .nav-section-label {
-                color: #F4D35E;
+                color: #d19f09;
                 font-size: 0.75rem;
                 font-weight: 600;
                 text-transform: uppercase;
@@ -1978,8 +1986,8 @@ def render_sidebar_navigation():
 def render_public_header():
     # Just show a clean header with page title
     st.markdown("""
-        <div style="background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-            <h1 style="color: #F4D35E; font-size: 1.8rem; margin: 0; text-align: center;">
+        <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+            <h1 style="color: #d19f09; font-size: 1.8rem; margin: 0; text-align: center;">
                 Liderança Psicanalítica
             </h1>
             <p style="color: rgba(255,255,255,0.8); text-align: center; margin: 0.5rem 0 0 0; font-size: 0.95rem;">
@@ -1993,7 +2001,7 @@ def render_login_page():
     st.markdown("""
         <style>
         .login-container {
-            background-color: #0D3B66;
+            background-color: #18738c;
             padding: 3rem;
             border-radius: 15px;
             max-width: 450px;
@@ -2001,7 +2009,7 @@ def render_login_page():
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
         .login-title {
-            color: #F4D35E;
+            color: #d19f09;
             font-size: 1.5rem;
             text-align: center;
             margin-bottom: 1rem;
@@ -2023,10 +2031,10 @@ def render_login_page():
             st.image(LOGO_PATH, width=150)
         
         st.markdown("""
-            <h1 style="color: #0D3B66; font-size: 2.5rem; text-align: center; font-weight: bold; margin: 0.5rem 0;">
+            <h1 style="color: #18738c; font-size: 2.5rem; text-align: center; font-weight: bold; margin: 0.5rem 0;">
                 Liderança Psicanalítica
             </h1>
-            <div style="background-color: #0D3B66; padding: 1.5rem; border-radius: 15px; margin-top: 1rem;">
+            <div style="background-color: #18738c; padding: 1.5rem; border-radius: 15px; margin-top: 1rem;">
                 <p class="welcome-text">Transforme Sua Liderança com a Ciência do Inconsciente</p>
             </div>
         """, unsafe_allow_html=True)
@@ -2095,14 +2103,14 @@ if st.session_state.authenticated and not is_employee_access:
         if st.button("🎓 LPS Curso", key="nav_curso"):
             st.session_state.page = "LPS Curso"
             st.rerun()
-        if st.button("📝 LPSTest", key="nav_test"):
-            st.session_state.page = "LPSTest"
+        if st.button("📝 LPTest", key="nav_test"):
+            st.session_state.page = "LPTest"
             st.rerun()
         if st.button("👥 Gestão de Equipe", key="nav_team"):
             st.session_state.page = "TeamManagement"
             st.rerun()
-        if st.button("💬 LPSChat", key="nav_chat"):
-            st.session_state.page = "LPSChat"
+        if st.button("💬 LPChat", key="nav_chat"):
+            st.session_state.page = "LPChat"
             st.rerun()
         if st.button("📅 Mentoria", key="nav_mentoria"):
             st.session_state.page = "Mentoria"
@@ -2167,7 +2175,7 @@ def create_pdf_styles():
         name='LPSTitle',
         parent=styles['Heading1'],
         fontSize=24,
-        textColor=HexColor('#0D3B66'),
+        textColor=HexColor('#18738c'),
         alignment=TA_CENTER,
         spaceAfter=20
     ))
@@ -2177,7 +2185,7 @@ def create_pdf_styles():
         name='LPSSubtitle',
         parent=styles['Heading2'],
         fontSize=14,
-        textColor=HexColor('#F4D35E'),
+        textColor=HexColor('#d19f09'),
         alignment=TA_CENTER,
         spaceAfter=15
     ))
@@ -2187,7 +2195,7 @@ def create_pdf_styles():
         name='LPSSection',
         parent=styles['Heading2'],
         fontSize=14,
-        textColor=HexColor('#0D3B66'),
+        textColor=HexColor('#18738c'),
         spaceAfter=10,
         spaceBefore=15
     ))
@@ -2222,19 +2230,19 @@ def create_pdf_header_table():
         logo = Image(logo_path, width=1.2*inch, height=1.2*inch)
         header_data = [[
             logo,
-            Paragraph("<font color='white' size='14'><b>Lideranca Psicanalitica</b></font><br/><font color='#F4D35E' size='10'>Viviane Nishiura & Equipe LPS</font>", getSampleStyleSheet()['Normal'])
+            Paragraph("<font color='white' size='14'><b>Lideranca Psicanalitica</b></font><br/><font color='#d19f09' size='10'>Viviane Nishiura & Equipe LPS</font>", getSampleStyleSheet()['Normal'])
         ]]
     else:
         # Fallback to text-based header if logo not found
         header_data = [[
-            Paragraph("<font color='#F4D35E' size='28'><b>LPS</b></font>", getSampleStyleSheet()['Normal']),
+            Paragraph("<font color='#d19f09' size='28'><b>LPS</b></font>", getSampleStyleSheet()['Normal']),
             Paragraph("<font color='white' size='12'>Lideranca Psicanalitica<br/><font size='9'>Viviane Nishiura & Equipe</font></font>", getSampleStyleSheet()['Normal'])
         ]]
     
     header_table = Table(header_data, colWidths=[1.5*inch, 4*inch])
     header_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), HexColor('#0D3B66')),
-        ('TEXTCOLOR', (0, 0), (0, 0), HexColor('#F4D35E')),
+        ('BACKGROUND', (0, 0), (-1, -1), HexColor('#18738c')),
+        ('TEXTCOLOR', (0, 0), (0, 0), HexColor('#d19f09')),
         ('TEXTCOLOR', (1, 0), (1, 0), HexColor('#FFFFFF')),
         ('ALIGN', (0, 0), (0, 0), 'CENTER'),
         ('ALIGN', (1, 0), (1, 0), 'LEFT'),
@@ -2243,7 +2251,7 @@ def create_pdf_header_table():
         ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
         ('LEFTPADDING', (0, 0), (-1, -1), 12),
         ('RIGHTPADDING', (0, 0), (-1, -1), 12),
-        ('BOX', (0, 0), (-1, -1), 1, HexColor('#0D3B66')),
+        ('BOX', (0, 0), (-1, -1), 1, HexColor('#18738c')),
     ]))
     return header_table
 
@@ -2286,7 +2294,7 @@ def generate_team_pdf_report(manager_name, employees_data, include_date=True):
     if len(table_data) > 1:
         table = Table(table_data, colWidths=[1.3*inch, 1.6*inch, 1.2*inch, 1.2*inch, 1.2*inch])
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), HexColor('#0D3B66')),
+            ('BACKGROUND', (0, 0), (-1, 0), HexColor('#18738c')),
             ('TEXTCOLOR', (0, 0), (-1, 0), HexColor('#FFFFFF')),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
@@ -2421,7 +2429,7 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     # Footer
     elements.append(Spacer(1, 30))
     elements.append(Paragraph("_" * 60, styles['LPSInfo']))
-    elements.append(Paragraph("Analise gerada pela LPSChat - Consultora de IA em Psicanalise e Neurociencia", styles['LPSInfo']))
+    elements.append(Paragraph("Analise gerada pela LPChat - Consultora de IA em Psicanalise e Neurociencia", styles['LPSInfo']))
     elements.append(Paragraph("Plataforma LPS - Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
     
     doc.build(elements)
@@ -2479,7 +2487,7 @@ def generate_manager_guide_pdf():
     elements.append(Paragraph("2. Mapeamento de Equipe", styles['LPSSection']))
     elements.append(Spacer(1, 10))
     elements.append(Paragraph(
-        "O LPSTest mapeia os perfis inconscientes de sua equipe, permitindo entender dinamicas grupais "
+        "O LPTest mapeia os perfis inconscientes de sua equipe, permitindo entender dinamicas grupais "
         "que impactam produtividade, conflitos e turnover.",
         styles['LPSBody']))
     elements.append(Spacer(1, 8))
@@ -2503,11 +2511,11 @@ def generate_manager_guide_pdf():
     
     elements.append(Spacer(1, 20))
     
-    # Section 3: Uso Estratégico do LPSChat
-    elements.append(Paragraph("3. Uso Estrategico do LPSChat", styles['LPSSection']))
+    # Section 3: Uso Estratégico do LPChat
+    elements.append(Paragraph("3. Uso Estrategico do LPChat", styles['LPSSection']))
     elements.append(Spacer(1, 10))
     elements.append(Paragraph(
-        "O LPSChat e sua consultora de IA especializada em psicanalise e neurociencia aplicada a lideranca. "
+        "O LPChat e sua consultora de IA especializada em psicanalise e neurociencia aplicada a lideranca. "
         "Para obter os melhores insights, faca perguntas especificas sobre sua equipe.",
         styles['LPSBody']))
     elements.append(Spacer(1, 8))
@@ -2583,21 +2591,21 @@ def generate_team_chart(employees_data, manager_name):
     
     # Create figure with two subplots
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
-    fig.suptitle(f'Perfil da Equipe - {manager_name}', fontsize=16, color='#0D3B66', fontweight='bold')
+    fig.suptitle(f'Perfil da Equipe - {manager_name}', fontsize=16, color='#18738c', fontweight='bold')
     
     # Colors matching LPS brand
-    colors_profile = ['#0D3B66', '#1a4f7a', '#2d6a9f', '#4080b5', '#5596c9', '#6aabdc']
-    colors_bion = ['#F4D35E', '#e6c54e', '#d9b83e', '#ccab2e', '#bf9e1e', '#b2910e']
+    colors_profile = ['#18738c', '#1a4f7a', '#2d6a9f', '#4080b5', '#5596c9', '#6aabdc']
+    colors_bion = ['#d19f09', '#e6c54e', '#d9b83e', '#ccab2e', '#bf9e1e', '#b2910e']
     
     # Profile distribution pie chart
     if profile_counts:
         labels1 = list(profile_counts.keys())
         sizes1 = list(profile_counts.values())
         ax1.pie(sizes1, labels=labels1, colors=colors_profile[:len(labels1)], autopct='%1.0f%%', startangle=90)
-        ax1.set_title('Perfis de Lideranca', fontsize=12, color='#0D3B66')
+        ax1.set_title('Perfis de Lideranca', fontsize=12, color='#18738c')
     else:
         ax1.text(0.5, 0.5, 'Sem dados', ha='center', va='center')
-        ax1.set_title('Perfis de Lideranca', fontsize=12, color='#0D3B66')
+        ax1.set_title('Perfis de Lideranca', fontsize=12, color='#18738c')
     
     # Bion roles bar chart
     if bion_counts:
@@ -2605,13 +2613,13 @@ def generate_team_chart(employees_data, manager_name):
         sizes2 = list(bion_counts.values())
         bars = ax2.barh(labels2, sizes2, color=colors_bion[:len(labels2)])
         ax2.set_xlabel('Quantidade')
-        ax2.set_title('Papeis de Bion', fontsize=12, color='#0D3B66')
+        ax2.set_title('Papeis de Bion', fontsize=12, color='#18738c')
         ax2.set_xlim(0, max(sizes2) + 1)
         for bar, size in zip(bars, sizes2):
             ax2.text(bar.get_width() + 0.1, bar.get_y() + bar.get_height()/2, str(size), va='center')
     else:
         ax2.text(0.5, 0.5, 'Sem dados', ha='center', va='center')
-        ax2.set_title('Papeis de Bion', fontsize=12, color='#0D3B66')
+        ax2.set_title('Papeis de Bion', fontsize=12, color='#18738c')
     
     plt.tight_layout()
     
@@ -2666,15 +2674,15 @@ def generate_radar_chart(block_sums, profile_name=""):
     fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
     
     # Plot data
-    ax.fill(angles, values_plot, color='#0D3B66', alpha=0.25)
-    ax.plot(angles, values_plot, color='#0D3B66', linewidth=2)
+    ax.fill(angles, values_plot, color='#18738c', alpha=0.25)
+    ax.plot(angles, values_plot, color='#18738c', linewidth=2)
     
     # Add markers
-    ax.scatter(angles[:-1], values, color='#F4D35E', s=100, zorder=5)
+    ax.scatter(angles[:-1], values, color='#d19f09', s=100, zorder=5)
     
     # Set category labels
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, size=10, color='#0D3B66')
+    ax.set_xticklabels(categories, size=10, color='#18738c')
     
     # Set y-axis limits
     ax.set_ylim(0, 100)
@@ -2683,11 +2691,11 @@ def generate_radar_chart(block_sums, profile_name=""):
     
     # Title
     title = f'Perfil de Lideranca: {profile_name}' if profile_name else 'Perfil de Lideranca'
-    ax.set_title(title, size=14, color='#0D3B66', fontweight='bold', pad=20)
+    ax.set_title(title, size=14, color='#18738c', fontweight='bold', pad=20)
     
     # Style
     ax.grid(True, color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
-    ax.spines['polar'].set_color('#0D3B66')
+    ax.spines['polar'].set_color('#18738c')
     
     # Save to buffer
     buffer = io.BytesIO()
@@ -2775,8 +2783,8 @@ def generate_individual_pdf(employee_data, manager_name=""):
     doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch)
     
     # Colors
-    navy_blue = HexColor('#0D3B66')
-    gold = HexColor('#F4D35E')
+    navy_blue = HexColor('#18738c')
+    gold = HexColor('#d19f09')
     light_gray = HexColor('#F5F5F5')
     
     # Styles
@@ -2883,8 +2891,8 @@ def generate_team_pdf(employees_list, manager_name=""):
     doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch)
     
     # Colors
-    navy_blue = HexColor('#0D3B66')
-    gold = HexColor('#F4D35E')
+    navy_blue = HexColor('#18738c')
+    gold = HexColor('#d19f09')
     light_gray = HexColor('#F5F5F5')
     
     # Styles
@@ -3070,7 +3078,7 @@ if page == "Home":
         
         # Video Intro
         st.write("")
-        vimeo_video("https://vimeo.com/1154502544")
+        vimeo_video("https://vimeo.com/1154882598")
         
         # Features
         st.write("---")
@@ -3081,7 +3089,7 @@ if page == "Home":
             st.markdown("""
                 <div style="text-align: center; padding: 1rem;">
                     <div style="font-size: 2.5rem;">🧠</div>
-                    <h4 style="color: #0D3B66;">Neurociência + Psicanálise</h4>
+                    <h4 style="color: #18738c;">Neurociência + Psicanálise</h4>
                     <p style="color: #666;">Metodologia única que une ciência do cérebro com análise profunda do comportamento.</p>
                 </div>
             """, unsafe_allow_html=True)
@@ -3089,7 +3097,7 @@ if page == "Home":
             st.markdown("""
                 <div style="text-align: center; padding: 1rem;">
                     <div style="font-size: 2.5rem;">📊</div>
-                    <h4 style="color: #0D3B66;">Assessment Completo</h4>
+                    <h4 style="color: #18738c;">Assessment Completo</h4>
                     <p style="color: #666;">Descubra seu perfil de liderança e mapeie sua equipe com ferramentas exclusivas.</p>
                 </div>
             """, unsafe_allow_html=True)
@@ -3097,8 +3105,8 @@ if page == "Home":
             st.markdown("""
                 <div style="text-align: center; padding: 1rem;">
                     <div style="font-size: 2.5rem;">💬</div>
-                    <h4 style="color: #0D3B66;">IA Consultora</h4>
-                    <p style="color: #666;">Converse com a LPSChat para receber insights personalizados sobre sua equipe.</p>
+                    <h4 style="color: #18738c;">IA Consultora</h4>
+                    <p style="color: #666;">Converse com a LPChat para receber insights personalizados sobre sua equipe.</p>
                 </div>
             """, unsafe_allow_html=True)
         
@@ -3118,7 +3126,7 @@ if page == "Home":
         
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #0D3B66;">O que é Liderança Psicanalítica?</h3>
+                <h3 style="color: #18738c;">O que é Liderança Psicanalítica?</h3>
                 <p>A Liderança Psicanalítica é uma abordagem inovadora que integra conceitos da psicanálise com práticas de gestão moderna. 
                 Desenvolvida por <strong>Viviane Nishiura</strong>, esta metodologia ajuda líderes a compreenderem as dinâmicas 
                 inconscientes que influenciam suas equipes e tomadas de decisão.</p>
@@ -3127,7 +3135,7 @@ if page == "Home":
         
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #0D3B66;">Quem é Viviane Nishiura?</h3>
+                <h3 style="color: #18738c;">Quem é Viviane Nishiura?</h3>
                 <p>Psicóloga clínica e consultora organizacional com mais de 15 anos de experiência em desenvolvimento de líderes. 
                 Especialista em psicanálise aplicada às organizações, Viviane criou o método LPS para ajudar gestores 
                 a transformarem suas relações de trabalho através do autoconhecimento.</p>
@@ -3151,7 +3159,7 @@ if page == "Home":
         st.markdown("""
             <style>
             .premium-module-card {
-                background-color: #0D3B66;
+                background-color: #18738c;
                 border-radius: 12px;
                 padding: 1.5rem;
                 margin-bottom: 1rem;
@@ -3169,7 +3177,7 @@ if page == "Home":
                 margin-bottom: 0.75rem;
             }
             .premium-module-title {
-                color: #F4D35E;
+                color: #d19f09;
                 font-size: 1.15rem;
                 font-weight: bold;
                 text-align: center;
@@ -3233,8 +3241,8 @@ if page == "Home":
         if st.session_state.show_login_modal:
             st.write("")
             st.markdown(f"""
-                <div style="background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #F4D35E; margin: 1rem 0;">
-                    <h3 style="color: #0D3B66; margin-top: 0;">Conteudo Exclusivo para Alunos</h3>
+                <div style="background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #d19f09; margin: 1rem 0;">
+                    <h3 style="color: #18738c; margin-top: 0;">Conteudo Exclusivo para Alunos</h3>
                     <p style="color: #333;">O acesso ao curso completo e liberado apos a confirmacao do pagamento. Entre em contato via WhatsApp para adquirir seu acesso.</p>
                     <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 0.5rem;">
                         Falar com Consultor
@@ -3250,19 +3258,19 @@ if page == "Home":
         cta_cols = st.columns([1, 2, 1])
         with cta_cols[1]:
             st.markdown(f"""
-                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.1rem; background-color: #F4D35E; color: #0D3B66;">
+                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.1rem; background-color: #d19f09; color: #18738c;">
                     Comprar Curso Completo
                 </a>
             """, unsafe_allow_html=True)
     
     # LPSTEST SECTION - Preview with Paywall
     elif current_section == "lpstest":
-        st.markdown('<div class="section-title">LPSTest - Assessment de Liderança</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">LPTest - Assessment de Liderança</div>', unsafe_allow_html=True)
         
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #0D3B66;">Descubra Seu Perfil de Liderança</h3>
-                <p>O LPSTest é um assessment exclusivo com <strong>48 questões</strong> desenvolvidas para mapear 
+                <h3 style="color: #18738c;">Descubra Seu Perfil de Liderança</h3>
+                <p>O LPTest é um assessment exclusivo com <strong>48 questões</strong> desenvolvidas para mapear 
                 seu perfil de liderança através de 6 dimensões psicanalíticas:</p>
                 <ul style="color: #666;">
                     <li><strong>Autoridade</strong> - Como você exerce e percebe sua autoridade</li>
@@ -3278,27 +3286,27 @@ if page == "Home":
         st.markdown("""
             <div style="text-align: center; padding: 2rem;">
                 <div style="font-size: 4rem;">📊</div>
-                <h3 style="color: #0D3B66;">Receba Seu Perfil Híbrido</h3>
+                <h3 style="color: #18738c;">Receba Seu Perfil Híbrido</h3>
                 <p style="color: #666;">Ao completar o assessment, você recebe um relatório com seu perfil dominante, 
                 perfil secundário e papel grupal segundo Bion.</p>
             </div>
         """, unsafe_allow_html=True)
         
         if st.session_state.authenticated:
-            if st.button("Fazer o LPSTest Agora", use_container_width=True, type="primary"):
-                st.session_state.page = "LPSTest"
+            if st.button("Fazer o LPTest Agora", use_container_width=True, type="primary"):
+                st.session_state.page = "LPTest"
                 st.rerun()
         else:
             render_paywall()
     
     # LPSCHAT SECTION - Preview with Paywall
     elif current_section == "lpschat":
-        st.markdown('<div class="section-title">LPSChat - Consultor de IA</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">LPChat - Consultor de IA</div>', unsafe_allow_html=True)
         
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #0D3B66;">Sua Consultora Psicanalítica 24/7</h3>
-                <p>O LPSChat é uma inteligência artificial treinada com os conceitos da metodologia LPS. 
+                <h3 style="color: #18738c;">Sua Consultora Psicanalítica 24/7</h3>
+                <p>O LPChat é uma inteligência artificial treinada com os conceitos da metodologia LPS. 
                 Ela tem acesso ao seu perfil e da sua equipe, oferecendo:</p>
                 <ul style="color: #666;">
                     <li>Análise das dinâmicas grupais da sua equipe</li>
@@ -3313,15 +3321,15 @@ if page == "Home":
             <div style="background-color: #F5F5F5; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;">
                 <p style="color: #666; font-style: italic;">"Minha equipe está em conflito constante. O João parece 
                 sempre ser culpado por tudo. Como posso intervir?"</p>
-                <p style="color: #0D3B66; margin-top: 1rem;"><strong>LPSChat:</strong> Pelo que descreve, João pode 
+                <p style="color: #18738c; margin-top: 1rem;"><strong>LPChat:</strong> Pelo que descreve, João pode 
                 estar assumindo o papel de <em>Bode Expiatório</em> do grupo - uma dinâmica comum quando há ansiedade 
                 não processada. Sugiro focar na <em>Tarefa Real</em> para resgatar a racionalidade...</p>
             </div>
         """, unsafe_allow_html=True)
         
         if st.session_state.authenticated:
-            if st.button("Acessar LPSChat", use_container_width=True, type="primary"):
-                st.session_state.page = "LPSChat"
+            if st.button("Acessar LPChat", use_container_width=True, type="primary"):
+                st.session_state.page = "LPChat"
                 st.rerun()
         else:
             render_paywall()
@@ -3332,10 +3340,10 @@ if page == "Home":
         
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #0D3B66;">Acompanhamento Personalizado</h3>
+                <h3 style="color: #18738c;">Acompanhamento Personalizado</h3>
                 <p>Sessões individuais com Viviane Nishiura para aprofundar seu desenvolvimento como líder psicanalítico:</p>
                 <ul style="color: #666;">
-                    <li>Análise do seu perfil LPSTest</li>
+                    <li>Análise do seu perfil LPTest</li>
                     <li>Supervisão de casos da sua equipe</li>
                     <li>Desenvolvimento de estratégias personalizadas</li>
                     <li>Acompanhamento mensal do seu progresso</li>
@@ -3427,7 +3435,7 @@ if page == "Home":
             },
             {
                 "title": "Como Reduzir Turnover com Mapeamento de Perfis",
-                "excerpt": "Estudo de caso: empresa reduziu rotatividade em 40% apos aplicar LPSTest e realocar funcionarios por perfil.",
+                "excerpt": "Estudo de caso: empresa reduziu rotatividade em 40% apos aplicar LPTest e realocar funcionarios por perfil.",
                 "category": "Gestao",
                 "date": "Dezembro 2024"
             },
@@ -3452,24 +3460,24 @@ if page == "Home":
             
             with cols[i % 2]:
                 category_color = {
-                    "Psicanalise": "#0D3B66",
+                    "Psicanalise": "#18738c",
                     "Neurociencia": "#28a745",
-                    "Gestao": "#F4D35E",
+                    "Gestao": "#d19f09",
                     "Dinamica Grupal": "#6c757d"
-                }.get(post["category"], "#0D3B66")
+                }.get(post["category"], "#18738c")
                 
                 st.markdown(f"""
                     <div style="background: white; border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid {category_color};">
                         <span style="background: {category_color}; color: white; padding: 3px 10px; border-radius: 15px; font-size: 0.75rem; margin-bottom: 0.5rem; display: inline-block;">{post['category']}</span>
-                        <h3 style="color: #0D3B66; margin: 0.5rem 0; font-size: 1.1rem;">{post['title']}</h3>
+                        <h3 style="color: #18738c; margin: 0.5rem 0; font-size: 1.1rem;">{post['title']}</h3>
                         <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{post['excerpt']}</p>
                         <span style="color: #999; font-size: 0.8rem;">{post['date']}</span>
                     </div>
                 """, unsafe_allow_html=True)
         
         st.markdown(f"""
-            <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); border-radius: 15px;">
-                <h3 style="color: #F4D35E; margin-bottom: 1rem;">Receba Conteudos Semanais</h3>
+            <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); border-radius: 15px;">
+                <h3 style="color: #d19f09; margin-bottom: 1rem;">Receba Conteudos Semanais</h3>
                 <p style="color: white; margin-bottom: 1.5rem;">Insights exclusivos sobre lideranca psicanalitica direto no seu WhatsApp</p>
                 <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
                     Receber Insights
@@ -3484,7 +3492,7 @@ if page == "Home":
         st.markdown("""
             <div style="text-align: center; padding: 2rem;">
                 <div style="font-size: 4rem;">📱</div>
-                <h3 style="color: #0D3B66;">Fale Diretamente Conosco</h3>
+                <h3 style="color: #18738c;">Fale Diretamente Conosco</h3>
                 <p style="color: #666; font-size: 1.1rem;">
                     Tire suas dúvidas, solicite orçamentos ou agende sua mentoria.<br>
                     Atendimento personalizado via WhatsApp.
@@ -3525,7 +3533,7 @@ elif page == "Dashboard":
     user_id = st.session_state.user['id']
     manager_id = manager_data['id'] if manager_data else None
     
-    st.markdown(f"<h2 style='color: #0D3B66;'>Bem-vindo(a), {st.session_state.user['name']}!</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='color: #18738c;'>Bem-vindo(a), {st.session_state.user['name']}!</h2>", unsafe_allow_html=True)
     
     # Dashboard CSS
     st.markdown("""
@@ -3535,11 +3543,11 @@ elif page == "Dashboard":
             border-radius: 12px;
             padding: 1.5rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-left: 4px solid #F4D35E;
+            border-left: 4px solid #d19f09;
             margin-bottom: 1rem;
         }
         .dashboard-card h3 {
-            color: #0D3B66;
+            color: #18738c;
             margin: 0 0 1rem 0;
             font-size: 1.1rem;
         }
@@ -3561,7 +3569,7 @@ elif page == "Dashboard":
             margin: 0 10px;
         }
         .progress-module-fill {
-            background: linear-gradient(90deg, #0D3B66, #F4D35E);
+            background: linear-gradient(90deg, #18738c, #d19f09);
             height: 100%;
             border-radius: 10px;
             transition: width 0.3s ease;
@@ -3581,7 +3589,7 @@ elif page == "Dashboard":
         .stat-number {
             font-size: 2rem;
             font-weight: bold;
-            color: #0D3B66;
+            color: #18738c;
         }
         .stat-label {
             font-size: 0.85rem;
@@ -3611,7 +3619,7 @@ elif page == "Dashboard":
         }
         .mentoring-btn {
             display: inline-block;
-            background: linear-gradient(135deg, #0D3B66, #1a5490);
+            background: linear-gradient(135deg, #18738c, #1a5490);
             color: white;
             padding: 15px 30px;
             border-radius: 25px;
@@ -3653,7 +3661,7 @@ elif page == "Dashboard":
             """, unsafe_allow_html=True)
         
         overall_progress = (total_completed / total_lessons * 100) if total_lessons > 0 else 0
-        st.markdown(f"<p style='text-align: center; margin-top: 1rem; color: #0D3B66; font-weight: bold;'>Progresso Total: {overall_progress:.0f}%</p></div>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center; margin-top: 1rem; color: #18738c; font-weight: bold;'>Progresso Total: {overall_progress:.0f}%</p></div>", unsafe_allow_html=True)
         
         # Radar Chart Card - Manager Profile
         manager_profile = get_manager_profile_by_user(user_id)
@@ -3669,15 +3677,15 @@ elif page == "Dashboard":
                     st.image(radar_chart, use_container_width=True)
                     st.markdown(f"""
                         <div style='text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-top: 1rem;'>
-                            <strong style='color: #0D3B66;'>Perfil Dominante:</strong> {manager_profile['dominant']}<br>
-                            <strong style='color: #0D3B66;'>Perfil Secundario:</strong> {manager_profile['secondary']}
+                            <strong style='color: #18738c;'>Perfil Dominante:</strong> {manager_profile['dominant']}<br>
+                            <strong style='color: #18738c;'>Perfil Secundario:</strong> {manager_profile['secondary']}
                         </div>
                     """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                     <div style='text-align: center; padding: 1rem;'>
-                        <strong style='color: #0D3B66;'>{manager_profile['dominant']} + {manager_profile['secondary']}</strong>
-                        <p style='color: #666; font-size: 0.9rem; margin-top: 0.5rem;'>Refaca o LPSTest para visualizar seu grafico radar</p>
+                        <strong style='color: #18738c;'>{manager_profile['dominant']} + {manager_profile['secondary']}</strong>
+                        <p style='color: #666; font-size: 0.9rem; margin-top: 0.5rem;'>Refaca o LPTest para visualizar seu grafico radar</p>
                     </div>
                 """, unsafe_allow_html=True)
             
@@ -3694,14 +3702,14 @@ elif page == "Dashboard":
                     icon = {'warning': 'O', 'info': 'i', 'alert': '!', 'success': '✓'}.get(insight['type'], 'i')
                     st.markdown(f"<div class='insight-item {insight_class}'>{insight['message']}</div>", unsafe_allow_html=True)
             else:
-                st.markdown("<p style='color: #666;'>Nenhum insight disponível ainda. Complete o LPSTest e mapeie sua equipe.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666;'>Nenhum insight disponível ainda. Complete o LPTest e mapeie sua equipe.</p>", unsafe_allow_html=True)
             
             st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
         # Assessment Stats Card
         if manager_id:
-            st.markdown("<div class='dashboard-card'><h3>Gestão de LPSTest</h3>", unsafe_allow_html=True)
+            st.markdown("<div class='dashboard-card'><h3>Gestão de LPTest</h3>", unsafe_allow_html=True)
             
             stats = get_assessment_stats(manager_id)
             
@@ -3748,29 +3756,29 @@ elif page == "Dashboard":
     st.write("---")
     
     # Quick Access Buttons
-    st.markdown("<h4 style='color: #0D3B66;'>Acesso Rápido</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #18738c;'>Acesso Rápido</h4>", unsafe_allow_html=True)
     dash_cols = st.columns(4)
     with dash_cols[0]:
         if st.button("Curso", key="btn-dash-curso", use_container_width=True):
             st.session_state.page = "LPS Curso"
             st.rerun()
     with dash_cols[1]:
-        if st.button("LPSTest", key="btn-dash-test", use_container_width=True):
-            st.session_state.page = "LPSTest"
+        if st.button("LPTest", key="btn-dash-test", use_container_width=True):
+            st.session_state.page = "LPTest"
             st.rerun()
     with dash_cols[2]:
         if st.button("Equipe", key="btn-dash-equipe", use_container_width=True):
             st.session_state.page = "TeamManagement"
             st.rerun()
     with dash_cols[3]:
-        # LPSChat with access control
+        # LPChat with access control
         course_completed = is_course_completed(user_id)
         if course_completed:
-            if st.button("LPSChat", key="btn-dash-chat", use_container_width=True):
-                st.session_state.page = "LPSChat"
+            if st.button("LPChat", key="btn-dash-chat", use_container_width=True):
+                st.session_state.page = "LPChat"
                 st.rerun()
         else:
-            if st.button("LPSChat (Bloqueado)", key="btn-dash-chat-locked", use_container_width=True, disabled=True):
+            if st.button("LPChat (Bloqueado)", key="btn-dash-chat-locked", use_container_width=True, disabled=True):
                 pass
             st.caption("Complete os módulos teóricos para liberar")
     
@@ -3807,7 +3815,7 @@ elif page == "LPS Curso":
     completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
     
     # Overall progress bar
-    st.markdown(f"<p style='color: #0D3B66; font-weight: bold;'>Progresso Geral: {completed_lessons}/{total_lessons} aulas concluídas</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color: #18738c; font-weight: bold;'>Progresso Geral: {completed_lessons}/{total_lessons} aulas concluídas</p>", unsafe_allow_html=True)
     st.progress(completed_lessons / total_lessons if total_lessons > 0 else 0)
     
     st.write("---")
@@ -3825,11 +3833,11 @@ elif page == "LPS Curso":
                 with open(mod['file'], "rb") as f:
                     st.download_button("Material de Apoio", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
 
-elif page == "LPSTest":
+elif page == "LPTest":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
-    st.title("📝 LPSTest Assessment - Seu Perfil")
+    st.title("📝 LPTest Assessment - Seu Perfil")
     
     # Check for existing saved profile from database
     saved_profile = get_manager_profile_by_user(st.session_state.user['id'])
@@ -3848,7 +3856,7 @@ elif page == "LPSTest":
             </div>
         """, unsafe_allow_html=True)
         st.write("---")
-        if st.button("🔄 Refazer LPSTest"):
+        if st.button("🔄 Refazer LPTest"):
             st.session_state.show_test_form = True
             st.rerun()
     
@@ -3928,7 +3936,7 @@ elif page == "TeamManagement":
                     </div>
                 """, unsafe_allow_html=True)
             else:
-                st.warning("Complete seu LPSTest primeiro para ver a comparacao com sua equipe.")
+                st.warning("Complete seu LPTest primeiro para ver a comparacao com sua equipe.")
             
             st.write("---")
             st.subheader("Gerar Link de Convite para Equipe")
@@ -3936,7 +3944,7 @@ elif page == "TeamManagement":
             if not st.session_state.show_employee_links and not has_existing_links:
                 st.markdown("""
                     <div style='background-color: #e8f4f8; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;'>
-                        <p style='margin: 0; color: #0D3B66;'>
+                        <p style='margin: 0; color: #18738c;'>
                             <strong>Como funciona:</strong> Clique no botao abaixo para gerar links unicos para ate 4 funcionarios. 
                             Envie cada link por WhatsApp ou e-mail. Ao clicar, eles responderao o assessment e voce recebera os resultados aqui.
                         </p>
@@ -4041,7 +4049,7 @@ elif page == "TeamManagement":
                 
                 if manager_profile and completed_count > 0:
                     st.markdown(f"""
-                        <div style="background-color: #0D3B66; color: white; padding: 10px; border-radius: 8px; margin: 20px 0 10px 0;">
+                        <div style="background-color: #18738c; color: white; padding: 10px; border-radius: 8px; margin: 20px 0 10px 0;">
                             <strong>Comparacao:</strong> Seu perfil ({manager_profile['dominant']}) vs Equipe
                         </div>
                     """, unsafe_allow_html=True)
@@ -4059,13 +4067,13 @@ elif page == "TeamManagement":
                             with col_info:
                                 st.markdown(f"""
                                     <div class="employee-card">
-                                        <h4 style="color: #0D3B66; margin:0;">{emp_name}</h4>
+                                        <h4 style="color: #18738c; margin:0;">{emp_name}</h4>
                                         <p><strong>Perfil:</strong> {emp[6]} + {emp[7]}</p>
                                         <span class="bion-badge">{emp[9]}</span>
                                         <p style="font-size: 0.9rem; color: #666; margin-top:10px;">
                                             {BION_DESCRIPTIONS.get(emp[9], '')}
                                         </p>
-                                        <p style="font-size: 0.85rem; color: #0D3B66; margin-top: 8px;">
+                                        <p style="font-size: 0.85rem; color: #18738c; margin-top: 8px;">
                                             Resultado enviado para: {emp[5]}
                                         </p>
                                     </div>
@@ -4112,15 +4120,15 @@ elif page == "EmployeeAssessment":
     elif employee[10] == 1:  # already completed - Thank You page
         st.markdown("""
             <div style='text-align: center; padding: 2rem;'>
-                <h1 style='color: #0D3B66;'>Obrigado pela participacao!</h1>
+                <h1 style='color: #18738c;'>Obrigado pela participacao!</h1>
             </div>
         """, unsafe_allow_html=True)
         st.markdown(f"""
             <div class="result-card" style="max-width: 600px; margin: 0 auto;">
                 <div class="profile-title">Seu Perfil foi Registrado</div>
                 <p style="text-align: center; font-size: 1.4rem;"><strong>{employee[6]} + {employee[7]}</strong></p>
-                <div style="background-color: #F4D35E; padding: 10px; border-radius: 20px; text-align: center; margin: 15px auto; max-width: 200px;">
-                    <strong style="color: #0D3B66;">{employee[9]}</strong>
+                <div style="background-color: #d19f09; padding: 10px; border-radius: 20px; text-align: center; margin: 15px auto; max-width: 200px;">
+                    <strong style="color: #18738c;">{employee[9]}</strong>
                 </div>
                 <p style="text-align: center; font-size: 0.95rem; color: #666; margin-top: 20px;">
                     Seu resultado foi salvo e enviado para seu e-mail ({employee[5]}).
@@ -4139,7 +4147,7 @@ elif page == "EmployeeAssessment":
         # Assessment Form - clean page for employees
         st.markdown("""
             <div style='text-align: center; margin-bottom: 1rem;'>
-                <h1 style='color: #0D3B66;'>LPSTest - Assessment de Equipe</h1>
+                <h1 style='color: #18738c;'>LPTest - Assessment de Equipe</h1>
                 <p style='color: #666;'>Responda as afirmacoes abaixo de forma honesta. Seus resultados individuais sao confidenciais.</p>
             </div>
         """, unsafe_allow_html=True)
@@ -4161,8 +4169,8 @@ elif page == "EmployeeAssessment":
             # Show consent terms if not yet consented
             if not consent_given:
                 st.markdown("""
-                    <div style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #0D3B66; margin-bottom: 1.5rem;">
-                        <h4 style="color: #0D3B66; margin-top: 0;">Termo de Consentimento - LGPD</h4>
+                    <div style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #18738c; margin-bottom: 1.5rem;">
+                        <h4 style="color: #18738c; margin-top: 0;">Termo de Consentimento - LGPD</h4>
                         <p style="color: #333; font-size: 0.9rem;">Ao concluir esta avaliacao, voce aceita que:</p>
                         <ul style="color: #333; font-size: 0.85rem;">
                             <li>Seus dados serao utilizados exclusivamente para fins de desenvolvimento profissional</li>
@@ -4217,7 +4225,7 @@ elif page == "EmployeeAssessment":
                     st.balloons()
                     st.rerun()
 
-elif page == "LPSChat":
+elif page == "LPChat":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
@@ -4232,7 +4240,7 @@ elif page == "LPSChat":
     st.markdown("""
         <style>
         .chat-header {
-            background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%);
+            background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%);
             color: white;
             padding: 2rem;
             border-radius: 15px;
@@ -4241,7 +4249,7 @@ elif page == "LPSChat":
             box-shadow: 0 4px 15px rgba(13, 59, 102, 0.3);
         }
         .chat-header h1 {
-            color: #F4D35E;
+            color: #d19f09;
             margin: 0;
             font-size: 2rem;
         }
@@ -4256,14 +4264,14 @@ elif page == "LPSChat":
             border: 2px solid #e9ecef;
         }
         .example-questions {
-            background: linear-gradient(135deg, rgba(244, 211, 94, 0.15) 0%, rgba(244, 211, 94, 0.05) 100%);
-            border: 1px solid #F4D35E;
+            background: linear-gradient(135deg, rgba(209, 159, 9, 0.15) 0%, rgba(209, 159, 9, 0.05) 100%);
+            border: 1px solid #d19f09;
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
         .example-questions h4 {
-            color: #0D3B66;
+            color: #18738c;
             margin: 0 0 1rem 0;
         }
         .example-q {
@@ -4271,7 +4279,7 @@ elif page == "LPSChat":
             padding: 0.75rem 1rem;
             border-radius: 8px;
             margin: 0.5rem 0;
-            border-left: 3px solid #F4D35E;
+            border-left: 3px solid #d19f09;
             color: #333;
             font-style: italic;
             cursor: pointer;
@@ -4290,10 +4298,10 @@ elif page == "LPSChat":
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .team-context-card h4 {
-            color: #0D3B66;
+            color: #18738c;
             margin: 0 0 1rem 0;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid #F4D35E;
+            border-bottom: 2px solid #d19f09;
         }
         .team-member {
             display: flex;
@@ -4306,8 +4314,8 @@ elif page == "LPSChat":
         .team-member-icon {
             width: 40px;
             height: 40px;
-            background: #0D3B66;
-            color: #F4D35E;
+            background: #18738c;
+            color: #d19f09;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -4316,8 +4324,8 @@ elif page == "LPSChat":
             font-weight: bold;
         }
         .bion-badge {
-            background: #F4D35E;
-            color: #0D3B66;
+            background: #d19f09;
+            color: #18738c;
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
@@ -4330,7 +4338,7 @@ elif page == "LPSChat":
     # Chat header with brand styling
     st.markdown("""
         <div class="chat-header">
-            <h1>LPSChat</h1>
+            <h1>LPChat</h1>
             <p>Consultora de IA em Psicanalise e Neurociencia aplicada a Lideranca</p>
         </div>
     """, unsafe_allow_html=True)
@@ -4344,7 +4352,7 @@ elif page == "LPSChat":
                 <div style='background-color: #f8d7da; padding: 2rem; border-radius: 10px; border-left: 4px solid #dc3545;'>
                     <h3 style='color: #721c24; margin-top: 0;'>Conteudo Exclusivo para Alunos</h3>
                     <p style='color: #721c24;'>
-                        O acesso ao LPSChat e liberado apos a confirmacao do pagamento.
+                        O acesso ao LPChat e liberado apos a confirmacao do pagamento.
                         Entre em contato via WhatsApp para adquirir seu acesso.
                     </p>
                     <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
@@ -4355,7 +4363,7 @@ elif page == "LPSChat":
         elif not access_status['course_completed']:
             st.markdown("""
                 <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
-                    <h3 style='color: #856404; margin-top: 0;'>Complete os modulos teoricos para liberar o LPSChat</h3>
+                    <h3 style='color: #856404; margin-top: 0;'>Complete os modulos teoricos para liberar o LPChat</h3>
                     <p style='color: #856404;'>
                         O acesso ao consultor de IA e liberado apos a conclusao dos 5 primeiros modulos do curso.
                         Isso garante que voce tenha a base teorica necessaria para aproveitar ao maximo as analises da IA.
@@ -4365,7 +4373,7 @@ elif page == "LPSChat":
             
             # Show progress
             module_status = get_module_completion_status(user_id)
-            st.markdown("<h4 style='color: #0D3B66; margin-top: 2rem;'>Seu progresso nos modulos teoricos:</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color: #18738c; margin-top: 2rem;'>Seu progresso nos modulos teoricos:</h4>", unsafe_allow_html=True)
             
             theoretical_modules = [1, 2, 3, 4, 5]
             for mod_id in theoretical_modules:
@@ -4466,7 +4474,7 @@ PAPEL E IDENTIDADE:
 
 GESTOR:
 Nome: {user_name}
-{manager_profile if manager_profile else "O gestor ainda nao completou o LPSTest."}
+{manager_profile if manager_profile else "O gestor ainda nao completou o LPTest."}
 
 FUNCIONARIOS DA EQUIPE:
 {employees_context if employees_context else "Nenhum funcionario completou o assessment ainda."}
@@ -4677,7 +4685,7 @@ elif page == "Mentoria":
     
     st.markdown("""
         <div style="text-align: center; margin-bottom: 2rem;">
-            <h1 style="color: #0D3B66;">Mentoria com Viviane Nishiura</h1>
+            <h1 style="color: #18738c;">Mentoria com Viviane Nishiura</h1>
             <p style="color: #666;">Sessoes individuais para aprofundar sua jornada de lideranca consciente</p>
         </div>
     """, unsafe_allow_html=True)
@@ -4714,7 +4722,7 @@ elif page == "Mentoria":
         # Full mentoria content for paying users
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #0D3B66;">O que esperar da Mentoria</h3>
+                <h3 style="color: #18738c;">O que esperar da Mentoria</h3>
                 <ul>
                     <li><strong>Sessao individual de 1 hora</strong> com Viviane Nishiura</li>
                     <li>Analise aprofundada do seu perfil de lideranca</li>
@@ -4727,7 +4735,7 @@ elif page == "Mentoria":
         
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #0D3B66;">Como se preparar</h3>
+                <h3 style="color: #18738c;">Como se preparar</h3>
                 <ol>
                     <li>Revise seu perfil de lideranca no Dashboard</li>
                     <li>Analise os resultados do mapeamento de equipe</li>
@@ -4738,8 +4746,8 @@ elif page == "Mentoria":
         """, unsafe_allow_html=True)
         
         st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); padding: 2rem; border-radius: 15px; text-align: center; margin-top: 2rem;">
-                <h2 style="color: #F4D35E; margin-bottom: 1rem;">Agende sua Sessao</h2>
+            <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); padding: 2rem; border-radius: 15px; text-align: center; margin-top: 2rem;">
+                <h2 style="color: #d19f09; margin-bottom: 1rem;">Agende sua Sessao</h2>
                 <p style="color: white; margin-bottom: 1.5rem;">Entre em contato via WhatsApp para agendar sua mentoria individual.</p>
                 <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 1rem 3rem; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 1.1rem;">
                     Agendar Mentoria
@@ -4848,15 +4856,15 @@ elif page == "GuiaSuporte":
     
     st.markdown("""
         <div style="text-align: center; margin-bottom: 2rem;">
-            <h1 style="color: #0D3B66;">Guia e Suporte</h1>
+            <h1 style="color: #18738c;">Guia e Suporte</h1>
             <p style="color: #666;">Materiais de apoio para maximizar sua experiencia com a plataforma LPS</p>
         </div>
     """, unsafe_allow_html=True)
     
     # Download Manual Button
     st.markdown("""
-        <div style="background: linear-gradient(135deg, #0D3B66 0%, #1a4f7a 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
-            <h2 style="color: #F4D35E; margin-bottom: 1rem;">Manual do Gestor LPS</h2>
+        <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
+            <h2 style="color: #d19f09; margin-bottom: 1rem;">Manual do Gestor LPS</h2>
             <p style="color: white; margin-bottom: 1.5rem;">Guia completo com tudo que voce precisa saber para aplicar a Lideranca Psicanalitica na sua equipe.</p>
         </div>
     """, unsafe_allow_html=True)
@@ -4877,7 +4885,7 @@ elif page == "GuiaSuporte":
     # Section 1: Como interpretar seu Perfil
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">1. Como Interpretar seu Perfil</h3>
+            <h3 style="color: #18738c;">1. Como Interpretar seu Perfil</h3>
             <p>Seu perfil de lideranca revela seus <strong>arquetipos inconscientes dominantes</strong> - padroes de comportamento 
             que operam abaixo da consciencia e influenciam como voce lidera sua equipe.</p>
             <p>Os 6 perfis de lideranca do LPS sao:</p>
@@ -4889,23 +4897,23 @@ elif page == "GuiaSuporte":
                 <li><strong>Espelho Emocional:</strong> Empatia e validacao emocional</li>
                 <li><strong>Observador Reflexivo:</strong> Analise profunda e decisoes ponderadas</li>
             </ul>
-            <p><em>Cada perfil tem seus pontos fortes e areas de atencao. O LPSTest mostra seu perfil dominante e secundario.</em></p>
+            <p><em>Cada perfil tem seus pontos fortes e areas de atencao. O LPTest mostra seu perfil dominante e secundario.</em></p>
         </div>
     """, unsafe_allow_html=True)
     
     # Section 2: Mapeamento de Equipe
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">2. Mapeamento de Equipe</h3>
-            <p>O LPSTest mapeia os perfis inconscientes de sua equipe, permitindo entender dinamicas grupais 
+            <h3 style="color: #18738c;">2. Mapeamento de Equipe</h3>
+            <p>O LPTest mapeia os perfis inconscientes de sua equipe, permitindo entender dinamicas grupais 
             que impactam produtividade, conflitos e turnover.</p>
-            <h4 style="color: #0D3B66;">Como usar para reduzir turnover:</h4>
+            <h4 style="color: #18738c;">Como usar para reduzir turnover:</h4>
             <ul>
                 <li>Identifique funcionarios cujo perfil nao se adequa ao cargo atual</li>
                 <li>Realoque pessoas com base em suas tendencias naturais</li>
                 <li>Crie pares complementares (ex: Estruturador + Criativo)</li>
             </ul>
-            <h4 style="color: #0D3B66;">Como usar para reduzir conflitos:</h4>
+            <h4 style="color: #18738c;">Como usar para reduzir conflitos:</h4>
             <ul>
                 <li>Identifique <strong>Bodes Expiatorios</strong> e proteja-os de projecoes negativas</li>
                 <li>Reconheca <strong>Porta-Vozes</strong> como sensores do clima organizacional</li>
@@ -4914,13 +4922,13 @@ elif page == "GuiaSuporte":
         </div>
     """, unsafe_allow_html=True)
     
-    # Section 3: Uso Estratégico do LPSChat
+    # Section 3: Uso Estratégico do LPChat
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">3. Uso Estrategico do LPSChat</h3>
-            <p>O LPSChat e sua <strong>consultora de IA especializada</strong> em psicanalise e neurociencia aplicada a lideranca. 
+            <h3 style="color: #18738c;">3. Uso Estrategico do LPChat</h3>
+            <p>O LPChat e sua <strong>consultora de IA especializada</strong> em psicanalise e neurociencia aplicada a lideranca. 
             Para obter os melhores insights, faca perguntas especificas sobre sua equipe.</p>
-            <h4 style="color: #0D3B66;">Perguntas recomendadas:</h4>
+            <h4 style="color: #18738c;">Perguntas recomendadas:</h4>
             <ul>
                 <li>"Quais conflitos inconscientes podem surgir entre [Funcionario A] e [Funcionario B]?"</li>
                 <li>"Qual funcionario seria ideal para liderar o projeto X, considerando os perfis mapeados?"</li>
@@ -4935,32 +4943,32 @@ elif page == "GuiaSuporte":
     # Section 4: Passo a Passo da Mentoria
     st.markdown(f"""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">4. Passo a Passo da Mentoria</h3>
+            <h3 style="color: #18738c;">4. Passo a Passo da Mentoria</h3>
             <p>A mentoria com <strong>Viviane Nishiura</strong> e o momento de aprofundar sua jornada de lideranca consciente. 
             Prepare-se adequadamente para maximizar os resultados.</p>
-            <h4 style="color: #0D3B66;">Antes da sessao:</h4>
+            <h4 style="color: #18738c;">Antes da sessao:</h4>
             <ol>
                 <li>Revise seu perfil de lideranca no Dashboard</li>
                 <li>Analise os resultados do mapeamento de equipe</li>
                 <li>Identifique 2-3 desafios especificos que deseja abordar</li>
                 <li>Anote situacoes concretas para discutir</li>
             </ol>
-            <h4 style="color: #0D3B66;">Durante a sessao:</h4>
+            <h4 style="color: #18738c;">Durante a sessao:</h4>
             <ul>
                 <li>Compartilhe abertamente seus desafios</li>
                 <li>Pergunte sobre padroes inconscientes que nao consegue ver</li>
                 <li>Solicite exercicios praticos para aplicar no dia-a-dia</li>
             </ul>
-            <h4 style="color: #0D3B66;">Como agendar:</h4>
+            <h4 style="color: #18738c;">Como agendar:</h4>
             <p>Acesse o menu <strong>Mentoria</strong> no Dashboard ou envie mensagem via 
-            <a href="{WHATSAPP_URL}" target="_blank" style="color: #0D3B66;">WhatsApp</a> para agendar sua sessao.</p>
+            <a href="{WHATSAPP_URL}" target="_blank" style="color: #18738c;">WhatsApp</a> para agendar sua sessao.</p>
         </div>
     """, unsafe_allow_html=True)
     
     # Contact Support
     st.markdown(f"""
         <div style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 10px; text-align: center; margin-top: 2rem;">
-            <h3 style="color: #0D3B66;">Precisa de Ajuda?</h3>
+            <h3 style="color: #18738c;">Precisa de Ajuda?</h3>
             <p>Entre em contato com nossa equipe via WhatsApp para suporte personalizado.</p>
             <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold;">
                 Falar com Suporte
@@ -4974,7 +4982,7 @@ elif page == "Privacy":
     
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">Politica de Privacidade - LGPD</h3>
+            <h3 style="color: #18738c;">Politica de Privacidade - LGPD</h3>
             <p>A Plataforma LPS (Lideranca Psicanalitica) esta comprometida com a protecao dos dados pessoais de todos os usuarios, 
             em conformidade com a Lei Geral de Protecao de Dados (LGPD - Lei 13.709/2018).</p>
         </div>
@@ -4982,7 +4990,7 @@ elif page == "Privacy":
     
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">Dados Coletados</h3>
+            <h3 style="color: #18738c;">Dados Coletados</h3>
             <p><strong>Para Gestores:</strong></p>
             <ul style="color: #333;">
                 <li>Nome completo e e-mail para autenticacao</li>
@@ -5000,7 +5008,7 @@ elif page == "Privacy":
     
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">Finalidade do Tratamento</h3>
+            <h3 style="color: #18738c;">Finalidade do Tratamento</h3>
             <p>Os dados coletados sao utilizados <strong>exclusivamente</strong> para:</p>
             <ul style="color: #333;">
                 <li>Desenvolvimento profissional e autoconhecimento dos participantes</li>
@@ -5008,13 +5016,13 @@ elif page == "Privacy":
                 <li>Personalizacao da experiencia de aprendizagem</li>
                 <li>Comunicacoes relacionadas ao programa LPS</li>
             </ul>
-            <p style="color: #0D3B66;"><strong>Os dados NUNCA serao vendidos, compartilhados com terceiros ou utilizados para fins comerciais alem do programa.</strong></p>
+            <p style="color: #18738c;"><strong>Os dados NUNCA serao vendidos, compartilhados com terceiros ou utilizados para fins comerciais alem do programa.</strong></p>
         </div>
     """, unsafe_allow_html=True)
     
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">Sigilo e Confidencialidade</h3>
+            <h3 style="color: #18738c;">Sigilo e Confidencialidade</h3>
             <p>Todos os resultados de assessment sao tratados com <strong>sigilo absoluto</strong>:</p>
             <ul style="color: #333;">
                 <li>Funcionarios: Seus resultados sao visiveis apenas para o gestor que enviou o convite</li>
@@ -5027,7 +5035,7 @@ elif page == "Privacy":
     
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">Direitos do Usuario (LGPD)</h3>
+            <h3 style="color: #18738c;">Direitos do Usuario (LGPD)</h3>
             <p>Voce tem direito a:</p>
             <ul style="color: #333;">
                 <li><strong>Acesso:</strong> Solicitar copia de todos os seus dados</li>
@@ -5042,7 +5050,7 @@ elif page == "Privacy":
     
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">Termos de Uso</h3>
+            <h3 style="color: #18738c;">Termos de Uso</h3>
             <p>Ao utilizar a Plataforma LPS, voce concorda que:</p>
             <ul style="color: #333;">
                 <li>Os conteudos do curso sao protegidos por direitos autorais</li>
@@ -5056,7 +5064,7 @@ elif page == "Privacy":
     
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #0D3B66;">Contato</h3>
+            <h3 style="color: #18738c;">Contato</h3>
             <p>Para duvidas sobre privacidade e protecao de dados:</p>
             <p><strong>Responsavel:</strong> Viviane Nishiura</p>
             <p><strong>E-mail:</strong> contato@liderancapsicanalitica.com.br</p>
@@ -5075,12 +5083,14 @@ elif page == "Privacy":
 
 # Footer for all pages (except employee assessment)
 if not is_employee_access:
-    st.markdown("""
+    st.markdown(f"""
         <div style="margin-top: 3rem; padding: 1.5rem; background-color: #f5f5f5; border-radius: 8px; text-align: center;">
-            <p style="margin: 0; color: #666; font-size: 0.9rem;">
-                Lideranca Psicanalitica - Viviane Nishiura & Equipe | 
-                <a href="#" onclick="return false;" style="color: #0D3B66; text-decoration: none;">Privacidade e Termos</a>
+            <p style="margin: 0 0 10px 0; color: #666; font-size: 0.9rem;">
+                Lideranca Psicanalitica - Viviane Nishiura & Equipe
             </p>
+            <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 25px; background-color: #25D366; color: white; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 0.95rem;">
+                Fale Conosco no WhatsApp
+            </a>
         </div>
     """, unsafe_allow_html=True)
     
