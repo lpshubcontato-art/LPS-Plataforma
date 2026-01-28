@@ -2153,17 +2153,9 @@ def render_sidebar_navigation():
 
 # Public Header (simplified - navigation moved to sidebar)
 def render_public_header():
-    # Just show a clean header with page title
-    st.markdown("""
-        <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-            <h1 style="color: #d19f09; font-size: 1.8rem; margin: 0; text-align: center;">
-                Liderança Psicanalítica
-            </h1>
-            <p style="color: rgba(255,255,255,0.8); text-align: center; margin: 0.5rem 0 0 0; font-size: 0.95rem;">
-                Transforme sua gestão com Psicanálise e Neurociência
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
+    # Empty header for Home - the main banner is rendered in the section
+    # This function is kept for other pages that may need a header
+    pass
 
 # Login Page Function
 def render_login_page():
@@ -3234,35 +3226,23 @@ if page == "Home":
     
     # HOME SECTION - Hero
     if current_section == "home":
-        # Banner 1 - Hero Section (Azure background)
+        # Banner Único - Hero Section (Azure background)
         st.markdown("""
             <div style="background-color: #18738c; padding: 4rem 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
                 <h1 style="color: white; font-size: 3rem; margin: 0; font-family: 'Open Sans', sans-serif; font-weight: 800;">
-                    Lideranca Psicanalitica
+                    Liderança Psicanalítica
                 </h1>
-                <p style="color: #d19f09; font-size: 1.5rem; margin-top: 1rem; font-family: 'Ubuntu', sans-serif;">
-                    A ciencia por tras da gestao de pessoas
+                <p style="color: #d19f09; font-size: 1.5rem; margin-top: 1rem; font-family: 'Open Sans', sans-serif;">
+                    A ciência por trás da gestão de pessoas.
                 </p>
             </div>
         """, unsafe_allow_html=True)
         
-        # Video Intro
-        st.write("")
+        # Video Intro (immediately after banner)
         vimeo_video("https://vimeo.com/1154882598")
         
-        # Banner 2 - Second Hero (Yellow accent)
-        st.markdown("""
-            <div style="background: linear-gradient(135deg, #d19f09 0%, #e6b82e 100%); padding: 3rem 2rem; border-radius: 15px; margin: 2rem 0; text-align: center;">
-                <h2 style="color: #18738c; font-size: 2.2rem; margin: 0; font-family: 'Open Sans', sans-serif; font-weight: 700;">
-                    Transforme sua Lideranca
-                </h2>
-                <p style="color: #18738c; font-size: 1.2rem; margin-top: 1rem; font-family: 'Ubuntu', sans-serif; opacity: 0.9;">
-                    Entenda as dinamicas invisiveis que travam sua equipe
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
-        
         # Features
+        st.write("")
         st.write("---")
         st.markdown("### Por Que Escolher o LPS?")
         
