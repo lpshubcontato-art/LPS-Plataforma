@@ -1084,6 +1084,32 @@ st.markdown("""
         word-break: break-all;
     }
 
+    /* Slider styling - blue bar, gold thumb */
+    div[data-testid="stSlider"] > div > div > div {
+        background-color: var(--primary-blue) !important;
+    }
+    div[data-testid="stSlider"] [role="slider"] {
+        background-color: var(--accent-gold) !important;
+        border: 2px solid var(--primary-blue) !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+    }
+    div[data-testid="stSlider"] [data-testid="stTickBarMin"],
+    div[data-testid="stSlider"] [data-testid="stTickBarMax"] {
+        background-color: var(--primary-blue) !important;
+    }
+
+    /* Select slider styling */
+    div[data-baseweb="slider"] > div > div:first-child {
+        background-color: var(--primary-blue) !important;
+    }
+    div[data-baseweb="slider"] [role="slider"] {
+        background-color: var(--accent-gold) !important;
+        border-color: var(--primary-blue) !important;
+    }
+    div[data-baseweb="slider"] > div > div:nth-child(3) {
+        background-color: #c0d8e0 !important;
+    }
+
     .bion-badge {
         background-color: var(--primary-blue);
         color: white;
@@ -3267,19 +3293,29 @@ if page == "Home":
     elif current_section == "sobre":
         st.markdown('<div class="section-title">Sobre o Programa LPS</div>', unsafe_allow_html=True)
         
-        st.subheader("Metodologia LPS")
-        st.info("Conteudo a ser inserido pelo administrador.")
+        st.subheader("Sobre a Autora")
+        st.markdown("""Viviane Nishiura é psicóloga (Mackenzie) com mais de 30 anos de trajetória conectando RH corporativo, gestão de projetos e clínica psicológica. Sua experiência permite identificar conflitos corporativos como manifestações de dinâmicas inconscientes. Atualmente lidera o LPS – Líder Psicanalítico, integrando teoria psicanalítica e visão sistêmica para ajudar líderes a sustentarem autoridade e limites com saúde mental.""")
         
-        st.subheader("Sobre a Plataforma")
-        st.info("Conteudo a ser inserido pelo administrador.")
+        st.subheader("Sobre o LPS (Líder Psicanalítico)")
+        st.markdown("""O LPS é um modelo de intervenção estruturado para o mundo corporativo. Baseia-se no princípio de que organizações ativam regressões emocionais. O programa foca em:
+
+- **Leitura Psíquica:** Entender o funcionamento invisível das equipes.
+- **Sustentação de Autoridade:** Tomar decisões estratégicas sem sobrecarga emocional.
+- **Performance:** Alinhamento do comportamento à tarefa organizacional.""")
         
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            st.markdown(f"""
-                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center;">
-                    💬 Falar com a Consultora
+        st.markdown(f"""
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
+                    Fale Conosco no WhatsApp
                 </a>
-            """, unsafe_allow_html=True)
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+            <div style="text-align: center; margin-top: 1rem;">
+                <a href="#" style="color: #666; text-decoration: underline; font-size: 0.9rem;">Privacidade e Termos</a>
+            </div>
+        """, unsafe_allow_html=True)
     
     # CURSO SECTION - Module Cards with Paywall
     elif current_section == "curso":
@@ -4280,7 +4316,7 @@ elif page == "EmployeeAssessment":
         st.markdown("""
             <div style='text-align: center; margin-bottom: 1rem;'>
                 <h1 style='color: #18738c;'>LPTest - Assessment de Equipe</h1>
-                <p style='color: #666;'>Responda as afirmacoes abaixo de forma honesta. Seus resultados individuais sao confidenciais.</p>
+                <p style='color: #666;'>Responda as afirmacoes. (1 = Discordo Totalmente, 5 = Concordo Totalmente)</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -4892,10 +4928,30 @@ elif page == "Sobre":
         st.session_state.page = "Login"
         st.rerun()
     st.title("Sobre a Plataforma LPS")
-    st.subheader("Metodologia LPS")
-    st.info("Conteudo a ser inserido pelo administrador.")
-    st.subheader("Sobre a Plataforma")
-    st.info("Conteudo a ser inserido pelo administrador.")
+    
+    st.subheader("Sobre a Autora")
+    st.markdown("""Viviane Nishiura é psicóloga (Mackenzie) com mais de 30 anos de trajetória conectando RH corporativo, gestão de projetos e clínica psicológica. Sua experiência permite identificar conflitos corporativos como manifestações de dinâmicas inconscientes. Atualmente lidera o LPS – Líder Psicanalítico, integrando teoria psicanalítica e visão sistêmica para ajudar líderes a sustentarem autoridade e limites com saúde mental.""")
+    
+    st.subheader("Sobre o LPS (Líder Psicanalítico)")
+    st.markdown("""O LPS é um modelo de intervenção estruturado para o mundo corporativo. Baseia-se no princípio de que organizações ativam regressões emocionais. O programa foca em:
+
+- **Leitura Psíquica:** Entender o funcionamento invisível das equipes.
+- **Sustentação de Autoridade:** Tomar decisões estratégicas sem sobrecarga emocional.
+- **Performance:** Alinhamento do comportamento à tarefa organizacional.""")
+    
+    st.markdown(f"""
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
+                Fale Conosco no WhatsApp
+            </a>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="#" style="color: #666; text-decoration: underline; font-size: 0.9rem;">Privacidade e Termos</a>
+        </div>
+    """, unsafe_allow_html=True)
 
 elif page == "AdminEmail":
     # Admin page for sending welcome emails after payment confirmation

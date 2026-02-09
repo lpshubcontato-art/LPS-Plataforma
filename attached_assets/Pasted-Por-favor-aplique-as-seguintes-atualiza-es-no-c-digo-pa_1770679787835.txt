@@ -1,0 +1,34 @@
+Por favor, aplique as seguintes atualizações no código para alinhar o sistema com a nova estrutura de 70 questões e a identidade visual solicitada pela Viviane Nishiura:
+
+1. Ajustes de UI e Textos (Baseado em Imagens de Feedback)
+Instruções do Teste: Altere o texto de cabeçalho para exatamente: 'Responda às afirmações. (1 = Discordo Totalmente, 5 = Concordo Totalmente)'. Remova qualquer menção a números (como '48' ou '70').
+
+Despersonalização: * No título da Mentoria, mude de 'Mentoria com Viviane Nishiura' para 'Mentoria Executiva LPS'.
+
+Na descrição da sessão, altere para 'Sessão individual de 1 hora com consultor sênior'.
+
+Estilização dos Sliders: Use CSS personalizado (st.markdown com <style>) para alterar a cor dos st.slider. A barra preenchida deve ser Azul (cor da marca) e a 'bolinha' (thumb) deve ser Dourada. Remova o vermelho atual.
+
+Rodapé (Footer): Na página 'Sobre', certifique-se de que os botões 'Fale Conosco no WhatsApp' (verde) e 'Privacidade e Termos' estejam centralizados ao final da página, logo abaixo dos novos textos.
+
+2. Atualização da Página 'Sobre'
+Substitua o conteúdo atual da seção 'Sobre' por estes dois blocos de texto, usando st.header ou st.subheader:
+
+Sobre a Autora:
+Viviane Nishiura é psicóloga (Mackenzie) com mais de 30 anos de trajetória conectando RH corporativo, gestão de projetos e clínica psicológica. Sua experiência permite identificar conflitos corporativos como manifestações de dinâmicas inconscientes. Atualmente lidera o LPS – Líder Psicanalítico, integrando teoria psicanalítica e visão sistêmica para ajudar líderes a sustentarem autoridade e limites com saúde mental.
+
+Sobre o LPS (Líder Psicanalítico):
+O LPS é um modelo de intervenção estruturado para o mundo corporativo. Baseia-se no princípio de que organizações ativam regressões emocionais. O programa foca em:
+
+Leitura Psíquica: Entender o funcionamento invisível das equipes.
+
+Sustentação de Autoridade: Tomar decisões estratégicas sem sobrecarga emocional.
+
+Performance: Alinhamento do comportamento à tarefa organizacional.
+
+3. Lógica de 7 Blocos e 70 Questões
+Escala: Garanta que a pontuação máxima de cada bloco seja 50 pontos (10 questões x 5).
+
+Normalização: Atualize o gráfico de radar para exibir 7 eixos (incluindo 'Relacional Reativo') e certifique-se de que a normalização divida os valores por 50 para escala correta.
+
+Consistência: Verifique se variáveis como total_questions ou num_blocks foram atualizadas para 70 e 7, respectivamente. Revise o dicionário de perfis (Bion) para as 42 combinações, evitando KeyErrors."
