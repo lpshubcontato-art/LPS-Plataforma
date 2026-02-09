@@ -1386,6 +1386,10 @@ if 'progress' not in st.session_state:
     st.session_state.progress = {}
 if 'assessment_results' not in st.session_state:
     st.session_state.assessment_results = None
+if 'ai_laudo' not in st.session_state:
+    st.session_state.ai_laudo = None
+if 'laudo_requested' not in st.session_state:
+    st.session_state.laudo_requested = False
 if 'employee_token' not in st.session_state:
     st.session_state.employee_token = None
 if 'authenticated' not in st.session_state:
@@ -2866,6 +2870,70 @@ def generate_radar_chart(block_sums, profile_name=""):
     buffer.seek(0)
     return buffer.getvalue()
 
+def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_name=""):
+    """Generate a deep psychoanalytic leadership analysis using Gemini AI."""
+    try:
+        api_key = st.secrets.get("GOOGLE_API_KEY", os.environ.get("GOOGLE_API_KEY", ""))
+        if not api_key:
+            return None, "Chave da API do Google Gemini nao configurada."
+        
+        client = genai.Client(api_key=api_key)
+        
+        block_details = ""
+        block_keys = [
+            ("Bloco 1 – Autoridade Interna e Autoimagem", "Autoridade Interna"),
+            ("Bloco 2 – Contenção Emocional do Grupo", "Contenção Emocional"),
+            ("Bloco 3 – Narcisismo e Reconhecimento", "Narcisismo/Reconhecimento"),
+            ("Bloco 4 – Estrutura e Lógica de Tarefa", "Estrutura/Ordem"),
+            ("Bloco 5 – Relação com a Equipe e Projeções", "Relação/Empatia"),
+            ("Bloco 6 – Reflexão, Crítica e Autoconsciência", "Reflexão/Observação"),
+            ("Bloco 7 – Relacional Reativo", "Relacional Reativo"),
+        ]
+        for full_name, short_name in block_keys:
+            score = block_sums.get(full_name, 25)
+            pct = round((score / 50) * 100)
+            block_details += f"- {short_name}: {score}/50 ({pct}%)\n"
+        
+        prompt = f"""Voce e uma consultora especialista em Psicanalise e Neurociencia aplicada a Lideranca, 
+com formacao baseada em Kernberg, Bion, Sinek e Neurociencia organizacional.
+
+Gere uma ANALISE PROFUNDA PSICANALITICA E DE LIDERANCA para o seguinte perfil:
+
+Nome: {respondent_name if respondent_name else 'Lider avaliado'}
+Perfil Dominante: {dominant}
+Perfil Secundario: {secondary}
+Papel de Bion: {bion_role}
+
+Pontuacoes por eixo (maximo 50 pontos cada, 10 questoes x 5 pontos):
+{block_details}
+
+INSTRUCOES PARA O LAUDO:
+1. Escreva um laudo completo com NO MINIMO 5 paragrafos de texto corrido (nao apenas bullet points).
+2. Inclua analise psicanalitica profunda com referencias a:
+   - Dinamicas inconscientes do lider (Kernberg: relacoes objetais, narcisismo saudavel, atitude paranoide saudavel)
+   - Papel grupal segundo Bion (Pressupostos Basicos: Dependencia, Luta-Fuga, Pareamento vs Grupo de Trabalho)
+   - Neurociencia: impacto do cortisol vs ocitocina, amigdala, neuronios-espelho, cortex pre-frontal
+   - Circulo de Seguranca de Sinek (EDSO: Endorfina, Dopamina, Serotonina, Ocitocina)
+   - Transferencia e Contratransferencia nas relacoes de equipe
+3. Analise os eixos mais altos e mais baixos e o que isso revela sobre padroes inconscientes.
+4. Inclua recomendacoes praticas baseadas em neurociencia e psicanalise.
+5. Use linguagem profissional mas acessivel. Escreva em portugues brasileiro.
+6. Formate com titulos em negrito usando ** para secoes principais.
+7. O laudo deve ter entre 800 e 1200 palavras."""
+
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+            config={
+                "max_output_tokens": 4096,
+                "temperature": 0.7,
+            }
+        )
+        
+        return response.text, None
+    except Exception as e:
+        return None, f"Erro ao gerar laudo: {str(e)}"
+
 def save_assessment_responses(respondent_id, respondent_type, responses):
     """Save each individual response (1-5) to the database for future AI analysis."""
     conn = sqlite3.connect('lps_data.db')
@@ -4050,8 +4118,11 @@ elif page == "LPTest":
                     "dominant": dominant,
                     "secondary": secondary,
                     "details": details,
-                    "bion_role": bion_role
+                    "bion_role": bion_role,
+                    "block_sums": block_sums
                 }
+                st.session_state.ai_laudo = None
+                st.session_state.laudo_requested = True
                 st.rerun()
         
         if st.session_state.assessment_results:
@@ -4059,14 +4130,67 @@ elif page == "LPTest":
             st.markdown(f"""
                 <div class="result-card">
                     <div class="profile-title">Resultado: {res['dominant']} + {res['secondary']}</div>
-                    <div class="section-header">🧠 Forças</div>
+                    <div class="section-header">Forcas</div>
                     <p>{res['details']['forcas']}</p>
-                    <div class="section-header">⚠ Riscos</div>
+                    <div class="section-header">Riscos</div>
                     <p>{res['details']['riscos']}</p>
-                    <div class="section-header">➡ Recomendações</div>
+                    <div class="section-header">Recomendacoes</div>
                     <p>{res['details'].get('recomendacoes', 'Agende mentoria.')}</p>
                 </div>
             """, unsafe_allow_html=True)
+            
+            if res.get('block_sums'):
+                profile_name = f"{res['dominant']} + {res['secondary']}"
+                radar_chart = generate_radar_chart(res['block_sums'], profile_name)
+                if radar_chart:
+                    st.image(radar_chart, use_container_width=True)
+                
+                bion_desc = BION_DESCRIPTIONS.get(res['bion_role'], '')
+                if bion_desc:
+                    st.markdown(f"""
+                        <div style='background-color: #e8f4f8; padding: 1rem; border-radius: 8px; margin: 1rem 0;'>
+                            <strong style='color: #18738c;'>Papel de Bion:</strong> {res['bion_role']}<br>
+                            <span style='color: #555;'>{bion_desc}</span>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("---")
+                st.subheader("Laudo Completo - Analise Psicanalitica e de Lideranca")
+                
+                if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
+                    st.markdown(st.session_state.ai_laudo)
+                    if st.button("Regenerar Laudo", key="regen_laudo"):
+                        st.session_state.ai_laudo = None
+                        st.session_state.laudo_requested = True
+                        st.rerun()
+                elif st.session_state.get('ai_laudo', '').startswith("__ERROR__"):
+                    st.warning(st.session_state.ai_laudo.replace("__ERROR__:", ""))
+                    if st.button("Tentar novamente", key="retry_laudo"):
+                        st.session_state.ai_laudo = None
+                        st.session_state.laudo_requested = True
+                        st.rerun()
+                elif st.session_state.get('laudo_requested', False):
+                    with st.spinner("Gerando laudo completo com analise psicanalitica e de neurociencia..."):
+                        manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
+                        laudo_text, error = generate_ai_laudo(
+                            res['dominant'], res['secondary'], res['bion_role'],
+                            res['block_sums'], manager_name
+                        )
+                        if laudo_text:
+                            st.session_state.ai_laudo = laudo_text
+                        elif error:
+                            st.session_state.ai_laudo = f"__ERROR__:{error}"
+                        st.session_state.laudo_requested = False
+                        st.rerun()
+                else:
+                    st.markdown("""
+                        <div style='background-color: #e8f4f8; padding: 1.5rem; border-radius: 8px; text-align: center;'>
+                            <p style='color: #18738c; margin: 0;'>Clique abaixo para gerar sua analise profunda com base em psicanalise e neurociencia.</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Gerar Laudo Completo", key="gen_laudo", type="primary", use_container_width=True):
+                        st.session_state.laudo_requested = True
+                        st.rerun()
 
 elif page == "TeamManagement":
     if not st.session_state.authenticated:
