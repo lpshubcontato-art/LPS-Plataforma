@@ -11,7 +11,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import streamlit.components.v1 as components
 from datetime import datetime, timedelta
-import google.generativeai as genai
+from google import genai
 import io
 import matplotlib
 matplotlib.use('Agg')
@@ -4785,16 +4785,17 @@ FORMATO DE RESPOSTA:
             with st.chat_message("assistant"):
                 with st.spinner("Analisando dinamicas da equipe..."):
                     try:
-                        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-                        model = genai.GenerativeModel('gemini-1.5-flash')
+                        client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
                         
-                        # Build conversation history for Gemini
                         chat_history = f"{system_prompt}\n\n"
                         for msg in st.session_state.chat_messages:
                             role = "Gestor" if msg["role"] == "user" else "Consultora LPS"
                             chat_history += f"{role}: {msg['content']}\n\n"
                         
-                        response = model.generate_content(chat_history)
+                        response = client.models.generate_content(
+                            model="gemini-2.0-flash",
+                            contents=chat_history
+                        )
                         
                         assistant_message = response.text
                         st.markdown(assistant_message)

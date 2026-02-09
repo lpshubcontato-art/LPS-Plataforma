@@ -6,3 +6,5 @@ matplotlib
 reportlab
 bcrypt
 python-docx
+google-genai
+sift-stack-py
