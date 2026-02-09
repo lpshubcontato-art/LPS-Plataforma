@@ -260,7 +260,7 @@ def send_welcome_email(user_email, user_name, password):
                     <div class="feature-item">LPTest - Assessment de perfil de liderança</div>
                     <div class="feature-item">Gestão de Equipe - Mapeie até 4 colaboradores</div>
                     <div class="feature-item">LPChat - Consultor de IA especializado</div>
-                    <div class="feature-item">Acesso à mentoria com Viviane Nishiura</div>
+                    <div class="feature-item">Acesso à Mentoria Executiva LPS</div>
                 </div>
                 
                 <p style="text-align: center;">
@@ -2291,7 +2291,8 @@ def get_profile_tendency(profile):
         "Narciso Estrategico": "inspiracao e motivacao da equipe",
         "Estruturador": "organizacao e controle de processos",
         "Espelho Emocional": "empatia e validacao emocional",
-        "Observador Reflexivo": "analise profunda e decisoes ponderadas"
+        "Observador Reflexivo": "analise profunda e decisoes ponderadas",
+        "Relacional Reativo": "diplomacia e harmonizacao de conflitos"
     }
     return tendencies.get(profile, "desenvolvimento da equipe")
 
@@ -2670,7 +2671,7 @@ def generate_manager_guide_pdf():
     elements.append(Paragraph("4. Passo a Passo da Mentoria", styles['LPSSection']))
     elements.append(Spacer(1, 10))
     elements.append(Paragraph(
-        "A mentoria com Viviane Nishiura e o momento de aprofundar sua jornada de lideranca consciente. "
+        "A Mentoria Executiva LPS e o momento de aprofundar sua jornada de lideranca consciente. "
         "Prepare-se adequadamente para maximizar os resultados.",
         styles['LPSBody']))
     elements.append(Spacer(1, 8))
@@ -2860,8 +2861,8 @@ def save_assessment_responses(respondent_id, respondent_type, responses):
 
 def calculate_profile(responses):
     block_sums = {}
-    for block in ASSESSMENT_QUESTIONS.keys():
-        block_sums[block] = sum(responses[f"{block}_{i}"] for i in range(8))
+    for block, questions in ASSESSMENT_QUESTIONS.items():
+        block_sums[block] = sum(responses[f"{block}_{i}"] for i in range(len(questions)))
     
     sorted_blocks = sorted(block_sums.items(), key=lambda x: x[1], reverse=True)
     dom_key = sorted_blocks[0][0]
@@ -3235,7 +3236,7 @@ if page == "Home":
             st.markdown("""
                 <div style="text-align: center; padding: 1rem; background-color: #f8f9fa; border-radius: 10px; border: 2px solid #18738c;">
                     <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background-color: #d19f09; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                        <span style="color: white; font-weight: bold; font-size: 1.2rem;">48Q</span>
+                        <span style="color: white; font-weight: bold; font-size: 1.2rem;">LPT</span>
                     </div>
                     <h4 style="color: #18738c;">Assessment Completo</h4>
                     <p style="color: #666;">Descubra seu perfil de lideranca e mapeie sua equipe com ferramentas exclusivas.</p>
@@ -3266,23 +3267,11 @@ if page == "Home":
     elif current_section == "sobre":
         st.markdown('<div class="section-title">Sobre o Programa LPS</div>', unsafe_allow_html=True)
         
-        st.markdown("""
-            <div class="about-card">
-                <h3 style="color: #18738c;">O que é Liderança Psicanalítica?</h3>
-                <p>A Liderança Psicanalítica é uma abordagem inovadora que integra conceitos da psicanálise com práticas de gestão moderna. 
-                Desenvolvida por <strong>Viviane Nishiura</strong>, esta metodologia ajuda líderes a compreenderem as dinâmicas 
-                inconscientes que influenciam suas equipes e tomadas de decisão.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.subheader("Metodologia LPS")
+        st.info("Conteudo a ser inserido pelo administrador.")
         
-        st.markdown("""
-            <div class="about-card">
-                <h3 style="color: #18738c;">Quem é Viviane Nishiura?</h3>
-                <p>Psicóloga clínica e consultora organizacional com mais de 15 anos de experiência em desenvolvimento de líderes. 
-                Especialista em psicanálise aplicada às organizações, Viviane criou o método LPS para ajudar gestores 
-                a transformarem suas relações de trabalho através do autoconhecimento.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.subheader("Sobre a Plataforma")
+        st.info("Conteudo a ser inserido pelo administrador.")
         
         col1, col2 = st.columns([1, 1])
         with col1:
@@ -3412,8 +3401,8 @@ if page == "Home":
         st.markdown("""
             <div class="about-card">
                 <h3 style="color: #18738c;">Descubra Seu Perfil de Liderança</h3>
-                <p>O LPTest é um assessment exclusivo com <strong>48 questões</strong> desenvolvidas para mapear 
-                seu perfil de liderança através de 6 dimensões psicanalíticas:</p>
+                <p>O LPTest é um assessment exclusivo com <strong>questões desenvolvidas para mapear seu perfil</strong> 
+                de liderança através de 7 dimensões psicanalíticas:</p>
                 <ul style="color: #666;">
                     <li><strong>Autoridade</strong> - Como você exerce e percebe sua autoridade</li>
                     <li><strong>Contenção</strong> - Sua capacidade de manter a calma em crises</li>
@@ -3421,6 +3410,7 @@ if page == "Home":
                     <li><strong>Estrutura</strong> - Sua necessidade de controle e organização</li>
                     <li><strong>Relação</strong> - Suas dinâmicas de transferência com a equipe</li>
                     <li><strong>Reflexão</strong> - Sua capacidade de autoconhecimento</li>
+                    <li><strong>Relacional Reativo</strong> - Sua tendência a evitar conflitos e buscar harmonia</li>
                 </ul>
             </div>
         """, unsafe_allow_html=True)
@@ -3483,7 +3473,7 @@ if page == "Home":
         st.markdown("""
             <div class="about-card">
                 <h3 style="color: #18738c;">Acompanhamento Personalizado</h3>
-                <p>Sessões individuais com Viviane Nishiura para aprofundar seu desenvolvimento como líder psicanalítico:</p>
+                <p>Sessões individuais com consultor sênior para aprofundar seu desenvolvimento como líder psicanalítico:</p>
                 <ul style="color: #666;">
                     <li>Análise do seu perfil LPTest</li>
                     <li>Supervisão de casos da sua equipe</li>
@@ -3875,7 +3865,7 @@ elif page == "Dashboard":
         
         # Mentoring Card
         st.markdown("<div class='dashboard-card'><h3>Mentoria Individual</h3>", unsafe_allow_html=True)
-        st.markdown("<p style='font-size: 0.9rem; color: #666;'>Agende uma sessão exclusiva com Viviane Nishiura para aprofundar seus insights de liderança.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: 0.9rem; color: #666;'>Agende uma sessão exclusiva com consultor sênior para aprofundar seus insights de liderança.</p>", unsafe_allow_html=True)
         st.markdown(f"""
             <a href='{WHATSAPP_URL}' target='_blank' class='mentoring-btn' data-testid='button-agendar-mentoria'>
                 Agendar Mentoria
@@ -4004,7 +3994,7 @@ elif page == "LPTest":
     
     # Show form if no saved profile OR user wants to redo
     if not saved_profile or st.session_state.get('show_test_form', False):
-        st.write("Responda às 48 afirmações. (1 = Discordo Totalmente, 5 = Concordo Totalmente)")
+        st.write("Responda às afirmações. (1 = Discordo Totalmente, 5 = Concordo Totalmente)")
         
         with st.form("manager_assessment"):
             responses = render_assessment_form("manager")
@@ -4827,7 +4817,7 @@ elif page == "Mentoria":
     
     st.markdown("""
         <div style="text-align: center; margin-bottom: 2rem;">
-            <h1 style="color: #18738c;">Mentoria com Viviane Nishiura</h1>
+            <h1 style="color: #18738c;">Mentoria Executiva LPS</h1>
             <p style="color: #666;">Sessoes individuais para aprofundar sua jornada de lideranca consciente</p>
         </div>
     """, unsafe_allow_html=True)
@@ -4866,7 +4856,7 @@ elif page == "Mentoria":
             <div class="about-card">
                 <h3 style="color: #18738c;">O que esperar da Mentoria</h3>
                 <ul>
-                    <li><strong>Sessao individual de 1 hora</strong> com Viviane Nishiura</li>
+                    <li><strong>Sessao individual de 1 hora</strong> com consultor senior</li>
                     <li>Analise aprofundada do seu perfil de lideranca</li>
                     <li>Discussao sobre dinamicas de equipe e conflitos inconscientes</li>
                     <li>Estrategias praticas baseadas em psicanalise e neurociencia</li>
@@ -4901,8 +4891,11 @@ elif page == "Sobre":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
-    st.title("Sobre Viviane Nishiura")
-    st.write("Viviane Nishiura é psicóloga clínica e consultora de liderança.")
+    st.title("Sobre a Plataforma LPS")
+    st.subheader("Metodologia LPS")
+    st.info("Conteudo a ser inserido pelo administrador.")
+    st.subheader("Sobre a Plataforma")
+    st.info("Conteudo a ser inserido pelo administrador.")
 
 elif page == "AdminEmail":
     # Admin page for sending welcome emails after payment confirmation
@@ -5086,7 +5079,7 @@ elif page == "GuiaSuporte":
     st.markdown(f"""
         <div class="about-card">
             <h3 style="color: #18738c;">4. Passo a Passo da Mentoria</h3>
-            <p>A mentoria com <strong>Viviane Nishiura</strong> e o momento de aprofundar sua jornada de lideranca consciente. 
+            <p>A Mentoria Executiva LPS e o momento de aprofundar sua jornada de lideranca consciente. 
             Prepare-se adequadamente para maximizar os resultados.</p>
             <h4 style="color: #18738c;">Antes da sessao:</h4>
             <ol>
