@@ -2868,7 +2868,7 @@ def generate_radar_chart(block_sums, profile_name=""):
 
 def save_assessment_responses(respondent_id, respondent_type, responses):
     """Save each individual response (1-5) to the database for future AI analysis."""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect('lps_data.db')
     c = conn.cursor()
     
     for block_name, questions in ASSESSMENT_QUESTIONS.items():
