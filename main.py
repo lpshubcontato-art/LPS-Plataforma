@@ -3111,10 +3111,16 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     paragraphs = analysis_text.split('\n\n')
     for para in paragraphs:
         if para.strip():
+            import re as re_mod
             clean_para = para.replace('\n', ' ').strip()
-            clean_para = clean_para.replace('**', '')
-            clean_para = clean_para.replace('*', '')
-            elements.append(Paragraph(clean_para, styles['LPSBody']))
+            clean_para = re_mod.sub(r'\*\*\*(.+?)\*\*\*', r'<b><i>\1</i></b>', clean_para)
+            clean_para = re_mod.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', clean_para)
+            clean_para = re_mod.sub(r'\*(.+?)\*', r'<i>\1</i>', clean_para)
+            try:
+                elements.append(Paragraph(clean_para, styles['LPSBody']))
+            except Exception:
+                safe_para = para.replace('\n', ' ').strip().replace("<", "&lt;").replace(">", "&gt;")
+                elements.append(Paragraph(safe_para, styles['LPSBody']))
             elements.append(Spacer(1, 5))
     
     # Footer
@@ -3214,20 +3220,20 @@ def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_ro
         if content:
             paragraphs = content.split("\n\n") if "\n\n" in content else content.split("\n")
             for para in paragraphs:
-                clean = para.strip()
-                if not clean:
+                pdf_text = para.strip()
+                if not pdf_text:
                     continue
-                clean = clean.replace("**", "<b>").replace("*", "")
-                bold_count = clean.count("<b>")
-                if bold_count % 2 != 0:
-                    clean += "</b>"
+                import re as re_mod
+                pdf_text = re_mod.sub(r'\*\*\*(.+?)\*\*\*', r'<b><i>\1</i></b>', pdf_text)
+                pdf_text = re_mod.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', pdf_text)
+                pdf_text = re_mod.sub(r'\*(.+?)\*', r'<i>\1</i>', pdf_text)
                 try:
-                    elements.append(Paragraph(clean, styles['LaudoBody']))
+                    elements.append(Paragraph(pdf_text, styles['LaudoBody']))
                 except Exception:
-                    safe_text = clean.replace("<", "&lt;").replace(">", "&gt;")
+                    safe_text = para.strip().replace("<", "&lt;").replace(">", "&gt;")
                     elements.append(Paragraph(safe_text, styles['LaudoBody']))
         else:
-            elements.append(Paragraph("<i>Secao nao disponivel nesta analise.</i>", styles['LaudoBody']))
+            elements.append(Paragraph("<i>Secao nao disponivel neste documento.</i>", styles['LaudoBody']))
     
     elements.append(Spacer(1, 25))
     footer_line = Table([[""]],  colWidths=[doc.width])
@@ -3538,7 +3544,9 @@ def find_docx_file(dominant, secondary, respondent_type="gestor"):
 
 def extract_docx_profile_text(dominant, secondary, respondent_type="gestor"):
     """Extract the COMPLETE, UNMODIFIED text from matching .docx file.
-    Preserves all original paragraph breaks and formatting from the Word document.
+    Preserves all original paragraph breaks and bold/italic formatting.
+    Bold text is wrapped in **text** and italic in *text* to preserve
+    the original Word formatting for display and PDF rendering.
     No text is summarized, altered, or omitted."""
     try:
         from docx import Document as DocxDocument
@@ -3550,7 +3558,22 @@ def extract_docx_profile_text(dominant, secondary, respondent_type="gestor"):
         doc = DocxDocument(file_path)
         full_text = []
         for para in doc.paragraphs:
-            full_text.append(para.text)
+            if not para.runs:
+                full_text.append(para.text)
+                continue
+            para_parts = []
+            for run in para.runs:
+                text = run.text
+                if not text:
+                    continue
+                if run.bold and run.italic:
+                    text = f"***{text}***"
+                elif run.bold:
+                    text = f"**{text}**"
+                elif run.italic:
+                    text = f"*{text}*"
+                para_parts.append(text)
+            full_text.append("".join(para_parts))
         
         result = "\n".join(full_text)
         while result.endswith("\n"):
@@ -3700,7 +3723,8 @@ def _match_header_line(line_text, patterns):
     if not clean:
         return None, None
     
-    test = clean.lower()
+    plain = clean.replace("***", "").replace("**", "").replace("*", "")
+    test = plain.lower()
     test_no_num = test
     num_prefix_len = 0
     if test and test[0].isdigit():
@@ -3708,7 +3732,7 @@ def _match_header_line(line_text, patterns):
         if dot_idx >= 0 and dot_idx <= 3:
             test_no_num = test[dot_idx + 1:].strip()
             num_prefix_len = dot_idx + 1
-            while num_prefix_len < len(clean) and clean[num_prefix_len] in ' \t':
+            while num_prefix_len < len(plain) and plain[num_prefix_len] in ' \t':
                 num_prefix_len += 1
     
     for section_key, keywords in patterns:
@@ -3719,12 +3743,18 @@ def _match_header_line(line_text, patterns):
                 else:
                     after_kw_pos = len(kw)
                 
-                remaining = clean[after_kw_pos:].strip() if after_kw_pos < len(clean) else ""
+                remaining_plain = plain[after_kw_pos:].strip() if after_kw_pos < len(plain) else ""
                 
-                if remaining:
-                    remaining = remaining.lstrip("(").lstrip(")").lstrip(":").lstrip("-").strip()
+                if remaining_plain:
+                    remaining_plain = remaining_plain.lstrip("(").lstrip(")").lstrip(":").lstrip("-").strip()
                 
-                if remaining and len(remaining) < 40:
+                if remaining_plain and len(remaining_plain) < 40:
+                    remaining_plain = ""
+                
+                if remaining_plain:
+                    rp_start = clean.find(remaining_plain[:20])
+                    remaining = clean[rp_start:].strip() if rp_start >= 0 else remaining_plain
+                else:
                     remaining = ""
                 
                 return section_key, remaining
