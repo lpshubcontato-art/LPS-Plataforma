@@ -1413,90 +1413,90 @@ LOGO_PATH = "attached_assets/logotipo_2__1768529013163.jpeg"
 # Definicoes das questoes do Assessment (8 blocos: 7x8 + 1x14 = 70 questoes totais)
 ASSESSMENT_QUESTIONS = {
     "Bloco 1 – Autoridade Interna, Autoimagem e Superego": [
-        "Sinto uma pressao interna constante para ser um lider exemplar.",
-        "Quando erro, minha autocritica e mais severa do que a dos outros.",
-        "Minha imagem de lider ideal e muito exigente comigo mesmo.",
-        "Tenho dificuldade em aceitar desempenhos medianos, mesmo quando razoaveis.",
-        "Sinto que nunca faco o suficiente, independentemente dos resultados.",
-        "Julgo a mim mesmo com mais rigidez do que julgo minha equipe.",
-        "Meu senso de dever me impede de relaxar, mesmo quando poderia.",
-        "Acredito que se eu nao mantiver padroes altos, tudo desmorona."
+        "Quando recebo um feedback negativo sobre minha lideranca, minha primeira reacao interna costuma ser de justificativa ou defesa.",
+        "Sinto uma pressao interna para corresponder a um ideal de lider perfeito, mesmo que isso me desgaste.",
+        "Tenho dificuldade em admitir nao sei ou pedir ajuda a minha equipe, pois temo parecer fraco(a).",
+        "A opiniao dos meus superiores sobre mim tem um peso significativo na minha autoconfianca como lider.",
+        "Hesito em tomar decisoes que possam desagradar a equipe, mesmo que sejam necessarias para o negocio.",
+        "Quando um projeto sob minha lideranca falha, sinto uma culpa ou responsabilidade desproporcional.",
+        "Prefiro manter uma postura mais distante e formal para garantir o respeito da equipe.",
+        "Fico ruminando criticas ou comentarios negativos sobre meu trabalho por mais tempo do que gostaria."
     ],
     "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": [
-        "Consigo perceber quando a equipe esta emocionalmente desestabilizada.",
-        "Minha presenca ajuda a acalmar o ambiente em momentos de tensao.",
-        "Sinto que absorvo as emocoes do grupo, mesmo quando nao quero.",
-        "Me esforco para criar um ambiente onde todos se sintam seguros.",
-        "Sei modular minha postura para transmitir seguranca ao grupo.",
-        "Percebo quando alguem da equipe esta emocionalmente sobrecarregado antes que diga.",
-        "Acredito que parte do meu papel e proteger a equipe de pressoes externas.",
-        "As vezes me sinto emocionalmente esgotado por carregar o clima do grupo."
+        "Em momentos de alta tensao na equipe, consigo manter minha calma interna e pensar com clareza.",
+        "Percebo quando minha propria ansiedade ou frustracao esta contaminando o clima da equipe.",
+        "Sinto-me confortavel em abordar conversas dificeis sobre emocoes ou conflitos interpessoais no time.",
+        "Consigo ouvir reclamacoes ou desabafos da equipe sem me sentir pessoalmente atacado(a) ou sobrecarregado(a).",
+        "Priorizo ativamente a criacao de um ambiente onde as pessoas se sintam seguras para expressar opinioes divergentes ou admitir erros.",
+        "Tenho facilidade em ler o estado emocional nao verbal da equipe (linguagem corporal, tom de voz).",
+        "Apos reunioes emocionalmente carregadas, preciso de um tempo consideravel para me recuperar energeticamente.",
+        "Hesito em dar mas noticias ou feedbacks corretivos por medo da reacao emocional da equipe."
     ],
     "Bloco 3 – Narcisismo, Reconhecimento e Motivacao": [
-        "Me incomodo quando nao sou reconhecido pelo meu esforco.",
-        "Gosto de ser destacado publicamente por minhas contribuicoes.",
-        "Comparo frequentemente meu desempenho com o de outros lideres.",
-        "Preciso de validacao externa para me sentir motivado.",
-        "Fico frustrado quando alguem recebe credito por algo que fiz.",
-        "Sinto que meu valor como lider depende da percepcao dos outros.",
-        "Evito situacoes onde possa ser ofuscado por alguem.",
-        "Busco provas externas de competencia com frequencia."
+        "Sinto uma satisfacao particular quando minhas ideias ou projetos recebem destaque e admiracao.",
+        "Fico genuinamente incomodado(a) quando o credito por um trabalho meu e dado a outra pessoa.",
+        "A ausencia de feedback positivo sobre meu desempenho me desmotiva significativamente.",
+        "Tenho uma tendencia a comparar meus resultados e reconhecimento com os de outros lideres que admiro.",
+        "Em discussoes, foco mais em defender meu ponto de vista do que em entender a perspectiva do outro.",
+        "Busco ativamente projetos ou tarefas que me coloquem em evidencia ou aumentem minha visibilidade.",
+        "Tenho dificuldade em celebrar o sucesso de outros lideres, especialmente se me sinto em competicao.",
+        "Uso historias sobre meus proprios sucessos para inspirar ou motivar a equipe."
     ],
     "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade": [
-        "Preciso de processos bem definidos para me sentir confortavel.",
-        "Me incomodo quando ha mudancas imprevistas no planejamento.",
-        "Prefiro manter o controle total das decisoes do meu time.",
-        "Tenho dificuldade em lidar com situacoes ambiguas ou incertas.",
-        "Sinto necessidade de documentar e organizar tudo com detalhes.",
-        "Quando os processos fogem do padrao, fico ansioso.",
-        "Acredito que estrutura rigida evita erros e conflitos.",
-        "Tenho dificuldade em delegar tarefas que considero criticas."
+        "Sinto-me desconfortavel ou ansioso(a) quando os planos mudam inesperadamente ou ha falta de clareza nas diretrizes.",
+        "Prefiro ter controle sobre os detalhes das tarefas da equipe para garantir que tudo saia conforme o esperado.",
+        "Tenho dificuldade em delegar tarefas criticas, preferindo faze-las eu mesmo(a) para assegurar a qualidade.",
+        "Acredito que regras e processos bem definidos sao a melhor forma de evitar o caos e garantir a produtividade.",
+        "Intervenho rapidamente quando percebo que um membro da equipe esta se desviando do processo estabelecido.",
+        "Valorizo mais a previsibilidade e a estabilidade do que a flexibilidade e a experimentacao.",
+        "Sinto uma necessidade de preencher o vazio com tarefas, mesmo quando nao ha urgencia real.",
+        "Foco mais em identificar e prevenir riscos do que em explorar novas oportunidades que envolvam incerteza."
     ],
     "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia": [
-        "Ja senti que alguem da equipe me tratava como figura parental.",
-        "Percebo que alguns colaboradores projetam em mim expectativas irreais.",
-        "Ja reagi de forma desproporcional a um conflito por ele me lembrar de algo pessoal.",
-        "Sinto que carrego emocoes que nao sao minhas, vindas da equipe.",
-        "Noto que certas pessoas ativam em mim reacoes automaticas.",
-        "Tenho dificuldade em separar o que sinto pela pessoa do que sinto pelo papel dela.",
-        "Alguns membros da equipe me fazem sentir culpado mesmo sem motivo claro.",
-        "Percebo padroes relacionais que se repetem com diferentes pessoas na equipe."
+        "Percebo que certos tipos de pessoas na equipe despertam em mim reacoes emocionais (positivas ou negativas) mais intensas que outras.",
+        "Ja me peguei tratando um membro da equipe de forma semelhante a como lidei com figuras importantes do meu passado (pais, irmaos, professores).",
+        "Sinto que alguns membros da equipe me colocam em um papel especifico (o salvador, o critico, o idealizado) que nao corresponde totalmente a realidade.",
+        "Tenho dificuldade em manter a neutralidade emocional com membros da equipe que me lembram pessoas com quem tive conflitos no passado.",
+        "Noto padroes repetitivos na forma como diferentes membros da equipe se relacionam comigo (ex: sempre buscando aprovacao, sempre desafiando).",
+        "Minhas reacoes a um determinado funcionario as vezes me surpreendem pela sua intensidade ou inadequacao.",
+        "Sinto necessidade de manter uma distancia segura de certos membros da equipe para nao me envolver emocionalmente.",
+        "Reflito sobre como minhas proprias experiencias e fantasmas do passado podem estar influenciando minhas interacoes atuais com a equipe."
     ],
     "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego": [
-        "Tenho facilidade em identificar minhas armadilhas emocionais.",
-        "Costumo refletir sobre o impacto do meu comportamento na equipe.",
-        "Consigo perceber quando estou usando mecanismos de defesa.",
-        "Entendo como minhas experiencias passadas influenciam minha lideranca.",
-        "Busco feedback genuino, mesmo quando desconfortavel.",
-        "Consigo nomear minhas emocoes com precisao na maioria das situacoes.",
-        "Reconheco quando meus vieses pessoais influenciam decisoes.",
-        "Vejo a lideranca como um processo psicologico, nao apenas tecnico."
+        "Consigo identificar quando estou usando um mecanismo de defesa (ex: racionalizacao, negacao, projecao) para lidar com uma situacao desconfortavel.",
+        "Sou capaz de analisar minhas proprias motivacoes (conscientes e talvez inconscientes) por tras de uma decisao importante.",
+        "Busco ativamente feedback sobre meus pontos cegos, mesmo que seja desconfortavel ouvi-los.",
+        "Consigo diferenciar uma critica ao meu comportamento/decisao de um ataque pessoal a minha identidade.",
+        "Reflito sobre o impacto do meu estado emocional (cansaco, estresse, empolgacao) na minha forma de liderar.",
+        "Estou aberto(a) a revisar minhas crencas e meu estilo de lideranca com base em novas experiencias ou aprendizados.",
+        "Consigo mentalizar, ou seja, imaginar o que se passa na mente do outro (seus pensamentos, sentimentos, intencoes) sem projetar excessivamente minhas proprias ideias.",
+        "Reconheco que minha percepcao da realidade e subjetiva e pode ser influenciada por meus vieses e historia pessoal."
     ],
     "Bloco 7 – Acao, Urgencia e Foco na Entrega": [
-        "Prefiro agir rapidamente a esperar por informacoes completas.",
-        "Sinto desconforto quando as coisas demoram para acontecer.",
-        "Tomo decisoes com agilidade, mesmo sob pressao.",
-        "Priorizo a execucao e o resultado acima de tudo.",
-        "Tenho dificuldade em tolerar processos lentos ou burocraticos.",
-        "Me sinto mais confortavel fazendo do que planejando.",
-        "Minha equipe me ve como alguem que faz acontecer.",
-        "As vezes, atropelo etapas para chegar ao resultado mais rapido."
+        "Quando ha indecisao na equipe, sinto um forte impulso para intervir e dar a direcao final imediatamente.",
+        "Minha principal metrica de sucesso na lideranca e a capacidade de fazer as coisas acontecerem de forma rapida.",
+        "Prefiro resolver um problema com acao direta do que gastar tempo excessivo em analise ou discussoes emocionais.",
+        "Tomo decisoes criticas rapidamente, mesmo que isso implique risco ou desagrade alguns membros da equipe.",
+        "Sinto uma frustracao intensa quando a equipe demonstra lentidao, passividade ou falta de senso de urgencia.",
+        "Sou mais eficaz em situacoes de crise ou pressao, onde minha assertividade e foco sao necessarios.",
+        "Valorizo mais a autonomia e a liberdade de acao do que a necessidade de seguir processos rigidos.",
+        "Tenho dificuldade em delegar tarefas de alta prioridade, preferindo a garantia da minha propria execucao."
     ],
     "Bloco 8 – Temperamento e Carater (Cloninger)": [
-        "Busco novas experiencias, mesmo que envolvam risco. (Busca de Novidade)",
-        "Tenho facilidade em agir por impulso. (Busca de Novidade)",
-        "Evito situacoes que possam gerar dor, critica ou punicao. (Evitacao de Dano)",
-        "Costumo antecipar problemas e me preparar para o pior. (Evitacao de Dano)",
-        "Preciso de recompensas frequentes para manter meu engajamento. (Dependencia de Recompensa)",
-        "Sou sensivel a sinais sociais de aprovacao e afeto. (Dependencia de Recompensa)",
-        "Mantenho meus habitos e rotinas mesmo quando nao sao mais uteis. (Persistencia)",
-        "Tenho dificuldade em desistir de algo que comecei. (Persistencia)",
-        "Me sinto responsavel pelo que acontece ao meu redor. (Autodirecionamento)",
-        "Tenho clareza sobre meus valores e proposito como lider. (Autodirecionamento)",
-        "Consigo me colocar no lugar dos outros com facilidade. (Cooperatividade)",
-        "Valorizo relacoes colaborativas mais do que competitivas. (Cooperatividade)",
-        "Sinto que faco parte de algo maior do que eu mesmo. (Autotranscendencia)",
-        "Momentos de reflexao profunda me ajudam a tomar decisoes melhores. (Autotranscendencia)"
+        "Sinto vontade de experimentar coisas novas regularmente. (Busca de Novidade - BN)",
+        "Gosto de desafios e situacoes nao previsiveis. (Busca de Novidade - BN)",
+        "Sinto ansiedade em situacoes de risco ou incerteza. (Evitacao de Dano - ED)",
+        "Evito decisoes que possam gerar criticas ou falhas. (Evitacao de Dano - ED)",
+        "Busco apoio e aprovacao de outros antes de decidir. (Dependencia de Recompensa - DR)",
+        "Sinto motivacao extra quando sou reconhecido publicamente. (Dependencia de Recompensa - DR)",
+        "Continuo esforcos mesmo diante de frustracoes. (Persistencia - P)",
+        "Finalizo tarefas mesmo quando enfrentam resistencia. (Persistencia - P)",
+        "Tenho clareza de objetivos e valores que guiam decisoes. (Autodirecao - AD)",
+        "Assumo responsabilidade pelos resultados, bons ou ruins. (Autodirecao - AD)",
+        "Tento entender perspectiva de todos antes de agir. (Cooperatividade - C)",
+        "Priorizo harmonia e colaboracao sobre competicao. (Cooperatividade - C)",
+        "Busco proposito maior no que faco. (Autotranscendencia - AT)",
+        "Sinto-me conectado(a) a algo maior que minhas tarefas diarias. (Autotranscendencia - AT)"
     ]
 }
 
@@ -1505,7 +1505,7 @@ CLONINGER_SUBDIMENSIONS = {
     "ED": {"name": "Evitacao de Dano", "questions": [2, 3]},
     "DR": {"name": "Dependencia de Recompensa", "questions": [4, 5]},
     "P": {"name": "Persistencia", "questions": [6, 7]},
-    "AD": {"name": "Autodirecionamento", "questions": [8, 9]},
+    "AD": {"name": "Autodirecao", "questions": [8, 9]},
     "C": {"name": "Cooperatividade", "questions": [10, 11]},
     "AT": {"name": "Autotranscendencia", "questions": [12, 13]}
 }
@@ -2311,16 +2311,43 @@ page = st.session_state.page
 # Assessment Form Component
 def render_assessment_form(form_key, is_employee=False):
     responses = {}
+    cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger)"
     for block_name, questions in ASSESSMENT_QUESTIONS.items():
         st.markdown(f"### {block_name}")
-        for i, q in enumerate(questions):
-            st.markdown(f'<div class="question-text">{i+1}. {q}</div>', unsafe_allow_html=True)
-            responses[f"{block_name}_{i}"] = st.select_slider(
-                "Nota:",
-                options=[1, 2, 3, 4, 5],
-                value=3,
-                key=f"{form_key}_{block_name}_{i}"
-            )
+        if block_name == cloninger_block:
+            st.markdown("""<p style='color: #666; font-size: 0.9rem; margin-bottom: 1rem;'>
+                Este bloco avalia 7 subdimensoes de temperamento e carater segundo o modelo de Cloninger. 
+                Cada subdimensao possui 2 questoes (pontuacao maxima: 10 por subdimensao).</p>""", unsafe_allow_html=True)
+            question_to_dim = {}
+            for code, info in CLONINGER_SUBDIMENSIONS.items():
+                for q_idx in info["questions"]:
+                    question_to_dim[q_idx] = f"{info['name']} ({code})"
+            shown_dims = set()
+            for i, q in enumerate(questions):
+                dim_label = question_to_dim.get(i, "")
+                if dim_label and dim_label not in shown_dims:
+                    shown_dims.add(dim_label)
+                    st.markdown(f"""<div style='background: linear-gradient(135deg, #18738c15, #d19f0915); 
+                        padding: 0.5rem 1rem; border-radius: 8px; margin: 0.8rem 0 0.4rem 0; 
+                        border-left: 3px solid #18738c;'>
+                        <strong style='color: #18738c;'>{dim_label}</strong></div>""", unsafe_allow_html=True)
+                q_display = q.split("(")[0].strip() if "(" in q else q
+                st.markdown(f'<div class="question-text">{i+1}. {q_display}</div>', unsafe_allow_html=True)
+                responses[f"{block_name}_{i}"] = st.select_slider(
+                    "Nota:",
+                    options=[1, 2, 3, 4, 5],
+                    value=3,
+                    key=f"{form_key}_{block_name}_{i}"
+                )
+        else:
+            for i, q in enumerate(questions):
+                st.markdown(f'<div class="question-text">{i+1}. {q}</div>', unsafe_allow_html=True)
+                responses[f"{block_name}_{i}"] = st.select_slider(
+                    "Nota:",
+                    options=[1, 2, 3, 4, 5],
+                    value=3,
+                    key=f"{form_key}_{block_name}_{i}"
+                )
         st.write("---")
     return responses
 
@@ -4192,6 +4219,26 @@ elif page == "LPTest":
                             <span style='color: #555;'>{bion_desc}</span>
                         </div>
                     """, unsafe_allow_html=True)
+                
+                if res.get('cloninger_scores'):
+                    cloninger_html = "<div style='background: linear-gradient(135deg, #18738c10, #d19f0910); padding: 1.2rem; border-radius: 10px; margin: 1rem 0; border: 1px solid #18738c20;'>"
+                    cloninger_html += "<strong style='color: #18738c; font-size: 1.1rem;'>Temperamento e Carater (Cloninger)</strong><br><br>"
+                    cloninger_html += "<div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem;'>"
+                    for code, data in res['cloninger_scores'].items():
+                        score = data['score']
+                        max_val = data['max']
+                        pct = round((score / max_val) * 100)
+                        level = "Alta" if pct >= 70 else ("Media" if pct >= 40 else "Baixa")
+                        level_color = "#18738c" if pct >= 70 else ("#d19f09" if pct >= 40 else "#888")
+                        cloninger_html += f"""<div style='background: white; padding: 0.6rem; border-radius: 6px; border-left: 3px solid {level_color};'>
+                            <strong style='color: #333; font-size: 0.85rem;'>{data['name']} ({code})</strong><br>
+                            <span style='color: {level_color}; font-weight: bold;'>{score}/{max_val} - {level}</span>
+                            <div style='background: #eee; border-radius: 4px; height: 6px; margin-top: 4px;'>
+                                <div style='background: {level_color}; width: {pct}%; height: 100%; border-radius: 4px;'></div>
+                            </div>
+                        </div>"""
+                    cloninger_html += "</div></div>"
+                    st.markdown(cloninger_html, unsafe_allow_html=True)
                 
                 st.markdown("---")
                 st.subheader("Laudo Completo - Analise Psicanalitica e de Lideranca")
