@@ -1,0 +1,47 @@
+Aja como um desenvolvedor Full Stack Sênior. Agora que você possui toda a base de conhecimento (PDFs de questões e arquivos .docx de laudos), implemente a lógica final da plataforma seguindo estas regras de negócio:
+
+1. Separação de Rotas (Líder vs. Equipe):
+
+Crie dois fluxos de avaliação distintos e independentes no banco de dados.
+
+Fluxo GESTOR: 70 questões do arquivo 'Assessment Psicanalítico do Líder (Versão Aprimorada).docx'.
+
+Fluxo EQUIPE: 72 questões do arquivo 'Assessment de Funcionários_ Arquétipos e Dinâmicas Grupais.docx'.
+
+2. Lógica de Match de Laudos (Cérebro do Sistema):
+
+Ao final de cada teste, calcule as pontuações e identifique o Arquétipo Dominante e o Secundário.
+
+Mapeamento Automático: O sistema deve buscar o arquivo .docx que corresponde à combinação das siglas dos arquétipos.
+
+Exemplo: Se o usuário for Gestor e o resultado for Buscador de Reconhecimento (BR) + Contenedor Empático (CE), o sistema deve ler o conteúdo do arquivo BRCE gestor.docx.
+
+Exemplo: Se o usuário for Equipe e o resultado for BR + CE, o sistema deve ler o conteúdo do arquivo BRCE funcionario.docx.
+
+Se houver arquivos duplicados na memória, utilize sempre a versão mais completa ou a última enviada.
+
+3. Inteligência Artificial (Gemini 2.0 Flash):
+
+Configure o prompt da IA para que, ao clicar em 'Gerar Laudo Completo', ela não use conhecimentos genéricos.
+
+Contexto: O input da IA deve ser o texto exato extraído do arquivo .docx mapeado no item anterior.
+
+Output: O laudo gerado deve ser uma análise profunda, de 5 a 8 parágrafos, mantendo o tom técnico e psicanalítico (referenciando Bion, Kernberg, Sinek e as dinâmicas de neurotransmissores citadas nos documentos).
+
+4. Design e Identidade Visual (Viviane Nishiura):
+
+Cores: Azure #18738c e Amarelo #d19f09.
+
+Fontes: Títulos em Open Sans e textos em Ubuntu.
+
+Menus: Renomeie para LPTest e LPChat.
+
+Home: Insira os Banners 1 e 2 e o vídeo do Vimeo (https://vimeo.com/1154882598).
+
+Rodapé: Adicione os links oficiais do LinkedIn e YouTube da LPS Hub.
+
+5. Página SOBRE:
+
+Substitua o conteúdo atual pela biografia da Viviane Nishiura e a explicação da Metodologia LPS conforme o documento de correções.
+
+Não comece sem confirmar que entendeu a lógica de mapeamento entre as siglas de resultado e os nomes dos arquivos .docx."

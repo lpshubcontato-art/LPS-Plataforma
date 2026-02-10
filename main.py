@@ -1500,6 +1500,163 @@ ASSESSMENT_QUESTIONS = {
     ]
 }
 
+EMPLOYEE_ASSESSMENT_QUESTIONS = {
+    "Bloco 1 – Idealista Exigente (Funcionario)": [
+        "Busco constantemente a excelencia em tudo que faco, mesmo que isso exija mais esforco da equipe.",
+        "Tenho dificuldade em aceitar trabalhos ou resultados que nao atendam aos meus altos padroes de qualidade.",
+        "Quando percebo um erro ou falha no grupo, sinto a necessidade de aponta-lo para que seja corrigido.",
+        "Frequentemente me vejo tentando inspirar a equipe a alcancar um objetivo maior ou uma visao mais ambiciosa.",
+        "Sinto-me frustrado(a) quando o grupo parece satisfeito com resultados medianos ou 'bons o suficiente'.",
+        "Acredito que a disciplina e o rigor sao fundamentais para o sucesso de qualquer projeto em equipe.",
+        "Se sinto que minhas ideias ou padroes nao sao valorizados, posso me tornar critico(a) em relacao ao progresso do grupo.",
+        "Prefiro trabalhar com pessoas que compartilham meu nivel de exigencia e comprometimento.",
+        "Em discussoes de grupo, foco mais nos padroes e na qualidade do que nas relacoes interpessoais.",
+        "As vezes, sinto que minhas criticas, mesmo bem-intencionadas, me isolam ou me tornam alvo de ressentimento no grupo.",
+        "Tenho uma visao clara de como as coisas deveriam ser feitas e tento guiar o grupo nessa direcao.",
+        "A mediocridade ou a falta de ambicao no grupo me incomodam profundamente."
+    ],
+    "Bloco 2 – Contenedor Empatico (Funcionario)": [
+        "Sou frequentemente procurado(a) por colegas para desabafar ou buscar apoio emocional.",
+        "Percebo facilmente o clima emocional do grupo e tento agir para torna-lo mais harmonioso.",
+        "Priorizo o bem-estar e as boas relacoes na equipe, mesmo que isso signifique ceder em alguns pontos.",
+        "Sinto-me responsavel por ajudar colegas que estao passando por dificuldades ou estresse.",
+        "Tenho facilidade em ouvir diferentes pontos de vista e mediar conflitos na equipe.",
+        "Em momentos de tensao no grupo, minha primeira reacao e tentar acalmar os animos.",
+        "As vezes, sinto que absorvo demais os problemas ou a negatividade dos outros no ambiente de trabalho.",
+        "Acredito que um ambiente de seguranca psicologica e essencial para a produtividade da equipe.",
+        "Consigo manter a calma e oferecer suporte mesmo quando o grupo esta sob pressao.",
+        "Preocupo-me mais em garantir que todos se sintam incluidos e ouvidos do que em impor minha propria opiniao.",
+        "Evito confrontos diretos e busco solucoes que agradem a maioria das pessoas no grupo.",
+        "Sinto-me energizado(a) ao ajudar a equipe a superar desafios emocionais ou relacionais."
+    ],
+    "Bloco 3 – Buscador de Reconhecimento (Funcionario)": [
+        "Gosto quando minhas contribuicoes sao publicamente reconhecidas pelo lider ou pela equipe.",
+        "Busco oportunidades para apresentar ideias ou liderar iniciativas que me coloquem em evidencia.",
+        "Sinto-me motivado(a) por elogios e pela admiracao dos meus colegas e superiores.",
+        "Comparo meu desempenho com o dos outros e me esforco para ser um dos melhores da equipe.",
+        "Fico desapontado(a) ou ressentido(a) quando sinto que meu trabalho nao recebe a atencao que merece.",
+        "Tenho facilidade em 'vender' minhas ideias e influenciar a opiniao do grupo a meu favor.",
+        "As vezes, posso exagerar um pouco minhas conquistas para causar uma boa impressao.",
+        "A ideia de passar despercebido(a) ou ser apenas 'mais um' no grupo me incomoda.",
+        "Se sinto que outro colega esta recebendo mais destaque, posso sentir inveja ou tentar minimizar suas conquistas.",
+        "Acredito que minha presenca e minhas ideias agregam um valor especial a equipe.",
+        "Em reunioes, faco questao de participar ativamente para que minhas opinioes sejam ouvidas.",
+        "Ja fui criticado(a) por parecer buscar demais os holofotes ou por ser competitivo(a) demais."
+    ],
+    "Bloco 4 – Estruturador Cauteloso (Funcionario)": [
+        "Sinto-me mais confortavel quando ha regras claras, processos definidos e um plano bem estruturado.",
+        "Preocupo-me com os riscos e prefiro analisar cuidadosamente antes de tomar decisoes ou apoiar novas ideias.",
+        "Tenho o habito de verificar se os procedimentos estao sendo seguidos corretamente pela equipe.",
+        "Resisto a mudancas repentinas ou a abordagens que me parecam desorganizadas ou impulsivas.",
+        "Prefiro metodos comprovados e seguros a experimentar solucoes inovadoras, mas incertas.",
+        "Em situacoes de caos ou incerteza no grupo, tento trazer ordem e estrutura para a discussao.",
+        "A falta de planejamento ou a ambiguidade nas tarefas me gera ansiedade.",
+        "Valorizo a estabilidade e a previsibilidade no ambiente de trabalho.",
+        "Quando surgem conflitos, foco em encontrar solucoes praticas e racionais, evitando discussoes emocionais.",
+        "Sou detalhista e atento(a) a possiveis problemas ou inconsistencias nos planos da equipe.",
+        "Posso ser visto(a) como alguem resistente a novas ideias ou que 'coloca dificuldade' em propostas mais ousadas.",
+        "Acredito que seguir as regras e a melhor forma de evitar problemas e garantir a eficiencia do grupo."
+    ],
+    "Bloco 5 – Relacional Reativo (Funcionario)": [
+        "Sou muito sensivel ao clima interpessoal e percebo facilmente quando ha tensoes nao ditas no grupo.",
+        "Preocupo-me bastante com o que os outros pensam de mim e evito fazer coisas que possam desagradar.",
+        "Tenho dificuldade em dizer 'nao' ou em expressar opinioes que possam gerar conflito.",
+        "Adapto meu comportamento para me encaixar melhor no grupo ou para evitar ser excluido(a).",
+        "Em situacoes de conflito, tendo a ficar quieto(a) ou a concordar com a maioria para evitar problemas.",
+        "Sinto-me desconfortavel ou ansioso(a) quando percebo criticas ou desaprovacao, mesmo que indiretas.",
+        "Ja me senti injusticado(a) ou culpabilizado(a) por problemas do grupo, mesmo sem ter responsabilidade direta.",
+        "Prefiro seguir o fluxo do grupo a tentar impor minhas proprias ideias ou vontades.",
+        "Se me sinto ameacado(a) ou desvalorizado(a), posso me retrair ou expressar meu descontentamento de forma indireta (ex: fofoca, atrasos).",
+        "Busco constantemente a aprovacao e a aceitacao dos meus colegas e do meu lider.",
+        "Tenho medo de ser mal interpretado(a) ou de causar uma ma impressao no grupo.",
+        "As vezes, sinto que minhas proprias necessidades ficam em segundo plano para manter a harmonia do grupo."
+    ],
+    "Bloco 6 – Observador Consciente (Funcionario)": [
+        "Prefiro analisar as situacoes de forma logica e objetiva antes de me envolver emocionalmente.",
+        "Mantenho um certo distanciamento emocional para conseguir avaliar melhor as dinamicas do grupo.",
+        "Frequentemente ofereco insights ou analises que ajudam o grupo a entender melhor um problema.",
+        "Tenho dificuldade em lidar com explosoes emocionais ou dramas interpessoais no ambiente de trabalho.",
+        "Baseio minhas opinioes e decisoes em fatos e dados, mais do que em intuicao ou sentimentos.",
+        "Posso ser percebido(a) como alguem frio(a) ou indiferente as questoes emocionais do grupo.",
+        "Em discussoes acaloradas, costumo observar mais do que participar ativamente.",
+        "Acredito que a logica e a razao sao as melhores ferramentas para resolver os problemas da equipe.",
+        "Avalio a coerencia e a logica dos argumentos dos outros, apontando falhas quando as percebo.",
+        "Nao me deixo levar facilmente pelo 'entusiasmo' ou pela 'pressao' do grupo.",
+        "Meu distanciamento as vezes e interpretado como falta de comprometimento ou critica velada.",
+        "Busco entender as causas raizes dos problemas do grupo, em vez de focar apenas nos sintomas."
+    ],
+    "Bloco 7 – Executor Decidido (Funcionario)": [
+        "Em vez de ficar analisando, prefiro partir logo para a acao e corrigir o curso se for preciso.",
+        "Quando ha indecisao na equipe, eu tomo a frente e dou a direcao.",
+        "Sinto-me mais motivado(a) quando tenho autonomia total para decidir o como da execucao.",
+        "Tenho facilidade em tomar decisoes rapidas, mesmo com informacoes incompletas.",
+        "Em uma crise, meu foco principal e resolver o problema e garantir o resultado, deixando as emocoes para depois.",
+        "Sou visto(a) como alguem assertivo(a) e direto(a) na comunicacao, sem rodeios.",
+        "A lentidao ou a passividade de um colega me irritam profundamente e me fazem querer agir por ele.",
+        "Priorizo o resultado final e o cumprimento da meta acima de quaisquer burocracias ou detalhes.",
+        "Nao tenho medo de confrontar um problema ou uma pessoa se isso for necessario para alcancar o objetivo.",
+        "Sinto-me energizado(a) pela pressao e pelos desafios que exigem uma reacao imediata.",
+        "Minha principal contribuicao para a equipe e a capacidade de fazer as coisas acontecerem.",
+        "Acredito que o tempo e um recurso valioso e me esforco para manter um alto senso de urgencia."
+    ],
+    "Bloco 8 – Temperamento e Carater (Cloninger Funcionario)": [
+        "Busco frequentemente experiencias novas e estimulos variados (BN).",
+        "Sinto ansiedade em situacoes de risco ou desconhecidas (ED).",
+        "Procuro recompensas externas e aceitacao social em minhas decisoes (DR).",
+        "Persevero em tarefas mesmo quando dificeis ou frustrantes (P).",
+        "Estabeleco metas claras e sigo principios proprios de forma consistente (AD).",
+        "Colaboro com os outros e sou compreensivo(a) mesmo em conflitos (C).",
+        "Sinto conexao com algo maior ou proposito transcendente (AT).",
+        "Evito riscos desnecessarios mesmo que perca oportunidades (ED).",
+        "Procuro desafios e novas experiencias mesmo que envolvam riscos (BN).",
+        "Tenho dificuldade em cooperar quando meus objetivos individuais estao em jogo (C).",
+        "Ajusto meu comportamento para agradar os outros ou obter aprovacao (DR).",
+        "Sigo minhas conviccoes pessoais mesmo quando nao reconhecido pelos outros (AD).",
+        "Sou flexivel e me adapto a mudancas e incertezas (P).",
+        "Sinto que minha vida tem um sentido maior ou espiritual (AT)."
+    ]
+}
+
+EMPLOYEE_BLOCK_TO_PROFILE = {
+    "Bloco 1 – Idealista Exigente (Funcionario)": "O Idealista Exigente",
+    "Bloco 2 – Contenedor Empatico (Funcionario)": "O Contenedor Empatico",
+    "Bloco 3 – Buscador de Reconhecimento (Funcionario)": "O Buscador de Reconhecimento",
+    "Bloco 4 – Estruturador Cauteloso (Funcionario)": "O Estruturador Cauteloso",
+    "Bloco 5 – Relacional Reativo (Funcionario)": "O Relacional Reativo",
+    "Bloco 6 – Observador Consciente (Funcionario)": "O Observador Consciente",
+    "Bloco 7 – Executor Decidido (Funcionario)": "O Executor Decidido"
+}
+
+EMPLOYEE_BLOCK_SHORT_NAMES = {
+    "Bloco 1 – Idealista Exigente (Funcionario)": "Autoridade",
+    "Bloco 2 – Contenedor Empatico (Funcionario)": "Contencao",
+    "Bloco 3 – Buscador de Reconhecimento (Funcionario)": "Narcisismo",
+    "Bloco 4 – Estruturador Cauteloso (Funcionario)": "Estrutura",
+    "Bloco 5 – Relacional Reativo (Funcionario)": "Relacional",
+    "Bloco 6 – Observador Consciente (Funcionario)": "Observacao",
+    "Bloco 7 – Executor Decidido (Funcionario)": "Execucao"
+}
+
+EMPLOYEE_CLONINGER_SUBDIMENSIONS = {
+    "BN": {"name": "Busca de Novidade", "questions": [0, 8]},
+    "ED": {"name": "Evitacao de Dano", "questions": [1, 7]},
+    "DR": {"name": "Dependencia de Recompensa", "questions": [2, 10]},
+    "P": {"name": "Persistencia", "questions": [3, 12]},
+    "AD": {"name": "Autodirecao", "questions": [4, 11]},
+    "C": {"name": "Cooperatividade", "questions": [5, 9]},
+    "AT": {"name": "Autotranscendencia", "questions": [6, 13]}
+}
+
+ARCHETYPE_TO_SIGLA = {
+    "O Idealista Exigente": "IE",
+    "O Contenedor Empatico": "CE",
+    "O Buscador de Reconhecimento": "BR",
+    "O Estruturador Cauteloso": "EC",
+    "O Relacional Reativo": "RR",
+    "O Observador Consciente": "OC",
+    "O Executor Decidido": "ED"
+}
+
 CLONINGER_SUBDIMENSIONS = {
     "BN": {"name": "Busca de Novidade", "questions": [0, 1]},
     "ED": {"name": "Evitacao de Dano", "questions": [2, 3]},
@@ -1573,6 +1730,49 @@ BION_DESCRIPTIONS = {
     "Lider de Luta-Fuga": "Reativo a ameacas reais ou imaginarias. Mobiliza o grupo para atacar ou fugir.",
     "Sabotador Silencioso": "Resiste passivamente as mudancas. Cumpre tarefas sem engajamento emocional.",
     "Harmonizador Ansioso": "Evita conflitos a todo custo. Busca manter harmonia mesmo sacrificando a autenticidade.",
+    "Neutro/Adaptavel": "Perfil equilibrado. Adapta-se as necessidades do grupo sem assumir papel fixo."
+}
+
+def classify_employee_bion_role(block_sums):
+    """
+    Classifica o papel grupal do funcionario segundo Bion (max 60 pontos por bloco, 12 questoes x 5):
+    5 papeis grupais para funcionarios:
+    - Bode Expiatorio: Alto Relacional + Baixa Contencao (absorve culpa do grupo)
+    - Sabotador: Alta Estrutura + Baixa Observacao (resiste passivamente)
+    - Lider Informal: Alto Narcisismo + Alta Execucao (assume lideranca sem cargo)
+    - Patrulheiro: Alta Autoridade + Alta Observacao (vigia normas e comportamentos)
+    - Apaziguador: Alta Contencao + Alto Relacional (evita conflitos a todo custo)
+    """
+    autoridade = block_sums.get("Autoridade", 30)
+    contencao = block_sums.get("Contencao", 30)
+    narcisismo = block_sums.get("Narcisismo", 30)
+    estrutura = block_sums.get("Estrutura", 30)
+    relacional = block_sums.get("Relacional", 30)
+    observacao = block_sums.get("Observacao", 30)
+    execucao = block_sums.get("Execucao", 30)
+    
+    high = 42
+    low = 30
+    
+    if contencao >= high and relacional >= high:
+        return "Apaziguador"
+    elif autoridade >= high and observacao >= high:
+        return "Patrulheiro"
+    elif relacional >= high and contencao <= low:
+        return "Bode Expiatorio"
+    elif narcisismo >= high and execucao >= high:
+        return "Lider Informal"
+    elif estrutura >= high and observacao <= low:
+        return "Sabotador"
+    else:
+        return "Neutro/Adaptavel"
+
+EMPLOYEE_BION_DESCRIPTIONS = {
+    "Bode Expiatorio": "Absorve as projecoes negativas do grupo. Frequentemente culpado por falhas que sao sistemicas.",
+    "Sabotador": "Resiste passivamente as mudancas e decisoes. Cumpre tarefas sem engajamento real.",
+    "Lider Informal": "Assume papel de lideranca sem ter o cargo formal. Mobiliza o grupo por carisma ou competencia.",
+    "Patrulheiro": "Vigia as normas e comportamentos do grupo. Aponta desvios e cobra conformidade.",
+    "Apaziguador": "Evita conflitos a todo custo. Busca manter a harmonia mesmo sacrificando a autenticidade.",
     "Neutro/Adaptavel": "Perfil equilibrado. Adapta-se as necessidades do grupo sem assumir papel fixo."
 }
 
@@ -2311,15 +2511,22 @@ page = st.session_state.page
 # Assessment Form Component
 def render_assessment_form(form_key, is_employee=False):
     responses = {}
-    cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger)"
-    for block_name, questions in ASSESSMENT_QUESTIONS.items():
+    if is_employee:
+        questions_dict = EMPLOYEE_ASSESSMENT_QUESTIONS
+        cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger Funcionario)"
+        cloninger_dims = EMPLOYEE_CLONINGER_SUBDIMENSIONS
+    else:
+        questions_dict = ASSESSMENT_QUESTIONS
+        cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger)"
+        cloninger_dims = CLONINGER_SUBDIMENSIONS
+    for block_name, questions in questions_dict.items():
         st.markdown(f"### {block_name}")
         if block_name == cloninger_block:
             st.markdown("""<p style='color: #666; font-size: 0.9rem; margin-bottom: 1rem;'>
                 Este bloco avalia 7 subdimensoes de temperamento e carater segundo o modelo de Cloninger. 
                 Cada subdimensao possui 2 questoes (pontuacao maxima: 10 por subdimensao).</p>""", unsafe_allow_html=True)
             question_to_dim = {}
-            for code, info in CLONINGER_SUBDIMENSIONS.items():
+            for code, info in cloninger_dims.items():
                 for q_idx in info["questions"]:
                     question_to_dim[q_idx] = f"{info['name']} ({code})"
             shown_dims = set()
@@ -2906,7 +3113,51 @@ def generate_radar_chart(block_sums, profile_name=""):
     buffer.seek(0)
     return buffer.getvalue()
 
-def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_name=""):
+def extract_docx_profile_text(dominant, secondary, respondent_type="gestor"):
+    """Extract profile text from matching .docx file in attached_assets.
+    
+    Args:
+        dominant: Name of dominant archetype (e.g., "O Idealista Exigente")
+        secondary: Name of secondary archetype
+        respondent_type: "gestor" or "funcionario"
+    
+    Returns:
+        Extracted text from .docx file, or None if not found
+    """
+    try:
+        from docx import Document as DocxDocument
+        import glob as glob_module
+        
+        dom_sigla = ARCHETYPE_TO_SIGLA.get(dominant, "")
+        sec_sigla = ARCHETYPE_TO_SIGLA.get(secondary, "")
+        
+        if not dom_sigla or not sec_sigla:
+            return None
+        
+        combo = f"{dom_sigla}{sec_sigla}"
+        pattern = f"attached_assets/{combo}_{respondent_type}_*.docx"
+        matches = glob_module.glob(pattern)
+        
+        if not matches:
+            pattern_alt = f"attached_assets/{sec_sigla}{dom_sigla}_{respondent_type}_*.docx"
+            matches = glob_module.glob(pattern_alt)
+        
+        if not matches:
+            return None
+        
+        doc = DocxDocument(matches[0])
+        full_text = []
+        for para in doc.paragraphs:
+            text = para.text.strip()
+            if text:
+                full_text.append(text)
+        
+        return "\n".join(full_text)
+    except Exception as e:
+        print(f"[DOCX] Error extracting profile: {e}")
+        return None
+
+def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_name="", profile_text=None, respondent_type="gestor"):
     """Generate a deep psychoanalytic leadership analysis using Gemini AI."""
     try:
         api_key = st.secrets.get("GOOGLE_API_KEY", os.environ.get("GOOGLE_API_KEY", ""))
@@ -2925,23 +3176,39 @@ def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_nam
             ("Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego", "Autoconsciencia/Mentalizacao"),
             ("Bloco 7 – Acao, Urgencia e Foco na Entrega", "Execucao/Urgencia"),
         ]
+        max_score = 60 if respondent_type == "funcionario" else 40
         for full_name, short_name in block_keys:
             score = block_sums.get(full_name, 20)
-            pct = round((score / 40) * 100)
-            block_details += f"- {short_name}: {score}/40 ({pct}%)\n"
+            pct = round((score / max_score) * 100)
+            block_details += f"- {short_name}: {score}/{max_score} ({pct}%)\n"
+        
+        profile_context = ""
+        if profile_text:
+            profile_context = f"""
+
+PERFIL DETALHADO EXTRAIDO DA BASE DE CONHECIMENTO:
+{profile_text}
+
+IMPORTANTE: Use o texto do perfil acima como BASE PRINCIPAL para a analise. 
+Expanda e aprofunde os pontos mencionados no perfil com suas referencias teoricas."""
+        
+        respondent_label = "funcionario/membro de equipe" if respondent_type == "funcionario" else "Lider avaliado"
+        max_label = f"maximo {max_score} pontos cada"
         
         prompt = f"""Voce e uma consultora especialista em Psicanalise e Neurociencia aplicada a Lideranca, 
 com formacao baseada em Kernberg, Bion, Sinek e Neurociencia organizacional.
 
 Gere uma ANALISE PROFUNDA PSICANALITICA E DE LIDERANCA para o seguinte perfil:
 
-Nome: {respondent_name if respondent_name else 'Lider avaliado'}
+Nome: {respondent_name if respondent_name else respondent_label}
+Tipo de Respondente: {respondent_type}
 Perfil Dominante: {dominant}
 Perfil Secundario: {secondary}
 Papel de Bion: {bion_role}
 
-Pontuacoes por eixo (maximo 40 pontos cada, 8 questoes x 5 pontos):
+Pontuacoes por eixo ({max_label}):
 {block_details}
+{profile_context}
 
 Os 7 arquetipos possiveis sao:
 - O Idealista Exigente (Superego/Autoimagem): pressao interna por excelencia
@@ -2998,6 +3265,25 @@ def save_assessment_responses(respondent_id, respondent_type, responses):
     conn.commit()
     conn.close()
 
+def save_employee_assessment_responses(respondent_id, respondent_type, responses):
+    """Save each individual employee response to the database."""
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    
+    for block_name, questions in EMPLOYEE_ASSESSMENT_QUESTIONS.items():
+        for q_idx, question_text in enumerate(questions):
+            response_key = f"{block_name}_{q_idx}"
+            response_value = responses.get(response_key, 3)
+            
+            response_id = str(uuid.uuid4())
+            c.execute("""INSERT INTO assessment_responses 
+                        (id, respondent_id, respondent_type, block_name, question_index, question_text, response_value)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                     (response_id, respondent_id, respondent_type, block_name, q_idx, question_text, response_value))
+    
+    conn.commit()
+    conn.close()
+
 def calculate_cloninger_scores(responses):
     """Calculate Cloninger temperament subdimension scores from Block 8."""
     cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger)"
@@ -3021,11 +3307,20 @@ def calculate_profile(responses):
     dominant_name = BLOCK_TO_PROFILE[dom_key]
     secondary_name = BLOCK_TO_PROFILE[sec_key]
     
-    details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
-        "forcas": f"Combinacao de {dominant_name} e {secondary_name}.",
-        "riscos": "Necessidade de vigilia sobre dinamicas da equipe.",
-        "recomendacoes": "Agende mentoria personalizada."
-    })
+    profile_text = extract_docx_profile_text(dominant_name, secondary_name, "gestor")
+    if profile_text:
+        details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
+            "forcas": f"Combinacao de {dominant_name} e {secondary_name}.",
+            "riscos": "Necessidade de vigilia sobre dinamicas da equipe.",
+            "recomendacoes": "Agende mentoria personalizada."
+        })
+        details["profile_text"] = profile_text
+    else:
+        details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
+            "forcas": f"Combinacao de {dominant_name} e {secondary_name}.",
+            "riscos": "Necessidade de vigilia sobre dinamicas da equipe.",
+            "recomendacoes": "Agende mentoria personalizada."
+        })
     
     short_block_sums = {}
     for full_name, value in archetype_blocks.items():
@@ -3035,6 +3330,52 @@ def calculate_profile(responses):
     bion_role = classify_bion_role(short_block_sums)
     
     cloninger_scores = calculate_cloninger_scores(responses)
+    
+    return dominant_name, secondary_name, details, bion_role, block_sums, cloninger_scores
+
+def calculate_employee_profile(responses):
+    """Calculate employee profile using employee-specific questions and Bion roles."""
+    block_sums = {}
+    for block, questions in EMPLOYEE_ASSESSMENT_QUESTIONS.items():
+        block_sums[block] = sum(responses.get(f"{block}_{i}", 3) for i in range(len(questions)))
+    
+    archetype_blocks = {k: v for k, v in block_sums.items() if k in EMPLOYEE_BLOCK_TO_PROFILE}
+    
+    sorted_blocks = sorted(archetype_blocks.items(), key=lambda x: x[1], reverse=True)
+    dom_key = sorted_blocks[0][0]
+    sec_key = sorted_blocks[1][0]
+    
+    dominant_name = EMPLOYEE_BLOCK_TO_PROFILE[dom_key]
+    secondary_name = EMPLOYEE_BLOCK_TO_PROFILE[sec_key]
+    
+    profile_text = extract_docx_profile_text(dominant_name, secondary_name, "funcionario")
+    
+    if profile_text:
+        details = {
+            "forcas": profile_text,
+            "riscos": "",
+            "recomendacoes": "",
+            "profile_text": profile_text
+        }
+    else:
+        details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
+            "forcas": f"Combinacao de {dominant_name} e {secondary_name}.",
+            "riscos": "Necessidade de vigilia sobre dinamicas da equipe.",
+            "recomendacoes": "Agende mentoria personalizada."
+        })
+    
+    short_block_sums = {}
+    for full_name, value in archetype_blocks.items():
+        short_name = EMPLOYEE_BLOCK_SHORT_NAMES.get(full_name, full_name)
+        short_block_sums[short_name] = value
+    
+    bion_role = classify_employee_bion_role(short_block_sums)
+    
+    cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger Funcionario)"
+    cloninger_scores = {}
+    for code, info in EMPLOYEE_CLONINGER_SUBDIMENSIONS.items():
+        total = sum(responses.get(f"{cloninger_block}_{q}", 3) for q in info["questions"])
+        cloninger_scores[code] = {"name": info["name"], "score": total, "max": 10}
     
     return dominant_name, secondary_name, details, bion_role, block_sums, cloninger_scores
 
@@ -4258,9 +4599,10 @@ elif page == "LPTest":
                 elif st.session_state.get('laudo_requested', False):
                     with st.spinner("Gerando laudo completo com analise psicanalitica e de neurociencia..."):
                         manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
+                        profile_text = res['details'].get('profile_text') if isinstance(res['details'], dict) else None
                         laudo_text, error = generate_ai_laudo(
                             res['dominant'], res['secondary'], res['bion_role'],
-                            res['block_sums'], manager_name
+                            res['block_sums'], manager_name, profile_text=profile_text, respondent_type="gestor"
                         )
                         if laudo_text:
                             st.session_state.ai_laudo = laudo_text
@@ -4563,7 +4905,7 @@ elif page == "EmployeeAssessment":
                 consent = True  # Already consented
             
             st.write("---")
-            responses = render_assessment_form("employee")
+            responses = render_assessment_form("employee", is_employee=True)
             submit = st.form_submit_button("Concluir Avaliacao", use_container_width=True)
             
             if submit:
@@ -4578,12 +4920,12 @@ elif page == "EmployeeAssessment":
                         save_employee_consent(token)
                     
                     # Calculate and save results
-                    dominant, secondary, details, bion_role, block_sums, cloninger_scores = calculate_profile(responses)
+                    dominant, secondary, details, bion_role, block_sums, cloninger_scores = calculate_employee_profile(responses)
                     save_employee_result(token, name, email, dominant, secondary, details, bion_role)
                     
                     # Save individual responses for future AI analysis
                     employee_id = employee[0]  # Get employee ID
-                    save_assessment_responses(employee_id, "employee", responses)
+                    save_employee_assessment_responses(employee_id, "employee", responses)
                     
                     # Send email notifications (if SMTP configured)
                     # Get manager info for notification

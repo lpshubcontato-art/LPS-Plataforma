@@ -8,3 +8,4 @@ bcrypt
 python-docx
 google-genai
 sift-stack-py
+python-docx
