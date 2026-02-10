@@ -892,6 +892,53 @@ def get_admin_monitoring_data(admin_user_id):
     conn.close()
     return results
 
+def get_all_leaders_results():
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""
+        SELECT 
+            m.id as manager_id,
+            m.user_id,
+            u.name,
+            u.email,
+            m.profile_dominant,
+            m.profile_secondary,
+            m.profile_details,
+            m.created_at
+        FROM managers m
+        JOIN users u ON m.user_id = u.id
+        WHERE m.profile_dominant IS NOT NULL AND m.profile_dominant != ''
+        ORDER BY m.created_at DESC
+    """)
+    results = c.fetchall()
+    conn.close()
+    return results
+
+def get_all_employees_results():
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""
+        SELECT 
+            e.id as employee_id,
+            e.name,
+            e.email,
+            e.profile_dominant,
+            e.profile_secondary,
+            e.bion_role,
+            e.profile_details,
+            e.completed,
+            e.manager_id,
+            m.name as manager_name,
+            e.created_at
+        FROM employees e
+        LEFT JOIN managers m ON e.manager_id = m.id
+        WHERE e.completed = 1 AND e.profile_dominant IS NOT NULL AND e.profile_dominant != ''
+        ORDER BY e.created_at DESC
+    """)
+    results = c.fetchall()
+    conn.close()
+    return results
+
 def get_manager_profile_by_user(user_id):
     conn = get_db()
     c = conn.cursor()
@@ -6427,181 +6474,334 @@ elif page == "GestaoLPS":
         
         with tab_monitoramento:
             st.markdown("<div class='gestao-card'><h3>Monitoramento em Tempo Real</h3>", unsafe_allow_html=True)
-            st.markdown("<p style='color: #666; font-size: 0.9rem;'>Acompanhe o status de cada colaborador convidado.</p>", unsafe_allow_html=True)
+            st.markdown("<p style='color: #666; font-size: 0.9rem;'>Acompanhe os resultados de todos os assessments realizados na plataforma.</p>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
             
+            leaders_data = get_all_leaders_results()
+            employees_data = get_all_employees_results()
             monitoring_data = get_admin_monitoring_data(user_id)
             
-            if monitoring_data:
-                header_cols = st.columns([2, 2, 1, 1, 1, 1])
-                with header_cols[0]:
+            st.markdown("""
+                <div class='gestao-card'>
+                    <h3 style='color: #18738c; border-bottom: 2px solid #d19f09; padding-bottom: 0.5rem; margin-bottom: 1rem;'>
+                        Tabela 1: Resultados do LPTest Lider
+                    </h3>
+                    <p style='color: #666; font-size: 0.85rem; margin-bottom: 1rem;'>
+                        Gestores que completaram o assessment de lideranca.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            if leaders_data:
+                ldr_header = st.columns([2, 2, 2, 2, 2])
+                with ldr_header[0]:
                     st.markdown("<strong style='color: #18738c;'>Nome</strong>", unsafe_allow_html=True)
-                with header_cols[1]:
+                with ldr_header[1]:
                     st.markdown("<strong style='color: #18738c;'>E-mail</strong>", unsafe_allow_html=True)
-                with header_cols[2]:
-                    st.markdown("<strong style='color: #18738c;'>Tipo</strong>", unsafe_allow_html=True)
-                with header_cols[3]:
-                    st.markdown("<strong style='color: #18738c;'>Status</strong>", unsafe_allow_html=True)
-                with header_cols[4]:
-                    st.markdown("<strong style='color: #18738c;'>Data</strong>", unsafe_allow_html=True)
-                with header_cols[5]:
-                    st.markdown("<strong style='color: #18738c;'>Acao</strong>", unsafe_allow_html=True)
+                with ldr_header[2]:
+                    st.markdown("<strong style='color: #18738c;'>Perfil Dominante</strong>", unsafe_allow_html=True)
+                with ldr_header[3]:
+                    st.markdown("<strong style='color: #18738c;'>Perfil Secundario</strong>", unsafe_allow_html=True)
+                with ldr_header[4]:
+                    st.markdown("<strong style='color: #18738c;'>Acoes</strong>", unsafe_allow_html=True)
                 
                 st.markdown("<hr style='margin: 0.5rem 0; border-color: #eee;'>", unsafe_allow_html=True)
                 
-                csv_export_data = "Nome,E-mail,Tipo,Status,Data Cadastro,Data Conclusao\n"
+                csv_leaders = "Nome,E-mail,Perfil Dominante,Perfil Secundario,Papel Bion,Data\n"
                 
-                for row in monitoring_data:
-                    m_name = row[0] or "-"
-                    m_email = row[1] or "-"
-                    m_type = "Equipe" if row[2] == "equipe" else "Lider"
-                    m_status = row[3]
-                    m_completed = row[4][:16] if row[4] else "-"
-                    m_created = row[5][:16] if row[5] else "-"
-                    m_auth_id = row[6]
+                for ldr in leaders_data:
+                    l_mgr_id = ldr[0]
+                    l_user_id = ldr[1]
+                    l_name = ldr[2] or "-"
+                    l_email = ldr[3] or "-"
+                    l_dominant = ldr[4] or "-"
+                    l_secondary = ldr[5] or "-"
+                    l_details = json.loads(ldr[6]) if ldr[6] else {}
+                    l_bion = l_details.get("bion_role", "-") if isinstance(l_details, dict) else "-"
+                    l_date = ldr[7][:16] if ldr[7] else "-"
                     
-                    status_display = {
-                        "pendente": "Nao Iniciou",
-                        "em_andamento": "Em Andamento",
-                        "concluido": "Concluido"
-                    }.get(m_status, m_status)
+                    csv_leaders += f'"{l_name}","{l_email}","{l_dominant}","{l_secondary}","{l_bion}","{l_date}"\n'
                     
-                    status_class = {
-                        "pendente": "status-pendente",
-                        "em_andamento": "status-andamento",
-                        "concluido": "status-concluido"
-                    }.get(m_status, "status-pendente")
-                    
-                    date_display = m_completed if m_status == "concluido" else m_created
-                    
-                    csv_export_data += f'"{m_name}","{m_email}","{m_type}","{status_display}","{m_created}","{m_completed}"\n'
-                    
-                    data_cols = st.columns([2, 2, 1, 1, 1, 1])
-                    with data_cols[0]:
-                        st.write(m_name)
-                    with data_cols[1]:
-                        st.write(m_email)
-                    with data_cols[2]:
-                        st.write(m_type)
-                    with data_cols[3]:
-                        st.markdown(f"<span class='status-badge {status_class}'>{status_display}</span>", unsafe_allow_html=True)
-                    with data_cols[4]:
-                        st.write(date_display)
-                    with data_cols[5]:
-                        if m_status == "concluido":
-                            if st.button("Ver Laudo", key=f"ver_laudo_{m_auth_id}"):
-                                st.session_state[f"show_laudo_modal_{m_auth_id}"] = True
+                    ldr_cols = st.columns([2, 2, 2, 2, 2])
+                    with ldr_cols[0]:
+                        st.write(l_name)
+                    with ldr_cols[1]:
+                        st.write(l_email)
+                    with ldr_cols[2]:
+                        st.markdown(f"<span class='status-badge status-concluido'>{l_dominant}</span>", unsafe_allow_html=True)
+                    with ldr_cols[3]:
+                        st.write(l_secondary)
+                    with ldr_cols[4]:
+                        btn_col1, btn_col2 = st.columns(2)
+                        with btn_col1:
+                            if st.button("Visualizar Laudo", key=f"ver_laudo_ldr_{l_mgr_id}", use_container_width=True):
+                                st.session_state[f"show_laudo_ldr_{l_mgr_id}"] = True
                                 st.rerun()
-                        else:
-                            st.write("-")
+                        with btn_col2:
+                            laudo_key_ldr = f"admin_laudo_ldr_{l_mgr_id}"
+                            if st.session_state.get(laudo_key_ldr):
+                                laudo_text_ldr = st.session_state[laudo_key_ldr]
+                                if not laudo_text_ldr.startswith("__ERROR__"):
+                                    pdf_data_ldr = generate_laudo_pdf(
+                                        laudo_text_ldr, l_name,
+                                        l_dominant, l_secondary,
+                                        l_bion, respondent_type="gestor"
+                                    )
+                                    st.download_button(
+                                        "Baixar PDF",
+                                        data=pdf_data_ldr,
+                                        file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
+                                        mime="application/pdf",
+                                        key=f"dl_laudo_ldr_{l_mgr_id}",
+                                        use_container_width=True
+                                    )
                     
-                    if st.session_state.get(f"show_laudo_modal_{m_auth_id}"):
-                        conn = get_db()
-                        c = conn.cursor()
-                        c.execute("""SELECT e.id, e.name, e.email, e.profile_dominant, e.profile_secondary, 
-                                     e.bion_role, e.profile_details
-                                     FROM employees e WHERE e.email = ?""", (m_email.lower().strip(),))
-                        emp_result = c.fetchone()
-                        conn.close()
-                        
-                        if emp_result:
-                            with st.expander(f"Laudo de {m_name}", expanded=True):
-                                st.markdown(f"""
-                                    <div style='background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;'>
-                                        <strong>Nome:</strong> {emp_result[1]}<br>
-                                        <strong>Perfil:</strong> {emp_result[3]} + {emp_result[4]}<br>
-                                        <strong>Papel de Bion:</strong> {emp_result[5]}
-                                    </div>
-                                """, unsafe_allow_html=True)
-                                
-                                laudo_key = f"admin_laudo_{m_auth_id}"
-                                if st.session_state.get(laudo_key):
-                                    laudo_text = st.session_state[laudo_key]
-                                    if not laudo_text.startswith("__ERROR__"):
-                                        laudo_secs = parse_laudo_sections(laudo_text)
-                                        if len(laudo_secs) > 1:
-                                            for sec_title in LAUDO_SECTIONS:
-                                                sec_content = laudo_secs.get(sec_title, "")
-                                                if sec_content:
-                                                    with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
-                                                        st.markdown(sec_content)
-                                        else:
-                                            st.markdown(laudo_text)
-                                        
-                                        pdf_data = generate_laudo_pdf(
-                                            laudo_text, emp_result[1],
-                                            emp_result[3] or "", emp_result[4] or "",
-                                            emp_result[5] or "", respondent_type="funcionario"
-                                        )
-                                        st.download_button(
-                                            "Baixar Laudo PDF",
-                                            data=pdf_data,
-                                            file_name=f"laudo_{m_name.replace(' ','_').lower()}.pdf",
-                                            mime="application/pdf",
-                                            key=f"dl_admin_laudo_{m_auth_id}",
-                                            use_container_width=True
-                                        )
+                    if st.session_state.get(f"show_laudo_ldr_{l_mgr_id}"):
+                        with st.expander(f"Laudo de Lideranca - {l_name}", expanded=True):
+                            st.markdown(f"""
+                                <div style='background: #f0f7fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #18738c;'>
+                                    <strong>Nome:</strong> {l_name}<br>
+                                    <strong>Perfil:</strong> {l_dominant} + {l_secondary}<br>
+                                    <strong>Papel de Bion:</strong> {l_bion}
+                                </div>
+                            """, unsafe_allow_html=True)
+                            
+                            laudo_key_ldr = f"admin_laudo_ldr_{l_mgr_id}"
+                            if st.session_state.get(laudo_key_ldr):
+                                laudo_text_ldr = st.session_state[laudo_key_ldr]
+                                if not laudo_text_ldr.startswith("__ERROR__"):
+                                    laudo_secs = parse_laudo_sections(laudo_text_ldr)
+                                    if len(laudo_secs) > 1:
+                                        for sec_title in LAUDO_SECTIONS:
+                                            sec_content = laudo_secs.get(sec_title, "")
+                                            if sec_content:
+                                                with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                                    st.markdown(sec_content)
                                     else:
-                                        st.warning(laudo_text.replace("__ERROR__:", ""))
-                                
-                                if st.button("Gerar Laudo", key=f"gen_admin_laudo_{m_auth_id}", use_container_width=True, type="primary"):
-                                    with st.spinner("Gerando laudo..."):
-                                        emp_block_sums = get_assessment_block_sums(emp_result[0], "employee")
-                                        emp_profile_text = extract_docx_profile_text(
-                                            emp_result[3] or "O Idealista Exigente",
-                                            emp_result[4] or "O Contenedor Empatico",
-                                            "funcionario"
-                                        )
-                                        laudo_text, error = generate_ai_laudo(
-                                            emp_result[3] or "", emp_result[4] or "",
-                                            emp_result[5] or "", emp_block_sums, emp_result[1],
-                                            profile_text=emp_profile_text, respondent_type="funcionario"
-                                        )
-                                        if laudo_text:
-                                            st.session_state[laudo_key] = laudo_text
-                                        elif error:
-                                            st.session_state[laudo_key] = f"__ERROR__:{error}"
-                                        st.rerun()
-                                
-                                if st.button("Fechar", key=f"close_laudo_{m_auth_id}"):
-                                    st.session_state[f"show_laudo_modal_{m_auth_id}"] = False
+                                        st.markdown(laudo_text_ldr)
+                                    
+                                    pdf_data_ldr = generate_laudo_pdf(
+                                        laudo_text_ldr, l_name,
+                                        l_dominant, l_secondary,
+                                        l_bion, respondent_type="gestor"
+                                    )
+                                    st.download_button(
+                                        "Baixar PDF do Laudo",
+                                        data=pdf_data_ldr,
+                                        file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
+                                        mime="application/pdf",
+                                        key=f"dl_laudo_ldr_exp_{l_mgr_id}",
+                                        use_container_width=True
+                                    )
+                                else:
+                                    st.warning(laudo_text_ldr.replace("__ERROR__:", ""))
+                            
+                            if st.button("Gerar Laudo", key=f"gen_laudo_ldr_{l_mgr_id}", use_container_width=True, type="primary"):
+                                with st.spinner("Gerando laudo de lideranca..."):
+                                    mgr_block_sums = get_assessment_block_sums(l_user_id, "manager")
+                                    mgr_profile_text = extract_docx_profile_text(
+                                        l_dominant or "O Idealista Exigente",
+                                        l_secondary or "O Contenedor Empatico",
+                                        "gestor"
+                                    )
+                                    laudo_text_ldr, error = generate_ai_laudo(
+                                        l_dominant or "", l_secondary or "",
+                                        l_bion or "", mgr_block_sums, l_name,
+                                        profile_text=mgr_profile_text, respondent_type="gestor"
+                                    )
+                                    if laudo_text_ldr:
+                                        st.session_state[laudo_key_ldr] = laudo_text_ldr
+                                    elif error:
+                                        st.session_state[laudo_key_ldr] = f"__ERROR__:{error}"
                                     st.rerun()
-                        else:
-                            st.info(f"Laudo ainda nao disponivel para {m_name}. O colaborador precisa completar o assessment primeiro.")
-                            if st.button("Fechar", key=f"close_nolaudo_{m_auth_id}"):
-                                st.session_state[f"show_laudo_modal_{m_auth_id}"] = False
+                            
+                            if st.button("Fechar", key=f"close_laudo_ldr_{l_mgr_id}"):
+                                st.session_state[f"show_laudo_ldr_{l_mgr_id}"] = False
                                 st.rerun()
                 
                 st.write("---")
-                
                 st.download_button(
-                    "Exportar Relatorio Geral (CSV)",
-                    data=csv_export_data,
-                    file_name="relatorio_gestao_lps.csv",
+                    "Exportar Lideres (CSV)",
+                    data=csv_leaders,
+                    file_name="relatorio_lideres_lps.csv",
                     mime="text/csv",
-                    key="export_gestao_csv",
-                    use_container_width=True,
-                    type="primary"
+                    key="export_leaders_csv",
+                    use_container_width=True
                 )
             else:
-                st.info("Nenhum colaborador cadastrado ainda. Va para a aba 'Cadastro de E-mails' para comecar.")
+                st.info("Nenhum gestor completou o LPTest Lider ainda.")
             
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.write("")
+            st.write("")
             
-            st.markdown("<div class='gestao-card'><h3>Resumo</h3>", unsafe_allow_html=True)
+            st.markdown("""
+                <div class='gestao-card'>
+                    <h3 style='color: #18738c; border-bottom: 2px solid #d19f09; padding-bottom: 0.5rem; margin-bottom: 1rem;'>
+                        Tabela 2: Resultados do LPTest Equipe
+                    </h3>
+                    <p style='color: #666; font-size: 0.85rem; margin-bottom: 1rem;'>
+                        Colaboradores que completaram o assessment de equipe.
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            if employees_data:
+                emp_header = st.columns([2, 2, 2, 1, 2])
+                with emp_header[0]:
+                    st.markdown("<strong style='color: #18738c;'>Nome</strong>", unsafe_allow_html=True)
+                with emp_header[1]:
+                    st.markdown("<strong style='color: #18738c;'>E-mail</strong>", unsafe_allow_html=True)
+                with emp_header[2]:
+                    st.markdown("<strong style='color: #18738c;'>Perfil</strong>", unsafe_allow_html=True)
+                with emp_header[3]:
+                    st.markdown("<strong style='color: #18738c;'>Gestor</strong>", unsafe_allow_html=True)
+                with emp_header[4]:
+                    st.markdown("<strong style='color: #18738c;'>Acoes</strong>", unsafe_allow_html=True)
+                
+                st.markdown("<hr style='margin: 0.5rem 0; border-color: #eee;'>", unsafe_allow_html=True)
+                
+                csv_employees = "Nome,E-mail,Perfil Dominante,Perfil Secundario,Papel Bion,Gestor,Data\n"
+                
+                for emp in employees_data:
+                    e_id = emp[0]
+                    e_name = emp[1] or "-"
+                    e_email = emp[2] or "-"
+                    e_dominant = emp[3] or "-"
+                    e_secondary = emp[4] or "-"
+                    e_bion = emp[5] or "-"
+                    e_details = emp[6]
+                    e_manager_name = emp[9] or "-"
+                    e_date = emp[10][:16] if emp[10] else "-"
+                    
+                    csv_employees += f'"{e_name}","{e_email}","{e_dominant}","{e_secondary}","{e_bion}","{e_manager_name}","{e_date}"\n'
+                    
+                    emp_cols = st.columns([2, 2, 2, 1, 2])
+                    with emp_cols[0]:
+                        st.write(e_name)
+                    with emp_cols[1]:
+                        st.write(e_email)
+                    with emp_cols[2]:
+                        st.markdown(f"<span class='status-badge status-concluido'>{e_dominant}</span>", unsafe_allow_html=True)
+                    with emp_cols[3]:
+                        st.write(e_manager_name)
+                    with emp_cols[4]:
+                        btn_c1, btn_c2 = st.columns(2)
+                        with btn_c1:
+                            if st.button("Visualizar Laudo", key=f"ver_laudo_emp_{e_id}", use_container_width=True):
+                                st.session_state[f"show_laudo_emp_{e_id}"] = True
+                                st.rerun()
+                        with btn_c2:
+                            laudo_key_emp = f"admin_laudo_emp_{e_id}"
+                            if st.session_state.get(laudo_key_emp):
+                                laudo_text_emp = st.session_state[laudo_key_emp]
+                                if not laudo_text_emp.startswith("__ERROR__"):
+                                    pdf_data_emp = generate_laudo_pdf(
+                                        laudo_text_emp, e_name,
+                                        e_dominant, e_secondary,
+                                        e_bion, respondent_type="funcionario"
+                                    )
+                                    st.download_button(
+                                        "Baixar PDF",
+                                        data=pdf_data_emp,
+                                        file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
+                                        mime="application/pdf",
+                                        key=f"dl_laudo_emp_{e_id}",
+                                        use_container_width=True
+                                    )
+                    
+                    if st.session_state.get(f"show_laudo_emp_{e_id}"):
+                        with st.expander(f"Laudo de Equipe - {e_name}", expanded=True):
+                            st.markdown(f"""
+                                <div style='background: #faf5e6; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #d19f09;'>
+                                    <strong>Nome:</strong> {e_name}<br>
+                                    <strong>Perfil:</strong> {e_dominant} + {e_secondary}<br>
+                                    <strong>Papel de Bion:</strong> {e_bion}<br>
+                                    <strong>Gestor:</strong> {e_manager_name}
+                                </div>
+                            """, unsafe_allow_html=True)
+                            
+                            laudo_key_emp = f"admin_laudo_emp_{e_id}"
+                            if st.session_state.get(laudo_key_emp):
+                                laudo_text_emp = st.session_state[laudo_key_emp]
+                                if not laudo_text_emp.startswith("__ERROR__"):
+                                    laudo_secs = parse_laudo_sections(laudo_text_emp)
+                                    if len(laudo_secs) > 1:
+                                        for sec_title in LAUDO_SECTIONS:
+                                            sec_content = laudo_secs.get(sec_title, "")
+                                            if sec_content:
+                                                with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                                    st.markdown(sec_content)
+                                    else:
+                                        st.markdown(laudo_text_emp)
+                                    
+                                    pdf_data_emp = generate_laudo_pdf(
+                                        laudo_text_emp, e_name,
+                                        e_dominant, e_secondary,
+                                        e_bion, respondent_type="funcionario"
+                                    )
+                                    st.download_button(
+                                        "Baixar PDF do Laudo",
+                                        data=pdf_data_emp,
+                                        file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
+                                        mime="application/pdf",
+                                        key=f"dl_laudo_emp_exp_{e_id}",
+                                        use_container_width=True
+                                    )
+                                else:
+                                    st.warning(laudo_text_emp.replace("__ERROR__:", ""))
+                            
+                            if st.button("Gerar Laudo", key=f"gen_laudo_emp_{e_id}", use_container_width=True, type="primary"):
+                                with st.spinner("Gerando laudo de equipe..."):
+                                    emp_block_sums = get_assessment_block_sums(e_id, "employee")
+                                    emp_profile_text = extract_docx_profile_text(
+                                        e_dominant or "O Idealista Exigente",
+                                        e_secondary or "O Contenedor Empatico",
+                                        "funcionario"
+                                    )
+                                    laudo_text_emp, error = generate_ai_laudo(
+                                        e_dominant or "", e_secondary or "",
+                                        e_bion or "", emp_block_sums, e_name,
+                                        profile_text=emp_profile_text, respondent_type="funcionario"
+                                    )
+                                    if laudo_text_emp:
+                                        st.session_state[laudo_key_emp] = laudo_text_emp
+                                    elif error:
+                                        st.session_state[laudo_key_emp] = f"__ERROR__:{error}"
+                                    st.rerun()
+                            
+                            if st.button("Fechar", key=f"close_laudo_emp_{e_id}"):
+                                st.session_state[f"show_laudo_emp_{e_id}"] = False
+                                st.rerun()
+                
+                st.write("---")
+                st.download_button(
+                    "Exportar Equipes (CSV)",
+                    data=csv_employees,
+                    file_name="relatorio_equipes_lps.csv",
+                    mime="text/csv",
+                    key="export_employees_csv",
+                    use_container_width=True
+                )
+            else:
+                st.info("Nenhum colaborador completou o LPTest Equipe ainda.")
+            
+            st.write("")
+            
+            st.markdown("<div class='gestao-card'><h3>Resumo Geral</h3>", unsafe_allow_html=True)
+            total_leaders = len(leaders_data) if leaders_data else 0
+            total_employees = len(employees_data) if employees_data else 0
             total_auth = len(monitoring_data) if monitoring_data else 0
             total_completed = len([r for r in monitoring_data if r[3] == "concluido"]) if monitoring_data else 0
-            total_pending = len([r for r in monitoring_data if r[3] == "pendente"]) if monitoring_data else 0
-            total_progress = len([r for r in monitoring_data if r[3] == "em_andamento"]) if monitoring_data else 0
             
             sum_cols = st.columns(4)
             with sum_cols[0]:
-                st.metric("Total Cadastrados", total_auth)
+                st.metric("Lideres Avaliados", total_leaders)
             with sum_cols[1]:
-                st.metric("Nao Iniciaram", total_pending)
+                st.metric("Colaboradores Avaliados", total_employees)
             with sum_cols[2]:
-                st.metric("Em Andamento", total_progress)
+                st.metric("Total Convidados", total_auth)
             with sum_cols[3]:
-                st.metric("Concluidos", total_completed)
+                st.metric("Convites Concluidos", total_completed)
             st.markdown("</div>", unsafe_allow_html=True)
 
 elif page == "AdminEmail":
