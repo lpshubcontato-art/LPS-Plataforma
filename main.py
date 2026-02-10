@@ -1410,388 +1410,399 @@ if 'selected_module' not in st.session_state:
 WHATSAPP_URL = "https://wa.me/5511971419453"
 LOGO_PATH = "attached_assets/logotipo_2__1768529013163.jpeg"
 
-# Definições das questões do Assessment (10 por bloco = 70 questões totais)
+# Definicoes das questoes do Assessment (8 blocos: 7x8 + 1x14 = 70 questoes totais)
 ASSESSMENT_QUESTIONS = {
-    "Bloco 1 – Autoridade Interna e Autoimagem": [
-        "Sinto que a equipe me observa de forma idealizada.",
-        "Tenho clareza sobre minhas forças e fraquezas como líder.",
-        "Me sinto desconfortável quando sou admirado demais.",
-        "Prefiro manter minha imagem emocionalmente neutra no ambiente.",
-        "Às vezes, não sei se sou respeitado ou apenas temido.",
-        "Quando recebo críticas, demoro a me recuperar internamente.",
-        "Me esforço para parecer emocionalmente estável, mesmo quando não estou.",
-        "A percepção da equipe sobre mim influencia minhas decisões.",
-        "Tenho dificuldade em aceitar elogios sem questionar sua sinceridade.",
-        "Minha autoimagem como líder oscila dependendo do feedback que recebo."
+    "Bloco 1 – Autoridade Interna, Autoimagem e Superego": [
+        "Sinto uma pressao interna constante para ser um lider exemplar.",
+        "Quando erro, minha autocritica e mais severa do que a dos outros.",
+        "Minha imagem de lider ideal e muito exigente comigo mesmo.",
+        "Tenho dificuldade em aceitar desempenhos medianos, mesmo quando razoaveis.",
+        "Sinto que nunca faco o suficiente, independentemente dos resultados.",
+        "Julgo a mim mesmo com mais rigidez do que julgo minha equipe.",
+        "Meu senso de dever me impede de relaxar, mesmo quando poderia.",
+        "Acredito que se eu nao mantiver padroes altos, tudo desmorona."
     ],
-    "Bloco 2 – Contenção Emocional do Grupo": [
-        "Em situações de crise, sou o primeiro a manter a calma.",
-        "Sei conter a ansiedade coletiva mesmo sem dizer uma palavra.",
-        "Percebo rapidamente quando a equipe está emocionalmente instável.",
-        "Eu sou, muitas vezes, o 'termômetro emocional' do time.",
-        "Me preocupo com o impacto emocional das mudanças.",
-        "Sei como evitar que o pânico da equipe tome conta.",
-        "Tenho habilidade para resgatar a racionalidade do grupo.",
-        "Sinto que absorvo emocionalmente o clima da equipe.",
-        "Consigo transmitir segurança mesmo em momentos de incerteza.",
-        "Minha presença ajuda a estabilizar o ambiente emocional do grupo."
+    "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": [
+        "Consigo perceber quando a equipe esta emocionalmente desestabilizada.",
+        "Minha presenca ajuda a acalmar o ambiente em momentos de tensao.",
+        "Sinto que absorvo as emocoes do grupo, mesmo quando nao quero.",
+        "Me esforco para criar um ambiente onde todos se sintam seguros.",
+        "Sei modular minha postura para transmitir seguranca ao grupo.",
+        "Percebo quando alguem da equipe esta emocionalmente sobrecarregado antes que diga.",
+        "Acredito que parte do meu papel e proteger a equipe de pressoes externas.",
+        "As vezes me sinto emocionalmente esgotado por carregar o clima do grupo."
     ],
-    "Bloco 3 – Narcisismo e Reconhecimento": [
-        "Me incomodo quando não sou reconhecido pelo meu esforço.",
-        "Gosto de ser o centro das atenções nas reuniões.",
-        "A opinião da liderança acima de mim afeta meu desempenho.",
-        "Sinto frustração quando minha equipe não valida minhas decisões.",
-        "Preciso de reconhecimento frequente para me manter motivado.",
-        "Evito demonstrar insegurança para não comprometer minha autoridade.",
-        "Comparo minha liderança com a de outros colegas frequentemente.",
-        "Às vezes exagero meu valor para manter respeito.",
-        "Fico incomodado quando alguém recebe mais destaque do que eu.",
-        "Minha motivação depende fortemente de como sou percebido pelos outros."
+    "Bloco 3 – Narcisismo, Reconhecimento e Motivacao": [
+        "Me incomodo quando nao sou reconhecido pelo meu esforco.",
+        "Gosto de ser destacado publicamente por minhas contribuicoes.",
+        "Comparo frequentemente meu desempenho com o de outros lideres.",
+        "Preciso de validacao externa para me sentir motivado.",
+        "Fico frustrado quando alguem recebe credito por algo que fiz.",
+        "Sinto que meu valor como lider depende da percepcao dos outros.",
+        "Evito situacoes onde possa ser ofuscado por alguem.",
+        "Busco provas externas de competencia com frequencia."
     ],
-    "Bloco 4 – Estrutura e Lógica de Tarefa": [
-        "Preciso de metas e estruturas bem definidas para funcionar.",
-        "Me incomodo com mudanças frequentes nas prioridades.",
-        "Gosto de controlar todos os processos para evitar erros.",
-        "Tenho dificuldade em delegar quando há risco de falhas.",
-        "Acredito que sem controle, as pessoas tendem ao caos.",
-        "Prefiro manter a equipe ocupada, mesmo que sem urgência.",
-        "Me estresso com prazos mal definidos.",
-        "Costumo antecipar problemas antes que eles ocorram.",
-        "Sinto necessidade de ter tudo documentado e organizado.",
-        "Fico ansioso quando os processos fogem do planejado."
+    "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade": [
+        "Preciso de processos bem definidos para me sentir confortavel.",
+        "Me incomodo quando ha mudancas imprevistas no planejamento.",
+        "Prefiro manter o controle total das decisoes do meu time.",
+        "Tenho dificuldade em lidar com situacoes ambiguas ou incertas.",
+        "Sinto necessidade de documentar e organizar tudo com detalhes.",
+        "Quando os processos fogem do padrao, fico ansioso.",
+        "Acredito que estrutura rigida evita erros e conflitos.",
+        "Tenho dificuldade em delegar tarefas que considero criticas."
     ],
-    "Bloco 5 – Relação com a Equipe e Projeções": [
-        "Já senti que alguém da equipe me via como uma figura parental.",
-        "Em alguns momentos, sou tratado com hostilidade sem motivo aparente.",
-        "Já notei que membros da equipe projetam em mim expectativas irreais.",
-        "Alguns funcionários me fazem sentir como se eu fosse o 'culpado' de tudo.",
-        "Tenho dificuldade em me distanciar emocionalmente de alguns colaboradores.",
-        "Preciso manter uma certa 'armadura' para não ser afetado pela equipe.",
-        "Costumo internalizar conflitos mesmo quando não são meus.",
-        "Às vezes, me sinto em uma posição emocionalmente isolada.",
-        "Percebo que alguns me tratam como salvador ou como vilão.",
-        "Sinto que carrego o peso emocional das expectativas da equipe."
+    "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia": [
+        "Ja senti que alguem da equipe me tratava como figura parental.",
+        "Percebo que alguns colaboradores projetam em mim expectativas irreais.",
+        "Ja reagi de forma desproporcional a um conflito por ele me lembrar de algo pessoal.",
+        "Sinto que carrego emocoes que nao sao minhas, vindas da equipe.",
+        "Noto que certas pessoas ativam em mim reacoes automaticas.",
+        "Tenho dificuldade em separar o que sinto pela pessoa do que sinto pelo papel dela.",
+        "Alguns membros da equipe me fazem sentir culpado mesmo sem motivo claro.",
+        "Percebo padroes relacionais que se repetem com diferentes pessoas na equipe."
     ],
-    "Bloco 6 – Reflexão, Crítica e Autoconsciência": [
+    "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego": [
         "Tenho facilidade em identificar minhas armadilhas emocionais.",
-        "Costumo refletir profundamente antes de tomar decisões difíceis.",
-        "Entendo como meu temperamento afeta meu estilo de liderança.",
-        "Estou constantemente ajustando meu modo de liderar conforme o grupo.",
-        "Levo em conta as dinâmicas inconscientes ao lidar com conflitos.",
-        "Aceito ajuda externa quando percebo que estou emocionalmente sobrecarregado.",
-        "Consigo separar crítica pessoal de crítica à minha liderança.",
-        "Vejo a liderança como um processo psicológico, não só técnico.",
-        "Busco feedback regularmente para melhorar minha atuação.",
-        "Reconheço quando meus vieses pessoais influenciam minhas decisões."
+        "Costumo refletir sobre o impacto do meu comportamento na equipe.",
+        "Consigo perceber quando estou usando mecanismos de defesa.",
+        "Entendo como minhas experiencias passadas influenciam minha lideranca.",
+        "Busco feedback genuino, mesmo quando desconfortavel.",
+        "Consigo nomear minhas emocoes com precisao na maioria das situacoes.",
+        "Reconheco quando meus vieses pessoais influenciam decisoes.",
+        "Vejo a lideranca como um processo psicologico, nao apenas tecnico."
     ],
-    "Bloco 7 – Relacional Reativo": [
-        "Evito conflitos mesmo quando seria necessário enfrentá-los.",
-        "Mudo de opinião facilmente para manter a harmonia no grupo.",
-        "Tenho medo de ser rejeitado ou criticado pela equipe.",
-        "Busco constantemente a aprovação de todos ao meu redor.",
-        "Tenho dificuldade em dizer 'não' para pedidos da equipe.",
-        "Me sinto ansioso quando percebo que alguém está insatisfeito comigo.",
-        "Adapto meu comportamento excessivamente para agradar os outros.",
-        "Evito dar feedback negativo por medo de magoar as pessoas.",
-        "Minha identidade como líder depende da aceitação do grupo.",
-        "Tenho dificuldade em manter uma posição firme sob pressão social."
+    "Bloco 7 – Acao, Urgencia e Foco na Entrega": [
+        "Prefiro agir rapidamente a esperar por informacoes completas.",
+        "Sinto desconforto quando as coisas demoram para acontecer.",
+        "Tomo decisoes com agilidade, mesmo sob pressao.",
+        "Priorizo a execucao e o resultado acima de tudo.",
+        "Tenho dificuldade em tolerar processos lentos ou burocraticos.",
+        "Me sinto mais confortavel fazendo do que planejando.",
+        "Minha equipe me ve como alguem que faz acontecer.",
+        "As vezes, atropelo etapas para chegar ao resultado mais rapido."
+    ],
+    "Bloco 8 – Temperamento e Carater (Cloninger)": [
+        "Busco novas experiencias, mesmo que envolvam risco. (Busca de Novidade)",
+        "Tenho facilidade em agir por impulso. (Busca de Novidade)",
+        "Evito situacoes que possam gerar dor, critica ou punicao. (Evitacao de Dano)",
+        "Costumo antecipar problemas e me preparar para o pior. (Evitacao de Dano)",
+        "Preciso de recompensas frequentes para manter meu engajamento. (Dependencia de Recompensa)",
+        "Sou sensivel a sinais sociais de aprovacao e afeto. (Dependencia de Recompensa)",
+        "Mantenho meus habitos e rotinas mesmo quando nao sao mais uteis. (Persistencia)",
+        "Tenho dificuldade em desistir de algo que comecei. (Persistencia)",
+        "Me sinto responsavel pelo que acontece ao meu redor. (Autodirecionamento)",
+        "Tenho clareza sobre meus valores e proposito como lider. (Autodirecionamento)",
+        "Consigo me colocar no lugar dos outros com facilidade. (Cooperatividade)",
+        "Valorizo relacoes colaborativas mais do que competitivas. (Cooperatividade)",
+        "Sinto que faco parte de algo maior do que eu mesmo. (Autotranscendencia)",
+        "Momentos de reflexao profunda me ajudam a tomar decisoes melhores. (Autotranscendencia)"
     ]
 }
 
+CLONINGER_SUBDIMENSIONS = {
+    "BN": {"name": "Busca de Novidade", "questions": [0, 1]},
+    "ED": {"name": "Evitacao de Dano", "questions": [2, 3]},
+    "DR": {"name": "Dependencia de Recompensa", "questions": [4, 5]},
+    "P": {"name": "Persistencia", "questions": [6, 7]},
+    "AD": {"name": "Autodirecionamento", "questions": [8, 9]},
+    "C": {"name": "Cooperatividade", "questions": [10, 11]},
+    "AT": {"name": "Autotranscendencia", "questions": [12, 13]}
+}
+
 BLOCK_SHORT_NAMES = {
-    "Bloco 1 – Autoridade Interna e Autoimagem": "Autoridade",
-    "Bloco 2 – Contenção Emocional do Grupo": "Contenção",
-    "Bloco 3 – Narcisismo e Reconhecimento": "Narcisismo",
-    "Bloco 4 – Estrutura e Lógica de Tarefa": "Estrutura",
-    "Bloco 5 – Relação com a Equipe e Projeções": "Relação",
-    "Bloco 6 – Reflexão, Crítica e Autoconsciência": "Reflexão",
-    "Bloco 7 – Relacional Reativo": "Reativo"
+    "Bloco 1 – Autoridade Interna, Autoimagem e Superego": "Autoridade",
+    "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": "Contencao",
+    "Bloco 3 – Narcisismo, Reconhecimento e Motivacao": "Narcisismo",
+    "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade": "Estrutura",
+    "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia": "Relacional",
+    "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego": "Observacao",
+    "Bloco 7 – Acao, Urgencia e Foco na Entrega": "Execucao"
 }
 
 BLOCK_TO_PROFILE = {
-    "Bloco 5 – Relação com a Equipe e Projeções": "🛡 Protetor",
-    "Bloco 2 – Contenção Emocional do Grupo": "🧱 Contenedor",
-    "Bloco 3 – Narcisismo e Reconhecimento": "🔥 Narciso Estratégico",
-    "Bloco 4 – Estrutura e Lógica de Tarefa": "🏗 Estruturador",
-    "Bloco 1 – Autoridade Interna e Autoimagem": "🪞 Espelho Emocional",
-    "Bloco 6 – Reflexão, Crítica e Autoconsciência": "🧠 Observador Reflexivo",
-    "Bloco 7 – Relacional Reativo": "🎭 Relacional Reativo"
+    "Bloco 1 – Autoridade Interna, Autoimagem e Superego": "O Idealista Exigente",
+    "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": "O Contenedor Empatico",
+    "Bloco 3 – Narcisismo, Reconhecimento e Motivacao": "O Buscador de Reconhecimento",
+    "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade": "O Estruturador Cauteloso",
+    "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia": "O Relacional Reativo",
+    "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego": "O Observador Consciente",
+    "Bloco 7 – Acao, Urgencia e Foco na Entrega": "O Executor Decidido"
 }
 
-# Mapeamento de Papéis de Bion baseado nas respostas
 def classify_bion_role(block_sums):
     """
-    Classifica o papel grupal segundo Bion:
-    - Porta-voz: Alta Autoridade + Alta Reflexão (expressa o que o grupo sente)
-    - Bode Expiatório: Alta Relação + Baixa Contenção (absorve projeções negativas)
-    - Dependente: Alta Contenção + Baixa Autoridade (busca proteção no líder)
-    - Líder de Luta-Fuga: Alto Narcisismo + Alta Estrutura (reativo a ameaças)
-    - Sabotador Silencioso: Alta Estrutura + Baixa Reflexão (resiste passivamente)
-    - Harmonizador Ansioso: Alto Reativo + Alta Relação (evita conflitos a todo custo)
+    Classifica o papel grupal segundo Bion (max 40 pontos por bloco, 8 questoes x 5):
+    - Porta-voz: Alta Autoridade + Alta Observacao (expressa o que o grupo sente)
+    - Bode Expiatorio: Alto Relacional + Baixa Contencao (absorve projecoes negativas)
+    - Dependente: Alta Contencao + Baixa Autoridade (busca protecao no lider)
+    - Lider de Luta-Fuga: Alto Narcisismo + Alta Execucao (reativo a ameacas)
+    - Sabotador Silencioso: Alta Estrutura + Baixa Observacao (resiste passivamente)
+    - Harmonizador Ansioso: Alto Relacional + Alta Contencao (evita conflitos a todo custo)
     """
-    autoridade = block_sums.get("Autoridade", 25)
-    contencao = block_sums.get("Contenção", 25)
-    narcisismo = block_sums.get("Narcisismo", 25)
-    estrutura = block_sums.get("Estrutura", 25)
-    relacao = block_sums.get("Relação", 25)
-    reflexao = block_sums.get("Reflexão", 25)
-    reativo = block_sums.get("Reativo", 25)
+    autoridade = block_sums.get("Autoridade", 20)
+    contencao = block_sums.get("Contencao", 20)
+    narcisismo = block_sums.get("Narcisismo", 20)
+    estrutura = block_sums.get("Estrutura", 20)
+    relacional = block_sums.get("Relacional", 20)
+    observacao = block_sums.get("Observacao", 20)
+    execucao = block_sums.get("Execucao", 20)
     
-    # Thresholds ajustados para 10 questões x 5 pontos = 50 max por bloco
-    high = 35
-    low = 25
+    high = 28
+    low = 20
     
-    if reativo >= high and relacao >= high:
-        return "🕊️ Harmonizador Ansioso"
-    elif autoridade >= high and reflexao >= high:
-        return "🎤 Porta-voz"
-    elif relacao >= high and contencao <= low:
-        return "🐐 Bode Expiatório"
+    if relacional >= high and contencao >= high:
+        return "Harmonizador Ansioso"
+    elif autoridade >= high and observacao >= high:
+        return "Porta-voz"
+    elif relacional >= high and contencao <= low:
+        return "Bode Expiatorio"
     elif contencao >= high and autoridade <= low:
-        return "🤝 Dependente"
-    elif narcisismo >= high and estrutura >= high:
-        return "⚔️ Líder de Luta-Fuga"
-    elif estrutura >= high and reflexao <= low:
-        return "🔇 Sabotador Silencioso"
+        return "Dependente"
+    elif narcisismo >= high and execucao >= high:
+        return "Lider de Luta-Fuga"
+    elif estrutura >= high and observacao <= low:
+        return "Sabotador Silencioso"
     else:
-        return "⚖️ Neutro/Adaptável"
+        return "Neutro/Adaptavel"
 
 BION_DESCRIPTIONS = {
-    "🎤 Porta-voz": "Expressa verbalmente o que o grupo sente mas não consegue dizer. Canaliza tensões coletivas.",
-    "🐐 Bode Expiatório": "Absorve projeções negativas do grupo. Frequentemente culpado por falhas sistêmicas.",
-    "🤝 Dependente": "Busca proteção e direção no líder. Evita autonomia e delega responsabilidade emocional.",
-    "⚔️ Líder de Luta-Fuga": "Reativo a ameaças reais ou imaginárias. Mobiliza o grupo para atacar ou fugir.",
-    "🔇 Sabotador Silencioso": "Resiste passivamente às mudanças. Cumpre tarefas sem engajamento emocional.",
-    "🕊️ Harmonizador Ansioso": "Evita conflitos a todo custo. Busca manter harmonia mesmo sacrificando a autenticidade.",
-    "⚖️ Neutro/Adaptável": "Perfil equilibrado. Adapta-se às necessidades do grupo sem assumir papel fixo."
+    "Porta-voz": "Expressa verbalmente o que o grupo sente mas nao consegue dizer. Canaliza tensoes coletivas.",
+    "Bode Expiatorio": "Absorve projecoes negativas do grupo. Frequentemente culpado por falhas sistemicas.",
+    "Dependente": "Busca protecao e direcao no lider. Evita autonomia e delega responsabilidade emocional.",
+    "Lider de Luta-Fuga": "Reativo a ameacas reais ou imaginarias. Mobiliza o grupo para atacar ou fugir.",
+    "Sabotador Silencioso": "Resiste passivamente as mudancas. Cumpre tarefas sem engajamento emocional.",
+    "Harmonizador Ansioso": "Evita conflitos a todo custo. Busca manter harmonia mesmo sacrificando a autenticidade.",
+    "Neutro/Adaptavel": "Perfil equilibrado. Adapta-se as necessidades do grupo sem assumir papel fixo."
 }
 
 PROFILES_DB = {
-    "🛡 Protetor": {
-        "🧠 Observador Reflexivo": {
-            "forcas": "✔ Inspira confiança e acolhimento. ✔ Capacidade de análise emocional e previsão de conflitos. ✔ Toma decisões considerando o impacto humano.",
-            "riscos": "⚠ Pode absorver emocionalmente os problemas do time. ⚠ Pode hesitar diante de decisões duras por empatia excessiva.",
-            "recomendacoes": "➡ Estabeleça limites claros entre você e a equipe. ➡ Reserve tempo para ação, não apenas para análise."
+    "O Idealista Exigente": {
+        "O Contenedor Empatico": {
+            "forcas": "Forca: Combina a busca por excelencia com sensibilidade emocional, criando padroes elevados sem perder a humanidade. Forca: Consegue inspirar a equipe a dar o melhor de si enquanto mantem um ambiente acolhedor. Forca: Equilibra a exigencia tecnica com o cuidado genuino pelas pessoas.",
+            "riscos": "Risco: Pode se esgotar emocionalmente ao tentar manter padroes altissimos enquanto absorve as emocoes do grupo. Risco: Tende a se culpar duplamente quando algo falha, tanto pela qualidade quanto pelo bem-estar da equipe. Risco: Pode adiar feedbacks criticos por medo de ferir os outros, comprometendo a excelencia que busca.",
+            "recomendacoes": "Acao: Estabeleca limites claros entre cuidar da equipe e manter seus padroes, sem tentar ser perfeito em ambos. Acao: Pratique o feedback direto e compassivo, entendendo que honestidade e uma forma de cuidado. Acao: Reserve momentos de autocuidado para evitar o esgotamento que vem da dupla demanda interna."
         },
-        "🔥 Narciso Estratégico": {
-            "forcas": "✔ Inspira pertencimento e admiração. ✔ Gera lealdade por meio da conexão emocional. ✔ Sabe como influenciar com afeto e presença.",
-            "riscos": "⚠ Pode depender demais da validação externa. ⚠ Corre risco de evitar feedbacks duros para manter o carinho do time.",
-            "recomendacoes": "➡ Trabalhe a construção da sua autoridade sem depender do afeto. ➡ Lembre-se: cuidar também é confrontar quando necessário."
+        "O Buscador de Reconhecimento": {
+            "forcas": "Forca: Une a busca por excelencia com o carisma e a capacidade de engajar os outros em torno de metas ambiciosas. Forca: A necessidade de reconhecimento impulsiona a entrega de resultados de alta qualidade. Forca: Consegue transformar padroes elevados em vitrines de competencia que inspiram a equipe.",
+            "riscos": "Risco: Pode se tornar perfeccionista movido pela vaidade, buscando excelencia apenas para ser admirado. Risco: Tende a competir com subordinados ou pares quando sente que seu merito nao esta sendo reconhecido. Risco: A frustacao com a falta de reconhecimento pode amplificar a autocritica ja intensa do superego.",
+            "recomendacoes": "Acao: Diferencie entre buscar excelencia por valores internos e buscar aprovacao externa, priorizando o primeiro. Acao: Pratique reconhecer publicamente as contribuicoes dos outros, fortalecendo a equipe e sua propria lideranca. Acao: Desenvolva fontes internas de validacao para reduzir a dependencia de aplausos externos."
         },
-        "🏗 Estruturador": {
-            "forcas": "✔ Cria ambientes emocionalmente estáveis. ✔ Protege o time com sistemas e processos claros. ✔ Excelente para liderar equipes em ambientes caóticos.",
-            "riscos": "⚠ Pode se tornar rígido(a) demais tentando 'salvar' todos. ⚠ Pode controlar excessivamente para evitar conflitos.",
-            "recomendacoes": "➡ Confie mais na maturidade emocional do time. ➡ Flexibilize regras quando perceber crescimento autônomo."
+        "O Estruturador Cauteloso": {
+            "forcas": "Forca: Combina altos padroes de qualidade com planejamento meticuloso e organizacao impecavel. Forca: Cria sistemas e processos que sustentam a excelencia de forma consistente e previsivel. Forca: A atencao ao detalhe do estruturador potencializa a busca por perfeicao do idealista.",
+            "riscos": "Risco: Pode criar ambientes rigidos demais onde a busca por perfeicao se transforma em burocracia paralisante. Risco: Tende a microgerenciar obsessivamente cada etapa, gerando lentidao e desmotivacao na equipe. Risco: A combinacao de perfeccionismo com necessidade de controle pode impedir a inovacao e a adaptacao.",
+            "recomendacoes": "Acao: Defina quais processos realmente precisam de controle rigoroso e quais podem ser mais flexiveis. Acao: Aceite que nem tudo precisa ser perfeito e estruturado ao mesmo tempo, priorizando o que gera mais impacto. Acao: Delegue etapas do processo confiando na competencia da equipe, mesmo que o resultado nao seja identico ao seu padrao."
         },
-        "🧱 Contenedor": {
-            "forcas": "✔ Equilíbrio emocional impressionante. ✔ Alta capacidade de empatia sem perder o centro. ✔ Inspira respeito e lealdade.",
-            "riscos": "⚠ Pode assumir a responsabilidade emocional de todos. ⚠ Pode ser visto como 'pai' ou 'mãe', gerando dependência excessiva.",
-            "recomendacoes": "➡ Incentive autonomia emocional na equipe. ➡ Crie momentos de autorreflexão para não se sobrecarregar."
+        "O Relacional Reativo": {
+            "forcas": "Forca: A sensibilidade relacional permite perceber como as exigencias elevadas afetam cada membro da equipe. Forca: Consegue ajustar o nivel de cobranca de acordo com o momento emocional das relacoes no grupo. Forca: A consciencia das dinamicas interpessoais humaniza a busca por excelencia.",
+            "riscos": "Risco: Pode ser ativado emocionalmente quando alguem nao atende seus padroes, reagindo de forma desproporcional. Risco: Tende a projetar nas relacoes de trabalho padroes de exigencia vindos de figuras de autoridade do passado. Risco: A reatividade emocional pode transformar feedbacks construtivos em confrontos pessoais.",
+            "recomendacoes": "Acao: Antes de reagir a uma entrega abaixo do esperado, faca uma pausa e avalie se a intensidade da sua reacao e proporcional. Acao: Identifique quais relacoes profissionais ativam seus padroes de exigencia mais primitivos e trabalhe essas transferencias. Acao: Desenvolva protocolos de feedback estruturado para evitar que emocoes relacionais contaminem avaliacoes tecnicas."
         },
-        "🪞 Espelho Emocional": {
-            "forcas": "✔ Capacidade ímpar de adaptação ao grupo. ✔ Constrói confiança e acolhimento rapidamente. ✔ Sensível às dinâmicas invisíveis da equipe.",
-            "riscos": "⚠ Pode perder autenticidade tentando corresponder a todas as expectativas. ⚠ Pode se frustrar com rejeições ou incompreensões sutis.",
-            "recomendacoes": "➡ Mantenha contato com sua identidade, além da imagem percebida. ➡ Fortaleça a liderança com base em valores, não só em aceitação."
+        "O Observador Consciente": {
+            "forcas": "Forca: A autoconsciencia permite identificar quando a busca por perfeicao se torna autodestrutiva ou improdutiva. Forca: Consegue refletir sobre seus proprios padroes de exigencia e ajusta-los com maturidade. Forca: A capacidade de mentalizacao transforma a autocritica em crescimento pessoal e profissional.",
+            "riscos": "Risco: Pode cair em ciclos de auto-analise paralisante, pensando demais sobre seus padroes em vez de agir. Risco: Tende a intelectualizar a busca por perfeicao sem conseguir modifica-la na pratica. Risco: A hiperreflexao sobre falhas pode amplificar a pressao interna do superego em vez de alivia-la.",
+            "recomendacoes": "Acao: Use a autoconsciencia como ferramenta de acao, nao apenas de reflexao, definindo mudancas concretas a cada insight. Acao: Estabeleca um limite de tempo para a auto-analise e depois mude para o modo de execucao. Acao: Compartilhe suas reflexoes com um mentor ou coach para evitar o isolamento do pensamento circular."
         },
-        "🎭 Relacional Reativo": {
-            "forcas": "✔ Combinação de proteção com diplomacia. ✔ Excelente em criar ambientes seguros e harmoniosos. ✔ Sabe quando intervir e quando deixar fluir.",
-            "riscos": "⚠ Pode evitar conflitos necessários para manter a paz. ⚠ Tendência a proteger demais, sufocando o crescimento.",
-            "recomendacoes": "➡ Permita que conflitos saudáveis ocorram. ➡ Confie na capacidade do grupo de se autorregular."
+        "O Executor Decidido": {
+            "forcas": "Forca: A combinacao de altos padroes com velocidade de execucao gera resultados excepcionais em prazos curtos. Forca: A decisividade do executor complementa a profundidade analitica do idealista, equilibrando pensamento e acao. Forca: Consegue transformar padroes elevados em entregas concretas sem ficar preso na paralisia da perfeicao.",
+            "riscos": "Risco: Pode gerar entregas rapidas mas que nao atendem seus proprios padroes, causando frustracao e retrabalho. Risco: A tensao entre querer perfeicao e querer velocidade pode criar ansiedade cronica e estresse elevado. Risco: Tende a pressionar a equipe com prazos apertados e padroes altissimos simultaneamente, gerando burnout.",
+            "recomendacoes": "Acao: Defina com clareza quando a velocidade e mais importante que a perfeicao e vice-versa, caso a caso. Acao: Crie categorias de entrega: rapida e funcional versus refinada e excelente, comunicando isso a equipe. Acao: Monitore os sinais de estresse em si mesmo e na equipe quando estiver operando em modo de alta exigencia e alta velocidade."
         }
     },
-    "🧱 Contenedor": {
-        "🛡 Protetor": {
-            "forcas": "✔ Regula emoções do grupo com estabilidade. ✔ Transmite confiança emocional e acolhimento. ✔ Excelente para liderar momentos de crise ou transformação.",
-            "riscos": "⚠ Pode atrair dependência emocional dos colaboradores. ⚠ Pode evitar confrontos para manter a harmonia.",
-            "recomendacoes": "➡ Incentive responsabilidade emocional na equipe. ➡ Lembre-se: firmeza também é uma forma de cuidado."
+    "O Contenedor Empatico": {
+        "O Idealista Exigente": {
+            "forcas": "Forca: Cria ambientes seguros onde as pessoas se sentem apoiadas para buscar altos padroes de desempenho. Forca: A empatia permite comunicar expectativas elevadas de forma que motiva em vez de intimidar. Forca: Consegue sustentar emocionalmente a equipe durante periodos de pressao por resultados.",
+            "riscos": "Risco: Pode absorver a ansiedade da equipe gerada por metas exigentes, esgotando-se emocionalmente. Risco: Tende a flexibilizar padroes para proteger os sentimentos dos outros, comprometendo a qualidade. Risco: A pressao interna por excelencia pode entrar em conflito com o desejo de acolher, gerando ambivalencia.",
+            "recomendacoes": "Acao: Reconheca que manter padroes elevados e uma forma de respeitar o potencial da equipe, nao uma agressao. Acao: Desenvolva a capacidade de ser firme e acolhedor ao mesmo tempo, praticando a assertividade empatica. Acao: Crie rituais de descompressao pessoal para nao acumular a carga emocional do grupo."
         },
-        "🔥 Narciso Estratégico": {
-            "forcas": "✔ Mistura inteligência emocional com carisma. ✔ Inspira e acalma ao mesmo tempo. ✔ Alta performance em contextos de tensão.",
-            "riscos": "⚠ Pode internalizar tensões em silêncio até esgotar-se. ⚠ Pode buscar reconhecimento como forma de compensar o peso de conter tudo.",
-            "recomendacoes": "➡ Divida responsabilidades emocionais. ➡ Cultive o reconhecimento interno, não só o externo."
+        "O Buscador de Reconhecimento": {
+            "forcas": "Forca: A empatia combinada com o carisma cria uma lideranca magnetica que atrai e mantem talentos. Forca: Consegue fazer cada pessoa se sentir vista e valorizada, fortalecendo o engajamento da equipe. Forca: O desejo de reconhecimento motiva a criar experiencias positivas que sao lembradas e celebradas.",
+            "riscos": "Risco: Pode usar a empatia como estrategia para ganhar admiracao, perdendo a autenticidade do cuidado. Risco: Tende a priorizar ser amado em vez de ser respeitado, evitando decisoes impopulares mas necessarias. Risco: A necessidade de validacao pode leva-lo a se sobrecarregar com as demandas emocionais dos outros para ser visto como indispensavel.",
+            "recomendacoes": "Acao: Verifique regularmente se seu cuidado com os outros e genuino ou se esta servindo a uma necessidade de ser admirado. Acao: Pratique tomar decisoes dificeis mesmo quando isso significa desagradar temporariamente. Acao: Busque reconhecimento por impacto real e nao apenas por simpatia, valorizando resultados alem de relacoes."
         },
-        "🧠 Observador Reflexivo": {
-            "forcas": "✔ Altíssimo nível de percepção emocional e racional. ✔ Sabe esperar o momento certo de agir. ✔ Traz clareza e estabilidade para grupos confusos.",
-            "riscos": "⚠ Pode se distanciar demais do grupo tentando manter neutralidade. ⚠ Pode cair em análise excessiva e postergar decisões importantes.",
-            "recomendacoes": "➡ Confie no seu timing emocional e decida com coragem. ➡ Mantenha-se presente mesmo quando estiver processando internamente."
+        "O Estruturador Cauteloso": {
+            "forcas": "Forca: Combina seguranca emocional com seguranca estrutural, criando ambientes altamente estaveis para a equipe. Forca: Os processos organizados permitem que o cuidado emocional seja sistematico e nao apenas reativo. Forca: A previsibilidade estrutural reduz a ansiedade do grupo, potencializando o efeito contenedor.",
+            "riscos": "Risco: Pode criar ambientes tao protegidos e controlados que impedem o crescimento e a autonomia da equipe. Risco: Tende a confundir seguranca emocional com ausencia de desafios, superprotegendo os liderados. Risco: A rigidez dos processos pode limitar a espontaneidade emocional necessaria para conexoes genuinas.",
+            "recomendacoes": "Acao: Permita que a equipe enfrente desafios graduais, oferecendo suporte sem eliminar todas as dificuldades. Acao: Use a estrutura como base de seguranca, nao como gaiola, mantendo flexibilidade para adaptacao. Acao: Reserve espacos nao-estruturados para conversas espontaneas que fortalecem vinculos genuinos."
         },
-        "🏗 Estruturador": {
-            "forcas": "✔ Excelente para liderar ambientes de caos e incerteza. ✔ Gera segurança por meio de sistemas claros e postura firme. ✔ Constrói uma cultura emocionalmente sólida.",
-            "riscos": "⚠ Pode se tornar inflexível com processos ou resistir a mudanças. ⚠ Pode achar que 'segurar tudo' é seu papel, sem delegar.",
-            "recomendacoes": "➡ Desenvolva flexibilidade estratégica. ➡ Ensine sua equipe a segurar junto com você — não sozinho(a)."
+        "O Relacional Reativo": {
+            "forcas": "Forca: A sensibilidade as dinamicas relacionais permite antecipar conflitos e intervir antes que se agravem. Forca: Consegue perceber sutilezas emocionais nas interacoes que outros lideres ignorariam. Forca: A combinacao de empatia com consciencia relacional cria mediacao natural de conflitos.",
+            "riscos": "Risco: Pode se envolver emocionalmente demais nos conflitos da equipe, perdendo a neutralidade necessaria para mediar. Risco: Tende a ser reativado por padroes relacionais do passado quando as dinamicas do grupo se intensificam. Risco: A sobrecarga emocional de absorver as tensoes e ao mesmo tempo ser ativado por elas pode causar colapso emocional.",
+            "recomendacoes": "Acao: Desenvolva a capacidade de observar as dinamicas relacionais sem se fundir emocionalmente com elas. Acao: Identifique quais tipos de conflito ativam suas proprias transferencias e busque supervisao para esses casos. Acao: Estabeleca limites claros sobre ate onde vai seu papel de contenedor e quando e necessario buscar apoio externo."
         },
-        "🪞 Espelho Emocional": {
-            "forcas": "✔ Capacidade empática refinada. ✔ Leitura intuitiva das emoções do grupo. ✔ Inspira confiança e conexão não verbal.",
-            "riscos": "⚠ Pode internalizar dores que não são suas. ⚠ Pode moldar seu comportamento em excesso para evitar desarmonia.",
-            "recomendacoes": "➡ Cuide da sua identidade enquanto cuida dos outros. ➡ Use sua empatia como ferramenta, não como identidade central."
+        "O Observador Consciente": {
+            "forcas": "Forca: A autoconsciencia permite monitorar a propria capacidade emocional e evitar o esgotamento por empatia. Forca: Consegue refletir sobre as dinamicas emocionais do grupo com profundidade e clareza. Forca: A mentalizacao transforma a empatia intuitiva em compreensao estruturada das necessidades da equipe.",
+            "riscos": "Risco: Pode intelectualizar as emocoes em vez de simplesmente acolhe-las, perdendo a espontaneidade do cuidado. Risco: Tende a analisar demais as interacoes emocionais, criando distancia em vez de conexao. Risco: A auto-observacao constante pode gerar duvidas sobre a autenticidade do proprio cuidado.",
+            "recomendacoes": "Acao: Permita-se sentir e acolher antes de analisar, usando a reflexao como complemento e nao substituto da empatia. Acao: Use a autoconsciencia para identificar quando esta se distanciando emocionalmente e reconecte-se. Acao: Confie na sua intuicao emocional tanto quanto na sua capacidade analitica."
         },
-        "🎭 Relacional Reativo": {
-            "forcas": "✔ Combinação de contenção com diplomacia. ✔ Excelente em manter a estabilidade enquanto navega conflitos. ✔ Capacidade de absorver tensões mantendo a harmonia.",
-            "riscos": "⚠ Pode reprimir demais as próprias emoções para manter o grupo. ⚠ Tendência a evitar posições firmes.",
-            "recomendacoes": "➡ Expresse suas necessidades sem medo de desagradar. ➡ Lembre-se que sua autenticidade fortalece o grupo."
+        "O Executor Decidido": {
+            "forcas": "Forca: A decisividade permite agir rapidamente quando a equipe precisa de intervencao emocional urgente. Forca: Combina cuidado com pragmatismo, oferecendo suporte que resulta em acoes concretas. Forca: A orientacao para acao impede que o acolhimento emocional se torne passividade ou estagnacao.",
+            "riscos": "Risco: Pode atropelar processos emocionais do grupo por impaciencia, querendo resolver sentimentos como se fossem problemas tecnicos. Risco: Tende a oferecer solucoes rapidas quando as pessoas precisam apenas ser ouvidas. Risco: A urgencia de agir pode criar a impressao de que emocoes sao obstaculos a serem eliminados.",
+            "recomendacoes": "Acao: Pratique a escuta ativa sem necessidade de resolver imediatamente, reconhecendo que processar emocoes leva tempo. Acao: Diferencie entre situacoes que exigem acao rapida e aquelas que precisam de espaco emocional. Acao: Use sua energia de execucao para criar estruturas de apoio duradouras, nao apenas intervencoes pontuais."
         }
     },
-    "🔥 Narciso Estratégico": {
-        "🛡 Protetor": {
-            "forcas": "✔ Mobiliza com empatia e energia. ✔ Cria laços emocionais com facilidade. ✔ Inspira performance e pertencimento.",
-            "riscos": "⚠ Pode se sentir sobrecarregado(a) por expectativas emocionais da equipe. ⚠ Pode adiar confrontos difíceis para preservar a imagem carinhosa.",
-            "recomendacoes": "➡ Equilibre empatia com assertividade. ➡ Reforce sua autoridade para além da simpatia."
+    "O Buscador de Reconhecimento": {
+        "O Idealista Exigente": {
+            "forcas": "Forca: O carisma natural combinado com altos padroes cria uma lideranca visionaria e inspiradora. Forca: A necessidade de reconhecimento impulsiona entregas de excelencia que destacam o lider e a equipe. Forca: Consegue mobilizar pessoas em torno de metas ambiciosas com entusiasmo contagiante.",
+            "riscos": "Risco: Pode usar padroes elevados como instrumento de competicao, buscando superioridade em vez de excelencia. Risco: Tende a se frustrar intensamente quando resultados excelentes nao geram o reconhecimento esperado. Risco: A combinacao de vaidade com perfeccionismo pode tornar qualquer critica uma ferida narcisica.",
+            "recomendacoes": "Acao: Separe a busca por excelencia da necessidade de aplausos, encontrando satisfacao no processo e nao apenas no resultado visivel. Acao: Desenvolva tolerancia a critica construtiva, entendendo que feedback e investimento no seu crescimento. Acao: Celebre as conquistas coletivas com a mesma intensidade que celebra as individuais."
         },
-        "🧱 Contenedor": {
-            "forcas": "✔ Presença forte e magnética. ✔ Sabe conter o caos emocional da equipe com calma, liderando com presença e impacto. ✔ Impõe respeito e mobiliza corações.",
-            "riscos": "⚠ Pode internalizar tensões em silêncio até esgotar-se. ⚠ Pode buscar reconhecimento para compensar o peso de conter tudo.",
-            "recomendacoes": "➡ Divida responsabilidades emocionais com a equipe. ➡ Cultive o reconhecimento interno, não só o externo."
+        "O Contenedor Empatico": {
+            "forcas": "Forca: O carisma aliado a empatia cria uma presenca magnetica que faz as pessoas se sentirem valorizadas. Forca: Consegue usar a sensibilidade emocional para conectar-se profundamente com cada membro da equipe. Forca: A necessidade de ser admirado motiva a criacao de ambientes positivos onde todos prosperam.",
+            "riscos": "Risco: Pode usar a empatia de forma manipulativa, acolhendo estrategicamente para ganhar lealdade e admiracao. Risco: Tende a absorver emocoes alheias nao por cuidado genuino, mas para se posicionar como heroi ou salvador. Risco: Pode negligenciar suas proprias necessidades emocionais enquanto busca validacao atraves do cuidado com os outros.",
+            "recomendacoes": "Acao: Examine honestamente suas motivacoes ao oferecer apoio emocional, distinguindo cuidado genuino de busca por admiracao. Acao: Permita que outros tambem cuidem de voce, reduzindo a assimetria relacional que alimenta o narcisismo. Acao: Desenvolva fontes de validacao interna que nao dependam de ser o salvador emocional do grupo."
         },
-        "🧠 Observador Reflexivo": {
-            "forcas": "✔ Combinação de profundidade intelectual com carisma. ✔ Excelente comunicador estratégico. ✔ Habilidade de ler o ambiente e adaptar a abordagem para máxima influência.",
-            "riscos": "⚠ Risco de usar a inteligência para manipular ou justificar ações egoístas. ⚠ A autoanálise pode focar apenas em otimizar a imagem.",
-            "recomendacoes": "➡ Use sua capacidade de análise para construir relações mais genuínas. ➡ Separe seu valor da admiração que recebe."
+        "O Estruturador Cauteloso": {
+            "forcas": "Forca: A capacidade de estruturar processos da visibilidade e credibilidade a lideranca carismatica. Forca: O planejamento cuidadoso garante que as iniciativas do lider nao sejam apenas brilhantes mas tambem sustentaveis. Forca: A combinacao de carisma com organizacao cria uma lideranca que inspira e entrega resultados consistentes.",
+            "riscos": "Risco: Pode usar estruturas e processos para controlar a narrativa e garantir que os creditos sempre cheguem a si. Risco: Tende a criar burocracias que centralizam as decisoes, mantendo-se como figura indispensavel. Risco: A cautela excessiva pode frustrar o desejo de brilhar rapidamente, gerando impaciencia com o proprio sistema.",
+            "recomendacoes": "Acao: Crie estruturas que distribuam responsabilidades e visibilidade, em vez de centraliza-las em voce. Acao: Reconheca que lideranca sustentavel vem da construcao de sistemas que funcionam mesmo sem a sua presenca. Acao: Use sua capacidade de planejamento para criar oportunidades de destaque para toda a equipe."
         },
-        "🏗 Estruturador": {
-            "forcas": "✔ Combina energia carismática com organização metódica. ✔ Transforma visão em processos claros. ✔ Motiva a equipe enquanto mantém o controle.",
-            "riscos": "⚠ Pode usar a estrutura para controlar e manter a centralidade. ⚠ Pode resistir a delegar para não perder o holofote.",
-            "recomendacoes": "➡ Deixe a equipe brilhar também. ➡ Use a estrutura para empoderar, não para controlar."
+        "O Relacional Reativo": {
+            "forcas": "Forca: A sensibilidade relacional permite perceber como esta sendo percebido e ajustar seu comportamento para manter influencia positiva. Forca: Consegue navegar dinamicas politicas complexas com carisma e inteligencia emocional. Forca: A consciencia das transferencias permite construir aliancas estrategicas genuinas.",
+            "riscos": "Risco: Pode reagir de forma desproporcional quando sente que nao esta recebendo o reconhecimento merecido nas relacoes. Risco: Tende a interpretar dinamicas relacionais normais como ameacas ao seu status ou posicao. Risco: A reatividade emocional combinada com necessidade de validacao pode gerar ciclos de idealizacao e desvalorizacao dos outros.",
+            "recomendacoes": "Acao: Quando se sentir ameacado em uma relacao profissional, pause e avalie se a ameaca e real ou uma projecao da sua necessidade de reconhecimento. Acao: Desenvolva relacionamentos profissionais baseados em reciprocidade, nao em admiracao unilateral. Acao: Trabalhe a capacidade de manter sua autoestima estavel independentemente das flutuacoes relacionais."
         },
-        "🪞 Espelho Emocional": {
-            "forcas": "✔ Carisma adaptável e leitura refinada do ambiente. ✔ Conecta-se facilmente com diferentes públicos. ✔ Usa a percepção social para influenciar positivamente.",
-            "riscos": "⚠ Pode se perder entre a imagem que projeta e quem realmente é. ⚠ Vulnerável à manipulação por buscar aprovação excessiva.",
-            "recomendacoes": "➡ Mantenha uma âncora interna de valores além da aprovação. ➡ Reflita sobre suas motivações mais profundas."
+        "O Observador Consciente": {
+            "forcas": "Forca: A autoconsciencia permite reconhecer quando a busca por reconhecimento esta distorcendo decisoes ou relacoes. Forca: A capacidade reflexiva transforma o narcisismo bruto em autenticidade e autoconhecimento produtivo. Forca: Consegue usar o carisma de forma consciente e etica, potencializando sua influencia positiva.",
+            "riscos": "Risco: Pode usar a auto-analise como mais uma forma de se admirar, transformando a reflexao em narcisismo intelectual. Risco: Tende a se perder em reflexoes sobre suas motivacoes sem mudar efetivamente o comportamento. Risco: A hiperconciencia pode gerar uma versao calculada de si mesmo que perde espontaneidade e autenticidade.",
+            "recomendacoes": "Acao: Use a autoconsciencia para acao transformadora, nao como espelho sofisticado para auto-admiracao. Acao: Busque feedback externo honesto para contrastar com suas auto-percepcoes, aceitando discrepancias. Acao: Pratique acoes anonimas de contribuicao para exercitar a generosidade desvinculada do reconhecimento."
         },
-        "🎭 Relacional Reativo": {
-            "forcas": "✔ Combinação de carisma com sensibilidade relacional. ✔ Excelente em criar conexões e manter harmonia. ✔ Influência positiva através da diplomacia.",
-            "riscos": "⚠ Pode buscar aprovação de forma excessiva. ⚠ Tendência a evitar posições que possam gerar rejeição.",
-            "recomendacoes": "➡ Construa sua identidade independente do feedback externo. ➡ Aceite que nem todos vão aprová-lo sempre."
+        "O Executor Decidido": {
+            "forcas": "Forca: A combinacao de carisma com capacidade de execucao rapida cria uma lideranca altamente impactante e visivel. Forca: A decisividade permite transformar ideias brilhantes em resultados concretos que geram reconhecimento legitimado. Forca: A energia de acao combinada com presenca carismatica mobiliza equipes para entregas extraordinarias.",
+            "riscos": "Risco: Pode agir precipitadamente para gerar resultados visiveis, sacrificando qualidade ou sustentabilidade. Risco: Tende a monopolizar decisoes importantes para garantir que os creditos sejam seus. Risco: A impaciencia com processos lentos combinada com desejo de destaque pode gerar atropelos e ressentimento na equipe.",
+            "recomendacoes": "Acao: Canalize sua energia de execucao para resultados coletivos, celebrando publicamente a contribuicao de cada um. Acao: Pratique a paciencia estrategica, entendendo que nem todos os resultados significativos sao imediatos ou visiveis. Acao: Delegue execucao e compartilhe creditos, fortalecendo sua reputacao como lider que desenvolve outros."
         }
     },
-    "🏗 Estruturador": {
-        "🛡 Protetor": {
-            "forcas": "✔ Une firmeza com sensibilidade. ✔ A equipe se sente segura porque você oferece direção, clareza e acolhimento. ✔ Protege através da organização.",
-            "riscos": "⚠ Pode se tornar rígido(a) tentando 'salvar' todos. ⚠ Pode controlar excessivamente para evitar conflitos.",
-            "recomendacoes": "➡ Confie mais na maturidade emocional do time. ➡ Flexibilize regras quando perceber crescimento autônomo."
+    "O Estruturador Cauteloso": {
+        "O Idealista Exigente": {
+            "forcas": "Forca: A organizacao metodica sustenta a busca por excelencia com processos claros e mensuracoes precisas. Forca: Altos padroes combinados com estrutura criam um sistema de qualidade robusto e confiavel. Forca: A previsibilidade dos processos reduz erros e aproxima os resultados dos padroes idealizados.",
+            "riscos": "Risco: Pode criar uma maquina burocratica perfeccionista que sufoca a criatividade e a agilidade da equipe. Risco: Tende a confundir seguir processos a risca com atingir excelencia, priorizando forma sobre substancia. Risco: A dupla rigidez de controle e perfeccionismo pode tornar o ambiente de trabalho insuportavelmente tenso.",
+            "recomendacoes": "Acao: Diferencie entre processos essenciais que garantem qualidade e processos excessivos que apenas alimentam a necessidade de controle. Acao: Inclua revisoes periodicas de processos para eliminar etapas que nao agregam valor real. Acao: Permita que a equipe sugira simplificacoes, valorizando eficiencia tanto quanto perfeicao."
         },
-        "🧱 Contenedor": {
-            "forcas": "✔ Líder de ferro com coração equilibrado. ✔ Organiza para proteger, cria rotinas para estabilizar. ✔ Conduz com tranquilidade firme.",
-            "riscos": "⚠ Pode se tornar inflexível com processos. ⚠ Pode achar que 'segurar tudo' é seu papel, sem delegar.",
-            "recomendacoes": "➡ Desenvolva flexibilidade estratégica. ➡ Ensine sua equipe a segurar junto com você."
+        "O Contenedor Empatico": {
+            "forcas": "Forca: A estrutura clara combinada com sensibilidade emocional cria ambientes previsivos e acolhedores ao mesmo tempo. Forca: Os processos organizados permitem atender as necessidades emocionais da equipe de forma consistente. Forca: A previsibilidade estrutural reduz a ansiedade do grupo, complementando o acolhimento emocional.",
+            "riscos": "Risco: Pode usar a estrutura como barreira emocional, mantendo as relacoes dentro de parametros controlados. Risco: Tende a processar sentimentos como itens de uma lista, perdendo a profundidade da conexao humana. Risco: A necessidade de ordem pode entrar em conflito com a natureza caotica das emocoes humanas.",
+            "recomendacoes": "Acao: Reconheca que emocoes nao seguem cronogramas e permita flexibilidade nos processos quando o momento emocional exigir. Acao: Use a estrutura para criar espacos seguros de dialogo, nao para controlar o que pode ser dito. Acao: Pratique estar presente emocionalmente mesmo quando a situacao foge dos seus planos."
         },
-        "🔥 Narciso Estratégico": {
-            "forcas": "✔ Combina visão estratégica com presença marcante. ✔ Usa a estrutura para amplificar seu impacto. ✔ Inspira confiança pela competência e carisma.",
-            "riscos": "⚠ Pode usar a estrutura para manter controle e centralidade. ⚠ Pode resistir a mudanças que ameacem sua posição.",
-            "recomendacoes": "➡ Deixe a equipe brilhar também. ➡ Use sua influência para desenvolver outros líderes."
+        "O Buscador de Reconhecimento": {
+            "forcas": "Forca: O carisma do buscador de reconhecimento torna os processos estruturados mais atrativos e faceis de adotar pela equipe. Forca: A necessidade de visibilidade motiva a criacao de sistemas que geram resultados mensuraveisos e celebraveis. Forca: A combinacao de organizacao com comunicacao carismatica fortalece a adesao da equipe a processos.",
+            "riscos": "Risco: Pode criar processos elaborados mais para impressionar do que para resolver problemas reais. Risco: Tende a resistir a mudancas nos processos que nao foram propostas por si mesmo, protegendo a autoria. Risco: A necessidade de reconhecimento pode fazer com que os processos sirvam ao ego do lider em vez de servir a equipe.",
+            "recomendacoes": "Acao: Avalie seus processos pela eficacia real e nao pela impressao que causam em superiores ou pares. Acao: Encoraje a equipe a melhorar processos e reconheca publicamente essas contribuicoes. Acao: Foque em criar sistemas que funcionem independentemente de quem receba o credito."
         },
-        "🧠 Observador Reflexivo": {
-            "forcas": "✔ Excepcional capacidade de análise sistêmica e pensamento estratégico. ✔ Criação de estruturas lógicas, eficientes e otimizadas. ✔ Tomada de decisão baseada em dados e análise crítica.",
-            "riscos": "⚠ Risco extremo de paralisia por análise, buscando a solução 'perfeita'. ⚠ Pode parecer excessivamente técnico ou desconectado da realidade prática.",
-            "recomendacoes": "➡ Integre a intuição e o fator humano em suas análises. ➡ Torne-se mais confortável com a incerteza e a adaptação."
+        "O Relacional Reativo": {
+            "forcas": "Forca: A sensibilidade relacional permite perceber quando processos estao gerando resistencia ou desconforto na equipe. Forca: Consegue ajustar estruturas de acordo com as dinamicas interpessoais do grupo. Forca: A consciencia das transferencias ajuda a entender por que certas pessoas resistem a determinadas estruturas.",
+            "riscos": "Risco: Pode usar processos e estruturas como defesa contra a ansiedade gerada pelas dinamicas relacionais. Risco: Tende a reagir emocionalmente quando alguem questiona ou desrespeita os processos estabelecidos. Risco: A reatividade relacional pode criar excecoes inconsistentes nos processos baseadas em preferencias pessoais.",
+            "recomendacoes": "Acao: Observe quando a rigidez nos processos aumenta em resposta a conflitos relacionais e busque abordar a causa real. Acao: Aplique as mesmas regras para todos, independentemente da sua relacao pessoal com cada membro da equipe. Acao: Use os processos como ferramentas de gestao, nao como escudo emocional contra a complexidade das relacoes."
         },
-        "🪞 Espelho Emocional": {
-            "forcas": "✔ Cria processos que promovem colaboração e minimizam atritos. ✔ Comunica regras de forma clara e diplomática. ✔ Ambiente organizado, previsível e com baixo conflito.",
-            "riscos": "⚠ Pode criar regras para evitar conversas difíceis. ⚠ Pode sacrificar agilidade em nome da harmonia e ordem.",
-            "recomendacoes": "➡ Use a clareza dos processos para abordar conflitos de forma construtiva. ➡ Equilibre ordem com flexibilidade."
+        "O Observador Consciente": {
+            "forcas": "Forca: A autoconsciencia permite identificar quando a necessidade de controle esta se tornando disfuncional. Forca: A reflexao sobre os proprios padroes de organizacao gera melhorias continuas nos processos. Forca: A mentalizacao ajuda a entender o impacto dos processos na experiencia subjetiva da equipe.",
+            "riscos": "Risco: Pode analisar excessivamente cada processo sem nunca implementa-lo de fato, buscando a estrutura perfeita. Risco: Tende a usar a reflexao como mais uma forma de controle, planejando compulsivamente em vez de executar. Risco: A hiperanalise pode gerar paralisia decisoria sobre qual a melhor forma de organizar cada atividade.",
+            "recomendacoes": "Acao: Estabeleca prazos para a fase de planejamento e force-se a implementar, mesmo que o processo nao esteja perfeito. Acao: Adote uma mentalidade iterativa onde processos sao testados e melhorados continuamente, nao planejados indefinidamente. Acao: Use a autoconsciencia para soltar o controle gradualmente, confiando na capacidade adaptativa da equipe."
         },
-        "🎭 Relacional Reativo": {
-            "forcas": "✔ Combinação de organização com sensibilidade relacional. ✔ Cria estruturas que acomodam diferentes estilos. ✔ Processos desenhados para minimizar conflitos.",
-            "riscos": "⚠ Pode usar estruturas para evitar conversas difíceis. ⚠ Tendência a criar regras demais para manter a paz.",
-            "recomendacoes": "➡ Use a estrutura para facilitar conversas, não para evitá-las. ➡ Aceite que alguma incerteza é saudável."
+        "O Executor Decidido": {
+            "forcas": "Forca: A decisividade do executor complementa o planejamento do estruturador, criando um ciclo eficiente de planejar e agir. Forca: A urgencia de execucao evita que os processos se tornem fins em si mesmos. Forca: A combinacao de estrutura com acao rapida gera resultados previsiveis em prazos competitivos.",
+            "riscos": "Risco: A tensao entre querer planejar tudo e querer agir rapido pode gerar ansiedade e inconsistencia. Risco: Tende a atropelar seus proprios processos quando a urgencia fala mais alto, minando a credibilidade da estrutura. Risco: Pode oscilar entre periodos de planejamento excessivo e execucao precipitada, confundindo a equipe.",
+            "recomendacoes": "Acao: Crie processos ageis que permitam velocidade sem sacrificar a previsibilidade que voce valoriza. Acao: Defina claramente em quais situacoes e aceitavel simplificar processos para ganhar velocidade. Acao: Pratique a consistencia entre o que planeja e o que executa, fortalecendo a confianca da equipe nos seus sistemas."
         }
     },
-    "🪞 Espelho Emocional": {
-        "🛡 Protetor": {
-            "forcas": "✔ Capacidade ímpar de adaptação e acolhimento. ✔ Percebe e responde às necessidades emocionais da equipe. ✔ Constrói conexões profundas e segurança psicológica.",
-            "riscos": "⚠ Pode perder autenticidade tentando corresponder a expectativas. ⚠ Pode se frustrar com rejeições sutis.",
-            "recomendacoes": "➡ Mantenha contato com sua identidade, além da imagem percebida. ➡ Fortaleça a liderança com base em valores."
+    "O Relacional Reativo": {
+        "O Idealista Exigente": {
+            "forcas": "Forca: A sensibilidade relacional permite calibrar exigencias de acordo com a capacidade e o momento de cada pessoa. Forca: A consciencia das transferencias ajuda a entender de onde vem a propria pressao por perfeicao. Forca: Consegue criar relacoes de confianca que sustentam feedbacks exigentes sem romper vinculos.",
+            "riscos": "Risco: Pode alternar entre exigencia excessiva e permissividade dependendo do estado emocional da relacao com cada liderado. Risco: Tende a projetar seus padroes de perfeicao nas relacoes, esperando que os outros correspondam a idealizacoes. Risco: A reatividade emocional pode transformar avaliacoes de desempenho em julgamentos pessoais carregados de afeto.",
+            "recomendacoes": "Acao: Separe a avaliacao de desempenho da qualidade do vinculo relacional, mantendo criterios objetivos. Acao: Identifique quais liderados ativam suas transferencias mais intensas e busque equilibrio nessas relacoes. Acao: Desenvolva consciencia de quando esta sendo exigente por padrao de qualidade e quando por necessidade relacional."
         },
-        "🧱 Contenedor": {
-            "forcas": "✔ Absorve o ambiente como uma esponja refinada. ✔ Sensibilidade rara para o emocional coletivo. ✔ Atua como espelho silencioso da equipe.",
-            "riscos": "⚠ Pode internalizar dores que não são suas. ⚠ Pode moldar comportamento em excesso para evitar desarmonia.",
-            "recomendacoes": "➡ Cuide da sua identidade enquanto cuida dos outros. ➡ Use empatia como ferramenta, não como identidade central."
+        "O Contenedor Empatico": {
+            "forcas": "Forca: A combinacao de reatividade relacional com empatia cria uma lideranca extremamente sintonizada com o clima emocional do grupo. Forca: Consegue perceber e acolher tensoes interpessoais antes que se transformem em conflitos abertos. Forca: A sensibilidade dupla permite mediar conflitos com profundidade e genuinidade.",
+            "riscos": "Risco: Pode se fundir emocionalmente com os conflitos do grupo, perdendo a capacidade de funcionar como lider. Risco: Tende a absorver as projecoes e transferencias dos outros sem filtro, esgotando-se rapidamente. Risco: A combinacao de reatividade com empatia pode criar dependencia emocional mutua entre lider e equipe.",
+            "recomendacoes": "Acao: Desenvolva a capacidade de estar emocionalmente presente sem se perder nas emocoes alheias, mantendo seu centro. Acao: Busque supervisao ou terapia regular para processar as cargas emocionais que absorve do grupo. Acao: Estabeleca rituais de autocuidado que renovem sua energia emocional apos interacoes intensas."
         },
-        "🔥 Narciso Estratégico": {
-            "forcas": "✔ Carisma adaptável e leitura refinada do ambiente. ✔ Conecta-se facilmente com diferentes públicos. ✔ Usa a percepção social para influenciar positivamente.",
-            "riscos": "⚠ Pode se perder entre a imagem que projeta e quem é. ⚠ Vulnerável à manipulação por buscar aprovação excessiva.",
-            "recomendacoes": "➡ Mantenha uma âncora interna de valores. ➡ Reflita sobre suas motivações mais profundas."
+        "O Buscador de Reconhecimento": {
+            "forcas": "Forca: O carisma e a consciencia relacional permitem construir redes de influencia poderosas e autenticas. Forca: A sensibilidade as dinamicas interpessoais potencializa a capacidade de engajar e motivar pessoas. Forca: Consegue perceber e responder as necessidades nao-verbalizadas dos outros, gerando lealdade genuina.",
+            "riscos": "Risco: Pode manipular dinamicas relacionais para garantir que o reconhecimento flua em sua direcao. Risco: Tende a interpretar a falta de reconhecimento como rejeicao pessoal, ativando padroes relacionais defensivos. Risco: A combinacao de necessidade de validacao com reatividade pode gerar dramas relacionais recorrentes.",
+            "recomendacoes": "Acao: Observe quando esta usando suas habilidades relacionais para servir a equipe versus para servir a sua necessidade de validacao. Acao: Pratique receber falta de reconhecimento sem interpretar como ataque pessoal ou relacional. Acao: Invista em relacoes profissionais baseadas em contribuicao mutua, nao em admiracao."
         },
-        "🏗 Estruturador": {
-            "forcas": "✔ Cria processos que acomodam necessidades relacionais. ✔ Sensível para ajustar estruturas de forma diplomática. ✔ Liderança equilibrada, justa e cuidadosa.",
-            "riscos": "⚠ Pode criar burocracia para evitar conversas difíceis. ⚠ Pode sacrificar agilidade em nome da harmonia.",
-            "recomendacoes": "➡ Use estrutura para abordar conflitos construtivamente. ➡ Equilibre ordem com flexibilidade e autenticidade."
+        "O Estruturador Cauteloso": {
+            "forcas": "Forca: A estrutura e os processos claros criam um contencao que reduz a ansiedade gerada pela reatividade relacional. Forca: As regras e protocolos ajudam a manter relacoes profissionais dentro de limites saudaveis. Forca: A previsibilidade dos processos oferece seguranca quando as dinamicas interpessoais se tornam intensas.",
+            "riscos": "Risco: Pode usar estruturas rigidas como defesa contra a vulnerabilidade das relacoes interpessoais. Risco: Tende a burocratizar as interacoes humanas para evitar o desconforto da espontaneidade relacional. Risco: A rigidez estrutural pode impedir a flexibilidade necessaria para lidar com situacoes emocionais imprevistas.",
+            "recomendacoes": "Acao: Use processos como suporte para as relacoes, nao como substituto delas, mantendo espaco para o humano. Acao: Permita-se ser surpreendido nas interacoes, aceitando que nem tudo precisa ser planejado. Acao: Avalie periodicamente se seus processos estao facilitando ou dificultando as conexoes genuinas com a equipe."
         },
-        "🧠 Observador Reflexivo": {
-            "forcas": "✔ Excepcional inteligência emocional e interpessoal. ✔ Habilidade de ler entrelinhas e compreender motivações ocultas. ✔ Pode ser excelente coach ou mentor.",
-            "riscos": "⚠ Risco de paralisia por análise nas relações. ⚠ Pode usar compreensão para evitar confrontos necessários.",
-            "recomendacoes": "➡ Use sua compreensão para agir com coragem e autenticidade. ➡ Equilibre observação com expressão genuína."
+        "O Observador Consciente": {
+            "forcas": "Forca: A autoconsciencia permite identificar padroes relacionais repetitivos e trabalhar para transforma-los. Forca: A mentalizacao ajuda a entender tanto suas proprias reacoes quanto as dos outros nas interacoes. Forca: A reflexao consciente transforma experiencias relacionais dificeis em aprendizado e crescimento.",
+            "riscos": "Risco: Pode intelectualizar as reacoes emocionais em vez de vive-las e resolve-las genuinamente. Risco: Tende a usar a auto-analise como forma de evitar o confronto direto com dinamicas relacionais dificeis. Risco: A hiperreflexao sobre padroes relacionais pode gerar paralisia na hora de agir nas relacoes.",
+            "recomendacoes": "Acao: Equilibre reflexao com acao relacional, usando os insights para mudar comportamentos concretos. Acao: Pratique conversas dificeis em vez de apenas analisa-las mentalmente, enfrentando o desconforto. Acao: Compartilhe suas reflexoes com pessoas de confianca para validar percepcoes e evitar vieses."
         },
-        "🎭 Relacional Reativo": {
-            "forcas": "✔ Altíssima capacidade de leitura emocional e adaptação. ✔ Excelente em navegar dinâmicas complexas. ✔ Cria ambientes de alta conexão e empatia.",
-            "riscos": "⚠ Risco extremo de perder a própria identidade. ⚠ Pode se moldar tanto que perde autenticidade.",
-            "recomendacoes": "➡ Fortaleça sua identidade central independente do grupo. ➡ Pratique manter posições mesmo sob pressão social."
+        "O Executor Decidido": {
+            "forcas": "Forca: A decisividade permite resolver conflitos interpessoais rapidamente em vez de deixa-los escalar. Forca: A orientacao para acao impede que dinamicas relacionais toxicas se perpetuem por inacao. Forca: Consegue tomar decisoes dificeis sobre pessoas quando as dinamicas do grupo exigem mudanca.",
+            "riscos": "Risco: Pode agir impulsivamente em situacoes relacionais complexas que exigiriam mais reflexao e sensibilidade. Risco: Tende a tratar conflitos interpessoais como problemas a serem resolvidos com rapidez, ignorando a profundidade emocional. Risco: A impaciencia com processos relacionais lentos pode gerar rupturas desnecessarias nos vinculos.",
+            "recomendacoes": "Acao: Antes de agir em situacoes interpessoais intensas, faca uma pausa para avaliar se a urgencia e real ou e sua reatividade. Acao: Reconheca que relacoes humanas precisam de tempo para se reparar e desenvolver, mesmo quando voce quer resolucao imediata. Acao: Use sua capacidade de decisao para criar espacos de dialogo, nao para encerrar conversas prematuramente."
         }
     },
-    "🧠 Observador Reflexivo": {
-        "🛡 Protetor": {
-            "forcas": "✔ Inspira confiança e acolhimento. ✔ Capacidade de análise emocional e previsão de conflitos. ✔ Toma decisões considerando o impacto humano.",
-            "riscos": "⚠ Pode absorver emocionalmente os problemas do time. ⚠ Pode hesitar diante de decisões duras por empatia excessiva.",
-            "recomendacoes": "➡ Estabeleça limites claros entre você e a equipe. ➡ Reserve tempo para ação, não apenas para análise."
+    "O Observador Consciente": {
+        "O Idealista Exigente": {
+            "forcas": "Forca: A reflexao consciente direciona a busca por excelencia para areas de real impacto e significado. Forca: A autoconsciencia permite distinguir entre padroes saudaveis de qualidade e perfeccionismo autodestrutivo. Forca: Consegue articular com clareza por que determinados padroes sao importantes, inspirando compreensao na equipe.",
+            "riscos": "Risco: Pode analisar excessivamente seus proprios padroes de excelencia sem conseguir relaxa-los na pratica. Risco: Tende a se tornar um critico interno hiperativo que pensa muito e age pouco sobre suas exigencias. Risco: A combinacao de hiperreflexao com perfeccionismo pode gerar uma forma sofisticada de procrastinacao.",
+            "recomendacoes": "Acao: Transforme suas reflexoes sobre padroes em acoes concretas com prazos definidos. Acao: Pratique o conceito de bom o suficiente em areas de menor impacto, reservando a excelencia para o que realmente importa. Acao: Busque um accountability partner que o ajude a sair do ciclo de analise e entrar no ciclo de execucao."
         },
-        "🧱 Contenedor": {
-            "forcas": "✔ Excepcional combinação de inteligência emocional e racional. ✔ Profunda estabilidade e capacidade de análise, mesmo sob pressão. ✔ Excelente em gerenciar crises e conflitos delicados.",
-            "riscos": "⚠ Risco de distanciamento excessivo, parecendo frio ou analítico demais. ⚠ Pode intelectualizar excessivamente as emoções.",
-            "recomendacoes": "➡ Compartilhe mais da sua humanidade sem perder sua força. ➡ Equilibre a observação com a participação ativa."
+        "O Contenedor Empatico": {
+            "forcas": "Forca: A autoconsciencia enriquece a empatia, criando um acolhimento profundo e informado por compreensao psicologica. Forca: Consegue oferecer suporte emocional sem se perder nas emocoes alheias, mantendo clareza interna. Forca: A reflexao consciente permite perceber necessidades emocionais sutis que outros lideres nao captariam.",
+            "riscos": "Risco: Pode transformar o cuidado em projeto intelectual, analisando as emocoes dos outros em vez de simplesmente acolhe-las. Risco: Tende a manter distancia emocional sob pretexto de observacao consciente, evitando vulnerabilidade. Risco: A sobre-analise das dinamicas emocionais pode tornar as interacoes artificiais e calculadas.",
+            "recomendacoes": "Acao: Pratique momentos de presenca emocional pura, sem a necessidade de compreender ou analisar tudo. Acao: Permita-se ser tocado emocionalmente pelas situacoes da equipe, usando a reflexao depois e nao durante. Acao: Busque feedback sobre como sua equipe percebe seu acolhimento para verificar se esta chegando de forma genuina."
         },
-        "🔥 Narciso Estratégico": {
-            "forcas": "✔ Combinação de profundidade intelectual com carisma. ✔ Excelente comunicador estratégico, capaz de persuadir com lógica e emoção. ✔ Capaz de gerar admiração tanto pelo conteúdo quanto pela forma.",
-            "riscos": "⚠ Risco de cinismo ou de usar a inteligência para manipular. ⚠ Pode se tornar excessivamente calculista.",
-            "recomendacoes": "➡ Use sua inteligência a serviço da conexão genuína e do propósito maior. ➡ Separe seu valor da admiração que recebe."
+        "O Buscador de Reconhecimento": {
+            "forcas": "Forca: A autoconsciencia sobre a necessidade de reconhecimento permite usa-la de forma construtiva e etica. Forca: O carisma informado por reflexao cria uma lideranca autentica e nao manipulativa. Forca: Consegue canalizar o desejo de destaque para contribuicoes que beneficiam genuinamente o grupo.",
+            "riscos": "Risco: Pode usar a autoconsciencia como mais uma ferramenta de construcao de imagem sofisticada. Risco: Tende a ficar preso entre o desejo de reconhecimento e a autocritica por desejar reconhecimento. Risco: A reflexao excessiva sobre motivacoes pode levar a inacao por medo de ser percebido como narcisista.",
+            "recomendacoes": "Acao: Aceite que o desejo de reconhecimento e humano e natural, focando em canaliza-lo de forma construtiva. Acao: Use sua capacidade reflexiva para garantir que suas acoes estejam alinhadas com seus valores, nao apenas com seu ego. Acao: Pratique a transparencia sobre suas motivacoes com pessoas de confianca, reduzindo a pressao interna."
         },
-        "🏗 Estruturador": {
-            "forcas": "✔ Excepcional capacidade de análise sistêmica e pensamento estratégico. ✔ Criação de estruturas lógicas e otimizadas. ✔ Liderança percebida como altamente inteligente e metódica.",
-            "riscos": "⚠ Risco extremo de paralisia por análise. ⚠ Pode supervalorizar a lógica, negligenciando fatores humanos e emocionais.",
-            "recomendacoes": "➡ Integre a intuição, a emoção e o fator humano em suas análises. ➡ Torne-se mais confortável com a incerteza."
+        "O Estruturador Cauteloso": {
+            "forcas": "Forca: A reflexao consciente sobre processos gera sistemas mais inteligentes e adaptaveis. Forca: A autoconsciencia permite perceber quando a necessidade de controle esta limitando a eficacia da equipe. Forca: A mentalizacao ajuda a criar estruturas que consideram o fator humano alem do fator tecnico.",
+            "riscos": "Risco: Pode analisar excessivamente cada processo, nunca chegando a uma versao final implementavel. Risco: Tende a criar sistemas teoricamente perfeitos mas praticamente impraticaveis por excesso de complexidade. Risco: A combinacao de cautela com hiperreflexao pode gerar paralisia organizacional sofisticada.",
+            "recomendacoes": "Acao: Adote a regra dos 80 porcento: implemente quando o processo estiver bom o suficiente e melhore continuamente. Acao: Teste suas estruturas rapidamente no campo em vez de refina-las indefinidamente no papel. Acao: Peca feedback pratico da equipe sobre seus processos, priorizando usabilidade sobre perfeicao teorica."
         },
-        "🪞 Espelho Emocional": {
-            "forcas": "✔ Excepcional inteligência emocional e interpessoal. ✔ Habilidade de ler entrelinhas e compreender motivações ocultas. ✔ Adapta-se às necessidades do grupo com consciência.",
-            "riscos": "⚠ Risco de paralisia pela análise das relações. ⚠ Pode usar a compreensão para evitar confrontos ou manipular sutilmente.",
-            "recomendacoes": "➡ Use sua compreensão para construir relações autênticas, mesmo que envolvam conflito. ➡ Equilibre a cabeça e o coração."
+        "O Relacional Reativo": {
+            "forcas": "Forca: A autoconsciencia permite identificar e nomear padroes transferenciais no momento em que acontecem. Forca: A mentalizacao transforma reacoes emocionais automaticas em respostas conscientes e escolhidas. Forca: Consegue observar as dinamicas relacionais do grupo com clareza suficiente para intervir de forma precisa.",
+            "riscos": "Risco: Pode observar e analisar as dinamicas sem nunca intervir, mantendo-se na seguranca da posicao de espectador. Risco: Tende a intelectualizar conflitos relacionais, nomeando padroes sem resolve-los efetivamente. Risco: A sobre-analise das proprias reacoes pode gerar desconfianca de si mesmo nas interacoes espontaneas.",
+            "recomendacoes": "Acao: Use seus insights sobre dinamicas relacionais para intervencoes praticas e oportunas, nao apenas para compreensao teorica. Acao: Confie nas suas reacoes emocionais como dados validos, nao apenas como objetos de analise. Acao: Pratique intervencoes relacionais imperfeitas, aceitando que a acao conta mais que a analise perfeita."
         },
-        "🎭 Relacional Reativo": {
-            "forcas": "✔ Combinação de profundidade analítica com sensibilidade relacional. ✔ Excelente em compreender dinâmicas de grupo. ✔ Capacidade de mediar e harmonizar conflitos.",
-            "riscos": "⚠ Pode usar a análise para evitar posições firmes. ⚠ Tende a sobre-analisar reações dos outros antes de agir.",
-            "recomendacoes": "➡ Use sua análise para agir, não para evitar. ➡ Confie em suas percepções e tome posição."
+        "O Executor Decidido": {
+            "forcas": "Forca: A decisividade complementa a reflexao, garantindo que insights profundos se transformem em acoes concretas. Forca: A orientacao para acao evita que a auto-observacao se torne fim em si mesma. Forca: A combinacao de pensamento profundo com execucao rapida cria decisoes bem fundamentadas e implementadas com agilidade.",
+            "riscos": "Risco: A tensao entre querer refletir mais e querer agir logo pode gerar estresse e decisoes ora precipitadas ora atrasadas. Risco: Tende a alternar entre periodos de analise excessiva e acao impulsiva, sem encontrar o equilibrio. Risco: A impaciencia do executor pode sabotar a profundidade da reflexao que o observador precisa.",
+            "recomendacoes": "Acao: Defina momentos claros para reflexao e momentos para acao, respeitando ambos sem mistura-los. Acao: Use a reflexao para definir direcao e a execucao para gerar aprendizado pratico, criando um ciclo virtuoso. Acao: Aceite que nem toda decisao precisa de reflexao profunda e nem toda acao precisa ser imediata."
         }
     },
-    "🎭 Relacional Reativo": {
-        "🛡 Protetor": {
-            "forcas": "✔ Alta sensibilidade às necessidades emocionais do grupo. ✔ Excelente em criar ambientes acolhedores. ✔ Capacidade de antecipar conflitos antes que explodam.",
-            "riscos": "⚠ Pode evitar confrontos necessários para manter a paz. ⚠ Tendência a absorver as emoções negativas do grupo.",
-            "recomendacoes": "➡ Aprenda que conflito saudável fortalece relacionamentos. ➡ Estabeleça limites claros para proteger sua energia."
+    "O Executor Decidido": {
+        "O Idealista Exigente": {
+            "forcas": "Forca: A velocidade de execucao aliada a altos padroes gera entregas rapidas e de qualidade quando bem equilibradas. Forca: A decisividade evita a paralisia da perfeicao, transformando ideais em resultados concretos. Forca: A combinacao de urgencia com excelencia cria uma lideranca de alto impacto e alta performance.",
+            "riscos": "Risco: Pode entregar rapido mas se frustrar com a qualidade, gerando ciclos de retrabalho e insatisfacao. Risco: Tende a pressionar a equipe com prazos agressivos e padroes irrealistas simultaneamente. Risco: A tensao cronica entre velocidade e perfeicao pode causar burnout pessoal e coletivo.",
+            "recomendacoes": "Acao: Defina explicitamente para cada projeto se a prioridade e velocidade ou qualidade, comunicando isso a equipe. Acao: Crie mecanismos de revisao rapida que garantam qualidade minima sem sacrificar a agilidade. Acao: Monitore seu nivel de estresse e o da equipe, ajustando expectativas quando necessario."
         },
-        "🧱 Contenedor": {
-            "forcas": "✔ Combinação de diplomacia com estabilidade emocional. ✔ Excelente em acalmar situações tensas. ✔ Capacidade de absorver ansiedade sem desestabilizar.",
-            "riscos": "⚠ Pode se tornar refém das expectativas do grupo. ⚠ Risco de reprimir suas próprias necessidades para manter harmonia.",
-            "recomendacoes": "➡ Equilibre a contenção com a expressão de suas necessidades. ➡ Lembre-se que sua estabilidade não precisa ser perfeita."
+        "O Contenedor Empatico": {
+            "forcas": "Forca: A empatia suaviza a urgencia de acao, criando um ambiente onde a velocidade nao atropela as pessoas. Forca: Consegue mover a equipe rapidamente enquanto mantem a conexao emocional e o bem-estar do grupo. Forca: A sensibilidade emocional informa decisoes rapidas, tornando-as mais humanas e sustentaveis.",
+            "riscos": "Risco: Pode ignorar sinais emocionais da equipe por estar focado na urgencia da execucao. Risco: Tende a alternar entre momentos de pressao intensa e tentativas de reparacao emocional, confundindo a equipe. Risco: A impaciencia natural pode ser percebida como falta de cuidado, mesmo quando a intencao e boa.",
+            "recomendacoes": "Acao: Inclua check-ins emocionais rapidos na sua rotina de execucao, mesmo quando o ritmo e intenso. Acao: Comunique a equipe que sua urgencia nao significa falta de cuidado, explicitando suas intencoes. Acao: Aprenda a desacelerar quando perceber que a equipe precisa de processamento emocional antes de seguir adiante."
         },
-        "🔥 Narciso Estratégico": {
-            "forcas": "✔ Habilidade diplomática aliada a carisma natural. ✔ Excelente em criar conexões e gerar admiração. ✔ Sabe como influenciar mantendo a harmonia.",
-            "riscos": "⚠ Pode buscar aprovação de forma excessiva. ⚠ Frustração quando não recebe o reconhecimento esperado.",
-            "recomendacoes": "➡ Construa sua identidade independente da aprovação externa. ➡ Reconheça seu valor além das validações do grupo."
+        "O Buscador de Reconhecimento": {
+            "forcas": "Forca: O carisma combinado com capacidade de entrega cria uma lideranca que inspira e produz resultados visiveis. Forca: A necessidade de reconhecimento canalizada em execucao gera realizacoes concretas e celebraveis. Forca: A visibilidade natural do executor potencializa o impacto positivo do seu carisma.",
+            "riscos": "Risco: Pode priorizar acoes que geram visibilidade rapida em detrimento de trabalho importante mas invisivel. Risco: Tende a competir por projetos de alta visibilidade, negligenciando tarefas fundamentais mas pouco glamorosas. Risco: A combinacao de impaciencia com vaidade pode gerar decisoes precipitadas motivadas por ego.",
+            "recomendacoes": "Acao: Valorize igualmente entregas visiveis e invisiveis, reconhecendo que sustentabilidade exige trabalho nos bastidores. Acao: Desenvolva satisfacao com o impacto real do trabalho, nao apenas com a percepcao externa. Acao: Pratique delegar projetos de alta visibilidade para membros da equipe, demonstrando lideranca madura."
         },
-        "🏗 Estruturador": {
-            "forcas": "✔ Capacidade de criar estruturas que promovem harmonia. ✔ Excelente em organizar equipes de forma que minimize conflitos. ✔ Processos desenhados para acolher diferentes perfis.",
-            "riscos": "⚠ Pode criar estruturas rígidas para evitar a incerteza relacional. ⚠ Tendência a controlar para evitar desaprovação.",
-            "recomendacoes": "➡ Permita flexibilidade nas estruturas para acomodar o humano. ➡ Aceite que nem todos os processos podem evitar conflitos."
+        "O Estruturador Cauteloso": {
+            "forcas": "Forca: A estrutura e o planejamento direcionam a energia de execucao para acoes mais estrategicas e eficazes. Forca: Os processos organizados garantem que a velocidade de execucao nao gere caos ou inconsistencia. Forca: A cautela do estruturador equilibra a impulsividade do executor, criando decisoes rapidas mas fundamentadas.",
+            "riscos": "Risco: Pode se sentir preso pelos proprios processos quando a situacao exige acao imediata e sem precedentes. Risco: Tende a oscilar entre seguir o plano rigidamente e abandona-lo completamente quando fica impaciente. Risco: A frustracao com a lentidao dos processos pode leva-lo a desrespeitar suas proprias estruturas.",
+            "recomendacoes": "Acao: Crie processos que tenham caminhos acelerados para situacoes de urgencia, mantendo a estrutura sem perder agilidade. Acao: Respeite seus proprios processos para manter a credibilidade, pedindo contribuicoes da equipe para torna-los mais ageis. Acao: Reconheca que a estrutura existe para servir a execucao, ajustando-a quando necessario sem abandona-la."
         },
-        "🪞 Espelho Emocional": {
-            "forcas": "✔ Altíssima sensibilidade emocional e adaptabilidade. ✔ Excelente em ler ambientes e ajustar comportamento. ✔ Cria conexões rápidas e profundas.",
-            "riscos": "⚠ Risco extremo de perder autenticidade. ⚠ Pode se moldar tanto que perde identidade própria.",
-            "recomendacoes": "➡ Fortaleça sua identidade central independente do grupo. ➡ Pratique manter posições mesmo sob pressão social."
+        "O Relacional Reativo": {
+            "forcas": "Forca: A sensibilidade relacional permite perceber rapidamente quando a equipe precisa de abordagens diferentes para manter o ritmo. Forca: Consegue adaptar seu estilo de lideranca de acordo com as necessidades interpessoais de cada momento. Forca: A consciencia das dinamicas de grupo informa decisoes rapidas sobre alocacao e gestao de pessoas.",
+            "riscos": "Risco: Pode tomar decisoes impulsivas sobre pessoas quando ativado emocionalmente por dinamicas interpessoais. Risco: Tende a reagir rapidamente demais em conflitos, antes de entender completamente o que esta acontecendo. Risco: A impaciencia com processos relacionais pode gerar rupturas desnecessarias que prejudicam o desempenho do grupo.",
+            "recomendacoes": "Acao: Estabeleca a regra de esperar 24 horas antes de tomar decisoes sobre pessoas ou relacoes em momentos de ativacao emocional. Acao: Use sua capacidade de acao rapida para criar espacos de dialogo, nao para impor solucoes unilaterais. Acao: Desenvolva tolerancia ao desconforto relacional, entendendo que nem todo conflito exige acao imediata."
         },
-        "🧠 Observador Reflexivo": {
-            "forcas": "✔ Combinação de análise profunda com sensibilidade relacional. ✔ Excelente em compreender dinâmicas ocultas. ✔ Capacidade de insight sobre o funcionamento do grupo.",
-            "riscos": "⚠ Pode usar análise como defesa contra a ação. ⚠ Tendência a hesitar por medo de errar nas relações.",
-            "recomendacoes": "➡ Transforme insights em ações concretas. ➡ Aceite que errar faz parte do crescimento relacional."
+        "O Observador Consciente": {
+            "forcas": "Forca: A autoconsciencia permite identificar quando a urgencia de acao esta sendo produtiva ou destrutiva. Forca: A reflexao consciente informa decisoes rapidas com maior profundidade e menor risco de erro. Forca: Consegue equilibrar acao decisiva com momentos de pausa estrategica quando necessario.",
+            "riscos": "Risco: A tensao entre agir e refletir pode gerar indecisao ou acoes seguidas de arrependimento. Risco: Tende a alternar entre impulso e sobre-analise, sem encontrar um ritmo consistente. Risco: Pode usar a reflexao como desculpa para procrastinar em situacoes que genuinamente exigem acao imediata.",
+            "recomendacoes": "Acao: Desenvolva um sistema rapido de checagem interna antes de decisoes importantes: tres perguntas-chave em dois minutos. Acao: Aceite que algumas decisoes precisam ser tomadas com informacao incompleta e que a acao gera aprendizado. Acao: Use a reflexao pos-acao como ferramenta de melhoria continua em vez de tentar prever tudo antes de agir."
         }
     }
 }
+
 
 MODULES_DATA = [
     {
@@ -2316,13 +2327,13 @@ def render_assessment_form(form_key, is_employee=False):
 def get_profile_tendency(profile):
     """Return the leadership tendency for a given profile."""
     tendencies = {
-        "Protetor": "acolhimento e cuidado da equipe",
-        "Contenedor": "estabilidade emocional e gestao de crises",
-        "Narciso Estrategico": "inspiracao e motivacao da equipe",
-        "Estruturador": "organizacao e controle de processos",
-        "Espelho Emocional": "empatia e validacao emocional",
-        "Observador Reflexivo": "analise profunda e decisoes ponderadas",
-        "Relacional Reativo": "diplomacia e harmonizacao de conflitos"
+        "O Idealista Exigente": "excelencia e padroes elevados de lideranca",
+        "O Contenedor Empatico": "estabilidade emocional e seguranca do grupo",
+        "O Buscador de Reconhecimento": "inspiracao e motivacao da equipe",
+        "O Estruturador Cauteloso": "organizacao, controle e previsibilidade",
+        "O Relacional Reativo": "sensibilidade as dinamicas interpessoais",
+        "O Observador Consciente": "autoconsciencia e analise profunda",
+        "O Executor Decidido": "acao decisiva e foco em resultados"
     }
     return tendencies.get(profile, "desenvolvimento da equipe")
 
@@ -2627,18 +2638,20 @@ def generate_manager_guide_pdf():
     
     # Profile descriptions
     profiles = [
-        ("Protetor", "Voce tende a acolher e cuidar da equipe. Seu ponto forte e criar ambientes seguros. "
-         "Atencao: pode haver dificuldade em cobrar resultados ou dar feedbacks dificeis."),
-        ("Contenedor", "Voce absorve tensoes do grupo e mantem estabilidade emocional. Essencial em crises. "
+        ("O Idealista Exigente", "Pressao interna constante por excelencia. Seu ponto forte e manter padroes altos de qualidade. "
+         "Atencao: autocritica excessiva pode gerar esgotamento e paralisia."),
+        ("O Contenedor Empatico", "Absorve tensoes do grupo e cria seguranca emocional. Essencial em crises. "
          "Atencao: risco de sobrecarga emocional e esgotamento."),
-        ("Narciso Estrategico", "Voce inspira e motiva atraves de visao e carisma. Mobiliza a equipe para grandes objetivos. "
-         "Atencao: pode centralizar demais e dificultar a autonomia."),
-        ("Estruturador", "Voce organiza processos e garante previsibilidade. Equipes bem estruturadas. "
+        ("O Buscador de Reconhecimento", "Inspira e motiva atraves de carisma e visao. Mobiliza a equipe para grandes objetivos. "
+         "Atencao: pode depender demais de validacao externa."),
+        ("O Estruturador Cauteloso", "Organiza processos e garante previsibilidade. Equipes bem estruturadas. "
          "Atencao: rigidez excessiva pode inibir criatividade e inovacao."),
-        ("Espelho Emocional", "Voce valida emocoes e cria conexao empatica. Equipes se sentem ouvidas. "
-         "Atencao: pode absorver problemas alheios e perder objetividade."),
-        ("Observador Reflexivo", "Voce analisa profundamente antes de agir. Decisoes ponderadas e estrategicas. "
-         "Atencao: pode parecer distante ou demorar demais para decidir.")
+        ("O Relacional Reativo", "Sensivel as dinamicas interpessoais e transferencias. Percebe padroes relacionais. "
+         "Atencao: pode ser ativado emocionalmente por conflitos, reagindo de forma desproporcional."),
+        ("O Observador Consciente", "Analisa profundamente e reflete antes de agir. Decisoes ponderadas e conscientes. "
+         "Atencao: pode parecer distante ou demorar demais para decidir."),
+        ("O Executor Decidido", "Orientado a acao e resultados rapidos. Faz as coisas acontecerem. "
+         "Atencao: pode atropelar processos e pessoas por impaciencia.")
     ]
     
     for name, desc in profiles:
@@ -2798,34 +2811,30 @@ def generate_radar_chart(block_sums, profile_name=""):
     """Generate a radar chart showing the 7 axes of the assessment."""
     import numpy as np
     
-    # Define the 7 axes with short names
     categories = [
-        'Autoridade\nInterna',
-        'Contencao\nEmocional',
-        'Narcisismo\nReconhecimento',
-        'Estrutura\nOrdem',
-        'Relacao\nEmpatia',
-        'Reflexao\nObservacao',
-        'Relacional\nReativo'
+        'Autoridade\nSuperego',
+        'Contencao\nEmpatia',
+        'Narcisismo\nMotivacao',
+        'Estrutura\nControle',
+        'Relacional\nTransferencia',
+        'Observacao\nMentalizacao',
+        'Execucao\nUrgencia'
     ]
     
-    # Map full block names to short names for data extraction
     block_keys = [
-        "Bloco 1 – Autoridade Interna e Autoimagem",
-        "Bloco 2 – Contenção Emocional do Grupo",
-        "Bloco 3 – Narcisismo e Reconhecimento",
-        "Bloco 4 – Estrutura e Lógica de Tarefa",
-        "Bloco 5 – Relação com a Equipe e Projeções",
-        "Bloco 6 – Reflexão, Crítica e Autoconsciência",
-        "Bloco 7 – Relacional Reativo"
+        "Bloco 1 – Autoridade Interna, Autoimagem e Superego",
+        "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca",
+        "Bloco 3 – Narcisismo, Reconhecimento e Motivacao",
+        "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade",
+        "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia",
+        "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego",
+        "Bloco 7 – Acao, Urgencia e Foco na Entrega"
     ]
     
-    # Get values (max is 50 for each block - 10 questions x 5 points)
     values = []
     for key in block_keys:
-        val = block_sums.get(key, 25)  # Default to midpoint if not found
-        # Normalize to percentage (0-100)
-        normalized = (val / 50) * 100
+        val = block_sums.get(key, 20)
+        normalized = (val / 40) * 100
         values.append(normalized)
     
     # Number of variables
@@ -2881,18 +2890,18 @@ def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_nam
         
         block_details = ""
         block_keys = [
-            ("Bloco 1 – Autoridade Interna e Autoimagem", "Autoridade Interna"),
-            ("Bloco 2 – Contenção Emocional do Grupo", "Contenção Emocional"),
-            ("Bloco 3 – Narcisismo e Reconhecimento", "Narcisismo/Reconhecimento"),
-            ("Bloco 4 – Estrutura e Lógica de Tarefa", "Estrutura/Ordem"),
-            ("Bloco 5 – Relação com a Equipe e Projeções", "Relação/Empatia"),
-            ("Bloco 6 – Reflexão, Crítica e Autoconsciência", "Reflexão/Observação"),
-            ("Bloco 7 – Relacional Reativo", "Relacional Reativo"),
+            ("Bloco 1 – Autoridade Interna, Autoimagem e Superego", "Superego/Autoridade Interna"),
+            ("Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca", "Contencao Emocional/Empatia"),
+            ("Bloco 3 – Narcisismo, Reconhecimento e Motivacao", "Narcisismo/Reconhecimento"),
+            ("Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade", "Estrutura/Controle"),
+            ("Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia", "Dinamicas Relacionais"),
+            ("Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego", "Autoconsciencia/Mentalizacao"),
+            ("Bloco 7 – Acao, Urgencia e Foco na Entrega", "Execucao/Urgencia"),
         ]
         for full_name, short_name in block_keys:
-            score = block_sums.get(full_name, 25)
-            pct = round((score / 50) * 100)
-            block_details += f"- {short_name}: {score}/50 ({pct}%)\n"
+            score = block_sums.get(full_name, 20)
+            pct = round((score / 40) * 100)
+            block_details += f"- {short_name}: {score}/40 ({pct}%)\n"
         
         prompt = f"""Voce e uma consultora especialista em Psicanalise e Neurociencia aplicada a Lideranca, 
 com formacao baseada em Kernberg, Bion, Sinek e Neurociencia organizacional.
@@ -2904,8 +2913,17 @@ Perfil Dominante: {dominant}
 Perfil Secundario: {secondary}
 Papel de Bion: {bion_role}
 
-Pontuacoes por eixo (maximo 50 pontos cada, 10 questoes x 5 pontos):
+Pontuacoes por eixo (maximo 40 pontos cada, 8 questoes x 5 pontos):
 {block_details}
+
+Os 7 arquetipos possiveis sao:
+- O Idealista Exigente (Superego/Autoimagem): pressao interna por excelencia
+- O Contenedor Empatico (Regulacao Emocional): absorve emocoes do grupo, cria seguranca
+- O Buscador de Reconhecimento (Narcisismo/Validacao): busca validacao externa
+- O Estruturador Cauteloso (Controle/Ordem): necessidade de estrutura e previsibilidade
+- O Relacional Reativo (Transferencia/Contratransferencia): ativado por dinamicas interpessoais
+- O Observador Consciente (Autoconsciencia/Mentalizacao): reflexivo, auto-observador
+- O Executor Decidido (Acao/Urgencia): orientado a acao e resultados rapidos
 
 INSTRUCOES PARA O LAUDO:
 1. Escreva um laudo completo com NO MINIMO 5 paragrafos de texto corrido (nao apenas bullet points).
@@ -2953,12 +2971,23 @@ def save_assessment_responses(respondent_id, respondent_type, responses):
     conn.commit()
     conn.close()
 
+def calculate_cloninger_scores(responses):
+    """Calculate Cloninger temperament subdimension scores from Block 8."""
+    cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger)"
+    scores = {}
+    for code, info in CLONINGER_SUBDIMENSIONS.items():
+        total = sum(responses.get(f"{cloninger_block}_{q}", 3) for q in info["questions"])
+        scores[code] = {"name": info["name"], "score": total, "max": 10}
+    return scores
+
 def calculate_profile(responses):
     block_sums = {}
     for block, questions in ASSESSMENT_QUESTIONS.items():
-        block_sums[block] = sum(responses[f"{block}_{i}"] for i in range(len(questions)))
+        block_sums[block] = sum(responses.get(f"{block}_{i}", 3) for i in range(len(questions)))
     
-    sorted_blocks = sorted(block_sums.items(), key=lambda x: x[1], reverse=True)
+    archetype_blocks = {k: v for k, v in block_sums.items() if k in BLOCK_TO_PROFILE}
+    
+    sorted_blocks = sorted(archetype_blocks.items(), key=lambda x: x[1], reverse=True)
     dom_key = sorted_blocks[0][0]
     sec_key = sorted_blocks[1][0]
     
@@ -2966,20 +2995,21 @@ def calculate_profile(responses):
     secondary_name = BLOCK_TO_PROFILE[sec_key]
     
     details = PROFILES_DB.get(dominant_name, {}).get(secondary_name, {
-        "forcas": f"✔ Combinação de {dominant_name} e {secondary_name}.",
-        "riscos": "⚠ Necessidade de vigília sobre dinâmicas da equipe.",
-        "recomendacoes": "➡ Agende mentoria personalizada."
+        "forcas": f"Combinacao de {dominant_name} e {secondary_name}.",
+        "riscos": "Necessidade de vigilia sobre dinamicas da equipe.",
+        "recomendacoes": "Agende mentoria personalizada."
     })
     
-    # Convert full block names to short names for Bion classification
     short_block_sums = {}
-    for full_name, value in block_sums.items():
+    for full_name, value in archetype_blocks.items():
         short_name = BLOCK_SHORT_NAMES.get(full_name, full_name)
         short_block_sums[short_name] = value
     
     bion_role = classify_bion_role(short_block_sums)
     
-    return dominant_name, secondary_name, details, bion_role, block_sums
+    cloninger_scores = calculate_cloninger_scores(responses)
+    
+    return dominant_name, secondary_name, details, bion_role, block_sums, cloninger_scores
 
 # Render Paywall Box
 def render_paywall():
@@ -3500,14 +3530,15 @@ if page == "Home":
                 <h3 style="color: #18738c;">Descubra Seu Perfil de Lideranca</h3>
                 <p>O LPTest e um assessment exclusivo, desenvolvido com bases teoricas na psicologia e neurociencia 
                 a partir de avaliacoes comportamentais e de personalidade. As questoes mapeiam seu perfil atraves 
-                de <strong>6 dimensoes</strong>:</p>
+                de <strong>7 dimensoes psicanaliticas + 1 bloco de temperamento</strong>:</p>
                 <ul style="color: #666;">
-                    <li><strong>Autoridade Interna</strong> - Como voce exerce e percebe sua autoridade</li>
-                    <li><strong>Contencao Emocional</strong> - Sua capacidade de manter a calma em crises</li>
-                    <li><strong>Narcisismo/Reconhecimento</strong> - Sua relacao com reconhecimento e validacao</li>
-                    <li><strong>Estrutura/Ordem</strong> - Sua necessidade de controle e organizacao</li>
-                    <li><strong>Relacao/Empatia</strong> - Suas dinamicas de transferencia com a equipe</li>
-                    <li><strong>Reflexao/Observacao</strong> - Sua capacidade de autoconhecimento</li>
+                    <li><strong>Autoridade/Superego</strong> - Pressao interna e exigencia consigo mesmo</li>
+                    <li><strong>Contencao Emocional</strong> - Empatia e criacao de seguranca no grupo</li>
+                    <li><strong>Narcisismo/Motivacao</strong> - Sua relacao com reconhecimento e validacao</li>
+                    <li><strong>Estrutura/Controle</strong> - Necessidade de ordem e tolerancia a ambiguidade</li>
+                    <li><strong>Dinamicas Relacionais</strong> - Transferencia e contratransferencia com a equipe</li>
+                    <li><strong>Autoconsciencia</strong> - Mentalizacao e defesas do ego</li>
+                    <li><strong>Execucao/Urgencia</strong> - Foco em acao e resultados</li>
                 </ul>
             </div>
         """, unsafe_allow_html=True)
@@ -4113,11 +4144,10 @@ elif page == "LPTest":
             submit = st.form_submit_button("Gerar Meu Perfil de Liderança")
             
             if submit and st.session_state.user:
-                dominant, secondary, details, bion_role, block_sums = calculate_profile(responses)
+                dominant, secondary, details, bion_role, block_sums, cloninger_scores = calculate_profile(responses)
                 user_id = st.session_state.user['id']
                 save_manager_profile(user_id, dominant, secondary, details)
                 
-                # Save individual responses for future AI analysis
                 save_assessment_responses(user_id, "manager", responses)
                 
                 st.session_state.manager_data = get_manager_by_user(user_id)
@@ -4127,7 +4157,8 @@ elif page == "LPTest":
                     "secondary": secondary,
                     "details": details,
                     "bion_role": bion_role,
-                    "block_sums": block_sums
+                    "block_sums": block_sums,
+                    "cloninger_scores": cloninger_scores
                 }
                 st.session_state.ai_laudo = None
                 st.session_state.laudo_requested = True
@@ -4500,7 +4531,7 @@ elif page == "EmployeeAssessment":
                         save_employee_consent(token)
                     
                     # Calculate and save results
-                    dominant, secondary, details, bion_role, block_sums = calculate_profile(responses)
+                    dominant, secondary, details, bion_role, block_sums, cloninger_scores = calculate_profile(responses)
                     save_employee_result(token, name, email, dominant, secondary, details, bion_role)
                     
                     # Save individual responses for future AI analysis
@@ -4830,19 +4861,20 @@ ANALISE AUTOMATICA DA DINAMICA GRUPAL:
 - Atitude paranoide sadia (alerta aos perigos da corrupcao e regressao)
 
 5. PERFIS DE LIDERANCA E SEUS ARQUETIPOS:
-- Protetor: Acolhe mas pode absorver demais (risco de burnout)
-- Contenedor: Mantem calma em crises, metaboliza ansiedade grupal
-- Narciso Estrategico: Inspira e motiva, mas precisa de validacao constante
-- Estruturador: Organiza e da forma, mas pode controlar demais
-- Espelho Emocional: Reflete e valida emocoes, mas pode ser afetado
-- Observador Reflexivo: Analisa profundamente, mas pode hesitar na acao
+- O Idealista Exigente: Pressao interna por excelencia, autocritica intensa (risco de burnout por perfeccionismo)
+- O Contenedor Empatico: Mantem calma em crises, absorve emocoes do grupo, cria seguranca
+- O Buscador de Reconhecimento: Inspira e motiva, mas precisa de validacao constante
+- O Estruturador Cauteloso: Organiza e controla, mas pode ser rigido demais
+- O Relacional Reativo: Sensivel a transferencias e dinamicas interpessoais, pode ser ativado emocionalmente
+- O Observador Consciente: Autoconsciencia e mentalizacao profundas, mas pode hesitar na acao
+- O Executor Decidido: Orientado a acao e resultados rapidos, mas pode atropelar processos
 
 6. ADEQUACAO DE PERFIS A FUNCOES:
-- Cargos de Lideranca Operacional: Estruturador ou Contenedor
-- Cargos Criativos: Narciso Estrategico ou Espelho Emocional
-- Cargos de Mediacao/RH: Protetor ou Espelho Emocional
-- Cargos Analiticos: Observador Reflexivo
-- Gestao de Crises: Contenedor ou Lider de Luta-Fuga (canalizado)
+- Cargos de Lideranca Operacional: Estruturador Cauteloso ou Executor Decidido
+- Cargos Criativos: Buscador de Reconhecimento ou Idealista Exigente
+- Cargos de Mediacao/RH: Contenedor Empatico ou Relacional Reativo
+- Cargos Analiticos: Observador Consciente ou Estruturador Cauteloso
+- Gestao de Crises: Contenedor Empatico ou Executor Decidido
 
 ============ INSTRUCOES DE RESPOSTA ============
 
@@ -5212,14 +5244,15 @@ elif page == "GuiaSuporte":
             <h3 style="color: #18738c;">1. Como Interpretar seu Perfil</h3>
             <p>Seu perfil de lideranca revela seus <strong>arquetipos inconscientes dominantes</strong> - padroes de comportamento 
             que operam abaixo da consciencia e influenciam como voce lidera sua equipe.</p>
-            <p>Os 6 perfis de lideranca do LPS sao:</p>
+            <p>Os 7 perfis de lideranca do LPS sao:</p>
             <ul>
-                <li><strong>Protetor:</strong> Acolhimento e cuidado da equipe</li>
-                <li><strong>Contenedor:</strong> Estabilidade emocional e gestao de crises</li>
-                <li><strong>Narciso Estrategico:</strong> Inspiracao e motivacao atraves de visao</li>
-                <li><strong>Estruturador:</strong> Organizacao e controle de processos</li>
-                <li><strong>Espelho Emocional:</strong> Empatia e validacao emocional</li>
-                <li><strong>Observador Reflexivo:</strong> Analise profunda e decisoes ponderadas</li>
+                <li><strong>O Idealista Exigente:</strong> Excelencia e padroes elevados de lideranca</li>
+                <li><strong>O Contenedor Empatico:</strong> Estabilidade emocional e seguranca do grupo</li>
+                <li><strong>O Buscador de Reconhecimento:</strong> Inspiracao e motivacao atraves de carisma</li>
+                <li><strong>O Estruturador Cauteloso:</strong> Organizacao, controle e previsibilidade</li>
+                <li><strong>O Relacional Reativo:</strong> Sensibilidade as dinamicas interpessoais</li>
+                <li><strong>O Observador Consciente:</strong> Autoconsciencia e analise profunda</li>
+                <li><strong>O Executor Decidido:</strong> Acao decisiva e foco em resultados</li>
             </ul>
             <p><em>Cada perfil tem seus pontos fortes e areas de atencao. O LPTest mostra seu perfil dominante e secundario.</em></p>
         </div>
