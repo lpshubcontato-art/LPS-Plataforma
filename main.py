@@ -2845,6 +2845,123 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     buffer.seek(0)
     return buffer.getvalue()
 
+def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_role, respondent_type="gestor"):
+    """Generate a professional PDF report for the AI laudo with 12-section structure."""
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch,
+                           leftMargin=0.75*inch, rightMargin=0.75*inch)
+    styles = create_pdf_styles()
+    
+    styles.add(ParagraphStyle(
+        name='LaudoSectionTitle',
+        parent=styles['Heading2'],
+        fontSize=13,
+        textColor=HexColor('#18738c'),
+        spaceBefore=18,
+        spaceAfter=8,
+        fontName='Helvetica-Bold',
+        borderWidth=0,
+        borderPadding=0,
+        borderColor=HexColor('#18738c'),
+    ))
+    
+    styles.add(ParagraphStyle(
+        name='LaudoBody',
+        parent=styles['Normal'],
+        fontSize=10.5,
+        textColor=HexColor('#2c2c2c'),
+        alignment=TA_JUSTIFY,
+        spaceAfter=6,
+        leading=14,
+        fontName='Helvetica',
+    ))
+    
+    styles.add(ParagraphStyle(
+        name='LaudoMeta',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=HexColor('#444444'),
+        spaceAfter=4,
+        fontName='Helvetica',
+    ))
+    
+    elements = []
+    
+    elements.append(create_pdf_header_table())
+    elements.append(Spacer(1, 15))
+    
+    tipo_label = "Laudo Psicanalitico de Lideranca" if respondent_type == "gestor" else "Laudo Psicanalitico - Perfil de Equipe"
+    elements.append(Paragraph(tipo_label, styles['LPSTitle']))
+    elements.append(Spacer(1, 8))
+    
+    elements.append(Paragraph(f"<b>Nome:</b> {respondent_name or 'Avaliado(a)'}", styles['LaudoMeta']))
+    elements.append(Paragraph(f"<b>Perfil:</b> {dominant} + {secondary}", styles['LaudoMeta']))
+    elements.append(Paragraph(f"<b>Papel de Bion:</b> {bion_role}", styles['LaudoMeta']))
+    elements.append(Paragraph(f"<b>Data:</b> {datetime.now().strftime('%d/%m/%Y %H:%M')}", styles['LaudoMeta']))
+    
+    line_table = Table([[""]],  colWidths=[doc.width])
+    line_table.setStyle(TableStyle([
+        ('LINEABOVE', (0, 0), (-1, 0), 1.5, HexColor('#18738c')),
+        ('TOPPADDING', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 4),
+    ]))
+    elements.append(line_table)
+    
+    sections = parse_laudo_sections(laudo_text)
+    
+    for section_title in LAUDO_SECTIONS:
+        content = sections.get(section_title, "")
+        if not content and section_title == "1. Visao Geral" and len(sections) == 1:
+            content = list(sections.values())[0]
+        
+        display_title = section_title
+        if respondent_type == "funcionario" and "Lideranca" in display_title:
+            display_title = display_title.replace("Lideranca", "Trabalho")
+        
+        elements.append(Paragraph(display_title, styles['LaudoSectionTitle']))
+        
+        sep_table = Table([[""]],  colWidths=[doc.width])
+        sep_table.setStyle(TableStyle([
+            ('LINEABOVE', (0, 0), (-1, 0), 0.5, HexColor('#d19f09')),
+            ('TOPPADDING', (0, 0), (-1, 0), 2),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+        ]))
+        elements.append(sep_table)
+        
+        if content:
+            paragraphs = content.split("\n\n") if "\n\n" in content else content.split("\n")
+            for para in paragraphs:
+                clean = para.strip()
+                if not clean:
+                    continue
+                clean = clean.replace("**", "<b>").replace("*", "")
+                bold_count = clean.count("<b>")
+                if bold_count % 2 != 0:
+                    clean += "</b>"
+                try:
+                    elements.append(Paragraph(clean, styles['LaudoBody']))
+                except Exception:
+                    safe_text = clean.replace("<", "&lt;").replace(">", "&gt;")
+                    elements.append(Paragraph(safe_text, styles['LaudoBody']))
+        else:
+            elements.append(Paragraph("<i>Secao nao disponivel nesta analise.</i>", styles['LaudoBody']))
+    
+    elements.append(Spacer(1, 25))
+    footer_line = Table([[""]],  colWidths=[doc.width])
+    footer_line.setStyle(TableStyle([
+        ('LINEABOVE', (0, 0), (-1, 0), 1, HexColor('#18738c')),
+        ('TOPPADDING', (0, 0), (-1, 0), 8),
+    ]))
+    elements.append(footer_line)
+    elements.append(Paragraph("Plataforma LPS - Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
+    elements.append(Paragraph(f"Documento gerado em {datetime.now().strftime('%d/%m/%Y as %H:%M')}", styles['LPSInfo']))
+    elements.append(Paragraph("Este laudo e confidencial e destinado exclusivamente ao avaliado e seu gestor.", styles['LPSInfo']))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer.getvalue()
+
 def generate_manager_guide_pdf():
     """Generate the Manager's Guide PDF with LPS methodology."""
     buffer = io.BytesIO()
@@ -3157,8 +3274,69 @@ def extract_docx_profile_text(dominant, secondary, respondent_type="gestor"):
         print(f"[DOCX] Error extracting profile: {e}")
         return None
 
+LAUDO_SECTIONS = [
+    "1. Visao Geral",
+    "2. Essencia Psicanalitica",
+    "3. Motivacoes Inconscientes",
+    "4. Forcas",
+    "5. Sombra (Riscos)",
+    "6. Dinamica Grupal (Papeis de Bion)",
+    "7. Estilo de Lideranca/Trabalho",
+    "8. Dinamica Emocional (Sinek + Neurociencia)",
+    "9. Melhor Aproveitamento",
+    "10. Riscos de Alocacao",
+    "11. Recomendacoes de Desenvolvimento",
+    "12. Sintese Final"
+]
+
+def parse_laudo_sections(laudo_text):
+    """Parse AI laudo text into the 12 structured sections."""
+    sections = {}
+    current_section = None
+    current_content = []
+    
+    for line in laudo_text.split("\n"):
+        stripped = line.strip()
+        matched = False
+        for section_title in LAUDO_SECTIONS:
+            num_prefix = section_title.split(".")[0].strip()
+            check_variants = [
+                f"**{section_title}**",
+                f"**{section_title}:",
+                f"## {section_title}",
+                f"### {section_title}",
+                section_title,
+                f"**{num_prefix}.",
+                f"## {num_prefix}.",
+                f"### {num_prefix}.",
+            ]
+            for variant in check_variants:
+                if stripped.startswith(variant) or stripped.startswith(variant.replace("**", "").strip()):
+                    if current_section:
+                        sections[current_section] = "\n".join(current_content).strip()
+                    current_section = section_title
+                    remainder = stripped
+                    for v in check_variants:
+                        remainder = remainder.replace(v, "")
+                    remainder = remainder.strip().strip("*").strip(":").strip()
+                    current_content = [remainder] if remainder else []
+                    matched = True
+                    break
+            if matched:
+                break
+        if not matched and current_section:
+            current_content.append(line)
+    
+    if current_section:
+        sections[current_section] = "\n".join(current_content).strip()
+    
+    if len(sections) < 6:
+        sections = {"1. Visao Geral": laudo_text}
+    
+    return sections
+
 def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_name="", profile_text=None, respondent_type="gestor"):
-    """Generate a deep psychoanalytic leadership analysis using Gemini AI."""
+    """Generate a deep psychoanalytic leadership analysis using Gemini AI with 12-section structure."""
     try:
         api_key = st.secrets.get("GOOGLE_API_KEY", os.environ.get("GOOGLE_API_KEY", ""))
         if not api_key:
@@ -3167,18 +3345,31 @@ def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_nam
         client = genai.Client(api_key=api_key)
         
         block_details = ""
-        block_keys = [
-            ("Bloco 1 – Autoridade Interna, Autoimagem e Superego", "Superego/Autoridade Interna"),
-            ("Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca", "Contencao Emocional/Empatia"),
-            ("Bloco 3 – Narcisismo, Reconhecimento e Motivacao", "Narcisismo/Reconhecimento"),
-            ("Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade", "Estrutura/Controle"),
-            ("Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia", "Dinamicas Relacionais"),
-            ("Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego", "Autoconsciencia/Mentalizacao"),
-            ("Bloco 7 – Acao, Urgencia e Foco na Entrega", "Execucao/Urgencia"),
-        ]
-        max_score = 60 if respondent_type == "funcionario" else 40
+        if respondent_type == "funcionario":
+            block_keys = [
+                ("Bloco 1 – Idealista Exigente (Funcionario)", "Autoridade/Idealismo"),
+                ("Bloco 2 – Contenedor Empatico (Funcionario)", "Contencao Emocional/Empatia"),
+                ("Bloco 3 – Buscador de Reconhecimento (Funcionario)", "Narcisismo/Reconhecimento"),
+                ("Bloco 4 – Estruturador Cauteloso (Funcionario)", "Estrutura/Controle"),
+                ("Bloco 5 – Relacional Reativo (Funcionario)", "Dinamicas Relacionais"),
+                ("Bloco 6 – Observador Consciente (Funcionario)", "Autoconsciencia/Observacao"),
+                ("Bloco 7 – Executor Decidido (Funcionario)", "Execucao/Urgencia"),
+            ]
+            max_score = 60
+        else:
+            block_keys = [
+                ("Bloco 1 – Autoridade Interna, Autoimagem e Superego", "Superego/Autoridade Interna"),
+                ("Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca", "Contencao Emocional/Empatia"),
+                ("Bloco 3 – Narcisismo, Reconhecimento e Motivacao", "Narcisismo/Reconhecimento"),
+                ("Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade", "Estrutura/Controle"),
+                ("Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia", "Dinamicas Relacionais"),
+                ("Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego", "Autoconsciencia/Mentalizacao"),
+                ("Bloco 7 – Acao, Urgencia e Foco na Entrega", "Execucao/Urgencia"),
+            ]
+            max_score = 40
+        
         for full_name, short_name in block_keys:
-            score = block_sums.get(full_name, 20)
+            score = block_sums.get(full_name, max_score // 2)
             pct = round((score / max_score) * 100)
             block_details += f"- {short_name}: {score}/{max_score} ({pct}%)\n"
         
@@ -3186,58 +3377,135 @@ def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_nam
         if profile_text:
             profile_context = f"""
 
-PERFIL DETALHADO EXTRAIDO DA BASE DE CONHECIMENTO:
+PERFIL DETALHADO EXTRAIDO DA BASE DE CONHECIMENTO (ARQUIVO .DOCX):
+--- INICIO DO PERFIL ---
 {profile_text}
+--- FIM DO PERFIL ---
 
-IMPORTANTE: Use o texto do perfil acima como BASE PRINCIPAL para a analise. 
-Expanda e aprofunde os pontos mencionados no perfil com suas referencias teoricas."""
+INSTRUCAO CRITICA: O texto acima e a BASE PRINCIPAL e OBRIGATORIA para o laudo.
+Utilize as informacoes, terminologia e insights do perfil .docx como alicerce de cada secao.
+Expanda e aprofunde cada ponto com referencias teoricas (Kernberg, Bion, Sinek, Neurociencia)."""
         
-        respondent_label = "funcionario/membro de equipe" if respondent_type == "funcionario" else "Lider avaliado"
-        max_label = f"maximo {max_score} pontos cada"
+        respondent_label = "funcionario/membro de equipe" if respondent_type == "funcionario" else "lider/gestor"
+        role_label = "Estilo de Trabalho" if respondent_type == "funcionario" else "Estilo de Lideranca"
         
-        prompt = f"""Voce e uma consultora especialista em Psicanalise e Neurociencia aplicada a Lideranca, 
-com formacao baseada em Kernberg, Bion, Sinek e Neurociencia organizacional.
+        if respondent_type == "funcionario":
+            bion_context = """Papeis Grupais de Bion para Funcionarios:
+- Bode Expiatorio: Absorve projecoes negativas do grupo, frequentemente culpado por falhas sistemicas
+- Sabotador: Resiste passivamente as mudancas, concordancia superficial com boicote sutil
+- Lider Informal: Assume lideranca sem cargo formal, mobiliza por carisma ou competencia
+- Patrulheiro: Vigia normas e comportamentos, aponta desvios e cobra conformidade
+- Apaziguador: Evita conflitos a todo custo, sacrifica autenticidade pela harmonia
+- Neutro/Adaptavel: Perfil equilibrado, adapta-se as necessidades sem papel fixo"""
+        else:
+            bion_context = """Papeis de Bion para Lideres:
+- Pressupostos Basicos: Dependencia, Luta-Fuga, Pareamento
+- Grupo de Trabalho: funcionamento maduro orientado a tarefa
+- Porta-voz, Bode Expiatorio, Dependente, Lider de Luta-Fuga, Sabotador Silencioso"""
+        
+        prompt = f"""Voce e a Dra. Viviane Nishiura, Consultora Psicanalitica Senior especializada em Psicanalise Organizacional, 
+Neurociencia Aplicada a Lideranca e Dinamicas Grupais. Sua formacao e baseada em Kernberg (relacoes objetais, 
+narcisismo saudavel, organizacao borderline e neurotica da personalidade), Bion (pressupostos basicos, grupo de trabalho, 
+continente-conteudo), Sinek (Circulo de Seguranca, quimicos EDSO) e Neurociencia Organizacional (cortisol, ocitocina, 
+amigdala, neuronios-espelho, cortex pre-frontal).
 
-Gere uma ANALISE PROFUNDA PSICANALITICA E DE LIDERANCA para o seguinte perfil:
-
-Nome: {respondent_name if respondent_name else respondent_label}
-Tipo de Respondente: {respondent_type}
+DADOS DO ASSESSMENT:
+Nome: {respondent_name if respondent_name else "Avaliado(a)"}
+Tipo: {respondent_label}
 Perfil Dominante: {dominant}
 Perfil Secundario: {secondary}
-Papel de Bion: {bion_role}
+Papel de Bion Identificado: {bion_role}
 
-Pontuacoes por eixo ({max_label}):
+Pontuacoes por Eixo (maximo {max_score} pontos cada):
 {block_details}
+
+{bion_context}
 {profile_context}
 
-Os 7 arquetipos possiveis sao:
-- O Idealista Exigente (Superego/Autoimagem): pressao interna por excelencia
-- O Contenedor Empatico (Regulacao Emocional): absorve emocoes do grupo, cria seguranca
-- O Buscador de Reconhecimento (Narcisismo/Validacao): busca validacao externa
-- O Estruturador Cauteloso (Controle/Ordem): necessidade de estrutura e previsibilidade
-- O Relacional Reativo (Transferencia/Contratransferencia): ativado por dinamicas interpessoais
-- O Observador Consciente (Autoconsciencia/Mentalizacao): reflexivo, auto-observador
-- O Executor Decidido (Acao/Urgencia): orientado a acao e resultados rapidos
+Os 7 arquetipos do sistema LPS sao:
+- O Idealista Exigente: Superego exigente, pressao interna por excelencia, alto padrao moral
+- O Contenedor Empatico: Funcao continente (Bion), absorve ansiedades do grupo, regulacao emocional
+- O Buscador de Reconhecimento: Narcisismo funcional (Kernberg), busca validacao e admiracao
+- O Estruturador Cauteloso: Necessidade de controle e previsibilidade, defesa contra ambiguidade
+- O Relacional Reativo: Ativado por transferencia/contratransferencia, sensivel a dinamicas interpessoais
+- O Observador Consciente: Alta mentalizacao, autoconsciencia reflexiva, distanciamento analitico
+- O Executor Decidido: Orientado a acao e resultados, urgencia como defesa contra ansiedade
 
-INSTRUCOES PARA O LAUDO:
-1. Escreva um laudo completo com NO MINIMO 5 paragrafos de texto corrido (nao apenas bullet points).
-2. Inclua analise psicanalitica profunda com referencias a:
-   - Dinamicas inconscientes do lider (Kernberg: relacoes objetais, narcisismo saudavel, atitude paranoide saudavel)
-   - Papel grupal segundo Bion (Pressupostos Basicos: Dependencia, Luta-Fuga, Pareamento vs Grupo de Trabalho)
-   - Neurociencia: impacto do cortisol vs ocitocina, amigdala, neuronios-espelho, cortex pre-frontal
-   - Circulo de Seguranca de Sinek (EDSO: Endorfina, Dopamina, Serotonina, Ocitocina)
-   - Transferencia e Contratransferencia nas relacoes de equipe
-3. Analise os eixos mais altos e mais baixos e o que isso revela sobre padroes inconscientes.
-4. Inclua recomendacoes praticas baseadas em neurociencia e psicanalise.
-5. Use linguagem profissional mas acessivel. Escreva em portugues brasileiro.
-6. Formate com titulos em negrito usando ** para secoes principais.
-7. O laudo deve ter entre 800 e 1200 palavras."""
+ESTRUTURA OBRIGATORIA DO LAUDO (12 SECOES):
+Gere o laudo seguindo RIGOROSAMENTE estas 12 secoes, cada uma como titulo em negrito com **:
+
+**1. Visao Geral**
+Apresentacao do perfil {dominant} + {secondary}. Contextualize a combinacao dos arquetipos, 
+explicando como a interacao entre dominante e secundario cria uma configuracao psiquica unica.
+Mencione o nome do avaliado e seu tipo ({respondent_label}).
+
+**2. Essencia Psicanalitica**
+Analise profunda da estrutura psiquica segundo Kernberg: tipo de organizacao da personalidade 
+(neurotica, borderline, narciSica), qualidade das relacoes objetais internalizadas, nivel de 
+integracao do self. Referencie conceitos como objeto bom/mau, posicao esquizo-paranoide vs depressiva (Klein).
+
+**3. Motivacoes Inconscientes**
+Identifique os impulsos inconscientes que dirigem o comportamento: fantasias inconscientes de lideranca, 
+mecanismos de defesa predominantes (projecao, identificacao projetiva, racionalizacao, sublimacao), 
+e como o Superego interno influencia decisoes e relacoes.
+
+**4. Forcas**
+Competencias e qualidades que emergem da combinacao dos arquetipos. Relacione com conceitos de 
+narcisismo saudavel (Kernberg), capacidade de continencia (Bion), e neuroquimica positiva 
+(dopamina, serotonina, ocitocina). Minimo 2 paragrafos.
+
+**5. Sombra (Riscos)**
+Aspectos sombrios e pontos cegos: vulnerabilidades psicanaliticas, riscos de regressao sob estresse, 
+padroes inconscientes destrutivos. Referencie o conceito de sombra (Jung adaptado), acting out, 
+e impacto do cortisol e amigdala hiperativa. Minimo 2 paragrafos.
+
+**6. Dinamica Grupal (Papeis de Bion)**
+Analise do papel de Bion identificado ({bion_role}). Explique como este papel se manifesta no grupo, 
+sua relacao com os pressupostos basicos (Dependencia, Luta-Fuga, Pareamento), e como o avaliado 
+transita entre pressuposto basico e grupo de trabalho. Inclua conceito de continente-conteudo.
+
+**7. {role_label}**
+Descricao detalhada de como os arquetipos se traduzem em comportamento {'de lideranca' if respondent_type == 'gestor' else 'no ambiente de trabalho'}. 
+Inclua padroes de tomada de decisao, estilo de comunicacao, gestao de conflitos, e impacto nos liderados/colegas.
+
+**8. Dinamica Emocional (Sinek + Neurociencia)**
+Aplique o Circulo de Seguranca de Sinek: como o perfil impacta os 4 quimicos EDSO 
+(Endorfina, Dopamina, Serotonina, Ocitocina) na equipe. Analise neurocientifica: 
+equilibrio cortisol vs ocitocina, ativacao da amigdala vs cortex pre-frontal, 
+papel dos neuronios-espelho na empatia e contencao emocional.
+
+**9. Melhor Aproveitamento**
+Recomendacoes de posicionamento estrategico: em quais funcoes, projetos e contextos 
+este perfil sera mais produtivo e realizado. Onde alocar para maximizar forcas e minimizar sombras.
+
+**10. Riscos de Alocacao**
+Situacoes, funcoes e dinamicas grupais que devem ser EVITADAS para este perfil. 
+Contextos que ativam regressao, acting out ou descompensacao. Combinacoes de equipe problematicas.
+
+**11. Recomendacoes de Desenvolvimento**
+Sugestoes praticas e fundamentadas para desenvolvimento: leituras, praticas de mentalizacao, 
+tecnicas de regulacao emocional, exercicios de autoconsciencia, e indicacao de mentoria psicanalitica.
+
+**12. Sintese Final**
+Parágrafo conclusivo integrando todos os elementos. Ressalte o potencial do perfil 
+quando bem direcionado e os cuidados necessarios para evitar armadilhas inconscientes.
+
+INSTRUCOES DE QUALIDADE:
+- Tom de Consultor Psicanalitico Senior: profissional, profundo, academico mas acessivel.
+- Cada secao deve ter NO MINIMO 2 paragrafos de texto corrido (nao apenas bullet points).
+- Use termos tecnicos com naturalidade: Superego, relacoes objetais, identificacao projetiva, 
+  continente-conteudo, narcisismo funcional, cortisol, amigdala, neuronios-espelho, EDSO.
+- O laudo completo deve ter entre 1500 e 2500 palavras.
+- Escreva em portugues brasileiro.
+- Formate CADA titulo de secao exatamente como: **N. Nome da Secao** (negrito com numero)
+- NAO use ### ou ## para titulos, use apenas ** negrito **.
+- Insira uma linha em branco entre secoes."""
 
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=prompt,
             config={
-                "max_output_tokens": 4096,
+                "max_output_tokens": 8192,
                 "temperature": 0.7,
             }
         )
@@ -4585,11 +4853,57 @@ elif page == "LPTest":
                 st.subheader("Laudo Completo - Analise Psicanalitica e de Lideranca")
                 
                 if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
-                    st.markdown(st.session_state.ai_laudo)
-                    if st.button("Regenerar Laudo", key="regen_laudo"):
-                        st.session_state.ai_laudo = None
-                        st.session_state.laudo_requested = True
-                        st.rerun()
+                    laudo_sections = parse_laudo_sections(st.session_state.ai_laudo)
+                    
+                    if len(laudo_sections) > 1:
+                        section_icons = {
+                            "1. Visao Geral": "🔍",
+                            "2. Essencia Psicanalitica": "🧠",
+                            "3. Motivacoes Inconscientes": "🌊",
+                            "4. Forcas": "💪",
+                            "5. Sombra (Riscos)": "⚡",
+                            "6. Dinamica Grupal (Papeis de Bion)": "👥",
+                            "7. Estilo de Lideranca/Trabalho": "🎯",
+                            "8. Dinamica Emocional (Sinek + Neurociencia)": "🧬",
+                            "9. Melhor Aproveitamento": "✅",
+                            "10. Riscos de Alocacao": "⛔",
+                            "11. Recomendacoes de Desenvolvimento": "📈",
+                            "12. Sintese Final": "📋"
+                        }
+                        for section_title in LAUDO_SECTIONS:
+                            content = laudo_sections.get(section_title, "")
+                            if content:
+                                icon = section_icons.get(section_title, "📄")
+                                with st.expander(f"{icon} {section_title}", expanded=(section_title == "1. Visao Geral")):
+                                    st.markdown(content)
+                    else:
+                        st.markdown(st.session_state.ai_laudo)
+                    
+                    st.markdown("---")
+                    col_pdf, col_regen = st.columns([2, 1])
+                    with col_pdf:
+                        manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
+                        pdf_data = generate_laudo_pdf(
+                            st.session_state.ai_laudo,
+                            manager_name,
+                            res['dominant'], res['secondary'], res['bion_role'],
+                            respondent_type="gestor"
+                        )
+                        safe_name = (manager_name or "gestor").replace(" ", "_").lower()
+                        st.download_button(
+                            "Baixar Laudo em PDF",
+                            data=pdf_data,
+                            file_name=f"laudo_lps_{safe_name}_{datetime.now().strftime('%Y%m%d')}.pdf",
+                            mime="application/pdf",
+                            key="download_laudo_pdf",
+                            use_container_width=True,
+                            type="primary"
+                        )
+                    with col_regen:
+                        if st.button("Regenerar Laudo", key="regen_laudo", use_container_width=True):
+                            st.session_state.ai_laudo = None
+                            st.session_state.laudo_requested = True
+                            st.rerun()
                 elif st.session_state.get('ai_laudo', '').startswith("__ERROR__"):
                     st.warning(st.session_state.ai_laudo.replace("__ERROR__:", ""))
                     if st.button("Tentar novamente", key="retry_laudo"):
@@ -4597,7 +4911,7 @@ elif page == "LPTest":
                         st.session_state.laudo_requested = True
                         st.rerun()
                 elif st.session_state.get('laudo_requested', False):
-                    with st.spinner("Gerando laudo completo com analise psicanalitica e de neurociencia..."):
+                    with st.spinner("Gerando laudo profissional com 12 secoes de analise psicanalitica..."):
                         manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
                         profile_text = res['details'].get('profile_text') if isinstance(res['details'], dict) else None
                         laudo_text, error = generate_ai_laudo(
@@ -4612,8 +4926,12 @@ elif page == "LPTest":
                         st.rerun()
                 else:
                     st.markdown("""
-                        <div style='background-color: #e8f4f8; padding: 1.5rem; border-radius: 8px; text-align: center;'>
-                            <p style='color: #18738c; margin: 0;'>Clique abaixo para gerar sua analise profunda com base em psicanalise e neurociencia.</p>
+                        <div style='background: linear-gradient(135deg, #18738c10, #d19f0910); padding: 2rem; border-radius: 12px; text-align: center; border: 1px solid #18738c30;'>
+                            <h4 style='color: #18738c; margin: 0 0 0.5rem 0;'>Laudo Psicanalitico Profissional</h4>
+                            <p style='color: #555; margin: 0 0 0.5rem 0;'>Analise completa com 12 secoes: Visao Geral, Essencia Psicanalitica, 
+                            Motivacoes Inconscientes, Forcas, Sombra, Dinamica Grupal, Estilo de Lideranca, 
+                            Dinamica Emocional, Melhor Aproveitamento, Riscos, Recomendacoes e Sintese Final.</p>
+                            <p style='color: #888; font-size: 0.85rem; margin: 0;'>Baseado em Kernberg, Bion, Sinek e Neurociencia Organizacional</p>
                         </div>
                     """, unsafe_allow_html=True)
                     if st.button("Gerar Laudo Completo", key="gen_laudo", type="primary", use_container_width=True):
@@ -4780,18 +5098,20 @@ elif page == "TeamManagement":
                 if completed_employees:
                     for emp in completed_employees:
                         emp_name = emp[4] or f'Funcionario {emp[3]}'
+                        emp_id = emp[0]
                         
                         with st.container():
                             col_info, col_csv_ind, col_pdf_ind = st.columns([4, 1, 1])
                             
                             with col_info:
+                                bion_desc = EMPLOYEE_BION_DESCRIPTIONS.get(emp[9], BION_DESCRIPTIONS.get(emp[9], ''))
                                 st.markdown(f"""
                                     <div class="employee-card">
                                         <h4 style="color: #18738c; margin:0;">{emp_name}</h4>
                                         <p><strong>Perfil:</strong> {emp[6]} + {emp[7]}</p>
                                         <span class="bion-badge">{emp[9]}</span>
                                         <p style="font-size: 0.9rem; color: #666; margin-top:10px;">
-                                            {BION_DESCRIPTIONS.get(emp[9], '')}
+                                            {bion_desc}
                                         </p>
                                         <p style="font-size: 0.85rem; color: #18738c; margin-top: 8px;">
                                             Resultado enviado para: {emp[5]}
@@ -4809,7 +5129,7 @@ elif page == "TeamManagement":
                                     data=individual_csv,
                                     file_name=f"resultado_{safe_name}.csv",
                                     mime="text/csv",
-                                    key=f"download_csv_{emp[0]}"
+                                    key=f"download_csv_{emp_id}"
                                 )
                             
                             with col_pdf_ind:
@@ -4819,8 +5139,61 @@ elif page == "TeamManagement":
                                     data=individual_pdf,
                                     file_name=f"resultado_{safe_name}.pdf",
                                     mime="application/pdf",
-                                    key=f"download_pdf_{emp[0]}"
+                                    key=f"download_pdf_{emp_id}"
                                 )
+                            
+                            laudo_key = f"emp_laudo_{emp_id}"
+                            if st.session_state.get(laudo_key):
+                                laudo_text = st.session_state[laudo_key]
+                                if not laudo_text.startswith("__ERROR__"):
+                                    laudo_secs = parse_laudo_sections(laudo_text)
+                                    if len(laudo_secs) > 1:
+                                        for sec_title in LAUDO_SECTIONS:
+                                            sec_content = laudo_secs.get(sec_title, "")
+                                            if sec_content:
+                                                display_t = sec_title.replace("Lideranca", "Trabalho")
+                                                with st.expander(f"{display_t}", expanded=(sec_title == "1. Visao Geral")):
+                                                    st.markdown(sec_content)
+                                    else:
+                                        st.markdown(laudo_text)
+                                    
+                                    pdf_emp = generate_laudo_pdf(
+                                        laudo_text, emp_name,
+                                        emp[6] or "", emp[7] or "", emp[9] or "",
+                                        respondent_type="funcionario"
+                                    )
+                                    st.download_button(
+                                        "Baixar Laudo em PDF",
+                                        data=pdf_emp,
+                                        file_name=f"laudo_lps_{safe_name}.pdf",
+                                        mime="application/pdf",
+                                        key=f"download_emp_laudo_pdf_{emp_id}",
+                                        use_container_width=True,
+                                        type="primary"
+                                    )
+                                else:
+                                    st.warning(laudo_text.replace("__ERROR__:", ""))
+                            
+                            if st.button("Gerar Laudo Psicanalitico", key=f"gen_emp_laudo_{emp_id}", use_container_width=True):
+                                with st.spinner(f"Gerando laudo para {emp_name}..."):
+                                    emp_block_sums = get_assessment_block_sums(emp_id, "employee")
+                                    emp_profile_text = extract_docx_profile_text(
+                                        emp[6] or "O Idealista Exigente",
+                                        emp[7] or "O Contenedor Empatico",
+                                        "funcionario"
+                                    )
+                                    laudo_text, error = generate_ai_laudo(
+                                        emp[6] or "", emp[7] or "", emp[9] or "",
+                                        emp_block_sums, emp_name,
+                                        profile_text=emp_profile_text, respondent_type="funcionario"
+                                    )
+                                    if laudo_text:
+                                        st.session_state[laudo_key] = laudo_text
+                                    elif error:
+                                        st.session_state[laudo_key] = f"__ERROR__:{error}"
+                                    st.rerun()
+                            
+                            st.write("---")
                 else:
                     st.info("Nenhum funcionario respondeu ainda. Os resultados aparecerao aqui assim que completarem o assessment.")
             else:

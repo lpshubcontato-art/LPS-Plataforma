@@ -70,10 +70,23 @@ Preferred communication style: Simple, everyday language.
   - Passo a Passo da Mentoria: How to schedule and what to prepare for sessions with Viviane
 - **WhatsApp Support**: Direct link to contact support team
 
-### Profile System (PROFILES_DB)
-- **42 Profile Combinations**: 7 archetypes × 6 secondary profiles each
-- **Archetypes**: 🛡 Protetor, 🧱 Contenedor, 🔥 Narciso Estratégico, 🏗 Estruturador, 🪞 Espelho Emocional, 🧠 Observador Reflexivo, 🎭 Relacional Reativo
-- **Each Combination Contains**: Forças (strengths), Riscos (risks), Recomendações (recommendations)
+### AI Laudo System (12-Section Professional Report)
+- **Structure**: 12 mandatory sections per LAUDO_SECTIONS constant
+- **Sections**: 1. Visao Geral | 2. Essencia Psicanalitica | 3. Motivacoes Inconscientes | 4. Forcas | 5. Sombra (Riscos) | 6. Dinamica Grupal (Bion) | 7. Estilo de Lideranca/Trabalho | 8. Dinamica Emocional (Sinek+Neurociencia) | 9. Melhor Aproveitamento | 10. Riscos de Alocacao | 11. Recomendacoes | 12. Sintese Final
+- **AI Model**: Gemini 2.0 Flash with 8192 max tokens, professional psychoanalytic consultant tone
+- **Profile Context**: .docx file text injected as primary context (extract_docx_profile_text)
+- **Display**: st.expander for each section (Visao Geral expanded by default)
+- **PDF Export**: generate_laudo_pdf() creates branded PDF with Azure headers, gold separators, Helvetica font
+- **Parser**: parse_laudo_sections() parses AI output into 12-section dict (fallback: single section if <6 found)
+- **Respondent Types**: "gestor" (manager, max 40pts/block) and "funcionario" (employee, max 60pts/block)
+
+### Profile System (PROFILES_DB + .docx Files)
+- **42 Profile Combinations**: 7 archetypes x 6 secondary profiles each
+- **Archetype Siglas**: IE (Idealista Exigente), CE (Contenedor Empatico), BR (Buscador de Reconhecimento), EC (Estruturador Cauteloso), RR (Relacional Reativo), OC (Observador Consciente), ED (Executor Decidido)
+- **.docx Files**: 42 manager (*_gestor_*.docx) + 42 employee (*_funcionario_*.docx) in attached_assets/
+- **Matching**: ARCHETYPE_TO_SIGLA maps names to 2-letter codes, combined as {dom}{sec} to find file
+- **Fallback**: PROFILES_DB dict used if .docx file not found
+- **Each Combination Contains**: Forcas (strengths), Riscos (risks), Recomendacoes (recommendations)
 
 ### Radar Chart Visualization
 - **7 Axes**: Autoridade Interna, Contenção Emocional, Narcisismo/Reconhecimento, Estrutura/Ordem, Relação/Empatia, Reflexão/Observação, Relacional Reativo
