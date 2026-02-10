@@ -1,0 +1,64 @@
+Realize as seguintes correções finais para alinhar a plataforma exatamente ao documento de requisitos da cliente:
+
+1. Ajustes de Identidade Visual e Fontes:
+
+
+Cores: Substitua o azul escuro por Azure #18738c e o amarelo por Amarelo #d19f09.
++1
+
+
+Fontes: Títulos devem usar Open Sans e textos de corpo devem usar Ubuntu.
++1
+
+
+Menus: No menu lateral, altere os nomes de 'LPSTest' para LPTest e 'LPSChat' para LPChat (remover o 'S' central).
++1
+
+2. Página Home e Banners:
+
+Substitua os blocos de texto 'Liderança Psicanalítica' e 'Transforme sua Liderança' pelos Banners 1 e 2 fornecidos.
+
+Insira o vídeo institucional do Vimeo usando o link: https://vimeo.com/1154882598.
+
+3. Conteúdo Estruturado (Página Sobre):
+
+Substitua todo o conteúdo atual pelos textos fornecidos:
+
+
+Sobre a Autora: (Inserir biografia completa de Viviane Nishiura, focando nos 30 anos de experiência e na criação do LPS).
++2
+
+
+Sobre o LPS: (Inserir descrição do programa como um modelo de intervenção real, integrando leitura psicanalítica e visão sistêmica).
++1
+
+
+Remova o botão 'Falar com a consultora' desta seção.
+
+4. Ajustes no LPTest (Assessment):
+
+Texto de introdução: Altere a descrição para: 'O LPTest é um assessment exclusivo, desenvolvido com bases teóricas na psicologia e neurociência a partir de avaliações comportamentais e de personalidade. As questões mapeiam seu perfil através de 6 dimensões'.
+
+
+Importante: Mantenha a lógica interna de 7 blocos (70 questões) que configuramos, mas use este texto de apresentação solicitado.
+
+5. Trilha LPS e Soluções:
+
+Renomeie 'Soluções Corporativas' para Trilha LPS.
+
+Atualize as quatro caixas da trilha para: 1 - O Curso LPS, 2 - LPTest, 3 - Mentoria e 4 - LPChat, com seus respectivos textos descritivos sobre as etapas do programa.
++3
+
+6. Rodapé e Redes Sociais:
+
+Na seção de Insights e Contato, adicione os links oficiais:
+
+
+Linkedin: https://www.linkedin.com/company/lpshub 
+
+
+Youtube: https://www.youtube.com/@LPSHubLiderança 
+
+7. Verificação de Erros de IA:
+
+Certifique-se de que o Consultor Virtual e o Laudo Completo não exibam mais o erro 404, utilizando o modelo gemini-2.0-flash com a biblioteca google-genai atualizada."

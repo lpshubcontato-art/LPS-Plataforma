@@ -1947,7 +1947,7 @@ MENU_SECTIONS = [
     {"key": "lpstest", "label": "LPTest", "icon": "🧠"},
     {"key": "lpschat", "label": "LPChat", "icon": "💬"},
     {"key": "mentoria", "label": "Mentoria", "icon": "📅"},
-    {"key": "soluções", "label": "Soluções", "icon": "💼"},
+    {"key": "soluções", "label": "Trilha LPS", "icon": "💼"},
     {"key": "insights", "label": "Insights", "icon": "📰"},
     {"key": "contato", "label": "Contato", "icon": "📧"}
 ]
@@ -3371,19 +3371,12 @@ if page == "Home":
 - **Sustentação de Autoridade:** Tomar decisões estratégicas sem sobrecarga emocional.
 - **Performance:** Alinhamento do comportamento à tarefa organizacional.""")
         
-        st.markdown(f"""
-            <div style="text-align: center; margin-top: 2rem;">
-                <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
-                    Fale Conosco no WhatsApp
-                </a>
-            </div>
-        """, unsafe_allow_html=True)
-        
         st.markdown("""
             <div style="text-align: center; margin-top: 1rem;">
                 <a href="#" style="color: #666; text-decoration: underline; font-size: 0.9rem;">Privacidade e Termos</a>
             </div>
         """, unsafe_allow_html=True)
+
     
     # CURSO SECTION - Module Cards with Paywall
     elif current_section == "curso":
@@ -3504,17 +3497,17 @@ if page == "Home":
         
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #18738c;">Descubra Seu Perfil de Liderança</h3>
-                <p>O LPTest é um assessment exclusivo com <strong>questões desenvolvidas para mapear seu perfil</strong> 
-                de liderança através de 7 dimensões psicanalíticas:</p>
+                <h3 style="color: #18738c;">Descubra Seu Perfil de Lideranca</h3>
+                <p>O LPTest e um assessment exclusivo, desenvolvido com bases teoricas na psicologia e neurociencia 
+                a partir de avaliacoes comportamentais e de personalidade. As questoes mapeiam seu perfil atraves 
+                de <strong>6 dimensoes</strong>:</p>
                 <ul style="color: #666;">
-                    <li><strong>Autoridade</strong> - Como você exerce e percebe sua autoridade</li>
-                    <li><strong>Contenção</strong> - Sua capacidade de manter a calma em crises</li>
-                    <li><strong>Narcisismo</strong> - Sua relação com reconhecimento e validação</li>
-                    <li><strong>Estrutura</strong> - Sua necessidade de controle e organização</li>
-                    <li><strong>Relação</strong> - Suas dinâmicas de transferência com a equipe</li>
-                    <li><strong>Reflexão</strong> - Sua capacidade de autoconhecimento</li>
-                    <li><strong>Relacional Reativo</strong> - Sua tendência a evitar conflitos e buscar harmonia</li>
+                    <li><strong>Autoridade Interna</strong> - Como voce exerce e percebe sua autoridade</li>
+                    <li><strong>Contencao Emocional</strong> - Sua capacidade de manter a calma em crises</li>
+                    <li><strong>Narcisismo/Reconhecimento</strong> - Sua relacao com reconhecimento e validacao</li>
+                    <li><strong>Estrutura/Ordem</strong> - Sua necessidade de controle e organizacao</li>
+                    <li><strong>Relacao/Empatia</strong> - Suas dinamicas de transferencia com a equipe</li>
+                    <li><strong>Reflexao/Observacao</strong> - Sua capacidade de autoconhecimento</li>
                 </ul>
             </div>
         """, unsafe_allow_html=True)
@@ -3595,23 +3588,24 @@ if page == "Home":
             </div>
         """, unsafe_allow_html=True)
     
-    # SOLUÇÕES SECTION
+    # TRILHA LPS SECTION
     elif current_section == "soluções":
-        st.markdown('<div class="section-title">Soluções Corporativas</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Trilha LPS</div>', unsafe_allow_html=True)
+        st.markdown('<p style="text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 2rem;">Conheca as 4 etapas do programa de desenvolvimento de lideres</p>', unsafe_allow_html=True)
         
         sol_cols = st.columns(2)
         with sol_cols[0]:
             st.markdown("""
                 <div class="solution-card">
-                    <div class="solution-title">Treinamento In-Company</div>
-                    <p>Formação completa para sua equipe de líderes com conteúdo personalizado para sua empresa.</p>
+                    <div class="solution-title">1 - O Curso LPS</div>
+                    <p>Formacao teorica completa com 8 modulos sobre psicanalise aplicada a lideranca, neurociencia organizacional e dinamicas grupais de Bion.</p>
                 </div>
             """, unsafe_allow_html=True)
         with sol_cols[1]:
             st.markdown("""
                 <div class="solution-card">
-                    <div class="solution-title">Consultoria Organizacional</div>
-                    <p>Diagnóstico e intervenção em dinâmicas grupais problemáticas na sua organização.</p>
+                    <div class="solution-title">2 - LPTest</div>
+                    <p>Assessment exclusivo com 70 questoes que mapeia seu perfil de lideranca atraves de dimensoes psicanaliticas, identificando seu arquetipo dominante e papel grupal.</p>
                 </div>
             """, unsafe_allow_html=True)
         
@@ -3620,22 +3614,22 @@ if page == "Home":
         with sol_cols2[0]:
             st.markdown("""
                 <div class="solution-card">
-                    <div class="solution-title">Assessment de Equipes</div>
-                    <p>Mapeamento completo de perfis e dinâmicas da sua equipe com relatório executivo.</p>
+                    <div class="solution-title">3 - Mentoria</div>
+                    <p>Sessoes individuais com consultora senior para aprofundar seu desenvolvimento, analisar dinamicas da sua equipe e criar estrategias personalizadas de intervencao.</p>
                 </div>
             """, unsafe_allow_html=True)
         with sol_cols2[1]:
             st.markdown("""
                 <div class="solution-card">
-                    <div class="solution-title">Palestras e Workshops</div>
-                    <p>Eventos sobre liderança psicanalítica para convenções e encontros corporativos.</p>
+                    <div class="solution-title">4 - LPChat</div>
+                    <p>Consultor virtual de IA treinado com a metodologia LPS, que analisa o perfil da sua equipe e oferece insights psicanaliticos e de neurociencia em tempo real.</p>
                 </div>
             """, unsafe_allow_html=True)
         
         st.markdown(f"""
             <div style="text-align: center; margin-top: 2rem;">
                 <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="font-size: 1.2rem;">
-                    💼 Solicitar Orçamento
+                    Iniciar Minha Trilha LPS
                 </a>
             </div>
         """, unsafe_allow_html=True)
@@ -3718,6 +3712,10 @@ if page == "Home":
                 <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
                     Receber Insights
                 </a>
+                <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1.5rem;">
+                    <a href="https://www.linkedin.com/company/lpshub" target="_blank" style="color: white; text-decoration: none; font-weight: bold;">LinkedIn</a>
+                    <a href="https://www.youtube.com/@LPSHubLiderança" target="_blank" style="color: white; text-decoration: none; font-weight: bold;">YouTube</a>
+                </div>
             </div>
         """, unsafe_allow_html=True)
     
@@ -3749,6 +3747,16 @@ if page == "Home":
             <div style="text-align: center; color: #666; margin-top: 2rem;">
                 <p><strong>E-mail:</strong> contato@liderancapsicanalitica.com.br</p>
                 <p><strong>Instagram:</strong> @liderancapsicanalitica</p>
+                <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem;">
+                    <a href="https://www.linkedin.com/company/lpshub" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #0A66C2; text-decoration: none; font-weight: bold; font-size: 1rem;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://www.youtube.com/@LPSHubLiderança" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #FF0000; text-decoration: none; font-weight: bold; font-size: 1rem;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        YouTube
+                    </a>
+                </div>
             </div>
         """, unsafe_allow_html=True)
 
