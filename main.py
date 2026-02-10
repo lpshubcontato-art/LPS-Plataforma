@@ -3537,7 +3537,9 @@ def find_docx_file(dominant, secondary, respondent_type="gestor"):
     return None
 
 def extract_docx_profile_text(dominant, secondary, respondent_type="gestor"):
-    """Extract raw text from matching .docx file."""
+    """Extract the COMPLETE, UNMODIFIED text from matching .docx file.
+    Preserves all original paragraph breaks and formatting from the Word document.
+    No text is summarized, altered, or omitted."""
     try:
         from docx import Document as DocxDocument
         
@@ -3548,47 +3550,138 @@ def extract_docx_profile_text(dominant, secondary, respondent_type="gestor"):
         doc = DocxDocument(file_path)
         full_text = []
         for para in doc.paragraphs:
-            text = para.text.strip()
-            if text:
-                full_text.append(text)
+            full_text.append(para.text)
         
-        return "\n".join(full_text)
+        result = "\n".join(full_text)
+        while result.endswith("\n"):
+            result = result[:-1]
+        return result
     except Exception as e:
         print(f"[DOCX] Error extracting profile: {e}")
         return None
 
-LAUDO_SECTION_PATTERNS_GESTOR = [
-    ("1. Visao Geral", ["visão geral", "visao geral"]),
-    ("2. Essencia Psicanalitica", ["essência psicanalítica", "essencia psicanalitica"]),
-    ("3. Motivacoes Inconscientes", ["motivações inconscientes", "motivacoes inconscientes"]),
-    ("4. Forcas", ["forças", "forcas"]),
-    ("5. Sombra (Riscos)", ["sombra"]),
-    ("6. Estilo de Lideranca e Impacto", ["estilo de liderança", "estilo de lideranca", "liderança e impacto", "lideranca e impacto"]),
-    ("7. Funcao de Lideranca", ["função de liderança", "funcao de lideranca"]),
-    ("8. Dinamica Emocional (Sinek + Neurociencia)", ["dinâmica emocional", "dinamica emocional", "sinek"]),
-    ("9. Melhor Aproveitamento", ["melhor aproveitamento"]),
-    ("10. Riscos de Alocacao", ["riscos se mal alocado", "riscos de alocação", "riscos de alocacao"]),
-    ("11. Recomendacoes de Desenvolvimento", ["recomendações de desenvolvimento", "recomendacoes de desenvolvimento"]),
-    ("12. Sintese", ["síntese", "sintese"]),
+GESTOR_HEADER_PATTERNS = [
+    ("1. Visao Geral", [
+        "visão geral",
+        "visao geral",
+    ]),
+    ("2. Essencia Psicanalitica", [
+        "essência psicanalítica",
+        "essencia psicanalitica",
+    ]),
+    ("3. Motivacoes Inconscientes", [
+        "motivações inconscientes",
+        "motivacoes inconscientes",
+    ]),
+    ("4. Forcas", [
+        "forças (manifestações positivas)",
+        "forcas (manifestacoes positivas)",
+        "forças",
+        "forcas",
+    ]),
+    ("5. Sombra", [
+        "sombra (riscos e manifestações negativas)",
+        "sombra (riscos e manifestacoes negativas)",
+        "sombra (riscos)",
+        "sombra",
+    ]),
+    ("6. Estilo de Lideranca e Impacto", [
+        "estilo de liderança e impacto",
+        "estilo de lideranca e impacto",
+        "estilo de liderança",
+        "estilo de lideranca",
+        "impacto no círculo de segurança",
+        "impacto no circulo de seguranca",
+    ]),
+    ("7. Funcao de Lideranca", [
+        "função de liderança",
+        "funcao de lideranca",
+    ]),
+    ("8. Dinamica Emocional (Sinek)", [
+        "dinâmica emocional (sinek + neurociência)",
+        "dinamica emocional (sinek + neurociencia)",
+        "dinâmica emocional",
+        "dinamica emocional",
+    ]),
+    ("9. Melhor Aproveitamento", [
+        "melhor aproveitamento do líder",
+        "melhor aproveitamento do lider",
+        "melhor aproveitamento",
+    ]),
+    ("10. Riscos de Alocacao", [
+        "riscos se mal alocado",
+        "riscos de alocação",
+        "riscos de alocacao",
+    ]),
+    ("11. Recomendacoes de Desenvolvimento", [
+        "recomendações de desenvolvimento",
+        "recomendacoes de desenvolvimento",
+    ]),
+    ("12. Sintese", [
+        "síntese",
+        "sintese",
+    ]),
 ]
 
-LAUDO_SECTION_PATTERNS_FUNCIONARIO = [
-    ("1. Visao Geral", ["visão geral", "visao geral"]),
-    ("2. Essencia Psicanalitica", ["essência psicanalítica", "essencia psicanalitica"]),
-    ("3. Motivacoes Inconscientes", ["motivações inconscientes", "motivacoes inconscientes"]),
-    ("4. Forcas", ["forças", "forcas"]),
-    ("5. Sombra (Riscos)", ["sombra"]),
-    ("6. Dinamica Grupal (Papeis de Bion)", ["tendências de papéis grupais", "tendencias de papeis grupais", "papéis grupais", "papeis grupais"]),
-    ("7. Dinamica Emocional (Sinek + Neurociencia)", ["dinâmica emocional", "dinamica emocional", "sinek"]),
-    ("8. Melhor Aproveitamento", ["melhor aproveitamento"]),
-    ("9. Riscos de Alocacao", ["riscos se mal alocado", "riscos de alocação", "riscos de alocacao"]),
-    ("10. Recomendacoes ao Gestor", ["recomendações ao gestor", "recomendacoes ao gestor"]),
-    ("11. Reflexoes para o Proprio Perfil", ["reflexões para o próprio perfil", "reflexoes para o proprio perfil"]),
-    ("12. Sintese", ["síntese", "sintese"]),
+FUNCIONARIO_HEADER_PATTERNS = [
+    ("1. Visao Geral", [
+        "visão geral",
+        "visao geral",
+    ]),
+    ("2. Essencia Psicanalitica", [
+        "essência psicanalítica",
+        "essencia psicanalitica",
+    ]),
+    ("3. Motivacoes Inconscientes", [
+        "motivações inconscientes",
+        "motivacoes inconscientes",
+    ]),
+    ("4. Forcas", [
+        "forças",
+        "forcas",
+    ]),
+    ("5. Sombra", [
+        "sombra",
+    ]),
+    ("6. Papeis Grupais (Bion)", [
+        "tendências de papéis grupais (bion)",
+        "tendencias de papeis grupais (bion)",
+        "tendências de papéis grupais",
+        "tendencias de papeis grupais",
+        "papéis grupais (bion)",
+        "papeis grupais (bion)",
+    ]),
+    ("7. Dinamica Emocional (Sinek)", [
+        "dinâmica emocional (sinek + neurociência)",
+        "dinamica emocional (sinek + neurociencia)",
+        "dinâmica emocional",
+        "dinamica emocional",
+    ]),
+    ("8. Melhor Aproveitamento", [
+        "melhor aproveitamento na equipe",
+        "melhor aproveitamento",
+    ]),
+    ("9. Riscos de Alocacao", [
+        "riscos se mal alocado",
+        "riscos de alocação",
+        "riscos de alocacao",
+    ]),
+    ("10. Recomendacoes ao Gestor", [
+        "recomendações ao gestor",
+        "recomendacoes ao gestor",
+    ]),
+    ("11. Reflexoes para o Proprio Perfil", [
+        "reflexões para o próprio perfil",
+        "reflexoes para o proprio perfil",
+    ]),
+    ("12. Sintese", [
+        "síntese",
+        "sintese",
+    ]),
 ]
 
-LAUDO_SECTIONS_GESTOR = [s[0] for s in LAUDO_SECTION_PATTERNS_GESTOR]
-LAUDO_SECTIONS_FUNCIONARIO = [s[0] for s in LAUDO_SECTION_PATTERNS_FUNCIONARIO]
+LAUDO_SECTIONS_GESTOR = [s[0] for s in GESTOR_HEADER_PATTERNS]
+LAUDO_SECTIONS_FUNCIONARIO = [s[0] for s in FUNCIONARIO_HEADER_PATTERNS]
 LAUDO_SECTIONS = LAUDO_SECTIONS_GESTOR
 
 def get_laudo_sections_for_type(respondent_type="gestor"):
@@ -3597,76 +3690,96 @@ def get_laudo_sections_for_type(respondent_type="gestor"):
         return LAUDO_SECTIONS_FUNCIONARIO
     return LAUDO_SECTIONS_GESTOR
 
+def _match_header_line(line_text, patterns):
+    """Check if a line is a section header. Returns (section_key, remaining_content) or (None, None).
+    A header is detected ONLY when the line starts with (optionally numbered) a known section title.
+    If the header line also contains body content (separated by space after the title), that content
+    is returned as 'remaining'. Short trailing words that are part of the title (like 'Principais',
+    'no Grupo') are NOT treated as content."""
+    clean = line_text.strip()
+    if not clean:
+        return None, None
+    
+    test = clean.lower()
+    test_no_num = test
+    num_prefix_len = 0
+    if test and test[0].isdigit():
+        dot_idx = test.find(".")
+        if dot_idx >= 0 and dot_idx <= 3:
+            test_no_num = test[dot_idx + 1:].strip()
+            num_prefix_len = dot_idx + 1
+            while num_prefix_len < len(clean) and clean[num_prefix_len] in ' \t':
+                num_prefix_len += 1
+    
+    for section_key, keywords in patterns:
+        for kw in keywords:
+            if test_no_num.startswith(kw) or test.startswith(kw):
+                if test_no_num.startswith(kw):
+                    after_kw_pos = num_prefix_len + len(kw)
+                else:
+                    after_kw_pos = len(kw)
+                
+                remaining = clean[after_kw_pos:].strip() if after_kw_pos < len(clean) else ""
+                
+                if remaining:
+                    remaining = remaining.lstrip("(").lstrip(")").lstrip(":").lstrip("-").strip()
+                
+                if remaining and len(remaining) < 40:
+                    remaining = ""
+                
+                return section_key, remaining
+    
+    return None, None
+
 def parse_docx_into_sections(docx_text, respondent_type="gestor"):
-    """Parse extracted docx text into structured sections based on section headers found in the document."""
+    """Parse docx text into structured sections. FAITHFUL extraction:
+    - Everything between one header and the next belongs to that section
+    - No text is cut, summarized, or modified
+    - If a section is not found, it is left empty (never AI-generated)
+    - Inline content after a header (on the same line) is preserved"""
     if not docx_text:
         return {}
     
-    patterns = LAUDO_SECTION_PATTERNS_GESTOR if respondent_type == "gestor" else LAUDO_SECTION_PATTERNS_FUNCIONARIO
+    patterns = GESTOR_HEADER_PATTERNS if respondent_type == "gestor" else FUNCIONARIO_HEADER_PATTERNS
     
-    lines = docx_text.split("\n")
+    all_lines = docx_text.split("\n")
+    
     sections = {}
     current_section = None
     current_content = []
-    title_line_skipped = False
+    title_line_seen = False
     
-    for line in lines:
+    for line in all_lines:
         stripped = line.strip()
-        if not stripped:
-            if current_section:
-                current_content.append("")
-            continue
         
-        clean = stripped.replace("**", "").replace("##", "").replace("###", "").strip()
-        clean_lower = clean.lower()
-        clean_no_num = clean_lower
-        if clean_no_num and clean_no_num[0].isdigit():
-            parts = clean_no_num.split(".", 1)
-            if len(parts) > 1:
-                clean_no_num = parts[1].strip()
+        section_key, remaining = _match_header_line(stripped, patterns)
         
-        matched_section = None
-        for section_title, keywords in patterns:
-            for kw in keywords:
-                if kw in clean_lower or clean_no_num.startswith(kw):
-                    if len(clean) < 120:
-                        matched_section = section_title
-                        break
-            if matched_section:
-                break
-        
-        if matched_section:
-            if current_section and current_content:
+        if section_key:
+            if current_section is not None:
                 sections[current_section] = "\n".join(current_content).strip()
-            current_section = matched_section
+            
+            current_section = section_key
             current_content = []
+            title_line_seen = True
             
-            header_end = 0
-            for kw in [k for _, kws in patterns for k in kws]:
-                idx = clean_lower.find(kw)
-                if idx >= 0:
-                    candidate = idx + len(kw)
-                    if candidate > header_end:
-                        header_end = candidate
-            
-            after_header = clean[header_end:].strip().lstrip(":").lstrip("-").lstrip(")").strip()
-            if after_header and len(after_header) > 15:
-                current_content.append(after_header)
-        elif not title_line_skipped and not current_section:
-            title_line_skipped = True
-        elif current_section:
-            current_content.append(stripped)
+            if remaining:
+                current_content.append(remaining)
+        elif not title_line_seen and current_section is None:
+            title_line_seen = True
+        elif current_section is not None:
+            current_content.append(line)
     
-    if current_section and current_content:
+    if current_section is not None:
         sections[current_section] = "\n".join(current_content).strip()
     
     if not sections and docx_text:
-        sections[patterns[0][0]] = docx_text
+        section_list = LAUDO_SECTIONS_GESTOR if respondent_type == "gestor" else LAUDO_SECTIONS_FUNCIONARIO
+        sections[section_list[0]] = docx_text
     
     return sections
 
 def parse_laudo_sections(laudo_text, respondent_type="gestor"):
-    """Parse laudo text into structured sections."""
+    """Parse laudo text into structured sections. Pure docx extraction, no AI."""
     return parse_docx_into_sections(laudo_text, respondent_type)
 
 def generate_docx_laudo(dominant, secondary, bion_role, respondent_name="", respondent_type="gestor"):
@@ -5065,20 +5178,7 @@ elif page == "LPTest":
                 st.markdown("---")
                 st.subheader("Laudo Completo - Analise Psicanalitica e de Lideranca")
                 
-                section_icons = {
-                    "1. Visao Geral": "1.",
-                    "2. Essencia Psicanalitica": "2.",
-                    "3. Motivacoes Inconscientes": "3.",
-                    "4. Forcas": "4.",
-                    "5. Sombra (Riscos)": "5.",
-                    "6. Dinamica Grupal (Papeis de Bion)": "6.",
-                    "7. Estilo de Lideranca/Trabalho": "7.",
-                    "8. Dinamica Emocional (Sinek + Neurociencia)": "8.",
-                    "9. Melhor Aproveitamento": "9.",
-                    "10. Riscos de Alocacao": "10.",
-                    "11. Recomendacoes de Desenvolvimento": "11.",
-                    "12. Sintese Final": "12."
-                }
+                section_icons = {s: f"{i+1}." for i, s in enumerate(get_laudo_sections_for_type("gestor"))}
                 
                 if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
                     laudo_sections = parse_laudo_sections(st.session_state.ai_laudo, "gestor")
@@ -5359,10 +5459,11 @@ elif page == "TeamManagement":
                                     if len(laudo_secs) > 1:
                                         for sec_title in get_laudo_sections_for_type("funcionario"):
                                             sec_content = laudo_secs.get(sec_title, "")
-                                            if sec_content:
-                                                display_t = sec_title.replace("Lideranca", "Trabalho")
-                                                with st.expander(f"{display_t}", expanded=(sec_title == "1. Visao Geral")):
+                                            with st.expander(f"{sec_title}", expanded=(sec_title == "1. Visao Geral")):
+                                                if sec_content:
                                                     st.markdown(sec_content)
+                                                else:
+                                                    st.markdown("*Secao nao disponivel neste documento.*")
                                     else:
                                         st.markdown(laudo_text)
                                     
@@ -6561,9 +6662,11 @@ elif page == "GestaoLPS":
                                     if len(laudo_secs) > 1:
                                         for sec_title in get_laudo_sections_for_type("gestor"):
                                             sec_content = laudo_secs.get(sec_title, "")
-                                            if sec_content:
-                                                with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                            with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                                if sec_content:
                                                     st.markdown(sec_content)
+                                                else:
+                                                    st.markdown("*Secao nao disponivel neste documento.*")
                                     else:
                                         st.markdown(laudo_text_ldr)
                                     
@@ -6716,9 +6819,11 @@ elif page == "GestaoLPS":
                                     if len(laudo_secs) > 1:
                                         for sec_title in get_laudo_sections_for_type("funcionario"):
                                             sec_content = laudo_secs.get(sec_title, "")
-                                            if sec_content:
-                                                with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                            with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                                if sec_content:
                                                     st.markdown(sec_content)
+                                                else:
+                                                    st.markdown("*Secao nao disponivel neste documento.*")
                                     else:
                                         st.markdown(laudo_text_emp)
                                     
