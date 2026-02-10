@@ -550,6 +550,38 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     
+    # Authorized users table - pre-registered emails for invite-based access
+    c.execute('''CREATE TABLE IF NOT EXISTS authorized_users (
+        id TEXT PRIMARY KEY,
+        email TEXT UNIQUE,
+        name TEXT,
+        invite_type TEXT DEFAULT 'equipe',
+        status TEXT DEFAULT 'pendente',
+        invited_by TEXT,
+        completed_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (invited_by) REFERENCES users(id)
+    )''')
+    
+    # Invite links table - unique URLs for leader/team assessments
+    c.execute('''CREATE TABLE IF NOT EXISTS invite_links (
+        id TEXT PRIMARY KEY,
+        token TEXT UNIQUE,
+        invite_type TEXT DEFAULT 'equipe',
+        created_by TEXT,
+        used_by_email TEXT,
+        is_used INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        used_at TIMESTAMP,
+        FOREIGN KEY (created_by) REFERENCES users(id)
+    )''')
+    
+    # Migration: Add is_admin column to users if it doesn't exist
+    c.execute("PRAGMA table_info(users)")
+    user_columns = [col[1] for col in c.fetchall()]
+    if 'is_admin' not in user_columns:
+        c.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0")
+    
     conn.commit()
     conn.close()
 
@@ -694,6 +726,10 @@ def save_employee_result(token, name, email, dominant, secondary, details, bion_
     conn.commit()
     conn.close()
     
+    # Update authorized_users status to completed if email exists
+    if email:
+        update_authorized_user_status(email, "concluido")
+    
     # Send email to employee with their result
     send_employee_result_email(name, email, dominant, secondary, bion_role, manager_name)
     
@@ -730,6 +766,131 @@ def get_employee_consent(token):
     if result:
         return result[0] == 1
     return False
+
+def is_user_admin(user_id):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT is_admin FROM users WHERE id = ?", (user_id,))
+    result = c.fetchone()
+    conn.close()
+    return result and result[0] == 1
+
+def set_user_admin(user_id, is_admin=True):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("UPDATE users SET is_admin = ? WHERE id = ?", (1 if is_admin else 0, user_id))
+    conn.commit()
+    conn.close()
+
+def create_invite_link(invite_type, created_by):
+    conn = get_db()
+    c = conn.cursor()
+    link_id = str(uuid.uuid4())
+    token = str(uuid.uuid4())[:12]
+    c.execute("INSERT INTO invite_links (id, token, invite_type, created_by) VALUES (?, ?, ?, ?)",
+              (link_id, token, invite_type, created_by))
+    conn.commit()
+    conn.close()
+    return token
+
+def get_invite_links(created_by=None):
+    conn = get_db()
+    c = conn.cursor()
+    if created_by:
+        c.execute("SELECT * FROM invite_links WHERE created_by = ? ORDER BY created_at DESC", (created_by,))
+    else:
+        c.execute("SELECT * FROM invite_links ORDER BY created_at DESC")
+    links = c.fetchall()
+    conn.close()
+    return links
+
+def get_invite_by_token(token):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT * FROM invite_links WHERE token = ?", (token,))
+    result = c.fetchone()
+    conn.close()
+    return result
+
+def mark_invite_used(token, email):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("UPDATE invite_links SET is_used = 1, used_by_email = ?, used_at = ? WHERE token = ?",
+              (email, datetime.now(), token))
+    conn.commit()
+    conn.close()
+
+def add_authorized_user(email, name, invite_type, invited_by):
+    conn = get_db()
+    c = conn.cursor()
+    try:
+        auth_id = str(uuid.uuid4())
+        c.execute("INSERT INTO authorized_users (id, email, name, invite_type, invited_by) VALUES (?, ?, ?, ?, ?)",
+                  (auth_id, email.lower().strip(), name, invite_type, invited_by))
+        conn.commit()
+        conn.close()
+        return True, None
+    except sqlite3.IntegrityError:
+        conn.close()
+        return False, "E-mail ja cadastrado na lista de autorizados."
+
+def get_authorized_users(invited_by=None):
+    conn = get_db()
+    c = conn.cursor()
+    if invited_by:
+        c.execute("SELECT * FROM authorized_users WHERE invited_by = ? ORDER BY created_at DESC", (invited_by,))
+    else:
+        c.execute("SELECT * FROM authorized_users ORDER BY created_at DESC")
+    users = c.fetchall()
+    conn.close()
+    return users
+
+def check_email_authorized(email):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT * FROM authorized_users WHERE email = ?", (email.lower().strip(),))
+    result = c.fetchone()
+    conn.close()
+    return result
+
+def update_authorized_user_status(email, status):
+    conn = get_db()
+    c = conn.cursor()
+    if status == "concluido":
+        c.execute("UPDATE authorized_users SET status = ?, completed_at = ? WHERE email = ?",
+                  (status, datetime.now(), email.lower().strip()))
+    else:
+        c.execute("UPDATE authorized_users SET status = ? WHERE email = ?",
+                  (status, email.lower().strip()))
+    conn.commit()
+    conn.close()
+
+def delete_authorized_user(auth_id):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("DELETE FROM authorized_users WHERE id = ?", (auth_id,))
+    conn.commit()
+    conn.close()
+
+def get_admin_monitoring_data(admin_user_id):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""
+        SELECT 
+            au.name as nome,
+            au.email,
+            au.invite_type,
+            au.status,
+            au.completed_at,
+            au.created_at,
+            au.id as auth_id
+        FROM authorized_users au
+        WHERE au.invited_by = ?
+        ORDER BY au.created_at DESC
+    """, (admin_user_id,))
+    results = c.fetchall()
+    conn.close()
+    return results
 
 def get_manager_profile_by_user(user_id):
     conn = get_db()
@@ -2125,11 +2286,24 @@ MODULES_DATA = [
 query_params = st.query_params
 is_employee_access = False
 
-# Token in URL - set session state
+# Invite link detection: ?tipo=equipe&ref=token123
+if 'ref' in query_params and 'tipo' in query_params:
+    invite_ref = query_params['ref']
+    invite_tipo = query_params['tipo']
+    st.session_state.invite_ref = invite_ref
+    st.session_state.invite_tipo = invite_tipo
+    st.session_state.page = "InviteWelcome"
+
+# Token in URL - set session state (legacy employee access)
 if 'token' in query_params:
     st.session_state.employee_token = query_params['token']
     st.session_state.page = "EmployeeAssessment"
     is_employee_access = True
+
+# Invite session state persistence
+if st.session_state.get('invite_ref') and not st.session_state.get('authenticated') and not st.session_state.get('invite_email_verified'):
+    if st.session_state.get('page') != "InviteWelcome":
+        st.session_state.page = "InviteWelcome"
 
 # Token already in session state - maintain employee access lock
 if st.session_state.get('employee_token') and not st.session_state.get('authenticated'):
@@ -2333,6 +2507,10 @@ def render_sidebar_navigation():
             if st.button("Minha Area", key=f"{key_prefix}dashboard", use_container_width=True):
                 st.session_state.page = "Dashboard"
                 st.rerun()
+            if is_user_admin(st.session_state.user['id']):
+                if st.button("Gestao LPS", key=f"{key_prefix}gestao", use_container_width=True, type="primary"):
+                    st.session_state.page = "GestaoLPS"
+                    st.rerun()
             if st.button("Sair", key=f"{key_prefix}logout", use_container_width=True):
                 st.session_state.authenticated = False
                 st.session_state.user = None
@@ -4695,18 +4873,30 @@ elif page == "Dashboard":
     
     st.write("---")
     
-    # Admin section (only for administrators)
-    admin_col1, admin_col2 = st.columns([3, 1])
-    with admin_col1:
+    # Admin section
+    if is_user_admin(user_id):
+        admin_col1, admin_col2, admin_col3 = st.columns([2, 1, 1])
+        with admin_col1:
+            if st.button("Sair", key="btn-logout", use_container_width=True):
+                st.session_state.authenticated = False
+                st.session_state.user = None
+                st.session_state.manager_data = None
+                st.session_state.page = "Home"
+                st.rerun()
+        with admin_col2:
+            if st.button("Gestao LPS", key="btn-gestao", use_container_width=True, type="primary"):
+                st.session_state.page = "GestaoLPS"
+                st.rerun()
+        with admin_col3:
+            if st.button("Admin E-mail", key="btn-admin", use_container_width=True):
+                st.session_state.page = "AdminEmail"
+                st.rerun()
+    else:
         if st.button("Sair", key="btn-logout", use_container_width=True):
             st.session_state.authenticated = False
             st.session_state.user = None
             st.session_state.manager_data = None
             st.session_state.page = "Home"
-            st.rerun()
-    with admin_col2:
-        if st.button("Admin", key="btn-admin", use_container_width=True):
-            st.session_state.page = "AdminEmail"
             st.rerun()
 
 elif page == "LPS Curso":
@@ -5198,6 +5388,158 @@ elif page == "TeamManagement":
                     st.info("Nenhum funcionario respondeu ainda. Os resultados aparecerao aqui assim que completarem o assessment.")
             else:
                 st.info("Nenhum convite gerado ainda. Va para a aba 'Gerar Convites' para criar links.")
+
+elif page == "InviteWelcome":
+    invite_ref = st.session_state.get('invite_ref', '')
+    invite_tipo = st.session_state.get('invite_tipo', 'equipe')
+    
+    invite_data = get_invite_by_token(invite_ref) if invite_ref else None
+    
+    st.markdown("""
+        <style>
+        .welcome-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+        .welcome-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-top: 4px solid #18738c;
+        }
+        .welcome-title {
+            color: #18738c;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        .welcome-subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        .welcome-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #18738c, #1a8ba6);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<div class='welcome-container'>", unsafe_allow_html=True)
+    
+    if os.path.exists(LOGO_PATH):
+        col_logo = st.columns([1, 2, 1])
+        with col_logo[1]:
+            st.image(LOGO_PATH, use_container_width=True)
+    
+    tipo_label = "Assessment de Equipe" if invite_tipo == "equipe" else "Assessment de Lider"
+    
+    if not invite_data:
+        st.markdown(f"""
+            <div class='welcome-card'>
+                <div class='welcome-title'>Link Invalido</div>
+                <p class='welcome-subtitle'>
+                    Este link de convite nao e valido ou ja foi utilizado. 
+                    Solicite um novo link ao seu gestor.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Ir para a pagina inicial", key="invite_go_home", use_container_width=True):
+            st.session_state.invite_ref = None
+            st.session_state.invite_tipo = None
+            st.session_state.page = "Home"
+            st.rerun()
+    elif invite_data[5] == 1:
+        st.markdown(f"""
+            <div class='welcome-card'>
+                <div class='welcome-title'>Convite ja Utilizado</div>
+                <p class='welcome-subtitle'>
+                    Este link de convite ja foi utilizado por <strong>{invite_data[4] or 'um participante'}</strong>.
+                    Solicite um novo link ao seu gestor se necessario.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Ir para a pagina inicial", key="invite_used_home", use_container_width=True):
+            st.session_state.invite_ref = None
+            st.session_state.invite_tipo = None
+            st.session_state.page = "Home"
+            st.rerun()
+    else:
+        st.markdown(f"""
+            <div class='welcome-card'>
+                <span class='welcome-badge'>{tipo_label}</span>
+                <div class='welcome-title'>Bem-vindo(a) a Plataforma LPS</div>
+                <p class='welcome-subtitle'>
+                    Voce foi convidado(a) para participar do {tipo_label} da Lideranca Psicanalitica.
+                    Para comecar, confirme o seu e-mail cadastrado abaixo.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.write("")
+        
+        with st.form("invite_email_verify", clear_on_submit=False):
+            verify_email = st.text_input("Confirme seu e-mail", placeholder="seu-email@empresa.com", key="invite_verify_email")
+            submit_verify = st.form_submit_button("Confirmar e Iniciar", use_container_width=True, type="primary")
+            
+            if submit_verify:
+                if not verify_email:
+                    st.error("Digite seu e-mail para continuar.")
+                else:
+                    auth_user = check_email_authorized(verify_email)
+                    if auth_user:
+                        invite_creator = invite_data[3] if invite_data else None
+                        auth_inviter = auth_user[5]
+                        if invite_creator and auth_inviter and invite_creator != auth_inviter:
+                            st.error("Este e-mail nao esta vinculado ao gestor que gerou este convite. Verifique com seu gestor.")
+                        else:
+                            mark_invite_used(invite_ref, verify_email)
+                            update_authorized_user_status(verify_email, "em_andamento")
+                            
+                            st.session_state.invite_email_verified = True
+                            st.session_state.invite_verified_email = verify_email.lower().strip()
+                            st.session_state.invite_verified_name = auth_user[2] or ""
+                            st.session_state.invite_verified_type = invite_tipo
+                            
+                            if invite_tipo == "lider":
+                                st.session_state.page = "Login"
+                            else:
+                                manager_id_for_invite = None
+                                if auth_user[5]:
+                                    conn = get_db()
+                                    c = conn.cursor()
+                                    c.execute("SELECT id FROM managers WHERE user_id = ?", (auth_user[5],))
+                                    mgr = c.fetchone()
+                                    conn.close()
+                                    if mgr:
+                                        manager_id_for_invite = mgr[0]
+                                
+                                if manager_id_for_invite:
+                                    existing_slots = get_manager_employees(manager_id_for_invite)
+                                    next_slot = len(existing_slots) + 1
+                                    if next_slot <= 4:
+                                        new_token = generate_employee_link(manager_id_for_invite, next_slot)
+                                        st.session_state.employee_token = new_token
+                                        st.session_state.page = "EmployeeAssessment"
+                                    else:
+                                        st.warning("O limite de 4 colaboradores para este gestor ja foi atingido.")
+                                else:
+                                    st.warning("Gestor nao encontrado. Contate o administrador.")
+                            
+                            st.rerun()
+                    else:
+                        st.error("E-mail nao encontrado na lista de autorizados. Verifique com seu gestor se o e-mail esta correto.")
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
 elif page == "EmployeeAssessment":
     token = st.session_state.employee_token
@@ -5879,6 +6221,388 @@ elif page == "Sobre":
             <a href="#" style="color: #666; text-decoration: underline; font-size: 0.9rem;">Privacidade e Termos</a>
         </div>
     """, unsafe_allow_html=True)
+
+elif page == "GestaoLPS":
+    if not st.session_state.authenticated:
+        st.session_state.page = "Login"
+        st.rerun()
+    
+    user_id = st.session_state.user['id']
+    if not is_user_admin(user_id):
+        st.error("Acesso restrito. Apenas administradores podem acessar esta area.")
+        if st.button("Voltar ao Dashboard", key="gestao_back"):
+            st.session_state.page = "Dashboard"
+            st.rerun()
+    else:
+        render_sidebar_navigation()
+        render_public_header()
+        
+        st.markdown("<h2 style='color: #18738c;'>Gestao LPS - Painel Administrativo</h2>", unsafe_allow_html=True)
+        
+        st.markdown("""
+            <style>
+            .gestao-card {
+                background: white;
+                border-radius: 12px;
+                padding: 1.5rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-left: 4px solid #d19f09;
+                margin-bottom: 1.5rem;
+            }
+            .gestao-card h3 {
+                color: #18738c;
+                margin: 0 0 1rem 0;
+                font-size: 1.1rem;
+            }
+            .status-badge {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 12px;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+            .status-pendente { background: #fff3cd; color: #856404; }
+            .status-andamento { background: #cce5ff; color: #004085; }
+            .status-concluido { background: #d4edda; color: #155724; }
+            .invite-link-box {
+                background: #f8f9fa;
+                border: 2px dashed #18738c;
+                border-radius: 8px;
+                padding: 1rem;
+                text-align: center;
+                word-break: break-all;
+                font-family: monospace;
+                color: #18738c;
+                font-weight: bold;
+                margin: 0.5rem 0;
+            }
+            .auth-user-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.75rem;
+                border-bottom: 1px solid #eee;
+            }
+            .auth-user-row:last-child { border-bottom: none; }
+            </style>
+        """, unsafe_allow_html=True)
+        
+        tab_convites, tab_emails, tab_monitoramento = st.tabs(["Gerar Convites", "Cadastro de E-mails", "Monitoramento"])
+        
+        with tab_convites:
+            st.markdown("<div class='gestao-card'><h3>Gerar Links de Convite</h3>", unsafe_allow_html=True)
+            st.markdown("<p style='color: #666; font-size: 0.9rem;'>Crie links unicos para convidar lideres ou equipes para o assessment.</p>", unsafe_allow_html=True)
+            
+            col_type, col_btn = st.columns([2, 1])
+            with col_type:
+                invite_type = st.selectbox(
+                    "Tipo de Convite",
+                    ["equipe", "lider"],
+                    format_func=lambda x: "Convite Equipe" if x == "equipe" else "Convite Lider",
+                    key="gestao_invite_type"
+                )
+            with col_btn:
+                st.write("")
+                st.write("")
+                if st.button("Gerar Novo Link", key="gestao_gen_link", use_container_width=True, type="primary"):
+                    token = create_invite_link(invite_type, user_id)
+                    st.session_state['last_generated_invite'] = token
+                    st.session_state['last_invite_type'] = invite_type
+                    st.rerun()
+            
+            if st.session_state.get('last_generated_invite'):
+                token = st.session_state['last_generated_invite']
+                inv_type = st.session_state.get('last_invite_type', 'equipe')
+                try:
+                    base_url = st.query_params.get("base_url", "")
+                    if not base_url:
+                        import urllib.parse
+                        base_url = ""
+                except:
+                    base_url = ""
+                
+                tipo_label = "Equipe" if inv_type == "equipe" else "Lider"
+                full_link = f"/?tipo={inv_type}&ref={token}"
+                st.success(f"Link de Convite {tipo_label} gerado com sucesso!")
+                st.markdown(f"<div class='invite-link-box'>{full_link}</div>", unsafe_allow_html=True)
+                st.caption("Copie e envie este link para o convidado. Ele abrira a plataforma no teste correto.")
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            st.markdown("<div class='gestao-card'><h3>Historico de Convites</h3>", unsafe_allow_html=True)
+            invite_links = get_invite_links(user_id)
+            if invite_links:
+                for link in invite_links:
+                    link_token = link[1]
+                    link_type = link[2]
+                    is_used = link[5]
+                    used_email = link[4] or "-"
+                    created = link[6][:16] if link[6] else "-"
+                    
+                    status_class = "status-concluido" if is_used else "status-pendente"
+                    status_text = "Utilizado" if is_used else "Disponivel"
+                    type_label = "Equipe" if link_type == "equipe" else "Lider"
+                    
+                    st.markdown(f"""
+                        <div class='auth-user-row'>
+                            <div>
+                                <strong style='color: #18738c;'>{type_label}</strong>
+                                <span style='color: #999; margin-left: 8px; font-family: monospace; font-size: 0.85rem;'>ref={link_token}</span>
+                            </div>
+                            <div>
+                                <span class='status-badge {status_class}'>{status_text}</span>
+                                <span style='color: #999; font-size: 0.8rem; margin-left: 8px;'>{created}</span>
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("Nenhum convite gerado ainda.")
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        with tab_emails:
+            st.markdown("<div class='gestao-card'><h3>Cadastro de E-mails Autorizados</h3>", unsafe_allow_html=True)
+            st.markdown("<p style='color: #666; font-size: 0.9rem;'>Pre-cadastre os e-mails dos colaboradores. Apenas e-mails cadastrados aqui poderao iniciar o teste.</p>", unsafe_allow_html=True)
+            
+            with st.form("add_auth_email_form", clear_on_submit=True):
+                col_name, col_email, col_type = st.columns([2, 2, 1])
+                with col_name:
+                    auth_name = st.text_input("Nome do Colaborador", placeholder="Ex: Maria Silva", key="auth_name_input")
+                with col_email:
+                    auth_email = st.text_input("E-mail do Colaborador", placeholder="maria@empresa.com", key="auth_email_input")
+                with col_type:
+                    auth_type = st.selectbox("Tipo", ["equipe", "lider"], format_func=lambda x: "Equipe" if x == "equipe" else "Lider", key="auth_type_select")
+                
+                submit_auth = st.form_submit_button("Cadastrar E-mail", use_container_width=True, type="primary")
+                if submit_auth:
+                    if auth_name and auth_email:
+                        success, error = add_authorized_user(auth_email, auth_name, auth_type, user_id)
+                        if success:
+                            st.success(f"E-mail {auth_email} cadastrado com sucesso!")
+                            st.rerun()
+                        else:
+                            st.warning(error)
+                    else:
+                        st.error("Preencha o nome e o e-mail do colaborador.")
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            st.markdown("<div class='gestao-card'><h3>E-mails Cadastrados</h3>", unsafe_allow_html=True)
+            auth_users = get_authorized_users(user_id)
+            if auth_users:
+                for au in auth_users:
+                    au_id = au[0]
+                    au_email = au[1]
+                    au_name = au[2]
+                    au_type = au[3]
+                    au_status = au[4]
+                    au_date = au[7][:16] if au[7] else "-"
+                    
+                    status_class = "status-concluido" if au_status == "concluido" else ("status-andamento" if au_status == "em_andamento" else "status-pendente")
+                    status_label = "Concluido" if au_status == "concluido" else ("Em Andamento" if au_status == "em_andamento" else "Pendente")
+                    type_label = "Equipe" if au_type == "equipe" else "Lider"
+                    
+                    col_info, col_action = st.columns([5, 1])
+                    with col_info:
+                        st.markdown(f"""
+                            <div class='auth-user-row'>
+                                <div>
+                                    <strong>{au_name}</strong>
+                                    <span style='color: #666; margin-left: 8px;'>{au_email}</span>
+                                    <span style='color: #999; margin-left: 8px; font-size: 0.8rem;'>({type_label})</span>
+                                </div>
+                                <div>
+                                    <span class='status-badge {status_class}'>{status_label}</span>
+                                    <span style='color: #999; font-size: 0.8rem; margin-left: 8px;'>{au_date}</span>
+                                </div>
+                            </div>
+                        """, unsafe_allow_html=True)
+                    with col_action:
+                        if au_status != "concluido":
+                            if st.button("Remover", key=f"remove_auth_{au_id}", type="secondary"):
+                                delete_authorized_user(au_id)
+                                st.rerun()
+            else:
+                st.info("Nenhum e-mail cadastrado ainda.")
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        with tab_monitoramento:
+            st.markdown("<div class='gestao-card'><h3>Monitoramento em Tempo Real</h3>", unsafe_allow_html=True)
+            st.markdown("<p style='color: #666; font-size: 0.9rem;'>Acompanhe o status de cada colaborador convidado.</p>", unsafe_allow_html=True)
+            
+            monitoring_data = get_admin_monitoring_data(user_id)
+            
+            if monitoring_data:
+                header_cols = st.columns([2, 2, 1, 1, 1, 1])
+                with header_cols[0]:
+                    st.markdown("<strong style='color: #18738c;'>Nome</strong>", unsafe_allow_html=True)
+                with header_cols[1]:
+                    st.markdown("<strong style='color: #18738c;'>E-mail</strong>", unsafe_allow_html=True)
+                with header_cols[2]:
+                    st.markdown("<strong style='color: #18738c;'>Tipo</strong>", unsafe_allow_html=True)
+                with header_cols[3]:
+                    st.markdown("<strong style='color: #18738c;'>Status</strong>", unsafe_allow_html=True)
+                with header_cols[4]:
+                    st.markdown("<strong style='color: #18738c;'>Data</strong>", unsafe_allow_html=True)
+                with header_cols[5]:
+                    st.markdown("<strong style='color: #18738c;'>Acao</strong>", unsafe_allow_html=True)
+                
+                st.markdown("<hr style='margin: 0.5rem 0; border-color: #eee;'>", unsafe_allow_html=True)
+                
+                csv_export_data = "Nome,E-mail,Tipo,Status,Data Cadastro,Data Conclusao\n"
+                
+                for row in monitoring_data:
+                    m_name = row[0] or "-"
+                    m_email = row[1] or "-"
+                    m_type = "Equipe" if row[2] == "equipe" else "Lider"
+                    m_status = row[3]
+                    m_completed = row[4][:16] if row[4] else "-"
+                    m_created = row[5][:16] if row[5] else "-"
+                    m_auth_id = row[6]
+                    
+                    status_display = {
+                        "pendente": "Nao Iniciou",
+                        "em_andamento": "Em Andamento",
+                        "concluido": "Concluido"
+                    }.get(m_status, m_status)
+                    
+                    status_class = {
+                        "pendente": "status-pendente",
+                        "em_andamento": "status-andamento",
+                        "concluido": "status-concluido"
+                    }.get(m_status, "status-pendente")
+                    
+                    date_display = m_completed if m_status == "concluido" else m_created
+                    
+                    csv_export_data += f'"{m_name}","{m_email}","{m_type}","{status_display}","{m_created}","{m_completed}"\n'
+                    
+                    data_cols = st.columns([2, 2, 1, 1, 1, 1])
+                    with data_cols[0]:
+                        st.write(m_name)
+                    with data_cols[1]:
+                        st.write(m_email)
+                    with data_cols[2]:
+                        st.write(m_type)
+                    with data_cols[3]:
+                        st.markdown(f"<span class='status-badge {status_class}'>{status_display}</span>", unsafe_allow_html=True)
+                    with data_cols[4]:
+                        st.write(date_display)
+                    with data_cols[5]:
+                        if m_status == "concluido":
+                            if st.button("Ver Laudo", key=f"ver_laudo_{m_auth_id}"):
+                                st.session_state[f"show_laudo_modal_{m_auth_id}"] = True
+                                st.rerun()
+                        else:
+                            st.write("-")
+                    
+                    if st.session_state.get(f"show_laudo_modal_{m_auth_id}"):
+                        conn = get_db()
+                        c = conn.cursor()
+                        c.execute("""SELECT e.id, e.name, e.email, e.profile_dominant, e.profile_secondary, 
+                                     e.bion_role, e.profile_details
+                                     FROM employees e WHERE e.email = ?""", (m_email.lower().strip(),))
+                        emp_result = c.fetchone()
+                        conn.close()
+                        
+                        if emp_result:
+                            with st.expander(f"Laudo de {m_name}", expanded=True):
+                                st.markdown(f"""
+                                    <div style='background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;'>
+                                        <strong>Nome:</strong> {emp_result[1]}<br>
+                                        <strong>Perfil:</strong> {emp_result[3]} + {emp_result[4]}<br>
+                                        <strong>Papel de Bion:</strong> {emp_result[5]}
+                                    </div>
+                                """, unsafe_allow_html=True)
+                                
+                                laudo_key = f"admin_laudo_{m_auth_id}"
+                                if st.session_state.get(laudo_key):
+                                    laudo_text = st.session_state[laudo_key]
+                                    if not laudo_text.startswith("__ERROR__"):
+                                        laudo_secs = parse_laudo_sections(laudo_text)
+                                        if len(laudo_secs) > 1:
+                                            for sec_title in LAUDO_SECTIONS:
+                                                sec_content = laudo_secs.get(sec_title, "")
+                                                if sec_content:
+                                                    with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                                        st.markdown(sec_content)
+                                        else:
+                                            st.markdown(laudo_text)
+                                        
+                                        pdf_data = generate_laudo_pdf(
+                                            laudo_text, emp_result[1],
+                                            emp_result[3] or "", emp_result[4] or "",
+                                            emp_result[5] or "", respondent_type="funcionario"
+                                        )
+                                        st.download_button(
+                                            "Baixar Laudo PDF",
+                                            data=pdf_data,
+                                            file_name=f"laudo_{m_name.replace(' ','_').lower()}.pdf",
+                                            mime="application/pdf",
+                                            key=f"dl_admin_laudo_{m_auth_id}",
+                                            use_container_width=True
+                                        )
+                                    else:
+                                        st.warning(laudo_text.replace("__ERROR__:", ""))
+                                
+                                if st.button("Gerar Laudo", key=f"gen_admin_laudo_{m_auth_id}", use_container_width=True, type="primary"):
+                                    with st.spinner("Gerando laudo..."):
+                                        emp_block_sums = get_assessment_block_sums(emp_result[0], "employee")
+                                        emp_profile_text = extract_docx_profile_text(
+                                            emp_result[3] or "O Idealista Exigente",
+                                            emp_result[4] or "O Contenedor Empatico",
+                                            "funcionario"
+                                        )
+                                        laudo_text, error = generate_ai_laudo(
+                                            emp_result[3] or "", emp_result[4] or "",
+                                            emp_result[5] or "", emp_block_sums, emp_result[1],
+                                            profile_text=emp_profile_text, respondent_type="funcionario"
+                                        )
+                                        if laudo_text:
+                                            st.session_state[laudo_key] = laudo_text
+                                        elif error:
+                                            st.session_state[laudo_key] = f"__ERROR__:{error}"
+                                        st.rerun()
+                                
+                                if st.button("Fechar", key=f"close_laudo_{m_auth_id}"):
+                                    st.session_state[f"show_laudo_modal_{m_auth_id}"] = False
+                                    st.rerun()
+                        else:
+                            st.info(f"Laudo ainda nao disponivel para {m_name}. O colaborador precisa completar o assessment primeiro.")
+                            if st.button("Fechar", key=f"close_nolaudo_{m_auth_id}"):
+                                st.session_state[f"show_laudo_modal_{m_auth_id}"] = False
+                                st.rerun()
+                
+                st.write("---")
+                
+                st.download_button(
+                    "Exportar Relatorio Geral (CSV)",
+                    data=csv_export_data,
+                    file_name="relatorio_gestao_lps.csv",
+                    mime="text/csv",
+                    key="export_gestao_csv",
+                    use_container_width=True,
+                    type="primary"
+                )
+            else:
+                st.info("Nenhum colaborador cadastrado ainda. Va para a aba 'Cadastro de E-mails' para comecar.")
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            st.markdown("<div class='gestao-card'><h3>Resumo</h3>", unsafe_allow_html=True)
+            total_auth = len(monitoring_data) if monitoring_data else 0
+            total_completed = len([r for r in monitoring_data if r[3] == "concluido"]) if monitoring_data else 0
+            total_pending = len([r for r in monitoring_data if r[3] == "pendente"]) if monitoring_data else 0
+            total_progress = len([r for r in monitoring_data if r[3] == "em_andamento"]) if monitoring_data else 0
+            
+            sum_cols = st.columns(4)
+            with sum_cols[0]:
+                st.metric("Total Cadastrados", total_auth)
+            with sum_cols[1]:
+                st.metric("Nao Iniciaram", total_pending)
+            with sum_cols[2]:
+                st.metric("Em Andamento", total_progress)
+            with sum_cols[3]:
+                st.metric("Concluidos", total_completed)
+            st.markdown("</div>", unsafe_allow_html=True)
 
 elif page == "AdminEmail":
     # Admin page for sending welcome emails after payment confirmation
