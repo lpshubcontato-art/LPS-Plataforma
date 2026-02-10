@@ -2656,42 +2656,65 @@ def render_public_header():
 def render_login_page():
     st.markdown("""
         <style>
-        .login-container {
-            background-color: #18738c;
-            padding: 3rem;
-            border-radius: 15px;
-            max-width: 450px;
-            margin: 2rem auto;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        .login-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(24, 115, 140, 0.15);
+            max-width: 440px;
+            width: 100%;
+            overflow: hidden;
         }
-        .login-title {
-            color: #d19f09;
-            font-size: 1.5rem;
+        .login-header {
+            background: linear-gradient(135deg, #18738c 0%, #0e5a6e 100%);
+            padding: 2.5rem 2rem 2rem 2rem;
             text-align: center;
+        }
+        .login-header img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid #c5a059;
             margin-bottom: 1rem;
-            font-weight: bold;
+            object-fit: cover;
         }
-        .welcome-text {
+        .login-header h2 {
             color: white;
-            text-align: center;
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.3rem 0;
+            letter-spacing: 0.5px;
+        }
+        .login-header p {
+            color: #c5a059;
+            font-size: 0.9rem;
+            margin: 0;
             font-style: italic;
+        }
+        .login-divider {
+            height: 3px;
+            background: linear-gradient(90deg, #18738c, #c5a059, #18738c);
         }
         </style>
     """, unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([1, 2.2, 1])
     with col2:
+        logo_html = ""
         if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=150)
+            import base64 as b64mod
+            with open(LOGO_PATH, "rb") as lf:
+                logo_b64 = b64mod.b64encode(lf.read()).decode()
+            ext = LOGO_PATH.rsplit(".", 1)[-1]
+            logo_html = f'<img src="data:image/{ext};base64,{logo_b64}" alt="LPS Logo">'
         
-        st.markdown("""
-            <h1 style="color: #18738c; font-size: 2.5rem; text-align: center; font-weight: bold; margin: 0.5rem 0;">
-                Liderança Psicanalítica
-            </h1>
-            <div style="background-color: #18738c; padding: 1.5rem; border-radius: 15px; margin-top: 1rem;">
-                <p class="welcome-text">Transforme Sua Liderança com a Ciência do Inconsciente</p>
+        st.markdown(f"""
+            <div class="login-card" style="margin: 0 auto;">
+                <div class="login-header">
+                    {logo_html}
+                    <h2>Lideranca Psicanalitica</h2>
+                    <p>Transforme sua lideranca com a ciencia do inconsciente</p>
+                </div>
+                <div class="login-divider"></div>
             </div>
         """, unsafe_allow_html=True)
         
@@ -2717,11 +2740,6 @@ def render_login_page():
                     else:
                         st.error("Preencha todos os campos.")
         
-        st.write("")
-        if st.button("⬅️ Voltar para Vitrine", key="back_to_vitrine", use_container_width=True):
-            st.session_state.page = "Vitrine"
-            st.rerun()
-        
         with tab2:
             with st.form("register_form"):
                 name = st.text_input("Nome Completo", key="reg_name")
@@ -2734,15 +2752,20 @@ def render_login_page():
                     if not all([name, email, password, password2]):
                         st.error("Preencha todos os campos.")
                     elif password != password2:
-                        st.error("As senhas não coincidem.")
+                        st.error("As senhas nao coincidem.")
                     elif len(password) < 6:
-                        st.error("Senha deve ter no mínimo 6 caracteres.")
+                        st.error("Senha deve ter no minimo 6 caracteres.")
                     else:
                         user_id, error = register_user(email, password, name)
                         if user_id:
-                            st.success("Conta criada! Faça login para continuar.")
+                            st.success("Conta criada! Faca login para continuar.")
                         else:
                             st.error(error)
+        
+        st.write("")
+        if st.button("Voltar para Vitrine", key="back_to_vitrine", use_container_width=True):
+            st.session_state.page = "Vitrine"
+            st.rerun()
 
 # Sidebar (only for authenticated managers, not employees via token)
 if st.session_state.authenticated and not is_employee_access:
@@ -2801,7 +2824,28 @@ def render_assessment_form(form_key, is_employee=False):
         questions_dict = ASSESSMENT_QUESTIONS
         cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger)"
         cloninger_dims = CLONINGER_SUBDIMENSIONS
-    for block_name, questions in questions_dict.items():
+
+    total_blocks = len(questions_dict)
+    block_names_list = list(questions_dict.keys())
+
+    total_questions = sum(len(qs) for qs in questions_dict.values())
+    questions_so_far = 0
+
+    for block_idx, (block_name, questions) in enumerate(questions_dict.items()):
+        questions_so_far += len(questions)
+        progress_pct = (questions_so_far / total_questions) * 100 if total_questions > 0 else 0
+        block_num = block_idx + 1
+        st.markdown(f"""
+            <div style="margin-bottom: 0.3rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                    <span style="font-size: 0.8rem; color: #18738c; font-weight: 600;">Bloco {block_num} de {total_blocks}</span>
+                    <span style="font-size: 0.8rem; color: #666;">{int(progress_pct)}% concluido</span>
+                </div>
+                <div style="width: 100%; background: #e8e8e8; border-radius: 10px; height: 10px; overflow: hidden;">
+                    <div style="width: {max(progress_pct, 2)}%; background: linear-gradient(90deg, #18738c, #c5a059); height: 100%; border-radius: 10px; transition: width 0.3s;"></div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
         st.markdown(f"### {block_name}")
         if block_name == cloninger_block:
             st.markdown("""<p style='color: #666; font-size: 0.9rem; margin-bottom: 1rem;'>
@@ -2838,6 +2882,17 @@ def render_assessment_form(form_key, is_employee=False):
                     key=f"{form_key}_{block_name}_{i}"
                 )
         st.write("---")
+    st.markdown(f"""
+        <div style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                <span style="font-size: 0.85rem; color: #18738c; font-weight: 700;">Questionario completo!</span>
+                <span style="font-size: 0.85rem; color: #c5a059; font-weight: 600;">100%</span>
+            </div>
+            <div style="width: 100%; background: #e8e8e8; border-radius: 10px; height: 10px; overflow: hidden;">
+                <div style="width: 100%; background: linear-gradient(90deg, #18738c, #c5a059); height: 100%; border-radius: 10px;"></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
     return responses
 
 def get_profile_tendency(profile):
@@ -3493,7 +3548,7 @@ def generate_radar_chart(block_sums, profile_name=""):
     ax.plot(angles, values_plot, color='#18738c', linewidth=2)
     
     # Add markers
-    ax.scatter(angles[:-1], values, color='#d19f09', s=100, zorder=5)
+    ax.scatter(angles[:-1], values, color='#c5a059', s=100, zorder=5)
     
     # Set category labels
     ax.set_xticks(angles[:-1])
