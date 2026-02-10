@@ -586,6 +586,19 @@ def init_db():
         FOREIGN KEY (created_by) REFERENCES users(id)
     )''')
     
+    c.execute('''CREATE TABLE IF NOT EXISTS laudos (
+        id TEXT PRIMARY KEY,
+        respondent_id TEXT NOT NULL,
+        respondent_type TEXT NOT NULL DEFAULT 'gestor',
+        respondent_name TEXT,
+        profile_dominant TEXT,
+        profile_secondary TEXT,
+        bion_role TEXT,
+        laudo_text TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+    
     # Migration: Add is_admin column to users if it doesn't exist
     c.execute("PRAGMA table_info(users)")
     user_columns = [col[1] for col in c.fetchall()]
@@ -829,6 +842,40 @@ def mark_invite_used(token, email):
               (email, datetime.now(), token))
     conn.commit()
     conn.close()
+
+def save_laudo(respondent_id, respondent_type, respondent_name, profile_dominant, profile_secondary, bion_role, laudo_text):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id FROM laudos WHERE respondent_id = ? AND respondent_type = ?", (respondent_id, respondent_type))
+    existing = c.fetchone()
+    if existing:
+        c.execute("""UPDATE laudos SET laudo_text = ?, respondent_name = ?, profile_dominant = ?, 
+                     profile_secondary = ?, bion_role = ?, updated_at = CURRENT_TIMESTAMP 
+                     WHERE respondent_id = ? AND respondent_type = ?""",
+                  (laudo_text, respondent_name, profile_dominant, profile_secondary, bion_role, respondent_id, respondent_type))
+    else:
+        laudo_id = str(uuid.uuid4())
+        c.execute("""INSERT INTO laudos (id, respondent_id, respondent_type, respondent_name, profile_dominant, 
+                     profile_secondary, bion_role, laudo_text) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                  (laudo_id, respondent_id, respondent_type, respondent_name, profile_dominant, profile_secondary, bion_role, laudo_text))
+    conn.commit()
+    conn.close()
+
+def get_laudo(respondent_id, respondent_type):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT * FROM laudos WHERE respondent_id = ? AND respondent_type = ?", (respondent_id, respondent_type))
+    result = c.fetchone()
+    conn.close()
+    return result
+
+def get_all_laudos():
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT * FROM laudos ORDER BY created_at DESC")
+    results = c.fetchall()
+    conn.close()
+    return results
 
 def add_authorized_user(email, name, invite_type, invited_by):
     conn = get_db()
@@ -5108,6 +5155,13 @@ elif page == "LPTest":
                 if radar_chart:
                     st.image(radar_chart, use_container_width=True)
                 
+                if not st.session_state.get('ai_laudo'):
+                    mgr_user_id = st.session_state.user.get('id', '') if st.session_state.user else ''
+                    if mgr_user_id:
+                        saved_mgr_laudo = get_laudo(mgr_user_id, "gestor")
+                        if saved_mgr_laudo:
+                            st.session_state.ai_laudo = saved_mgr_laudo[7]
+                
                 if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
                     manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
                     pdf_data = generate_laudo_pdf(
@@ -5210,6 +5264,9 @@ elif page == "LPTest":
                         )
                         if laudo_text:
                             st.session_state.ai_laudo = laudo_text
+                            user_id_for_laudo = st.session_state.user.get('id', '') if st.session_state.user else ''
+                            if user_id_for_laudo:
+                                save_laudo(user_id_for_laudo, "gestor", manager_name, res['dominant'], res['secondary'], res['bion_role'], laudo_text)
                         elif error:
                             st.session_state.ai_laudo = f"__ERROR__:{error}"
                         st.session_state.laudo_requested = False
@@ -5382,6 +5439,16 @@ elif page == "TeamManagement":
                         </div>
                     """, unsafe_allow_html=True)
                 
+                # Pre-load saved laudos from database
+                for emp_check in employees:
+                    if emp_check[10] == 1:
+                        emp_check_id = emp_check[0]
+                        emp_laudo_key = f"emp_laudo_{emp_check_id}"
+                        if not st.session_state.get(emp_laudo_key):
+                            saved = get_laudo(emp_check_id, "funcionario")
+                            if saved:
+                                st.session_state[emp_laudo_key] = saved[7]
+                
                 # Only show completed employees in results tab
                 completed_employees = [emp for emp in employees if emp[10] == 1]
                 
@@ -5479,6 +5546,7 @@ elif page == "TeamManagement":
                                     )
                                     if laudo_text:
                                         st.session_state[laudo_key] = laudo_text
+                                        save_laudo(emp_id, "funcionario", emp_name, emp[6] or "", emp[7] or "", emp[9] or "", laudo_text)
                                     elif error:
                                         st.session_state[laudo_key] = f"__ERROR__:{error}"
                                     st.rerun()
@@ -6534,6 +6602,20 @@ elif page == "GestaoLPS":
             employees_data = get_all_employees_results()
             monitoring_data = get_admin_monitoring_data(user_id)
             
+            all_saved_laudos = get_all_laudos()
+            for saved_l in all_saved_laudos:
+                s_resp_id = saved_l[1]
+                s_resp_type = saved_l[2]
+                s_laudo_text = saved_l[7]
+                if s_resp_type == "gestor":
+                    lk = f"admin_laudo_ldr_{s_resp_id}"
+                    if not st.session_state.get(lk):
+                        st.session_state[lk] = s_laudo_text
+                elif s_resp_type == "funcionario":
+                    lk = f"admin_laudo_emp_{s_resp_id}"
+                    if not st.session_state.get(lk):
+                        st.session_state[lk] = s_laudo_text
+            
             st.markdown("""
                 <div class='gestao-card'>
                     <h3 style='color: #18738c; border-bottom: 2px solid #d19f09; padding-bottom: 0.5rem; margin-bottom: 1rem;'>
@@ -6664,6 +6746,7 @@ elif page == "GestaoLPS":
                                     )
                                     if laudo_text_ldr:
                                         st.session_state[laudo_key_ldr] = laudo_text_ldr
+                                        save_laudo(l_mgr_id, "gestor", l_name, l_dominant or "", l_secondary or "", l_bion or "", laudo_text_ldr)
                                     elif error:
                                         st.session_state[laudo_key_ldr] = f"__ERROR__:{error}"
                                     st.rerun()
@@ -6818,6 +6901,7 @@ elif page == "GestaoLPS":
                                     )
                                     if laudo_text_emp:
                                         st.session_state[laudo_key_emp] = laudo_text_emp
+                                        save_laudo(e_id, "funcionario", e_name, e_dominant or "", e_secondary or "", e_bion or "", laudo_text_emp)
                                     elif error:
                                         st.session_state[laudo_key_emp] = f"__ERROR__:{error}"
                                     st.rerun()
