@@ -37,16 +37,26 @@ from reportlab.pdfgen import canvas
 #   SMTP_FROM_EMAIL = "your-email@gmail.com"
 # ==========================================
 
+def get_secret(key, default=""):
+    """Safely get a secret from st.secrets or environment variables."""
+    try:
+        val = st.secrets.get(key, None)
+        if val is not None:
+            return val
+    except Exception:
+        pass
+    return os.environ.get(key, default)
+
 def get_smtp_config():
     """Get SMTP configuration from secrets or environment"""
     try:
         return {
-            'host': st.secrets.get("SMTP_HOST", os.environ.get("SMTP_HOST", "")),
-            'port': int(st.secrets.get("SMTP_PORT", os.environ.get("SMTP_PORT", "587"))),
-            'user': st.secrets.get("SMTP_USER", os.environ.get("SMTP_USER", "")),
-            'password': st.secrets.get("SMTP_PASSWORD", os.environ.get("SMTP_PASSWORD", "")),
-            'from_name': st.secrets.get("SMTP_FROM_NAME", os.environ.get("SMTP_FROM_NAME", "Liderança Psicanalítica")),
-            'from_email': st.secrets.get("SMTP_FROM_EMAIL", os.environ.get("SMTP_FROM_EMAIL", ""))
+            'host': get_secret("SMTP_HOST", ""),
+            'port': int(get_secret("SMTP_PORT", "587")),
+            'user': get_secret("SMTP_USER", ""),
+            'password': get_secret("SMTP_PASSWORD", ""),
+            'from_name': get_secret("SMTP_FROM_NAME", "Lideranca Psicanalitica"),
+            'from_email': get_secret("SMTP_FROM_EMAIL", "")
         }
     except:
         return None
@@ -3115,8 +3125,10 @@ def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_ro
     elements.append(create_pdf_header_table())
     elements.append(Spacer(1, 15))
     
+    elements.append(Paragraph("Plataforma LPS - Viviane Nishiura", styles['LPSTitle']))
+    elements.append(Spacer(1, 4))
     tipo_label = "Laudo Psicanalitico de Lideranca" if respondent_type == "gestor" else "Laudo Psicanalitico - Perfil de Equipe"
-    elements.append(Paragraph(tipo_label, styles['LPSTitle']))
+    elements.append(Paragraph(tipo_label, styles['LaudoMeta']))
     elements.append(Spacer(1, 8))
     
     elements.append(Paragraph(f"<b>Nome:</b> {respondent_name or 'Avaliado(a)'}", styles['LaudoMeta']))
@@ -3516,39 +3528,68 @@ LAUDO_SECTIONS = [
 
 def parse_laudo_sections(laudo_text):
     """Parse AI laudo text into the 12 structured sections."""
+    import re
     sections = {}
     current_section = None
     current_content = []
     
+    section_keywords = {}
+    for section_title in LAUDO_SECTIONS:
+        num = section_title.split(".")[0].strip()
+        name_part = section_title.split(".", 1)[1].strip() if "." in section_title else section_title
+        keywords = [w.lower() for w in name_part.split() if len(w) > 3]
+        section_keywords[section_title] = (num, keywords)
+    
     for line in laudo_text.split("\n"):
         stripped = line.strip()
+        if not stripped:
+            if current_section:
+                current_content.append("")
+            continue
+        
         matched = False
+        clean_stripped = stripped.replace("**", "").replace("##", "").replace("###", "").strip()
+        clean_stripped = clean_stripped.rstrip(":").strip()
+        
         for section_title in LAUDO_SECTIONS:
-            num_prefix = section_title.split(".")[0].strip()
+            num, keywords = section_keywords[section_title]
+            
             check_variants = [
                 f"**{section_title}**",
                 f"**{section_title}:",
+                f"**{section_title}",
                 f"## {section_title}",
                 f"### {section_title}",
                 section_title,
-                f"**{num_prefix}.",
-                f"## {num_prefix}.",
-                f"### {num_prefix}.",
+                f"**{num}.",
+                f"## {num}.",
+                f"### {num}.",
             ]
+            
+            direct_match = False
             for variant in check_variants:
                 if stripped.startswith(variant) or stripped.startswith(variant.replace("**", "").strip()):
-                    if current_section:
-                        sections[current_section] = "\n".join(current_content).strip()
-                    current_section = section_title
-                    remainder = stripped
-                    for v in check_variants:
-                        remainder = remainder.replace(v, "")
-                    remainder = remainder.strip().strip("*").strip(":").strip()
-                    current_content = [remainder] if remainder else []
-                    matched = True
+                    direct_match = True
                     break
-            if matched:
+            
+            if not direct_match:
+                if re.match(rf'^\**\s*{num}\s*[\.\)\-]', clean_stripped):
+                    keyword_matches = sum(1 for kw in keywords if kw in clean_stripped.lower())
+                    if keyword_matches >= 1:
+                        direct_match = True
+            
+            if direct_match:
+                if current_section:
+                    sections[current_section] = "\n".join(current_content).strip()
+                current_section = section_title
+                remainder = stripped
+                for v in check_variants:
+                    remainder = remainder.replace(v, "")
+                remainder = remainder.strip().strip("*").strip(":").strip()
+                current_content = [remainder] if remainder else []
+                matched = True
                 break
+        
         if not matched and current_section:
             current_content.append(line)
     
@@ -3563,11 +3604,14 @@ def parse_laudo_sections(laudo_text):
 def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_name="", profile_text=None, respondent_type="gestor"):
     """Generate a deep psychoanalytic leadership analysis using Gemini AI with 12-section structure."""
     try:
-        api_key = st.secrets.get("GOOGLE_API_KEY", os.environ.get("GOOGLE_API_KEY", ""))
+        api_key = get_secret("GOOGLE_API_KEY", "")
         if not api_key:
             return None, "Chave da API do Google Gemini nao configurada."
         
         client = genai.Client(api_key=api_key)
+        
+        if block_sums is None:
+            block_sums = {}
         
         block_details = ""
         if respondent_type == "funcionario":
@@ -3716,6 +3760,8 @@ Parágrafo conclusivo integrando todos os elementos. Ressalte o potencial do per
 quando bem direcionado e os cuidados necessarios para evitar armadilhas inconscientes.
 
 INSTRUCOES DE QUALIDADE:
+- Estruture sua resposta estritamente em 12 topicos numerados conforme a lista fornecida acima.
+- NAO omita nenhuma secao. TODAS as 12 secoes sao OBRIGATORIAS.
 - Tom de Consultor Psicanalitico Senior: profissional, profundo, academico mas acessivel.
 - Cada secao deve ter NO MINIMO 2 paragrafos de texto corrido (nao apenas bullet points).
 - Use termos tecnicos com naturalidade: Superego, relacoes objetais, identificacao projetiva, 
@@ -3723,8 +3769,10 @@ INSTRUCOES DE QUALIDADE:
 - O laudo completo deve ter entre 1500 e 2500 palavras.
 - Escreva em portugues brasileiro.
 - Formate CADA titulo de secao exatamente como: **N. Nome da Secao** (negrito com numero)
+  Exemplos exatos: **1. Visao Geral**, **2. Essencia Psicanalitica**, **3. Motivacoes Inconscientes**, etc.
 - NAO use ### ou ## para titulos, use apenas ** negrito **.
-- Insira uma linha em branco entre secoes."""
+- Insira uma linha em branco entre secoes.
+- ATENCAO: O laudo DEVE conter exatamente 12 secoes numeradas de 1 a 12. Verifique antes de finalizar."""
 
         response = client.models.generate_content(
             model="gemini-1.5-flash",
@@ -3735,7 +3783,10 @@ INSTRUCOES DE QUALIDADE:
             }
         )
         
-        return response.text, None
+        result_text = response.text if response and hasattr(response, 'text') else None
+        if not result_text:
+            return None, "A IA nao retornou conteudo. Tente novamente."
+        return result_text, None
     except Exception as e:
         return None, f"Erro ao gerar laudo: {str(e)}"
 
@@ -5057,6 +5108,25 @@ elif page == "LPTest":
                 if radar_chart:
                     st.image(radar_chart, use_container_width=True)
                 
+                if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
+                    manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
+                    pdf_data = generate_laudo_pdf(
+                        st.session_state.ai_laudo,
+                        manager_name,
+                        res['dominant'], res['secondary'], res['bion_role'],
+                        respondent_type="gestor"
+                    )
+                    safe_name = (manager_name or "gestor").replace(" ", "_").lower()
+                    st.download_button(
+                        "Baixar Laudo Profissional (PDF)",
+                        data=pdf_data,
+                        file_name=f"laudo_lps_{safe_name}_{datetime.now().strftime('%Y%m%d')}.pdf",
+                        mime="application/pdf",
+                        key="download_laudo_pdf",
+                        use_container_width=True,
+                        type="primary"
+                    )
+                
                 bion_desc = BION_DESCRIPTIONS.get(res['bion_role'], '')
                 if bion_desc:
                     st.markdown(f"""
@@ -5089,58 +5159,41 @@ elif page == "LPTest":
                 st.markdown("---")
                 st.subheader("Laudo Completo - Analise Psicanalitica e de Lideranca")
                 
+                section_icons = {
+                    "1. Visao Geral": "1.",
+                    "2. Essencia Psicanalitica": "2.",
+                    "3. Motivacoes Inconscientes": "3.",
+                    "4. Forcas": "4.",
+                    "5. Sombra (Riscos)": "5.",
+                    "6. Dinamica Grupal (Papeis de Bion)": "6.",
+                    "7. Estilo de Lideranca/Trabalho": "7.",
+                    "8. Dinamica Emocional (Sinek + Neurociencia)": "8.",
+                    "9. Melhor Aproveitamento": "9.",
+                    "10. Riscos de Alocacao": "10.",
+                    "11. Recomendacoes de Desenvolvimento": "11.",
+                    "12. Sintese Final": "12."
+                }
+                
                 if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
                     laudo_sections = parse_laudo_sections(st.session_state.ai_laudo)
                     
                     if len(laudo_sections) > 1:
-                        section_icons = {
-                            "1. Visao Geral": "🔍",
-                            "2. Essencia Psicanalitica": "🧠",
-                            "3. Motivacoes Inconscientes": "🌊",
-                            "4. Forcas": "💪",
-                            "5. Sombra (Riscos)": "⚡",
-                            "6. Dinamica Grupal (Papeis de Bion)": "👥",
-                            "7. Estilo de Lideranca/Trabalho": "🎯",
-                            "8. Dinamica Emocional (Sinek + Neurociencia)": "🧬",
-                            "9. Melhor Aproveitamento": "✅",
-                            "10. Riscos de Alocacao": "⛔",
-                            "11. Recomendacoes de Desenvolvimento": "📈",
-                            "12. Sintese Final": "📋"
-                        }
                         for section_title in LAUDO_SECTIONS:
                             content = laudo_sections.get(section_title, "")
-                            if content:
-                                icon = section_icons.get(section_title, "📄")
-                                with st.expander(f"{icon} {section_title}", expanded=(section_title == "1. Visao Geral")):
+                            display_title = section_title
+                            with st.expander(f"{display_title}", expanded=(section_title == "1. Visao Geral")):
+                                if content:
                                     st.markdown(content)
+                                else:
+                                    st.markdown("*Secao nao disponivel nesta analise.*")
                     else:
                         st.markdown(st.session_state.ai_laudo)
                     
                     st.markdown("---")
-                    col_pdf, col_regen = st.columns([2, 1])
-                    with col_pdf:
-                        manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
-                        pdf_data = generate_laudo_pdf(
-                            st.session_state.ai_laudo,
-                            manager_name,
-                            res['dominant'], res['secondary'], res['bion_role'],
-                            respondent_type="gestor"
-                        )
-                        safe_name = (manager_name or "gestor").replace(" ", "_").lower()
-                        st.download_button(
-                            "Baixar Laudo em PDF",
-                            data=pdf_data,
-                            file_name=f"laudo_lps_{safe_name}_{datetime.now().strftime('%Y%m%d')}.pdf",
-                            mime="application/pdf",
-                            key="download_laudo_pdf",
-                            use_container_width=True,
-                            type="primary"
-                        )
-                    with col_regen:
-                        if st.button("Regenerar Laudo", key="regen_laudo", use_container_width=True):
-                            st.session_state.ai_laudo = None
-                            st.session_state.laudo_requested = True
-                            st.rerun()
+                    if st.button("Regenerar Laudo", key="regen_laudo", use_container_width=True):
+                        st.session_state.ai_laudo = None
+                        st.session_state.laudo_requested = True
+                        st.rerun()
                 elif st.session_state.get('ai_laudo', '').startswith("__ERROR__"):
                     st.warning(st.session_state.ai_laudo.replace("__ERROR__:", ""))
                     if st.button("Tentar novamente", key="retry_laudo"):
@@ -6100,7 +6153,7 @@ FORMATO DE RESPOSTA:
             with st.chat_message("assistant"):
                 with st.spinner("Analisando dinamicas da equipe..."):
                     try:
-                        client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
+                        client = genai.Client(api_key=get_secret("GOOGLE_API_KEY", ""))
                         
                         chat_history = f"{system_prompt}\n\n"
                         for msg in st.session_state.chat_messages:
