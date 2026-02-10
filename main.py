@@ -3727,7 +3727,7 @@ INSTRUCOES DE QUALIDADE:
 - Insira uma linha em branco entre secoes."""
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-1.5-flash",
             contents=prompt,
             config={
                 "max_output_tokens": 8192,
@@ -6108,7 +6108,7 @@ FORMATO DE RESPOSTA:
                             chat_history += f"{role}: {msg['content']}\n\n"
                         
                         response = client.models.generate_content(
-                            model="gemini-2.0-flash",
+                            model="gemini-1.5-flash",
                             contents=chat_history
                         )
                         
