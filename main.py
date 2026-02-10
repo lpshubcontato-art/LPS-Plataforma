@@ -3191,16 +3191,15 @@ def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_ro
     ]))
     elements.append(line_table)
     
-    sections = parse_laudo_sections(laudo_text)
+    sections = parse_laudo_sections(laudo_text, respondent_type)
+    section_list = get_laudo_sections_for_type(respondent_type)
     
-    for section_title in LAUDO_SECTIONS:
+    for section_title in section_list:
         content = sections.get(section_title, "")
         if not content and section_title == "1. Visao Geral" and len(sections) == 1:
             content = list(sections.values())[0]
         
         display_title = section_title
-        if respondent_type == "funcionario" and "Lideranca" in display_title:
-            display_title = display_title.replace("Lideranca", "Trabalho")
         
         elements.append(Paragraph(display_title, styles['LaudoSectionTitle']))
         
@@ -3514,39 +3513,39 @@ def generate_radar_chart(block_sums, profile_name=""):
     buffer.seek(0)
     return buffer.getvalue()
 
+def find_docx_file(dominant, secondary, respondent_type="gestor"):
+    """Find the matching .docx file for a profile combination.
+    Returns the file path or None if not found."""
+    import glob as glob_module
+    
+    dom_sigla = ARCHETYPE_TO_SIGLA.get(dominant, "")
+    sec_sigla = ARCHETYPE_TO_SIGLA.get(secondary, "")
+    
+    if not dom_sigla or not sec_sigla:
+        return None
+    
+    combo = f"{dom_sigla}{sec_sigla}"
+    pattern = f"attached_assets/{combo}_{respondent_type}_*.docx"
+    matches = glob_module.glob(pattern)
+    
+    if not matches:
+        pattern_alt = f"attached_assets/{sec_sigla}{dom_sigla}_{respondent_type}_*.docx"
+        matches = glob_module.glob(pattern_alt)
+    
+    if matches:
+        return sorted(matches)[-1]
+    return None
+
 def extract_docx_profile_text(dominant, secondary, respondent_type="gestor"):
-    """Extract profile text from matching .docx file in attached_assets.
-    
-    Args:
-        dominant: Name of dominant archetype (e.g., "O Idealista Exigente")
-        secondary: Name of secondary archetype
-        respondent_type: "gestor" or "funcionario"
-    
-    Returns:
-        Extracted text from .docx file, or None if not found
-    """
+    """Extract raw text from matching .docx file."""
     try:
         from docx import Document as DocxDocument
-        import glob as glob_module
         
-        dom_sigla = ARCHETYPE_TO_SIGLA.get(dominant, "")
-        sec_sigla = ARCHETYPE_TO_SIGLA.get(secondary, "")
-        
-        if not dom_sigla or not sec_sigla:
+        file_path = find_docx_file(dominant, secondary, respondent_type)
+        if not file_path:
             return None
         
-        combo = f"{dom_sigla}{sec_sigla}"
-        pattern = f"attached_assets/{combo}_{respondent_type}_*.docx"
-        matches = glob_module.glob(pattern)
-        
-        if not matches:
-            pattern_alt = f"attached_assets/{sec_sigla}{dom_sigla}_{respondent_type}_*.docx"
-            matches = glob_module.glob(pattern_alt)
-        
-        if not matches:
-            return None
-        
-        doc = DocxDocument(matches[0])
+        doc = DocxDocument(file_path)
         full_text = []
         for para in doc.paragraphs:
             text = para.text.strip()
@@ -3558,284 +3557,137 @@ def extract_docx_profile_text(dominant, secondary, respondent_type="gestor"):
         print(f"[DOCX] Error extracting profile: {e}")
         return None
 
-LAUDO_SECTIONS = [
-    "1. Visao Geral",
-    "2. Essencia Psicanalitica",
-    "3. Motivacoes Inconscientes",
-    "4. Forcas",
-    "5. Sombra (Riscos)",
-    "6. Dinamica Grupal (Papeis de Bion)",
-    "7. Estilo de Lideranca/Trabalho",
-    "8. Dinamica Emocional (Sinek + Neurociencia)",
-    "9. Melhor Aproveitamento",
-    "10. Riscos de Alocacao",
-    "11. Recomendacoes de Desenvolvimento",
-    "12. Sintese Final"
+LAUDO_SECTION_PATTERNS_GESTOR = [
+    ("1. Visao Geral", ["visão geral", "visao geral"]),
+    ("2. Essencia Psicanalitica", ["essência psicanalítica", "essencia psicanalitica"]),
+    ("3. Motivacoes Inconscientes", ["motivações inconscientes", "motivacoes inconscientes"]),
+    ("4. Forcas", ["forças", "forcas"]),
+    ("5. Sombra (Riscos)", ["sombra"]),
+    ("6. Estilo de Lideranca e Impacto", ["estilo de liderança", "estilo de lideranca", "liderança e impacto", "lideranca e impacto"]),
+    ("7. Funcao de Lideranca", ["função de liderança", "funcao de lideranca"]),
+    ("8. Dinamica Emocional (Sinek + Neurociencia)", ["dinâmica emocional", "dinamica emocional", "sinek"]),
+    ("9. Melhor Aproveitamento", ["melhor aproveitamento"]),
+    ("10. Riscos de Alocacao", ["riscos se mal alocado", "riscos de alocação", "riscos de alocacao"]),
+    ("11. Recomendacoes de Desenvolvimento", ["recomendações de desenvolvimento", "recomendacoes de desenvolvimento"]),
+    ("12. Sintese", ["síntese", "sintese"]),
 ]
 
-def parse_laudo_sections(laudo_text):
-    """Parse AI laudo text into the 12 structured sections."""
-    import re
+LAUDO_SECTION_PATTERNS_FUNCIONARIO = [
+    ("1. Visao Geral", ["visão geral", "visao geral"]),
+    ("2. Essencia Psicanalitica", ["essência psicanalítica", "essencia psicanalitica"]),
+    ("3. Motivacoes Inconscientes", ["motivações inconscientes", "motivacoes inconscientes"]),
+    ("4. Forcas", ["forças", "forcas"]),
+    ("5. Sombra (Riscos)", ["sombra"]),
+    ("6. Dinamica Grupal (Papeis de Bion)", ["tendências de papéis grupais", "tendencias de papeis grupais", "papéis grupais", "papeis grupais"]),
+    ("7. Dinamica Emocional (Sinek + Neurociencia)", ["dinâmica emocional", "dinamica emocional", "sinek"]),
+    ("8. Melhor Aproveitamento", ["melhor aproveitamento"]),
+    ("9. Riscos de Alocacao", ["riscos se mal alocado", "riscos de alocação", "riscos de alocacao"]),
+    ("10. Recomendacoes ao Gestor", ["recomendações ao gestor", "recomendacoes ao gestor"]),
+    ("11. Reflexoes para o Proprio Perfil", ["reflexões para o próprio perfil", "reflexoes para o proprio perfil"]),
+    ("12. Sintese", ["síntese", "sintese"]),
+]
+
+LAUDO_SECTIONS_GESTOR = [s[0] for s in LAUDO_SECTION_PATTERNS_GESTOR]
+LAUDO_SECTIONS_FUNCIONARIO = [s[0] for s in LAUDO_SECTION_PATTERNS_FUNCIONARIO]
+LAUDO_SECTIONS = LAUDO_SECTIONS_GESTOR
+
+def get_laudo_sections_for_type(respondent_type="gestor"):
+    """Return the appropriate section list for the respondent type."""
+    if respondent_type == "funcionario":
+        return LAUDO_SECTIONS_FUNCIONARIO
+    return LAUDO_SECTIONS_GESTOR
+
+def parse_docx_into_sections(docx_text, respondent_type="gestor"):
+    """Parse extracted docx text into structured sections based on section headers found in the document."""
+    if not docx_text:
+        return {}
+    
+    patterns = LAUDO_SECTION_PATTERNS_GESTOR if respondent_type == "gestor" else LAUDO_SECTION_PATTERNS_FUNCIONARIO
+    
+    lines = docx_text.split("\n")
     sections = {}
     current_section = None
     current_content = []
+    title_line_skipped = False
     
-    section_keywords = {}
-    for section_title in LAUDO_SECTIONS:
-        num = section_title.split(".")[0].strip()
-        name_part = section_title.split(".", 1)[1].strip() if "." in section_title else section_title
-        keywords = [w.lower() for w in name_part.split() if len(w) > 3]
-        section_keywords[section_title] = (num, keywords)
-    
-    for line in laudo_text.split("\n"):
+    for line in lines:
         stripped = line.strip()
         if not stripped:
             if current_section:
                 current_content.append("")
             continue
         
-        matched = False
-        clean_stripped = stripped.replace("**", "").replace("##", "").replace("###", "").strip()
-        clean_stripped = clean_stripped.rstrip(":").strip()
+        clean = stripped.replace("**", "").replace("##", "").replace("###", "").strip()
+        clean_lower = clean.lower()
+        clean_no_num = clean_lower
+        if clean_no_num and clean_no_num[0].isdigit():
+            parts = clean_no_num.split(".", 1)
+            if len(parts) > 1:
+                clean_no_num = parts[1].strip()
         
-        for section_title in LAUDO_SECTIONS:
-            num, keywords = section_keywords[section_title]
-            
-            check_variants = [
-                f"**{section_title}**",
-                f"**{section_title}:",
-                f"**{section_title}",
-                f"## {section_title}",
-                f"### {section_title}",
-                section_title,
-                f"**{num}.",
-                f"## {num}.",
-                f"### {num}.",
-            ]
-            
-            direct_match = False
-            for variant in check_variants:
-                if stripped.startswith(variant) or stripped.startswith(variant.replace("**", "").strip()):
-                    direct_match = True
-                    break
-            
-            if not direct_match:
-                if re.match(rf'^\**\s*{num}\s*[\.\)\-]', clean_stripped):
-                    keyword_matches = sum(1 for kw in keywords if kw in clean_stripped.lower())
-                    if keyword_matches >= 1:
-                        direct_match = True
-            
-            if direct_match:
-                if current_section:
-                    sections[current_section] = "\n".join(current_content).strip()
-                current_section = section_title
-                remainder = stripped
-                for v in check_variants:
-                    remainder = remainder.replace(v, "")
-                remainder = remainder.strip().strip("*").strip(":").strip()
-                current_content = [remainder] if remainder else []
-                matched = True
+        matched_section = None
+        for section_title, keywords in patterns:
+            for kw in keywords:
+                if kw in clean_lower or clean_no_num.startswith(kw):
+                    if len(clean) < 120:
+                        matched_section = section_title
+                        break
+            if matched_section:
                 break
         
-        if not matched and current_section:
-            current_content.append(line)
+        if matched_section:
+            if current_section and current_content:
+                sections[current_section] = "\n".join(current_content).strip()
+            current_section = matched_section
+            current_content = []
+            
+            header_end = 0
+            for kw in [k for _, kws in patterns for k in kws]:
+                idx = clean_lower.find(kw)
+                if idx >= 0:
+                    candidate = idx + len(kw)
+                    if candidate > header_end:
+                        header_end = candidate
+            
+            after_header = clean[header_end:].strip().lstrip(":").lstrip("-").lstrip(")").strip()
+            if after_header and len(after_header) > 15:
+                current_content.append(after_header)
+        elif not title_line_skipped and not current_section:
+            title_line_skipped = True
+        elif current_section:
+            current_content.append(stripped)
     
-    if current_section:
+    if current_section and current_content:
         sections[current_section] = "\n".join(current_content).strip()
     
-    if len(sections) < 6:
-        sections = {"1. Visao Geral": laudo_text}
+    if not sections and docx_text:
+        sections[patterns[0][0]] = docx_text
     
     return sections
 
-def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_name="", profile_text=None, respondent_type="gestor"):
-    """Generate a deep psychoanalytic leadership analysis using Gemini AI with 12-section structure."""
+def parse_laudo_sections(laudo_text, respondent_type="gestor"):
+    """Parse laudo text into structured sections."""
+    return parse_docx_into_sections(laudo_text, respondent_type)
+
+def generate_docx_laudo(dominant, secondary, bion_role, respondent_name="", respondent_type="gestor"):
+    """Extract laudo content directly from the corresponding .docx file.
+    No AI generation - uses the exact text from the document."""
     try:
-        api_key = get_secret("GOOGLE_API_KEY", "")
-        if not api_key:
-            return None, "Chave da API do Google Gemini nao configurada."
+        docx_text = extract_docx_profile_text(dominant, secondary, respondent_type)
         
-        client = genai.Client(api_key=api_key)
+        if not docx_text:
+            dom_sigla = ARCHETYPE_TO_SIGLA.get(dominant, "??")
+            sec_sigla = ARCHETYPE_TO_SIGLA.get(secondary, "??")
+            return None, f"Arquivo de perfil nao encontrado: {dom_sigla}{sec_sigla}_{respondent_type}.docx. Verifique se o arquivo existe no diretorio."
         
-        if block_sums is None:
-            block_sums = {}
-        
-        block_details = ""
-        if respondent_type == "funcionario":
-            block_keys = [
-                ("Bloco 1 – Idealista Exigente (Funcionario)", "Autoridade/Idealismo"),
-                ("Bloco 2 – Contenedor Empatico (Funcionario)", "Contencao Emocional/Empatia"),
-                ("Bloco 3 – Buscador de Reconhecimento (Funcionario)", "Narcisismo/Reconhecimento"),
-                ("Bloco 4 – Estruturador Cauteloso (Funcionario)", "Estrutura/Controle"),
-                ("Bloco 5 – Relacional Reativo (Funcionario)", "Dinamicas Relacionais"),
-                ("Bloco 6 – Observador Consciente (Funcionario)", "Autoconsciencia/Observacao"),
-                ("Bloco 7 – Executor Decidido (Funcionario)", "Execucao/Urgencia"),
-            ]
-            max_score = 60
-        else:
-            block_keys = [
-                ("Bloco 1 – Autoridade Interna, Autoimagem e Superego", "Superego/Autoridade Interna"),
-                ("Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca", "Contencao Emocional/Empatia"),
-                ("Bloco 3 – Narcisismo, Reconhecimento e Motivacao", "Narcisismo/Reconhecimento"),
-                ("Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade", "Estrutura/Controle"),
-                ("Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia", "Dinamicas Relacionais"),
-                ("Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego", "Autoconsciencia/Mentalizacao"),
-                ("Bloco 7 – Acao, Urgencia e Foco na Entrega", "Execucao/Urgencia"),
-            ]
-            max_score = 40
-        
-        for full_name, short_name in block_keys:
-            score = block_sums.get(full_name, max_score // 2)
-            pct = round((score / max_score) * 100)
-            block_details += f"- {short_name}: {score}/{max_score} ({pct}%)\n"
-        
-        profile_context = ""
-        if profile_text:
-            profile_context = f"""
-
-PERFIL DETALHADO EXTRAIDO DA BASE DE CONHECIMENTO (ARQUIVO .DOCX):
---- INICIO DO PERFIL ---
-{profile_text}
---- FIM DO PERFIL ---
-
-INSTRUCAO CRITICA: O texto acima e a BASE PRINCIPAL e OBRIGATORIA para o laudo.
-Utilize as informacoes, terminologia e insights do perfil .docx como alicerce de cada secao.
-Expanda e aprofunde cada ponto com referencias teoricas (Kernberg, Bion, Sinek, Neurociencia)."""
-        
-        respondent_label = "funcionario/membro de equipe" if respondent_type == "funcionario" else "lider/gestor"
-        role_label = "Estilo de Trabalho" if respondent_type == "funcionario" else "Estilo de Lideranca"
-        
-        if respondent_type == "funcionario":
-            bion_context = """Papeis Grupais de Bion para Funcionarios:
-- Bode Expiatorio: Absorve projecoes negativas do grupo, frequentemente culpado por falhas sistemicas
-- Sabotador: Resiste passivamente as mudancas, concordancia superficial com boicote sutil
-- Lider Informal: Assume lideranca sem cargo formal, mobiliza por carisma ou competencia
-- Patrulheiro: Vigia normas e comportamentos, aponta desvios e cobra conformidade
-- Apaziguador: Evita conflitos a todo custo, sacrifica autenticidade pela harmonia
-- Neutro/Adaptavel: Perfil equilibrado, adapta-se as necessidades sem papel fixo"""
-        else:
-            bion_context = """Papeis de Bion para Lideres:
-- Pressupostos Basicos: Dependencia, Luta-Fuga, Pareamento
-- Grupo de Trabalho: funcionamento maduro orientado a tarefa
-- Porta-voz, Bode Expiatorio, Dependente, Lider de Luta-Fuga, Sabotador Silencioso"""
-        
-        prompt = f"""Voce e a Dra. Viviane Nishiura, Consultora Psicanalitica Senior especializada em Psicanalise Organizacional, 
-Neurociencia Aplicada a Lideranca e Dinamicas Grupais. Sua formacao e baseada em Kernberg (relacoes objetais, 
-narcisismo saudavel, organizacao borderline e neurotica da personalidade), Bion (pressupostos basicos, grupo de trabalho, 
-continente-conteudo), Sinek (Circulo de Seguranca, quimicos EDSO) e Neurociencia Organizacional (cortisol, ocitocina, 
-amigdala, neuronios-espelho, cortex pre-frontal).
-
-DADOS DO ASSESSMENT:
-Nome: {respondent_name if respondent_name else "Avaliado(a)"}
-Tipo: {respondent_label}
-Perfil Dominante: {dominant}
-Perfil Secundario: {secondary}
-Papel de Bion Identificado: {bion_role}
-
-Pontuacoes por Eixo (maximo {max_score} pontos cada):
-{block_details}
-
-{bion_context}
-{profile_context}
-
-Os 7 arquetipos do sistema LPS sao:
-- O Idealista Exigente: Superego exigente, pressao interna por excelencia, alto padrao moral
-- O Contenedor Empatico: Funcao continente (Bion), absorve ansiedades do grupo, regulacao emocional
-- O Buscador de Reconhecimento: Narcisismo funcional (Kernberg), busca validacao e admiracao
-- O Estruturador Cauteloso: Necessidade de controle e previsibilidade, defesa contra ambiguidade
-- O Relacional Reativo: Ativado por transferencia/contratransferencia, sensivel a dinamicas interpessoais
-- O Observador Consciente: Alta mentalizacao, autoconsciencia reflexiva, distanciamento analitico
-- O Executor Decidido: Orientado a acao e resultados, urgencia como defesa contra ansiedade
-
-ESTRUTURA OBRIGATORIA DO LAUDO (12 SECOES):
-Gere o laudo seguindo RIGOROSAMENTE estas 12 secoes, cada uma como titulo em negrito com **:
-
-**1. Visao Geral**
-Apresentacao do perfil {dominant} + {secondary}. Contextualize a combinacao dos arquetipos, 
-explicando como a interacao entre dominante e secundario cria uma configuracao psiquica unica.
-Mencione o nome do avaliado e seu tipo ({respondent_label}).
-
-**2. Essencia Psicanalitica**
-Analise profunda da estrutura psiquica segundo Kernberg: tipo de organizacao da personalidade 
-(neurotica, borderline, narciSica), qualidade das relacoes objetais internalizadas, nivel de 
-integracao do self. Referencie conceitos como objeto bom/mau, posicao esquizo-paranoide vs depressiva (Klein).
-
-**3. Motivacoes Inconscientes**
-Identifique os impulsos inconscientes que dirigem o comportamento: fantasias inconscientes de lideranca, 
-mecanismos de defesa predominantes (projecao, identificacao projetiva, racionalizacao, sublimacao), 
-e como o Superego interno influencia decisoes e relacoes.
-
-**4. Forcas**
-Competencias e qualidades que emergem da combinacao dos arquetipos. Relacione com conceitos de 
-narcisismo saudavel (Kernberg), capacidade de continencia (Bion), e neuroquimica positiva 
-(dopamina, serotonina, ocitocina). Minimo 2 paragrafos.
-
-**5. Sombra (Riscos)**
-Aspectos sombrios e pontos cegos: vulnerabilidades psicanaliticas, riscos de regressao sob estresse, 
-padroes inconscientes destrutivos. Referencie o conceito de sombra (Jung adaptado), acting out, 
-e impacto do cortisol e amigdala hiperativa. Minimo 2 paragrafos.
-
-**6. Dinamica Grupal (Papeis de Bion)**
-Analise do papel de Bion identificado ({bion_role}). Explique como este papel se manifesta no grupo, 
-sua relacao com os pressupostos basicos (Dependencia, Luta-Fuga, Pareamento), e como o avaliado 
-transita entre pressuposto basico e grupo de trabalho. Inclua conceito de continente-conteudo.
-
-**7. {role_label}**
-Descricao detalhada de como os arquetipos se traduzem em comportamento {'de lideranca' if respondent_type == 'gestor' else 'no ambiente de trabalho'}. 
-Inclua padroes de tomada de decisao, estilo de comunicacao, gestao de conflitos, e impacto nos liderados/colegas.
-
-**8. Dinamica Emocional (Sinek + Neurociencia)**
-Aplique o Circulo de Seguranca de Sinek: como o perfil impacta os 4 quimicos EDSO 
-(Endorfina, Dopamina, Serotonina, Ocitocina) na equipe. Analise neurocientifica: 
-equilibrio cortisol vs ocitocina, ativacao da amigdala vs cortex pre-frontal, 
-papel dos neuronios-espelho na empatia e contencao emocional.
-
-**9. Melhor Aproveitamento**
-Recomendacoes de posicionamento estrategico: em quais funcoes, projetos e contextos 
-este perfil sera mais produtivo e realizado. Onde alocar para maximizar forcas e minimizar sombras.
-
-**10. Riscos de Alocacao**
-Situacoes, funcoes e dinamicas grupais que devem ser EVITADAS para este perfil. 
-Contextos que ativam regressao, acting out ou descompensacao. Combinacoes de equipe problematicas.
-
-**11. Recomendacoes de Desenvolvimento**
-Sugestoes praticas e fundamentadas para desenvolvimento: leituras, praticas de mentalizacao, 
-tecnicas de regulacao emocional, exercicios de autoconsciencia, e indicacao de mentoria psicanalitica.
-
-**12. Sintese Final**
-Parágrafo conclusivo integrando todos os elementos. Ressalte o potencial do perfil 
-quando bem direcionado e os cuidados necessarios para evitar armadilhas inconscientes.
-
-INSTRUCOES DE QUALIDADE:
-- Estruture sua resposta estritamente em 12 topicos numerados conforme a lista fornecida acima.
-- NAO omita nenhuma secao. TODAS as 12 secoes sao OBRIGATORIAS.
-- Tom de Consultor Psicanalitico Senior: profissional, profundo, academico mas acessivel.
-- Cada secao deve ter NO MINIMO 2 paragrafos de texto corrido (nao apenas bullet points).
-- Use termos tecnicos com naturalidade: Superego, relacoes objetais, identificacao projetiva, 
-  continente-conteudo, narcisismo funcional, cortisol, amigdala, neuronios-espelho, EDSO.
-- O laudo completo deve ter entre 1500 e 2500 palavras.
-- Escreva em portugues brasileiro.
-- Formate CADA titulo de secao exatamente como: **N. Nome da Secao** (negrito com numero)
-  Exemplos exatos: **1. Visao Geral**, **2. Essencia Psicanalitica**, **3. Motivacoes Inconscientes**, etc.
-- NAO use ### ou ## para titulos, use apenas ** negrito **.
-- Insira uma linha em branco entre secoes.
-- ATENCAO: O laudo DEVE conter exatamente 12 secoes numeradas de 1 a 12. Verifique antes de finalizar."""
-
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=prompt,
-            config={
-                "max_output_tokens": 8192,
-                "temperature": 0.7,
-            }
-        )
-        
-        result_text = response.text if response and hasattr(response, 'text') else None
-        if not result_text:
-            return None, "A IA nao retornou conteudo. Tente novamente."
-        return result_text, None
+        return docx_text, None
     except Exception as e:
-        return None, f"Erro ao gerar laudo: {str(e)}"
+        return None, f"Erro ao extrair laudo do documento: {str(e)}"
+
+def generate_ai_laudo(dominant, secondary, bion_role, block_sums, respondent_name="", profile_text=None, respondent_type="gestor"):
+    """Legacy wrapper - now reads from .docx files instead of AI generation.
+    Kept for backward compatibility with existing call sites."""
+    return generate_docx_laudo(dominant, secondary, bion_role, respondent_name, respondent_type)
 
 def save_assessment_responses(respondent_id, respondent_type, responses):
     """Save each individual response (1-5) to the database for future AI analysis."""
@@ -5229,10 +5081,10 @@ elif page == "LPTest":
                 }
                 
                 if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
-                    laudo_sections = parse_laudo_sections(st.session_state.ai_laudo)
+                    laudo_sections = parse_laudo_sections(st.session_state.ai_laudo, "gestor")
                     
                     if len(laudo_sections) > 1:
-                        for section_title in LAUDO_SECTIONS:
+                        for section_title in get_laudo_sections_for_type("gestor"):
                             content = laudo_sections.get(section_title, "")
                             display_title = section_title
                             with st.expander(f"{display_title}", expanded=(section_title == "1. Visao Geral")):
@@ -5503,9 +5355,9 @@ elif page == "TeamManagement":
                             if st.session_state.get(laudo_key):
                                 laudo_text = st.session_state[laudo_key]
                                 if not laudo_text.startswith("__ERROR__"):
-                                    laudo_secs = parse_laudo_sections(laudo_text)
+                                    laudo_secs = parse_laudo_sections(laudo_text, "funcionario")
                                     if len(laudo_secs) > 1:
-                                        for sec_title in LAUDO_SECTIONS:
+                                        for sec_title in get_laudo_sections_for_type("funcionario"):
                                             sec_content = laudo_secs.get(sec_title, "")
                                             if sec_content:
                                                 display_t = sec_title.replace("Lideranca", "Trabalho")
@@ -6705,9 +6557,9 @@ elif page == "GestaoLPS":
                             if st.session_state.get(laudo_key_ldr):
                                 laudo_text_ldr = st.session_state[laudo_key_ldr]
                                 if not laudo_text_ldr.startswith("__ERROR__"):
-                                    laudo_secs = parse_laudo_sections(laudo_text_ldr)
+                                    laudo_secs = parse_laudo_sections(laudo_text_ldr, "gestor")
                                     if len(laudo_secs) > 1:
-                                        for sec_title in LAUDO_SECTIONS:
+                                        for sec_title in get_laudo_sections_for_type("gestor"):
                                             sec_content = laudo_secs.get(sec_title, "")
                                             if sec_content:
                                                 with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
@@ -6860,9 +6712,9 @@ elif page == "GestaoLPS":
                             if st.session_state.get(laudo_key_emp):
                                 laudo_text_emp = st.session_state[laudo_key_emp]
                                 if not laudo_text_emp.startswith("__ERROR__"):
-                                    laudo_secs = parse_laudo_sections(laudo_text_emp)
+                                    laudo_secs = parse_laudo_sections(laudo_text_emp, "funcionario")
                                     if len(laudo_secs) > 1:
-                                        for sec_title in LAUDO_SECTIONS:
+                                        for sec_title in get_laudo_sections_for_type("funcionario"):
                                             sec_content = laudo_secs.get(sec_title, "")
                                             if sec_content:
                                                 with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
