@@ -3290,7 +3290,6 @@ def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_ro
 
     if docx_path and os.path.exists(docx_path):
         docx_doc = DocxDocument(docx_path)
-        first_para = True
         for para in docx_doc.paragraphs:
             raw = para.text.strip()
             if not raw:
@@ -3304,53 +3303,25 @@ def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_ro
                 if 0 < dot_pos <= 3:
                     looks_like_header = True
 
-            if first_para and not looks_like_header:
-                first_para = False
-                continue
-
-            first_para = False
-
             safe = raw.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             safe = safe.replace("\u201c", "&ldquo;").replace("\u201d", "&rdquo;")
             safe = safe.replace("\u2013", "&ndash;").replace("\u2014", "&mdash;")
 
-            if looks_like_header or is_bold:
-                if looks_like_header:
-                    story.append(Paragraph(safe, section_style))
-                    gold = Table([[""]], colWidths=[doc.width])
-                    gold.setStyle(TableStyle([
-                        ('LINEABOVE', (0,0), (-1,0), 0.6, HexColor('#c5a059')),
-                        ('TOPPADDING', (0,0), (-1,0), 0),
-                        ('BOTTOMPADDING', (0,0), (-1,0), 5),
-                    ]))
-                    story.append(gold)
-                else:
-                    story.append(Paragraph(f"<b>{safe}</b>", body_style))
+            if looks_like_header:
+                story.append(Paragraph(safe, section_style))
+                gold = Table([[""]], colWidths=[doc.width])
+                gold.setStyle(TableStyle([
+                    ('LINEABOVE', (0,0), (-1,0), 0.6, HexColor('#c5a059')),
+                    ('TOPPADDING', (0,0), (-1,0), 0),
+                    ('BOTTOMPADDING', (0,0), (-1,0), 5),
+                ]))
+                story.append(gold)
+            elif is_bold:
+                story.append(Paragraph(f"<b>{safe}</b>", body_style))
             else:
                 story.append(Paragraph(safe, body_style))
     else:
-        sections = parse_laudo_sections(laudo_text, respondent_type)
-        section_list = get_laudo_sections_for_type(respondent_type)
-        for section_key in section_list:
-            content = sections.get(section_key, "")
-            safe_title = section_key.replace("&", "&amp;")
-            story.append(Paragraph(safe_title, section_style))
-            gold = Table([[""]], colWidths=[doc.width])
-            gold.setStyle(TableStyle([
-                ('LINEABOVE', (0,0), (-1,0), 0.6, HexColor('#c5a059')),
-                ('TOPPADDING', (0,0), (-1,0), 0),
-                ('BOTTOMPADDING', (0,0), (-1,0), 5),
-            ]))
-            story.append(gold)
-            if content:
-                for line in content.split("\n"):
-                    lt = line.strip()
-                    if not lt:
-                        story.append(Spacer(1, 4))
-                        continue
-                    lt = lt.replace("**", "").replace("*", "")
-                    safe = lt.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-                    story.append(Paragraph(safe, body_style))
+        story.append(Paragraph("Documento .docx nao encontrado para este perfil.", body_style))
 
     story.append(Spacer(1, 20))
     end_sep = Table([[""]], colWidths=[doc.width])
