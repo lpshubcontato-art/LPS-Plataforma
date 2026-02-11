@@ -6603,68 +6603,21 @@ elif page == "GestaoLPS":
                     with ldr_cols[3]:
                         st.write(l_secondary)
                     with ldr_cols[4]:
-                        btn_col1, btn_col2 = st.columns(2)
-                        with btn_col1:
-                            if st.button("Visualizar Laudo", key=f"ver_laudo_ldr_{l_mgr_id}", use_container_width=True):
-                                st.session_state[f"show_laudo_ldr_{l_mgr_id}"] = True
-                                st.rerun()
-                        with btn_col2:
-                            row_ldr_docx = extract_docx_profile_text(
-                                l_dominant or "O Idealista Exigente",
-                                l_secondary or "O Contenedor Empatico",
-                                "gestor"
-                            )
-                            if row_ldr_docx:
-                                pdf_data_ldr = generate_laudo_pdf(
-                                    row_ldr_docx, l_name,
-                                    l_dominant, l_secondary,
-                                    l_bion, respondent_type="gestor"
-                                )
-                                st.download_button(
-                                    "Baixar PDF",
-                                    data=pdf_data_ldr,
-                                    file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
-                                    mime="application/pdf",
-                                    key=f"dl_laudo_ldr_{l_mgr_id}",
-                                    use_container_width=True
-                                )
-                    
-                    if st.session_state.get(f"show_laudo_ldr_{l_mgr_id}"):
-                        with st.expander(f"Laudo de Lideranca - {l_name}", expanded=True):
-                            st.markdown(f"""
-                                <div style='background: #f0f7fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #18738c;'>
-                                    <strong>Nome:</strong> {l_name}<br>
-                                    <strong>Perfil:</strong> {l_dominant} + {l_secondary}<br>
-                                    <strong>Papel de Bion:</strong> {l_bion}
-                                </div>
-                            """, unsafe_allow_html=True)
-                            
-                            admin_ldr_docx = extract_docx_profile_text(
-                                l_dominant or "O Idealista Exigente",
-                                l_secondary or "O Contenedor Empatico",
-                                "gestor"
-                            )
-                            if admin_ldr_docx:
-                                pdf_data_ldr = generate_laudo_pdf(
-                                    admin_ldr_docx, l_name,
-                                    l_dominant, l_secondary,
-                                    l_bion, respondent_type="gestor"
-                                )
-                                st.download_button(
-                                    "Baixar Laudo Completo em PDF",
-                                    data=pdf_data_ldr,
-                                    file_name=f"laudo_lps_{l_name.replace(' ','_').lower()}.pdf",
-                                    mime="application/pdf",
-                                    key=f"dl_laudo_ldr_exp_{l_mgr_id}",
-                                    use_container_width=True,
-                                    type="primary"
-                                )
-                            else:
-                                st.info(f"Documento .docx nao encontrado para {l_dominant} + {l_secondary}.")
-                            
-                            if st.button("Fechar", key=f"close_laudo_ldr_{l_mgr_id}"):
-                                st.session_state[f"show_laudo_ldr_{l_mgr_id}"] = False
-                                st.rerun()
+                        pdf_data_ldr = generate_laudo_pdf(
+                            "", l_name,
+                            l_dominant or "O Idealista Exigente",
+                            l_secondary or "O Contenedor Empatico",
+                            l_bion, respondent_type="gestor"
+                        )
+                        st.download_button(
+                            "BAIXAR LAUDO COMPLETO (PDF)",
+                            data=pdf_data_ldr,
+                            file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
+                            mime="application/pdf",
+                            key=f"dl_laudo_ldr_{l_mgr_id}",
+                            use_container_width=True,
+                            type="primary"
+                        )
                 
                 st.write("---")
                 st.download_button(
@@ -6732,69 +6685,21 @@ elif page == "GestaoLPS":
                     with emp_cols[3]:
                         st.write(e_manager_name)
                     with emp_cols[4]:
-                        btn_c1, btn_c2 = st.columns(2)
-                        with btn_c1:
-                            if st.button("Visualizar Laudo", key=f"ver_laudo_emp_{e_id}", use_container_width=True):
-                                st.session_state[f"show_laudo_emp_{e_id}"] = True
-                                st.rerun()
-                        with btn_c2:
-                            row_emp_docx = extract_docx_profile_text(
-                                e_dominant or "O Idealista Exigente",
-                                e_secondary or "O Contenedor Empatico",
-                                "funcionario"
-                            )
-                            if row_emp_docx:
-                                pdf_data_emp = generate_laudo_pdf(
-                                    row_emp_docx, e_name,
-                                    e_dominant, e_secondary,
-                                    e_bion, respondent_type="funcionario"
-                                )
-                                st.download_button(
-                                    "Baixar PDF",
-                                    data=pdf_data_emp,
-                                    file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
-                                    mime="application/pdf",
-                                    key=f"dl_laudo_emp_{e_id}",
-                                    use_container_width=True
-                                )
-                    
-                    if st.session_state.get(f"show_laudo_emp_{e_id}"):
-                        with st.expander(f"Laudo de Equipe - {e_name}", expanded=True):
-                            st.markdown(f"""
-                                <div style='background: #faf5e6; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #d19f09;'>
-                                    <strong>Nome:</strong> {e_name}<br>
-                                    <strong>Perfil:</strong> {e_dominant} + {e_secondary}<br>
-                                    <strong>Papel de Bion:</strong> {e_bion}<br>
-                                    <strong>Gestor:</strong> {e_manager_name}
-                                </div>
-                            """, unsafe_allow_html=True)
-                            
-                            admin_emp_docx = extract_docx_profile_text(
-                                e_dominant or "O Idealista Exigente",
-                                e_secondary or "O Contenedor Empatico",
-                                "funcionario"
-                            )
-                            if admin_emp_docx:
-                                pdf_data_emp = generate_laudo_pdf(
-                                    admin_emp_docx, e_name,
-                                    e_dominant, e_secondary,
-                                    e_bion, respondent_type="funcionario"
-                                )
-                                st.download_button(
-                                    "Baixar Laudo Completo em PDF",
-                                    data=pdf_data_emp,
-                                    file_name=f"laudo_lps_{e_name.replace(' ','_').lower()}.pdf",
-                                    mime="application/pdf",
-                                    key=f"dl_laudo_emp_exp_{e_id}",
-                                    use_container_width=True,
-                                    type="primary"
-                                )
-                            else:
-                                st.info(f"Documento .docx nao encontrado para {e_dominant} + {e_secondary}.")
-                            
-                            if st.button("Fechar", key=f"close_laudo_emp_{e_id}"):
-                                st.session_state[f"show_laudo_emp_{e_id}"] = False
-                                st.rerun()
+                        pdf_data_emp = generate_laudo_pdf(
+                            "", e_name,
+                            e_dominant or "O Idealista Exigente",
+                            e_secondary or "O Contenedor Empatico",
+                            e_bion, respondent_type="funcionario"
+                        )
+                        st.download_button(
+                            "BAIXAR LAUDO COMPLETO (PDF)",
+                            data=pdf_data_emp,
+                            file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
+                            mime="application/pdf",
+                            key=f"dl_laudo_emp_{e_id}",
+                            use_container_width=True,
+                            type="primary"
+                        )
                 
                 st.write("---")
                 st.download_button(
