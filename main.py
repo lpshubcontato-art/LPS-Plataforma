@@ -494,6 +494,8 @@ def init_db():
         c.execute("ALTER TABLE employees ADD COLUMN consent_given INTEGER DEFAULT 0")
     if 'consent_date' not in columns:
         c.execute("ALTER TABLE employees ADD COLUMN consent_date TIMESTAMP")
+    if 'employee_password' not in columns:
+        c.execute("ALTER TABLE employees ADD COLUMN employee_password TEXT")
     
     # Course progress table
     c.execute('''CREATE TABLE IF NOT EXISTS course_progress (
@@ -633,6 +635,39 @@ def ensure_master_admin():
 
 ensure_master_admin()
 
+def ensure_test_employee():
+    """Ensure test employee account exists for testing."""
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    c.execute("SELECT id FROM employees WHERE email = ?", ("teste@funcionario.com",))
+    existing = c.fetchone()
+    if existing:
+        c.execute("UPDATE employees SET employee_password = ? WHERE email = ?",
+                  (hash_password("lps123"), "teste@funcionario.com"))
+        conn.commit()
+        conn.close()
+        return
+    c.execute("SELECT id FROM managers LIMIT 1")
+    mgr = c.fetchone()
+    if not mgr:
+        conn.close()
+        return
+    emp_id = str(uuid.uuid4())
+    token = "test_funcionario_token_lps123"
+    c.execute("""INSERT INTO employees (id, manager_id, link_token, slot_number, name, email,
+                 profile_dominant, profile_secondary, profile_details, bion_role,
+                 completed, created_at, consent_given, consent_date, employee_password)
+                 VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?, 1, ?, 1, ?, ?)""",
+              (emp_id, mgr[0], token, "Funcionario Teste", "teste@funcionario.com",
+               "O Buscador de Reconhecimento", "O Contenedor Empatico",
+               json.dumps({"BR": 42, "CE": 38, "IE": 30, "EC": 25, "RR": 20, "OC": 28, "ED": 22}),
+               "lF - lider de Luta-Fuga", datetime.now(), datetime.now(),
+               hash_password("lps123")))
+    conn.commit()
+    conn.close()
+
+ensure_test_employee()
+
 # Run automatic backup on startup (once per day)
 auto_backup_on_startup()
 
@@ -666,6 +701,19 @@ def authenticate_user(email, password):
         if not result[1].startswith('$2'):
             upgrade_password_hash(result[0], password)
         return {"id": result[0], "name": result[2], "email": email.lower()}
+    return None
+
+def try_employee_login(email, password):
+    """Try to log in as an employee using email and password.
+    Returns the employee's link_token if credentials match, None otherwise."""
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT link_token, employee_password FROM employees WHERE email = ? AND completed = 1", (email.lower(),))
+    result = c.fetchone()
+    conn.close()
+    if result and result[1]:
+        if verify_password(password, result[1]):
+            return result[0]
     return None
 
 def get_manager_by_user(user_id):
@@ -2759,7 +2807,13 @@ def render_login_page():
                             st.session_state.page = "Home"
                             st.rerun()
                         else:
-                            st.error("E-mail ou senha incorretos.")
+                            emp_login = try_employee_login(email, password)
+                            if emp_login:
+                                st.session_state.employee_token = emp_login
+                                st.session_state.page = "EmployeeAssessment"
+                                st.rerun()
+                            else:
+                                st.error("E-mail ou senha incorretos.")
                     else:
                         st.error("Preencha todos os campos.")
         
@@ -5660,7 +5714,7 @@ elif page == "EmployeeAssessment":
                 <p>Se você recebeu este link do seu gestor, entre em contato para solicitar um novo link.</p>
             </div>
         """, unsafe_allow_html=True)
-    elif employee[10] == 1:  # already completed - Thank You page
+    elif employee[10] == 1:  # already completed - Results page with radar + PDF
         st.markdown("""
             <div style='text-align: center; padding: 2rem;'>
                 <h1 style='color: #18738c;'>Obrigado pela participacao!</h1>
@@ -5673,14 +5727,37 @@ elif page == "EmployeeAssessment":
                 <div style="background-color: #d19f09; padding: 10px; border-radius: 20px; text-align: center; margin: 15px auto; max-width: 200px;">
                     <strong style="color: #18738c;">{employee[9]}</strong>
                 </div>
-                <p style="text-align: center; font-size: 0.95rem; color: #666; margin-top: 20px;">
-                    Seu resultado foi salvo e enviado para seu e-mail ({employee[5]}).
-                </p>
-                <p style="text-align: center; font-size: 0.9rem; color: #888; margin-top: 10px;">
-                    Seu gestor recebera uma notificacao e podera discutir estrategias de desenvolvimento com voce em breve.
-                </p>
             </div>
         """, unsafe_allow_html=True)
+
+        emp_id = employee[0]
+        emp_block_sums = get_assessment_block_sums(emp_id, "employee")
+        if emp_block_sums:
+            emp_profile_name = f"{employee[6]} + {employee[7]}"
+            emp_radar = generate_radar_chart(emp_block_sums, emp_profile_name)
+            if emp_radar:
+                st.image(emp_radar, use_container_width=True)
+
+        st.write("")
+        pdf_col1, pdf_col2, pdf_col3 = st.columns([1, 2, 1])
+        with pdf_col2:
+            emp_pdf = generate_laudo_pdf(
+                "", employee[4] or "Funcionario",
+                employee[6] or "O Idealista Exigente",
+                employee[7] or "O Contenedor Empatico",
+                employee[9] or "", respondent_type="funcionario"
+            )
+            emp_safe_name = (employee[4] or "funcionario").replace(" ", "_").lower()[:20]
+            st.download_button(
+                "BAIXAR LAUDO COMPLETO (PDF)",
+                data=emp_pdf,
+                file_name=f"laudo_lps_{emp_safe_name}.pdf",
+                mime="application/pdf",
+                key="dl_emp_self_laudo",
+                use_container_width=True,
+                type="primary"
+            )
+
         st.markdown("""
             <div style='text-align: center; margin-top: 2rem; padding: 1rem; background-color: #f5f5f5; border-radius: 10px;'>
                 <p style='color: #666; margin: 0;'>Voce pode fechar esta pagina. Obrigado por participar do LPS!</p>
