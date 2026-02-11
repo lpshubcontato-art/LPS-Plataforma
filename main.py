@@ -3253,7 +3253,7 @@ def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_ro
     elements.append(create_pdf_header_table())
     elements.append(Spacer(1, 12))
 
-    elements.append(Paragraph("PLATAFORMA LPS - VIVIANE NISHIURA", styles['LaudoMainTitle']))
+    elements.append(Paragraph("Relatorio de Perfil Psicanalitico - Viviane Nishiura", styles['LaudoMainTitle']))
     elements.append(Spacer(1, 4))
     tipo_label = "Laudo Psicanalitico de Lideranca" if respondent_type == "gestor" else "Laudo Psicanalitico - Perfil de Equipe"
     elements.append(Paragraph(tipo_label, styles['LaudoSubtitle']))
@@ -5207,18 +5207,7 @@ elif page == "LPTest":
         
         if st.session_state.assessment_results:
             res = st.session_state.assessment_results
-            st.markdown(f"""
-                <div class="result-card">
-                    <div class="profile-title">Resultado: {res['dominant']} + {res['secondary']}</div>
-                    <div class="section-header">Forcas</div>
-                    <p>{res['details']['forcas']}</p>
-                    <div class="section-header">Riscos</div>
-                    <p>{res['details']['riscos']}</p>
-                    <div class="section-header">Recomendacoes</div>
-                    <p>{res['details'].get('recomendacoes', 'Agende mentoria.')}</p>
-                </div>
-            """, unsafe_allow_html=True)
-            
+
             if res.get('block_sums'):
                 profile_name = f"{res['dominant']} + {res['secondary']}"
                 radar_chart = generate_radar_chart(res['block_sums'], profile_name)
@@ -5234,13 +5223,8 @@ elif page == "LPTest":
                         respondent_type="gestor"
                     )
                     safe_name = (manager_name or "gestor").replace(" ", "_").lower()
-                    st.markdown("""
-                        <div style='text-align: center; margin: 1.5rem 0 0.5rem 0;'>
-                            <p style='color: #18738c; font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem;'>Laudo completo extraido do documento original</p>
-                        </div>
-                    """, unsafe_allow_html=True)
                     st.download_button(
-                        "GERAR E BAIXAR LAUDO PROFISSIONAL (PDF)",
+                        "Baixar Laudo Completo em PDF",
                         data=pdf_data,
                         file_name=f"laudo_lps_{safe_name}_{datetime.now().strftime('%Y%m%d')}.pdf",
                         mime="application/pdf",
@@ -5256,56 +5240,6 @@ elif page == "LPTest":
                             save_laudo(mgr_user_id, "gestor", manager_name, res['dominant'], res['secondary'], res['bion_role'], docx_text)
                 else:
                     st.warning("Arquivo .docx do perfil nao encontrado. Verifique se os documentos estao no diretorio attached_assets/.")
-
-                bion_desc = BION_DESCRIPTIONS.get(res['bion_role'], '')
-                if bion_desc:
-                    st.markdown(f"""
-                        <div style='background-color: #e8f4f8; padding: 1rem; border-radius: 8px; margin: 1rem 0;'>
-                            <strong style='color: #18738c;'>Papel de Bion:</strong> {res['bion_role']}<br>
-                            <span style='color: #555;'>{bion_desc}</span>
-                        </div>
-                    """, unsafe_allow_html=True)
-                
-                if res.get('cloninger_scores'):
-                    cloninger_html = "<div style='background: linear-gradient(135deg, #18738c10, #d19f0910); padding: 1.2rem; border-radius: 10px; margin: 1rem 0; border: 1px solid #18738c20;'>"
-                    cloninger_html += "<strong style='color: #18738c; font-size: 1.1rem;'>Temperamento e Carater (Cloninger)</strong><br><br>"
-                    cloninger_html += "<div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem;'>"
-                    for code, data in res['cloninger_scores'].items():
-                        score = data['score']
-                        max_val = data['max']
-                        pct = round((score / max_val) * 100)
-                        level = "Alta" if pct >= 70 else ("Media" if pct >= 40 else "Baixa")
-                        level_color = "#18738c" if pct >= 70 else ("#d19f09" if pct >= 40 else "#888")
-                        cloninger_html += f"""<div style='background: white; padding: 0.6rem; border-radius: 6px; border-left: 3px solid {level_color};'>
-                            <strong style='color: #333; font-size: 0.85rem;'>{data['name']} ({code})</strong><br>
-                            <span style='color: {level_color}; font-weight: bold;'>{score}/{max_val} - {level}</span>
-                            <div style='background: #eee; border-radius: 4px; height: 6px; margin-top: 4px;'>
-                                <div style='background: {level_color}; width: {pct}%; height: 100%; border-radius: 4px;'></div>
-                            </div>
-                        </div>"""
-                    cloninger_html += "</div></div>"
-                    st.markdown(cloninger_html, unsafe_allow_html=True)
-                
-                st.markdown("---")
-                st.subheader("Laudo Completo - Analise Psicanalitica e de Lideranca")
-
-                laudo_docx_text = st.session_state.get('ai_laudo') or extract_docx_profile_text(res['dominant'], res['secondary'], "gestor")
-                if laudo_docx_text:
-                    if not st.session_state.get('ai_laudo'):
-                        st.session_state.ai_laudo = laudo_docx_text
-                    laudo_sections = parse_laudo_sections(laudo_docx_text, "gestor")
-                    if len(laudo_sections) > 1:
-                        for section_title in get_laudo_sections_for_type("gestor"):
-                            content = laudo_sections.get(section_title, "")
-                            with st.expander(f"{section_title}", expanded=(section_title == "1. Visao Geral")):
-                                if content:
-                                    st.markdown(content)
-                                else:
-                                    st.markdown("*Secao nao disponivel neste documento.*")
-                    else:
-                        st.markdown(laudo_docx_text)
-                else:
-                    st.info("Documento de perfil nao encontrado para esta combinacao.")
 
 elif page == "TeamManagement":
     if not st.session_state.authenticated:
@@ -5478,84 +5412,37 @@ elif page == "TeamManagement":
                     for emp in completed_employees:
                         emp_name = emp[4] or f'Funcionario {emp[3]}'
                         emp_id = emp[0]
+                        safe_name = emp_name.replace(" ", "_").lower()[:20]
+                        
+                        emp_docx_text = extract_docx_profile_text(
+                            emp[6] or "O Idealista Exigente",
+                            emp[7] or "O Contenedor Empatico",
+                            "funcionario"
+                        )
                         
                         with st.container():
-                            col_info, col_csv_ind, col_pdf_ind = st.columns([4, 1, 1])
-                            
-                            with col_info:
-                                bion_desc = EMPLOYEE_BION_DESCRIPTIONS.get(emp[9], BION_DESCRIPTIONS.get(emp[9], ''))
-                                st.markdown(f"""
-                                    <div class="employee-card">
-                                        <h4 style="color: #18738c; margin:0;">{emp_name}</h4>
-                                        <p><strong>Perfil:</strong> {emp[6]} + {emp[7]}</p>
-                                        <span class="bion-badge">{emp[9]}</span>
-                                        <p style="font-size: 0.9rem; color: #666; margin-top:10px;">
-                                            {bion_desc}
-                                        </p>
-                                        <p style="font-size: 0.85rem; color: #18738c; margin-top: 8px;">
-                                            Resultado enviado para: {emp[5]}
-                                        </p>
-                                    </div>
-                                """, unsafe_allow_html=True)
-                            
-                            with col_csv_ind:
-                                individual_csv = f"Nome,E-mail,Perfil Dominante,Perfil Secundario,Papel de Bion\n"
-                                individual_csv += f'"{emp_name}","{emp[5]}","{emp[6]}","{emp[7]}","{emp[9]}"\n'
-                                
-                                safe_name = emp_name.replace(" ", "_").lower()[:20]
-                                st.download_button(
-                                    label="CSV",
-                                    data=individual_csv,
-                                    file_name=f"resultado_{safe_name}.csv",
-                                    mime="text/csv",
-                                    key=f"download_csv_{emp_id}"
-                                )
-                            
-                            with col_pdf_ind:
-                                individual_pdf = generate_individual_pdf_report(emp, manager_name)
-                                st.download_button(
-                                    label="PDF",
-                                    data=individual_pdf,
-                                    file_name=f"resultado_{safe_name}.pdf",
-                                    mime="application/pdf",
-                                    key=f"download_pdf_{emp_id}"
-                                )
-                            
-                            emp_docx_text = extract_docx_profile_text(
-                                emp[6] or "O Idealista Exigente",
-                                emp[7] or "O Contenedor Empatico",
-                                "funcionario"
-                            )
-                            if emp_docx_text:
-                                laudo_secs = parse_laudo_sections(emp_docx_text, "funcionario")
-                                if len(laudo_secs) > 1:
-                                    for sec_title in get_laudo_sections_for_type("funcionario"):
-                                        sec_content = laudo_secs.get(sec_title, "")
-                                        with st.expander(f"{sec_title}", expanded=(sec_title == "1. Visao Geral")):
-                                            if sec_content:
-                                                st.markdown(sec_content)
-                                            else:
-                                                st.markdown("*Secao nao disponivel neste documento.*")
-                                else:
-                                    st.markdown(emp_docx_text)
-                                
-                                pdf_emp = generate_laudo_pdf(
-                                    emp_docx_text, emp_name,
-                                    emp[6] or "", emp[7] or "", emp[9] or "",
-                                    respondent_type="funcionario"
-                                )
-                                st.download_button(
-                                    "GERAR E BAIXAR LAUDO PROFISSIONAL (PDF)",
-                                    data=pdf_emp,
-                                    file_name=f"laudo_lps_{safe_name}.pdf",
-                                    mime="application/pdf",
-                                    key=f"download_emp_laudo_pdf_{emp_id}",
-                                    use_container_width=True,
-                                    type="primary"
-                                )
-                            else:
-                                st.info(f"Documento .docx nao encontrado para o perfil {emp[6]} + {emp[7]}.")
-                            
+                            name_col, pdf_col = st.columns([4, 1])
+                            with name_col:
+                                st.markdown(f"<h4 style='color: #18738c; margin:0; padding-top:6px;'>{emp_name}</h4>", unsafe_allow_html=True)
+                            with pdf_col:
+                                if emp_docx_text:
+                                    pdf_emp = generate_laudo_pdf(
+                                        emp_docx_text, emp_name,
+                                        emp[6] or "", emp[7] or "", emp[9] or "",
+                                        respondent_type="funcionario"
+                                    )
+                                    st.download_button(
+                                        label="PDF",
+                                        data=pdf_emp,
+                                        file_name=f"laudo_lps_{safe_name}.pdf",
+                                        mime="application/pdf",
+                                        key=f"download_pdf_{emp_id}"
+                                    )
+                            st.markdown(f"""
+                                <p style='margin: 2px 0 8px 0; font-size: 0.9rem; color: #555;'>
+                                    <strong>Perfil:</strong> {emp[6]} + {emp[7]} | <span class="bion-badge">{emp[9]}</span>
+                                </p>
+                            """, unsafe_allow_html=True)
                             st.write("---")
                 else:
                     st.info("Nenhum funcionario respondeu ainda. Os resultados aparecerao aqui assim que completarem o assessment.")
@@ -6714,30 +6601,19 @@ elif page == "GestaoLPS":
                                 "gestor"
                             )
                             if admin_ldr_docx:
-                                laudo_secs = parse_laudo_sections(admin_ldr_docx, "gestor")
-                                if len(laudo_secs) > 1:
-                                    for sec_title in get_laudo_sections_for_type("gestor"):
-                                        sec_content = laudo_secs.get(sec_title, "")
-                                        with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
-                                            if sec_content:
-                                                st.markdown(sec_content)
-                                            else:
-                                                st.markdown("*Secao nao disponivel neste documento.*")
-                                else:
-                                    st.markdown(admin_ldr_docx)
-                                
                                 pdf_data_ldr = generate_laudo_pdf(
                                     admin_ldr_docx, l_name,
                                     l_dominant, l_secondary,
                                     l_bion, respondent_type="gestor"
                                 )
                                 st.download_button(
-                                    "GERAR E BAIXAR LAUDO PROFISSIONAL (PDF)",
+                                    "Baixar Laudo Completo em PDF",
                                     data=pdf_data_ldr,
-                                    file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
+                                    file_name=f"laudo_lps_{l_name.replace(' ','_').lower()}.pdf",
                                     mime="application/pdf",
                                     key=f"dl_laudo_ldr_exp_{l_mgr_id}",
-                                    use_container_width=True
+                                    use_container_width=True,
+                                    type="primary"
                                 )
                             else:
                                 st.info(f"Documento .docx nao encontrado para {l_dominant} + {l_secondary}.")
@@ -6855,30 +6731,19 @@ elif page == "GestaoLPS":
                                 "funcionario"
                             )
                             if admin_emp_docx:
-                                laudo_secs = parse_laudo_sections(admin_emp_docx, "funcionario")
-                                if len(laudo_secs) > 1:
-                                    for sec_title in get_laudo_sections_for_type("funcionario"):
-                                        sec_content = laudo_secs.get(sec_title, "")
-                                        with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
-                                            if sec_content:
-                                                st.markdown(sec_content)
-                                            else:
-                                                st.markdown("*Secao nao disponivel neste documento.*")
-                                else:
-                                    st.markdown(admin_emp_docx)
-                                
                                 pdf_data_emp = generate_laudo_pdf(
                                     admin_emp_docx, e_name,
                                     e_dominant, e_secondary,
                                     e_bion, respondent_type="funcionario"
                                 )
                                 st.download_button(
-                                    "GERAR E BAIXAR LAUDO PROFISSIONAL (PDF)",
+                                    "Baixar Laudo Completo em PDF",
                                     data=pdf_data_emp,
-                                    file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
+                                    file_name=f"laudo_lps_{e_name.replace(' ','_').lower()}.pdf",
                                     mime="application/pdf",
                                     key=f"dl_laudo_emp_exp_{e_id}",
-                                    use_container_width=True
+                                    use_container_width=True,
+                                    type="primary"
                                 )
                             else:
                                 st.info(f"Documento .docx nao encontrado para {e_dominant} + {e_secondary}.")

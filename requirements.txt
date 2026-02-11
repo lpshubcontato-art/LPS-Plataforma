@@ -10,3 +10,4 @@ google-genai
 sift-stack-py
 python-docx
 python-docx
+PyPDF2
