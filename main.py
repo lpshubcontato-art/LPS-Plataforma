@@ -3189,108 +3189,128 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     return buffer.getvalue()
 
 def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_role, respondent_type="gestor"):
-    """Generate a professional PDF report for the AI laudo with 12-section structure."""
+    """Generate a professional multi-page PDF with 100% faithful .docx content.
+    Uses ReportLab Paragraph for automatic page breaks - no content is ever cut."""
+    import re as re_mod
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.75*inch, bottomMargin=0.75*inch,
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.7*inch, bottomMargin=0.7*inch,
                            leftMargin=0.75*inch, rightMargin=0.75*inch)
     styles = create_pdf_styles()
-    
+
+    styles.add(ParagraphStyle(
+        name='LaudoMainTitle',
+        parent=styles['Normal'],
+        fontSize=16,
+        textColor=HexColor('#18738c'),
+        spaceBefore=0,
+        spaceAfter=2,
+        fontName='Helvetica-Bold',
+        alignment=TA_CENTER,
+    ))
+
+    styles.add(ParagraphStyle(
+        name='LaudoSubtitle',
+        parent=styles['Normal'],
+        fontSize=11,
+        textColor=HexColor('#444444'),
+        spaceAfter=2,
+        fontName='Helvetica',
+        alignment=TA_CENTER,
+    ))
+
     styles.add(ParagraphStyle(
         name='LaudoSectionTitle',
-        parent=styles['Heading2'],
+        parent=styles['Normal'],
         fontSize=13,
         textColor=HexColor('#18738c'),
-        spaceBefore=18,
-        spaceAfter=8,
+        spaceBefore=16,
+        spaceAfter=6,
         fontName='Helvetica-Bold',
-        borderWidth=0,
-        borderPadding=0,
-        borderColor=HexColor('#18738c'),
     ))
-    
+
     styles.add(ParagraphStyle(
         name='LaudoBody',
         parent=styles['Normal'],
-        fontSize=10.5,
+        fontSize=11,
         textColor=HexColor('#2c2c2c'),
         alignment=TA_JUSTIFY,
         spaceAfter=6,
-        leading=14,
+        leading=15,
         fontName='Helvetica',
     ))
-    
+
     styles.add(ParagraphStyle(
         name='LaudoMeta',
         parent=styles['Normal'],
-        fontSize=10,
+        fontSize=10.5,
         textColor=HexColor('#444444'),
-        spaceAfter=4,
+        spaceAfter=3,
         fontName='Helvetica',
     ))
-    
+
     elements = []
-    
+
     elements.append(create_pdf_header_table())
-    elements.append(Spacer(1, 15))
-    
-    elements.append(Paragraph("Plataforma LPS - Viviane Nishiura", styles['LPSTitle']))
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph("PLATAFORMA LPS - VIVIANE NISHIURA", styles['LaudoMainTitle']))
     elements.append(Spacer(1, 4))
     tipo_label = "Laudo Psicanalitico de Lideranca" if respondent_type == "gestor" else "Laudo Psicanalitico - Perfil de Equipe"
-    elements.append(Paragraph(tipo_label, styles['LaudoMeta']))
-    elements.append(Spacer(1, 8))
-    
+    elements.append(Paragraph(tipo_label, styles['LaudoSubtitle']))
+    elements.append(Spacer(1, 10))
+
     elements.append(Paragraph(f"<b>Nome:</b> {respondent_name or 'Avaliado(a)'}", styles['LaudoMeta']))
     elements.append(Paragraph(f"<b>Perfil:</b> {dominant} + {secondary}", styles['LaudoMeta']))
     elements.append(Paragraph(f"<b>Papel de Bion:</b> {bion_role}", styles['LaudoMeta']))
     elements.append(Paragraph(f"<b>Data:</b> {datetime.now().strftime('%d/%m/%Y %H:%M')}", styles['LaudoMeta']))
-    
+
     line_table = Table([[""]],  colWidths=[doc.width])
     line_table.setStyle(TableStyle([
         ('LINEABOVE', (0, 0), (-1, 0), 1.5, HexColor('#18738c')),
-        ('TOPPADDING', (0, 0), (-1, 0), 12),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 4),
+        ('TOPPADDING', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 2),
     ]))
     elements.append(line_table)
-    
+
     sections = parse_laudo_sections(laudo_text, respondent_type)
     section_list = get_laudo_sections_for_type(respondent_type)
-    
+
     for section_title in section_list:
         content = sections.get(section_title, "")
         if not content and section_title == "1. Visao Geral" and len(sections) == 1:
             content = list(sections.values())[0]
-        
-        display_title = section_title
-        
-        elements.append(Paragraph(display_title, styles['LaudoSectionTitle']))
-        
+
+        elements.append(Paragraph(f"<b>{section_title}</b>", styles['LaudoSectionTitle']))
+
         sep_table = Table([[""]],  colWidths=[doc.width])
         sep_table.setStyle(TableStyle([
-            ('LINEABOVE', (0, 0), (-1, 0), 0.5, HexColor('#d19f09')),
-            ('TOPPADDING', (0, 0), (-1, 0), 2),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+            ('LINEABOVE', (0, 0), (-1, 0), 0.5, HexColor('#c5a059')),
+            ('TOPPADDING', (0, 0), (-1, 0), 1),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 4),
         ]))
         elements.append(sep_table)
-        
+
         if content:
-            paragraphs = content.split("\n\n") if "\n\n" in content else content.split("\n")
+            paragraphs = content.split("\n")
             for para in paragraphs:
                 pdf_text = para.strip()
                 if not pdf_text:
+                    elements.append(Spacer(1, 4))
                     continue
-                import re as re_mod
                 pdf_text = re_mod.sub(r'\*\*\*(.+?)\*\*\*', r'<b><i>\1</i></b>', pdf_text)
                 pdf_text = re_mod.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', pdf_text)
                 pdf_text = re_mod.sub(r'\*(.+?)\*', r'<i>\1</i>', pdf_text)
+                pdf_text = pdf_text.replace("&", "&amp;")
+                pdf_text = re_mod.sub(r'&amp;(#?\w+;)', r'&\1', pdf_text)
                 try:
                     elements.append(Paragraph(pdf_text, styles['LaudoBody']))
                 except Exception:
-                    safe_text = para.strip().replace("<", "&lt;").replace(">", "&gt;")
+                    safe_text = para.strip().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                     elements.append(Paragraph(safe_text, styles['LaudoBody']))
         else:
             elements.append(Paragraph("<i>Secao nao disponivel neste documento.</i>", styles['LaudoBody']))
-    
-    elements.append(Spacer(1, 25))
+
+    elements.append(Spacer(1, 20))
     footer_line = Table([[""]],  colWidths=[doc.width])
     footer_line.setStyle(TableStyle([
         ('LINEABOVE', (0, 0), (-1, 0), 1, HexColor('#18738c')),
@@ -3301,7 +3321,7 @@ def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_ro
     elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
     elements.append(Paragraph(f"Documento gerado em {datetime.now().strftime('%d/%m/%Y as %H:%M')}", styles['LPSInfo']))
     elements.append(Paragraph("Este laudo e confidencial e destinado exclusivamente ao avaliado e seu gestor.", styles['LPSInfo']))
-    
+
     doc.build(elements)
     buffer.seek(0)
     return buffer.getvalue()
@@ -5204,25 +5224,23 @@ elif page == "LPTest":
                 radar_chart = generate_radar_chart(res['block_sums'], profile_name)
                 if radar_chart:
                     st.image(radar_chart, use_container_width=True)
-                
-                if not st.session_state.get('ai_laudo'):
-                    mgr_user_id = st.session_state.user.get('id', '') if st.session_state.user else ''
-                    if mgr_user_id:
-                        saved_mgr_laudo = get_laudo(mgr_user_id, "gestor")
-                        if saved_mgr_laudo:
-                            st.session_state.ai_laudo = saved_mgr_laudo[7]
-                
-                if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
-                    manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
+
+                manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
+                docx_text = extract_docx_profile_text(res['dominant'], res['secondary'], "gestor")
+                if docx_text:
                     pdf_data = generate_laudo_pdf(
-                        st.session_state.ai_laudo,
-                        manager_name,
+                        docx_text, manager_name,
                         res['dominant'], res['secondary'], res['bion_role'],
                         respondent_type="gestor"
                     )
                     safe_name = (manager_name or "gestor").replace(" ", "_").lower()
+                    st.markdown("""
+                        <div style='text-align: center; margin: 1.5rem 0 0.5rem 0;'>
+                            <p style='color: #18738c; font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem;'>Laudo completo extraido do documento original</p>
+                        </div>
+                    """, unsafe_allow_html=True)
                     st.download_button(
-                        "Baixar Laudo Profissional (PDF)",
+                        "GERAR E BAIXAR LAUDO PROFISSIONAL (PDF)",
                         data=pdf_data,
                         file_name=f"laudo_lps_{safe_name}_{datetime.now().strftime('%Y%m%d')}.pdf",
                         mime="application/pdf",
@@ -5230,7 +5248,15 @@ elif page == "LPTest":
                         use_container_width=True,
                         type="primary"
                     )
-                
+
+                    if not st.session_state.get('ai_laudo'):
+                        st.session_state.ai_laudo = docx_text
+                        mgr_user_id = st.session_state.user.get('id', '') if st.session_state.user else ''
+                        if mgr_user_id:
+                            save_laudo(mgr_user_id, "gestor", manager_name, res['dominant'], res['secondary'], res['bion_role'], docx_text)
+                else:
+                    st.warning("Arquivo .docx do perfil nao encontrado. Verifique se os documentos estao no diretorio attached_assets/.")
+
                 bion_desc = BION_DESCRIPTIONS.get(res['bion_role'], '')
                 if bion_desc:
                     st.markdown(f"""
@@ -5262,65 +5288,24 @@ elif page == "LPTest":
                 
                 st.markdown("---")
                 st.subheader("Laudo Completo - Analise Psicanalitica e de Lideranca")
-                
-                section_icons = {s: f"{i+1}." for i, s in enumerate(get_laudo_sections_for_type("gestor"))}
-                
-                if st.session_state.get('ai_laudo') and not st.session_state.ai_laudo.startswith("__ERROR__"):
-                    laudo_sections = parse_laudo_sections(st.session_state.ai_laudo, "gestor")
-                    
+
+                laudo_docx_text = st.session_state.get('ai_laudo') or extract_docx_profile_text(res['dominant'], res['secondary'], "gestor")
+                if laudo_docx_text:
+                    if not st.session_state.get('ai_laudo'):
+                        st.session_state.ai_laudo = laudo_docx_text
+                    laudo_sections = parse_laudo_sections(laudo_docx_text, "gestor")
                     if len(laudo_sections) > 1:
                         for section_title in get_laudo_sections_for_type("gestor"):
                             content = laudo_sections.get(section_title, "")
-                            display_title = section_title
-                            with st.expander(f"{display_title}", expanded=(section_title == "1. Visao Geral")):
+                            with st.expander(f"{section_title}", expanded=(section_title == "1. Visao Geral")):
                                 if content:
                                     st.markdown(content)
                                 else:
-                                    st.markdown("*Secao nao disponivel nesta analise.*")
+                                    st.markdown("*Secao nao disponivel neste documento.*")
                     else:
-                        st.markdown(st.session_state.ai_laudo)
-                    
-                    st.markdown("---")
-                    if st.button("Regenerar Laudo", key="regen_laudo", use_container_width=True):
-                        st.session_state.ai_laudo = None
-                        st.session_state.laudo_requested = True
-                        st.rerun()
-                elif st.session_state.get('ai_laudo', '').startswith("__ERROR__"):
-                    st.warning(st.session_state.ai_laudo.replace("__ERROR__:", ""))
-                    if st.button("Tentar novamente", key="retry_laudo"):
-                        st.session_state.ai_laudo = None
-                        st.session_state.laudo_requested = True
-                        st.rerun()
-                elif st.session_state.get('laudo_requested', False):
-                    with st.spinner("Gerando laudo profissional com 12 secoes de analise psicanalitica..."):
-                        manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
-                        profile_text = res['details'].get('profile_text') if isinstance(res['details'], dict) else None
-                        laudo_text, error = generate_ai_laudo(
-                            res['dominant'], res['secondary'], res['bion_role'],
-                            res['block_sums'], manager_name, profile_text=profile_text, respondent_type="gestor"
-                        )
-                        if laudo_text:
-                            st.session_state.ai_laudo = laudo_text
-                            user_id_for_laudo = st.session_state.user.get('id', '') if st.session_state.user else ''
-                            if user_id_for_laudo:
-                                save_laudo(user_id_for_laudo, "gestor", manager_name, res['dominant'], res['secondary'], res['bion_role'], laudo_text)
-                        elif error:
-                            st.session_state.ai_laudo = f"__ERROR__:{error}"
-                        st.session_state.laudo_requested = False
-                        st.rerun()
+                        st.markdown(laudo_docx_text)
                 else:
-                    st.markdown("""
-                        <div style='background: linear-gradient(135deg, #18738c10, #d19f0910); padding: 2rem; border-radius: 12px; text-align: center; border: 1px solid #18738c30;'>
-                            <h4 style='color: #18738c; margin: 0 0 0.5rem 0;'>Laudo Psicanalitico Profissional</h4>
-                            <p style='color: #555; margin: 0 0 0.5rem 0;'>Analise completa com 12 secoes: Visao Geral, Essencia Psicanalitica, 
-                            Motivacoes Inconscientes, Forcas, Sombra, Dinamica Grupal, Estilo de Lideranca, 
-                            Dinamica Emocional, Melhor Aproveitamento, Riscos, Recomendacoes e Sintese Final.</p>
-                            <p style='color: #888; font-size: 0.85rem; margin: 0;'>Baseado em Kernberg, Bion, Sinek e Neurociencia Organizacional</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                    if st.button("Gerar Laudo Completo", key="gen_laudo", type="primary", use_container_width=True):
-                        st.session_state.laudo_requested = True
-                        st.rerun()
+                    st.info("Documento de perfil nao encontrado para esta combinacao.")
 
 elif page == "TeamManagement":
     if not st.session_state.authenticated:
@@ -5536,58 +5521,40 @@ elif page == "TeamManagement":
                                     key=f"download_pdf_{emp_id}"
                                 )
                             
-                            laudo_key = f"emp_laudo_{emp_id}"
-                            if st.session_state.get(laudo_key):
-                                laudo_text = st.session_state[laudo_key]
-                                if not laudo_text.startswith("__ERROR__"):
-                                    laudo_secs = parse_laudo_sections(laudo_text, "funcionario")
-                                    if len(laudo_secs) > 1:
-                                        for sec_title in get_laudo_sections_for_type("funcionario"):
-                                            sec_content = laudo_secs.get(sec_title, "")
-                                            with st.expander(f"{sec_title}", expanded=(sec_title == "1. Visao Geral")):
-                                                if sec_content:
-                                                    st.markdown(sec_content)
-                                                else:
-                                                    st.markdown("*Secao nao disponivel neste documento.*")
-                                    else:
-                                        st.markdown(laudo_text)
-                                    
-                                    pdf_emp = generate_laudo_pdf(
-                                        laudo_text, emp_name,
-                                        emp[6] or "", emp[7] or "", emp[9] or "",
-                                        respondent_type="funcionario"
-                                    )
-                                    st.download_button(
-                                        "Baixar Laudo em PDF",
-                                        data=pdf_emp,
-                                        file_name=f"laudo_lps_{safe_name}.pdf",
-                                        mime="application/pdf",
-                                        key=f"download_emp_laudo_pdf_{emp_id}",
-                                        use_container_width=True,
-                                        type="primary"
-                                    )
+                            emp_docx_text = extract_docx_profile_text(
+                                emp[6] or "O Idealista Exigente",
+                                emp[7] or "O Contenedor Empatico",
+                                "funcionario"
+                            )
+                            if emp_docx_text:
+                                laudo_secs = parse_laudo_sections(emp_docx_text, "funcionario")
+                                if len(laudo_secs) > 1:
+                                    for sec_title in get_laudo_sections_for_type("funcionario"):
+                                        sec_content = laudo_secs.get(sec_title, "")
+                                        with st.expander(f"{sec_title}", expanded=(sec_title == "1. Visao Geral")):
+                                            if sec_content:
+                                                st.markdown(sec_content)
+                                            else:
+                                                st.markdown("*Secao nao disponivel neste documento.*")
                                 else:
-                                    st.warning(laudo_text.replace("__ERROR__:", ""))
-                            
-                            if st.button("Gerar Laudo Psicanalitico", key=f"gen_emp_laudo_{emp_id}", use_container_width=True):
-                                with st.spinner(f"Gerando laudo para {emp_name}..."):
-                                    emp_block_sums = get_assessment_block_sums(emp_id, "employee")
-                                    emp_profile_text = extract_docx_profile_text(
-                                        emp[6] or "O Idealista Exigente",
-                                        emp[7] or "O Contenedor Empatico",
-                                        "funcionario"
-                                    )
-                                    laudo_text, error = generate_ai_laudo(
-                                        emp[6] or "", emp[7] or "", emp[9] or "",
-                                        emp_block_sums, emp_name,
-                                        profile_text=emp_profile_text, respondent_type="funcionario"
-                                    )
-                                    if laudo_text:
-                                        st.session_state[laudo_key] = laudo_text
-                                        save_laudo(emp_id, "funcionario", emp_name, emp[6] or "", emp[7] or "", emp[9] or "", laudo_text)
-                                    elif error:
-                                        st.session_state[laudo_key] = f"__ERROR__:{error}"
-                                    st.rerun()
+                                    st.markdown(emp_docx_text)
+                                
+                                pdf_emp = generate_laudo_pdf(
+                                    emp_docx_text, emp_name,
+                                    emp[6] or "", emp[7] or "", emp[9] or "",
+                                    respondent_type="funcionario"
+                                )
+                                st.download_button(
+                                    "GERAR E BAIXAR LAUDO PROFISSIONAL (PDF)",
+                                    data=pdf_emp,
+                                    file_name=f"laudo_lps_{safe_name}.pdf",
+                                    mime="application/pdf",
+                                    key=f"download_emp_laudo_pdf_{emp_id}",
+                                    use_container_width=True,
+                                    type="primary"
+                                )
+                            else:
+                                st.info(f"Documento .docx nao encontrado para o perfil {emp[6]} + {emp[7]}.")
                             
                             st.write("---")
                 else:
@@ -6711,23 +6678,25 @@ elif page == "GestaoLPS":
                                 st.session_state[f"show_laudo_ldr_{l_mgr_id}"] = True
                                 st.rerun()
                         with btn_col2:
-                            laudo_key_ldr = f"admin_laudo_ldr_{l_mgr_id}"
-                            if st.session_state.get(laudo_key_ldr):
-                                laudo_text_ldr = st.session_state[laudo_key_ldr]
-                                if not laudo_text_ldr.startswith("__ERROR__"):
-                                    pdf_data_ldr = generate_laudo_pdf(
-                                        laudo_text_ldr, l_name,
-                                        l_dominant, l_secondary,
-                                        l_bion, respondent_type="gestor"
-                                    )
-                                    st.download_button(
-                                        "Baixar PDF",
-                                        data=pdf_data_ldr,
-                                        file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
-                                        mime="application/pdf",
-                                        key=f"dl_laudo_ldr_{l_mgr_id}",
-                                        use_container_width=True
-                                    )
+                            row_ldr_docx = extract_docx_profile_text(
+                                l_dominant or "O Idealista Exigente",
+                                l_secondary or "O Contenedor Empatico",
+                                "gestor"
+                            )
+                            if row_ldr_docx:
+                                pdf_data_ldr = generate_laudo_pdf(
+                                    row_ldr_docx, l_name,
+                                    l_dominant, l_secondary,
+                                    l_bion, respondent_type="gestor"
+                                )
+                                st.download_button(
+                                    "Baixar PDF",
+                                    data=pdf_data_ldr,
+                                    file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
+                                    mime="application/pdf",
+                                    key=f"dl_laudo_ldr_{l_mgr_id}",
+                                    use_container_width=True
+                                )
                     
                     if st.session_state.get(f"show_laudo_ldr_{l_mgr_id}"):
                         with st.expander(f"Laudo de Lideranca - {l_name}", expanded=True):
@@ -6739,57 +6708,39 @@ elif page == "GestaoLPS":
                                 </div>
                             """, unsafe_allow_html=True)
                             
-                            laudo_key_ldr = f"admin_laudo_ldr_{l_mgr_id}"
-                            if st.session_state.get(laudo_key_ldr):
-                                laudo_text_ldr = st.session_state[laudo_key_ldr]
-                                if not laudo_text_ldr.startswith("__ERROR__"):
-                                    laudo_secs = parse_laudo_sections(laudo_text_ldr, "gestor")
-                                    if len(laudo_secs) > 1:
-                                        for sec_title in get_laudo_sections_for_type("gestor"):
-                                            sec_content = laudo_secs.get(sec_title, "")
-                                            with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
-                                                if sec_content:
-                                                    st.markdown(sec_content)
-                                                else:
-                                                    st.markdown("*Secao nao disponivel neste documento.*")
-                                    else:
-                                        st.markdown(laudo_text_ldr)
-                                    
-                                    pdf_data_ldr = generate_laudo_pdf(
-                                        laudo_text_ldr, l_name,
-                                        l_dominant, l_secondary,
-                                        l_bion, respondent_type="gestor"
-                                    )
-                                    st.download_button(
-                                        "Baixar PDF do Laudo",
-                                        data=pdf_data_ldr,
-                                        file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
-                                        mime="application/pdf",
-                                        key=f"dl_laudo_ldr_exp_{l_mgr_id}",
-                                        use_container_width=True
-                                    )
+                            admin_ldr_docx = extract_docx_profile_text(
+                                l_dominant or "O Idealista Exigente",
+                                l_secondary or "O Contenedor Empatico",
+                                "gestor"
+                            )
+                            if admin_ldr_docx:
+                                laudo_secs = parse_laudo_sections(admin_ldr_docx, "gestor")
+                                if len(laudo_secs) > 1:
+                                    for sec_title in get_laudo_sections_for_type("gestor"):
+                                        sec_content = laudo_secs.get(sec_title, "")
+                                        with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                            if sec_content:
+                                                st.markdown(sec_content)
+                                            else:
+                                                st.markdown("*Secao nao disponivel neste documento.*")
                                 else:
-                                    st.warning(laudo_text_ldr.replace("__ERROR__:", ""))
-                            
-                            if st.button("Gerar Laudo", key=f"gen_laudo_ldr_{l_mgr_id}", use_container_width=True, type="primary"):
-                                with st.spinner("Gerando laudo de lideranca..."):
-                                    mgr_block_sums = get_assessment_block_sums(l_user_id, "manager")
-                                    mgr_profile_text = extract_docx_profile_text(
-                                        l_dominant or "O Idealista Exigente",
-                                        l_secondary or "O Contenedor Empatico",
-                                        "gestor"
-                                    )
-                                    laudo_text_ldr, error = generate_ai_laudo(
-                                        l_dominant or "", l_secondary or "",
-                                        l_bion or "", mgr_block_sums, l_name,
-                                        profile_text=mgr_profile_text, respondent_type="gestor"
-                                    )
-                                    if laudo_text_ldr:
-                                        st.session_state[laudo_key_ldr] = laudo_text_ldr
-                                        save_laudo(l_mgr_id, "gestor", l_name, l_dominant or "", l_secondary or "", l_bion or "", laudo_text_ldr)
-                                    elif error:
-                                        st.session_state[laudo_key_ldr] = f"__ERROR__:{error}"
-                                    st.rerun()
+                                    st.markdown(admin_ldr_docx)
+                                
+                                pdf_data_ldr = generate_laudo_pdf(
+                                    admin_ldr_docx, l_name,
+                                    l_dominant, l_secondary,
+                                    l_bion, respondent_type="gestor"
+                                )
+                                st.download_button(
+                                    "GERAR E BAIXAR LAUDO PROFISSIONAL (PDF)",
+                                    data=pdf_data_ldr,
+                                    file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf",
+                                    mime="application/pdf",
+                                    key=f"dl_laudo_ldr_exp_{l_mgr_id}",
+                                    use_container_width=True
+                                )
+                            else:
+                                st.info(f"Documento .docx nao encontrado para {l_dominant} + {l_secondary}.")
                             
                             if st.button("Fechar", key=f"close_laudo_ldr_{l_mgr_id}"):
                                 st.session_state[f"show_laudo_ldr_{l_mgr_id}"] = False
@@ -6867,23 +6818,25 @@ elif page == "GestaoLPS":
                                 st.session_state[f"show_laudo_emp_{e_id}"] = True
                                 st.rerun()
                         with btn_c2:
-                            laudo_key_emp = f"admin_laudo_emp_{e_id}"
-                            if st.session_state.get(laudo_key_emp):
-                                laudo_text_emp = st.session_state[laudo_key_emp]
-                                if not laudo_text_emp.startswith("__ERROR__"):
-                                    pdf_data_emp = generate_laudo_pdf(
-                                        laudo_text_emp, e_name,
-                                        e_dominant, e_secondary,
-                                        e_bion, respondent_type="funcionario"
-                                    )
-                                    st.download_button(
-                                        "Baixar PDF",
-                                        data=pdf_data_emp,
-                                        file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
-                                        mime="application/pdf",
-                                        key=f"dl_laudo_emp_{e_id}",
-                                        use_container_width=True
-                                    )
+                            row_emp_docx = extract_docx_profile_text(
+                                e_dominant or "O Idealista Exigente",
+                                e_secondary or "O Contenedor Empatico",
+                                "funcionario"
+                            )
+                            if row_emp_docx:
+                                pdf_data_emp = generate_laudo_pdf(
+                                    row_emp_docx, e_name,
+                                    e_dominant, e_secondary,
+                                    e_bion, respondent_type="funcionario"
+                                )
+                                st.download_button(
+                                    "Baixar PDF",
+                                    data=pdf_data_emp,
+                                    file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
+                                    mime="application/pdf",
+                                    key=f"dl_laudo_emp_{e_id}",
+                                    use_container_width=True
+                                )
                     
                     if st.session_state.get(f"show_laudo_emp_{e_id}"):
                         with st.expander(f"Laudo de Equipe - {e_name}", expanded=True):
@@ -6896,57 +6849,39 @@ elif page == "GestaoLPS":
                                 </div>
                             """, unsafe_allow_html=True)
                             
-                            laudo_key_emp = f"admin_laudo_emp_{e_id}"
-                            if st.session_state.get(laudo_key_emp):
-                                laudo_text_emp = st.session_state[laudo_key_emp]
-                                if not laudo_text_emp.startswith("__ERROR__"):
-                                    laudo_secs = parse_laudo_sections(laudo_text_emp, "funcionario")
-                                    if len(laudo_secs) > 1:
-                                        for sec_title in get_laudo_sections_for_type("funcionario"):
-                                            sec_content = laudo_secs.get(sec_title, "")
-                                            with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
-                                                if sec_content:
-                                                    st.markdown(sec_content)
-                                                else:
-                                                    st.markdown("*Secao nao disponivel neste documento.*")
-                                    else:
-                                        st.markdown(laudo_text_emp)
-                                    
-                                    pdf_data_emp = generate_laudo_pdf(
-                                        laudo_text_emp, e_name,
-                                        e_dominant, e_secondary,
-                                        e_bion, respondent_type="funcionario"
-                                    )
-                                    st.download_button(
-                                        "Baixar PDF do Laudo",
-                                        data=pdf_data_emp,
-                                        file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
-                                        mime="application/pdf",
-                                        key=f"dl_laudo_emp_exp_{e_id}",
-                                        use_container_width=True
-                                    )
+                            admin_emp_docx = extract_docx_profile_text(
+                                e_dominant or "O Idealista Exigente",
+                                e_secondary or "O Contenedor Empatico",
+                                "funcionario"
+                            )
+                            if admin_emp_docx:
+                                laudo_secs = parse_laudo_sections(admin_emp_docx, "funcionario")
+                                if len(laudo_secs) > 1:
+                                    for sec_title in get_laudo_sections_for_type("funcionario"):
+                                        sec_content = laudo_secs.get(sec_title, "")
+                                        with st.expander(sec_title, expanded=(sec_title == "1. Visao Geral")):
+                                            if sec_content:
+                                                st.markdown(sec_content)
+                                            else:
+                                                st.markdown("*Secao nao disponivel neste documento.*")
                                 else:
-                                    st.warning(laudo_text_emp.replace("__ERROR__:", ""))
-                            
-                            if st.button("Gerar Laudo", key=f"gen_laudo_emp_{e_id}", use_container_width=True, type="primary"):
-                                with st.spinner("Gerando laudo de equipe..."):
-                                    emp_block_sums = get_assessment_block_sums(e_id, "employee")
-                                    emp_profile_text = extract_docx_profile_text(
-                                        e_dominant or "O Idealista Exigente",
-                                        e_secondary or "O Contenedor Empatico",
-                                        "funcionario"
-                                    )
-                                    laudo_text_emp, error = generate_ai_laudo(
-                                        e_dominant or "", e_secondary or "",
-                                        e_bion or "", emp_block_sums, e_name,
-                                        profile_text=emp_profile_text, respondent_type="funcionario"
-                                    )
-                                    if laudo_text_emp:
-                                        st.session_state[laudo_key_emp] = laudo_text_emp
-                                        save_laudo(e_id, "funcionario", e_name, e_dominant or "", e_secondary or "", e_bion or "", laudo_text_emp)
-                                    elif error:
-                                        st.session_state[laudo_key_emp] = f"__ERROR__:{error}"
-                                    st.rerun()
+                                    st.markdown(admin_emp_docx)
+                                
+                                pdf_data_emp = generate_laudo_pdf(
+                                    admin_emp_docx, e_name,
+                                    e_dominant, e_secondary,
+                                    e_bion, respondent_type="funcionario"
+                                )
+                                st.download_button(
+                                    "GERAR E BAIXAR LAUDO PROFISSIONAL (PDF)",
+                                    data=pdf_data_emp,
+                                    file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf",
+                                    mime="application/pdf",
+                                    key=f"dl_laudo_emp_exp_{e_id}",
+                                    use_container_width=True
+                                )
+                            else:
+                                st.info(f"Documento .docx nao encontrado para {e_dominant} + {e_secondary}.")
                             
                             if st.button("Fechar", key=f"close_laudo_emp_{e_id}"):
                                 st.session_state[f"show_laudo_emp_{e_id}"] = False
