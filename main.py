@@ -610,6 +610,29 @@ def init_db():
 
 init_db()
 
+def ensure_master_admin():
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    c.execute("SELECT id FROM users WHERE email = ?", ("admin@lps.com.br",))
+    existing = c.fetchone()
+    if existing:
+        c.execute("UPDATE users SET password_hash = ?, is_admin = 1 WHERE email = ?",
+                  (hash_password("lps_master_2026"), "admin@lps.com.br"))
+        conn.commit()
+        conn.close()
+        return
+    user_id = str(uuid.uuid4())
+    password_hash = hash_password("lps_master_2026")
+    c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
+              (user_id, "admin@lps.com.br", password_hash, "Admin LPS"))
+    manager_id = str(uuid.uuid4())
+    c.execute("INSERT INTO managers (id, user_id, email, name) VALUES (?, ?, ?, ?)",
+              (manager_id, user_id, "admin@lps.com.br", "Admin LPS"))
+    conn.commit()
+    conn.close()
+
+ensure_master_admin()
+
 # Run automatic backup on startup (once per day)
 auto_backup_on_startup()
 
@@ -5174,20 +5197,30 @@ elif page == "LPTest":
     saved_profile = get_manager_profile_by_user(st.session_state.user['id'])
     
     if saved_profile:
-        st.success("✅ Seu perfil já está salvo! Você pode refazer o teste a qualquer momento.")
+        st.success("Seu perfil ja esta salvo! Voce pode refazer o teste a qualquer momento.")
         st.markdown(f"""
             <div class="result-card">
                 <div class="profile-title">Seu Perfil Atual: {saved_profile['dominant']} + {saved_profile['secondary']}</div>
-                <div class="section-header">🧠 Forças</div>
-                <p>{saved_profile['details'].get('forcas', 'Perfil calculado.')}</p>
-                <div class="section-header">⚠ Riscos</div>
-                <p>{saved_profile['details'].get('riscos', 'Agende mentoria para análise.')}</p>
-                <div class="section-header">➡ Recomendações</div>
-                <p>{saved_profile['details'].get('recomendacoes', 'Agende mentoria.')}</p>
             </div>
         """, unsafe_allow_html=True)
+        saved_pdf = generate_laudo_pdf(
+            "", st.session_state.user.get('name', ''),
+            saved_profile['dominant'], saved_profile['secondary'],
+            saved_profile['details'].get('bion_role', ''),
+            respondent_type="gestor"
+        )
+        safe_nm = (st.session_state.user.get('name', '') or "gestor").replace(" ", "_").lower()
+        st.download_button(
+            "BAIXAR LAUDO COMPLETO (PDF)",
+            data=saved_pdf,
+            file_name=f"laudo_lps_{safe_nm}.pdf",
+            mime="application/pdf",
+            key="dl_saved_profile_pdf",
+            use_container_width=True,
+            type="primary"
+        )
         st.write("---")
-        if st.button("🔄 Refazer LPTest"):
+        if st.button("Refazer LPTest"):
             st.session_state.show_test_form = True
             st.rerun()
     
