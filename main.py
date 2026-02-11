@@ -3188,141 +3188,266 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     buffer.seek(0)
     return buffer.getvalue()
 
+def _clean_text_for_pdf(raw_text):
+    """Clean raw docx-extracted text for ReportLab Paragraph rendering.
+    Converts markdown-style bold/italic to XML tags, escapes ampersands,
+    and strips orphan markers that would appear as literal ** in the PDF."""
+    import re as _re
+    text = raw_text.strip()
+    if not text:
+        return ""
+    text = text.replace("&", "&amp;")
+    text = _re.sub(r'&amp;(#?\w+;)', r'&\1', text)
+    text = text.replace("<", "&lt;").replace(">", "&gt;")
+    text = _re.sub(r'\*\*\*(.+?)\*\*\*', r'<b><i>\1</i></b>', text)
+    text = _re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+    text = _re.sub(r'\*(.+?)\*', r'<i>\1</i>', text)
+    text = _re.sub(r'\*{2,}', '', text)
+    text = _re.sub(r'\*', '', text)
+    text = text.strip()
+    return text
+
+SECTION_DISPLAY_NAMES_GESTOR = {
+    "1. Visao Geral": "1. Visão Geral",
+    "2. Essencia Psicanalitica": "2. Essência Psicanalítica",
+    "3. Motivacoes Inconscientes": "3. Motivações Inconscientes",
+    "4. Forcas": "4. Forças (Manifestações Positivas)",
+    "5. Sombra": "5. Sombra (Riscos e Manifestações Negativas)",
+    "6. Estilo de Lideranca e Impacto": "6. Estilo de Liderança e Impacto no Grupo",
+    "7. Funcao de Lideranca": "7. Função de Liderança",
+    "8. Dinamica Emocional (Sinek)": "8. Dinâmica Emocional (Sinek + Neurociência)",
+    "9. Melhor Aproveitamento": "9. Melhor Aproveitamento do Líder",
+    "10. Riscos de Alocacao": "10. Riscos se Mal Alocado",
+    "11. Recomendacoes de Desenvolvimento": "11. Recomendações de Desenvolvimento",
+    "12. Sintese": "12. Síntese",
+}
+
+SECTION_DISPLAY_NAMES_FUNCIONARIO = {
+    "1. Visao Geral": "1. Visão Geral",
+    "2. Essencia Psicanalitica": "2. Essência Psicanalítica",
+    "3. Motivacoes Inconscientes": "3. Motivações Inconscientes",
+    "4. Forcas": "4. Forças",
+    "5. Sombra": "5. Sombra",
+    "6. Papeis Grupais (Bion)": "6. Tendências de Papéis Grupais (Bion)",
+    "7. Dinamica Emocional (Sinek)": "7. Dinâmica Emocional (Sinek + Neurociência)",
+    "8. Melhor Aproveitamento": "8. Melhor Aproveitamento na Equipe",
+    "9. Riscos de Alocacao": "9. Riscos se Mal Alocado",
+    "10. Recomendacoes ao Gestor": "10. Recomendações ao Gestor",
+    "11. Reflexoes para o Proprio Perfil": "11. Reflexões para o Próprio Perfil",
+    "12. Sintese": "12. Síntese",
+}
+
+def _pdf_page_header(canvas_obj, doc_obj):
+    """Draw LPS logo and thin Azure line at the top of every page."""
+    canvas_obj.saveState()
+    logo_path = "attached_assets/logotipo_1768443722848.jpeg"
+    page_width = A4[0]
+    if os.path.exists(logo_path):
+        logo_w = 0.7 * inch
+        logo_h = 0.7 * inch
+        x = page_width - doc_obj.rightMargin - logo_w
+        y = A4[1] - 0.6 * inch
+        try:
+            canvas_obj.drawImage(logo_path, x, y, width=logo_w, height=logo_h, preserveAspectRatio=True, mask='auto')
+        except Exception:
+            pass
+    canvas_obj.setStrokeColor(HexColor('#18738c'))
+    canvas_obj.setLineWidth(0.5)
+    line_y = A4[1] - 0.72 * inch
+    canvas_obj.line(doc_obj.leftMargin, line_y, page_width - doc_obj.rightMargin, line_y)
+    canvas_obj.restoreState()
+
+def _pdf_page_footer(canvas_obj, doc_obj):
+    """Draw page number and confidentiality note at the bottom of every page."""
+    canvas_obj.saveState()
+    page_width = A4[0]
+    canvas_obj.setStrokeColor(HexColor('#c5a059'))
+    canvas_obj.setLineWidth(0.4)
+    canvas_obj.line(doc_obj.leftMargin, 0.6 * inch, page_width - doc_obj.rightMargin, 0.6 * inch)
+    canvas_obj.setFont('Helvetica', 8)
+    canvas_obj.setFillColor(HexColor('#888888'))
+    canvas_obj.drawCentredString(page_width / 2, 0.42 * inch,
+        "Plataforma LPS - Liderança Psicanalítica | Viviane Nishiura")
+    canvas_obj.drawCentredString(page_width / 2, 0.28 * inch,
+        "Documento confidencial e destinado exclusivamente ao avaliado e seu gestor.")
+    canvas_obj.drawRightString(page_width - doc_obj.rightMargin, 0.42 * inch,
+        f"Pág. {canvas_obj.getPageNumber()}")
+    canvas_obj.restoreState()
+
+def _pdf_on_page(canvas_obj, doc_obj):
+    """Combined header + footer callback for every page."""
+    _pdf_page_header(canvas_obj, doc_obj)
+    _pdf_page_footer(canvas_obj, doc_obj)
+
 def generate_laudo_pdf(laudo_text, respondent_name, dominant, secondary, bion_role, respondent_type="gestor"):
-    """Generate a professional multi-page PDF with 100% faithful .docx content.
-    Uses ReportLab Paragraph for automatic page breaks - no content is ever cut."""
-    import re as re_mod
+    """Generate a professional multi-page consultancy-style PDF report.
+    Content is 100% extracted from .docx files - no AI generation.
+    Features: LPS logo on every page, proper accented section titles,
+    Azure #18738c headings, Gold #c5a059 separators, automatic pagination."""
+    from reportlab.lib.units import mm
+
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.7*inch, bottomMargin=0.7*inch,
-                           leftMargin=0.75*inch, rightMargin=0.75*inch)
-    styles = create_pdf_styles()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        topMargin=0.85 * inch,
+        bottomMargin=0.8 * inch,
+        leftMargin=0.75 * inch,
+        rightMargin=0.75 * inch,
+    )
 
-    styles.add(ParagraphStyle(
-        name='LaudoMainTitle',
-        parent=styles['Normal'],
-        fontSize=16,
-        textColor=HexColor('#18738c'),
-        spaceBefore=0,
-        spaceAfter=2,
+    styles = getSampleStyleSheet()
+
+    style_report_title = ParagraphStyle(
+        'ReportTitle', parent=styles['Normal'],
+        fontSize=20, textColor=HexColor('#18738c'),
+        fontName='Helvetica-Bold', alignment=TA_CENTER,
+        spaceBefore=6, spaceAfter=4, leading=24,
+    )
+    style_report_subtitle = ParagraphStyle(
+        'ReportSubtitle', parent=styles['Normal'],
+        fontSize=12, textColor=HexColor('#555555'),
+        fontName='Helvetica', alignment=TA_CENTER,
+        spaceAfter=14,
+    )
+    style_meta_label = ParagraphStyle(
+        'MetaLabel', parent=styles['Normal'],
+        fontSize=11, textColor=HexColor('#333333'),
+        fontName='Helvetica', spaceAfter=2, leading=14,
+    )
+    style_section_heading = ParagraphStyle(
+        'SectionHeading', parent=styles['Normal'],
+        fontSize=13, textColor=HexColor('#18738c'),
         fontName='Helvetica-Bold',
-        alignment=TA_CENTER,
-    ))
-
-    styles.add(ParagraphStyle(
-        name='LaudoSubtitle',
-        parent=styles['Normal'],
-        fontSize=11,
-        textColor=HexColor('#444444'),
-        spaceAfter=2,
-        fontName='Helvetica',
-        alignment=TA_CENTER,
-    ))
-
-    styles.add(ParagraphStyle(
-        name='LaudoSectionTitle',
-        parent=styles['Normal'],
-        fontSize=13,
-        textColor=HexColor('#18738c'),
-        spaceBefore=16,
-        spaceAfter=6,
-        fontName='Helvetica-Bold',
-    ))
-
-    styles.add(ParagraphStyle(
-        name='LaudoBody',
-        parent=styles['Normal'],
-        fontSize=11,
-        textColor=HexColor('#2c2c2c'),
-        alignment=TA_JUSTIFY,
-        spaceAfter=6,
-        leading=15,
-        fontName='Helvetica',
-    ))
-
-    styles.add(ParagraphStyle(
-        name='LaudoMeta',
-        parent=styles['Normal'],
-        fontSize=10.5,
-        textColor=HexColor('#444444'),
+        spaceBefore=18, spaceAfter=4, leading=16,
+    )
+    style_body = ParagraphStyle(
+        'BodyText2', parent=styles['Normal'],
+        fontSize=11, textColor=HexColor('#2c2c2c'),
+        fontName='Helvetica', alignment=TA_JUSTIFY,
+        spaceAfter=6, leading=15,
+    )
+    style_bullet = ParagraphStyle(
+        'BulletItem', parent=style_body,
+        leftIndent=18, bulletIndent=6,
         spaceAfter=3,
-        fontName='Helvetica',
-    ))
+    )
+    style_footer_text = ParagraphStyle(
+        'FooterText', parent=styles['Normal'],
+        fontSize=9, textColor=HexColor('#777777'),
+        fontName='Helvetica', alignment=TA_CENTER,
+        spaceAfter=2,
+    )
 
     elements = []
 
-    elements.append(create_pdf_header_table())
-    elements.append(Spacer(1, 12))
+    elements.append(Spacer(1, 8))
+    elements.append(Paragraph(
+        "Relatório de Perfil Psicanalítico",
+        style_report_title
+    ))
+    elements.append(Paragraph(
+        "Viviane Nishiura",
+        style_report_subtitle
+    ))
 
-    elements.append(Paragraph("Relatorio de Perfil Psicanalitico - Viviane Nishiura", styles['LaudoMainTitle']))
-    elements.append(Spacer(1, 4))
-    tipo_label = "Laudo Psicanalitico de Lideranca" if respondent_type == "gestor" else "Laudo Psicanalitico - Perfil de Equipe"
-    elements.append(Paragraph(tipo_label, styles['LaudoSubtitle']))
-    elements.append(Spacer(1, 10))
+    tipo_label = "Laudo Psicanalítico de Liderança" if respondent_type == "gestor" else "Laudo Psicanalítico - Perfil de Equipe"
+    elements.append(Paragraph(tipo_label, ParagraphStyle(
+        'TipoLabel', parent=styles['Normal'],
+        fontSize=11, textColor=HexColor('#c5a059'),
+        fontName='Helvetica-Bold', alignment=TA_CENTER,
+        spaceAfter=16,
+    )))
 
-    elements.append(Paragraph(f"<b>Nome:</b> {respondent_name or 'Avaliado(a)'}", styles['LaudoMeta']))
-    elements.append(Paragraph(f"<b>Perfil:</b> {dominant} + {secondary}", styles['LaudoMeta']))
-    elements.append(Paragraph(f"<b>Papel de Bion:</b> {bion_role}", styles['LaudoMeta']))
-    elements.append(Paragraph(f"<b>Data:</b> {datetime.now().strftime('%d/%m/%Y %H:%M')}", styles['LaudoMeta']))
-
-    line_table = Table([[""]],  colWidths=[doc.width])
-    line_table.setStyle(TableStyle([
-        ('LINEABOVE', (0, 0), (-1, 0), 1.5, HexColor('#18738c')),
-        ('TOPPADDING', (0, 0), (-1, 0), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 2),
+    meta_data = [
+        ["<b>Avaliado(a):</b>", respondent_name or "---"],
+        ["<b>Perfil:</b>", f"{dominant} + {secondary}"],
+        ["<b>Papel de Bion:</b>", bion_role or "---"],
+        ["<b>Data:</b>", datetime.now().strftime('%d/%m/%Y')],
+    ]
+    meta_table_data = []
+    for label, value in meta_data:
+        meta_table_data.append([
+            Paragraph(label, style_meta_label),
+            Paragraph(value, style_meta_label),
+        ])
+    meta_table = Table(meta_table_data, colWidths=[1.6 * inch, 4.4 * inch])
+    meta_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('TOPPADDING', (0, 0), (-1, -1), 2),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+        ('LEFTPADDING', (0, 0), (0, -1), 0),
     ]))
-    elements.append(line_table)
+    elements.append(meta_table)
+    elements.append(Spacer(1, 8))
+
+    azure_line = Table([[""]],  colWidths=[doc.width])
+    azure_line.setStyle(TableStyle([
+        ('LINEABOVE', (0, 0), (-1, 0), 1.5, HexColor('#18738c')),
+        ('TOPPADDING', (0, 0), (-1, 0), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+    ]))
+    elements.append(azure_line)
 
     sections = parse_laudo_sections(laudo_text, respondent_type)
     section_list = get_laudo_sections_for_type(respondent_type)
+    display_names = SECTION_DISPLAY_NAMES_GESTOR if respondent_type == "gestor" else SECTION_DISPLAY_NAMES_FUNCIONARIO
 
-    for section_title in section_list:
-        content = sections.get(section_title, "")
-        if not content and section_title == "1. Visao Geral" and len(sections) == 1:
+    for section_key in section_list:
+        content = sections.get(section_key, "")
+        if not content and section_key == "1. Visao Geral" and len(sections) == 1:
             content = list(sections.values())[0]
 
-        elements.append(Paragraph(f"<b>{section_title}</b>", styles['LaudoSectionTitle']))
+        display_title = display_names.get(section_key, section_key)
 
-        sep_table = Table([[""]],  colWidths=[doc.width])
-        sep_table.setStyle(TableStyle([
-            ('LINEABOVE', (0, 0), (-1, 0), 0.5, HexColor('#c5a059')),
-            ('TOPPADDING', (0, 0), (-1, 0), 1),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 4),
+        elements.append(Paragraph(display_title, style_section_heading))
+
+        gold_sep = Table([[""]],  colWidths=[doc.width])
+        gold_sep.setStyle(TableStyle([
+            ('LINEABOVE', (0, 0), (-1, 0), 0.7, HexColor('#c5a059')),
+            ('TOPPADDING', (0, 0), (-1, 0), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
         ]))
-        elements.append(sep_table)
+        elements.append(gold_sep)
 
         if content:
             paragraphs = content.split("\n")
-            for para in paragraphs:
-                pdf_text = para.strip()
-                if not pdf_text:
-                    elements.append(Spacer(1, 4))
+            for raw_para in paragraphs:
+                cleaned = _clean_text_for_pdf(raw_para)
+                if not cleaned:
+                    elements.append(Spacer(1, 3))
                     continue
-                pdf_text = re_mod.sub(r'\*\*\*(.+?)\*\*\*', r'<b><i>\1</i></b>', pdf_text)
-                pdf_text = re_mod.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', pdf_text)
-                pdf_text = re_mod.sub(r'\*(.+?)\*', r'<i>\1</i>', pdf_text)
-                pdf_text = pdf_text.replace("&", "&amp;")
-                pdf_text = re_mod.sub(r'&amp;(#?\w+;)', r'&\1', pdf_text)
-                try:
-                    elements.append(Paragraph(pdf_text, styles['LaudoBody']))
-                except Exception:
-                    safe_text = para.strip().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-                    elements.append(Paragraph(safe_text, styles['LaudoBody']))
+                is_bullet = cleaned.lstrip().startswith(("- ", "• "))
+                if is_bullet:
+                    bullet_text = cleaned.lstrip("- ").lstrip("• ").strip()
+                    try:
+                        elements.append(Paragraph(f"• {bullet_text}", style_bullet))
+                    except Exception:
+                        elements.append(Paragraph(f"• {raw_para.strip()}", style_bullet))
+                else:
+                    try:
+                        elements.append(Paragraph(cleaned, style_body))
+                    except Exception:
+                        safe = raw_para.strip().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                        elements.append(Paragraph(safe, style_body))
         else:
-            elements.append(Paragraph("<i>Secao nao disponivel neste documento.</i>", styles['LaudoBody']))
+            elements.append(Paragraph(
+                "<i>Seção não disponível neste documento.</i>", style_body))
 
-    elements.append(Spacer(1, 20))
-    footer_line = Table([[""]],  colWidths=[doc.width])
-    footer_line.setStyle(TableStyle([
+    elements.append(Spacer(1, 24))
+    end_line = Table([[""]],  colWidths=[doc.width])
+    end_line.setStyle(TableStyle([
         ('LINEABOVE', (0, 0), (-1, 0), 1, HexColor('#18738c')),
-        ('TOPPADDING', (0, 0), (-1, 0), 8),
+        ('TOPPADDING', (0, 0), (-1, 0), 10),
     ]))
-    elements.append(footer_line)
-    elements.append(Paragraph("Plataforma LPS - Lideranca Psicanalitica", styles['LPSInfo']))
-    elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
-    elements.append(Paragraph(f"Documento gerado em {datetime.now().strftime('%d/%m/%Y as %H:%M')}", styles['LPSInfo']))
-    elements.append(Paragraph("Este laudo e confidencial e destinado exclusivamente ao avaliado e seu gestor.", styles['LPSInfo']))
+    elements.append(end_line)
+    elements.append(Paragraph(
+        "Plataforma LPS - Liderança Psicanalítica | Viviane Nishiura &amp; Equipe LPS",
+        style_footer_text))
+    elements.append(Paragraph(
+        f"Documento gerado em {datetime.now().strftime('%d/%m/%Y às %H:%M')}",
+        style_footer_text))
 
-    doc.build(elements)
+    doc.build(elements, onFirstPage=_pdf_on_page, onLaterPages=_pdf_on_page)
     buffer.seek(0)
     return buffer.getvalue()
 
