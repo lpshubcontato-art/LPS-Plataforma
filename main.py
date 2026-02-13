@@ -1219,7 +1219,16 @@ def activate_user_payment(user_id, plan_type='premium', amount=997.0, days_valid
 
 def can_access_premium_features(user_id):
     """Check if user can access premium features (LPChat, Mentoria)
-    Requires: Active payment AND completed theoretical course modules"""
+    Requires: Active payment AND completed theoretical course modules
+    Admin users get full access automatically."""
+    if is_user_admin(user_id):
+        return {
+            'can_access': True,
+            'payment_active': True,
+            'course_completed': True,
+            'plan': 'admin',
+            'message': None
+        }
     payment_status = get_user_payment_status(user_id)
     course_completed = is_course_completed(user_id)
     
@@ -2679,13 +2688,6 @@ def render_sidebar_navigation():
             st.markdown(f"""
                 <div class="user-badge">{st.session_state.user['name']}</div>
             """, unsafe_allow_html=True)
-            if st.button("Minha Area", key=f"{key_prefix}dashboard", use_container_width=True):
-                st.session_state.page = "Dashboard"
-                st.rerun()
-            if is_user_admin(st.session_state.user['id']):
-                if st.button("Gestao LPS", key=f"{key_prefix}gestao", use_container_width=True, type="primary"):
-                    st.session_state.page = "GestaoLPS"
-                    st.rerun()
             if st.button("Sair", key=f"{key_prefix}logout", use_container_width=True):
                 st.session_state.authenticated = False
                 st.session_state.user = None
@@ -2698,15 +2700,44 @@ def render_sidebar_navigation():
         
         st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
         
-        # Navigation Menu (no label - clean design)
-        current = st.session_state.section
-        for item in MENU_SECTIONS:
-            is_active = (current == item["key"])
-            btn_label = f"{item['icon']}   {item['label']}"
-            if st.button(btn_label, key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
-                st.session_state.section = item["key"]
-                st.session_state.show_login_modal = False
-                st.rerun()
+        if st.session_state.authenticated:
+            st.markdown('<div class="nav-section-label">Minha Area</div>', unsafe_allow_html=True)
+            auth_menu = [
+                {"key": "Dashboard", "label": "Dashboard", "icon": "📊", "page": "Dashboard"},
+                {"key": "LPTest", "label": "LPTest", "icon": "🧠", "page": "LPTest"},
+                {"key": "LPChat", "label": "LPChat", "icon": "💬", "page": "LPChat"},
+                {"key": "Equipe", "label": "Gestao de Equipe", "icon": "👥", "page": "TeamManagement"},
+                {"key": "Curso", "label": "Curso LPS", "icon": "📚", "page": "LPS Curso"},
+            ]
+            if is_user_admin(st.session_state.user['id']):
+                auth_menu.append({"key": "GestaoLPS", "label": "Gestao LPS", "icon": "⚙️", "page": "GestaoLPS"})
+            for item in auth_menu:
+                is_active = (st.session_state.page == item["page"])
+                btn_label = f"{item['icon']}   {item['label']}"
+                if st.button(btn_label, key=f"{key_prefix}auth_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
+                    st.session_state.page = item["page"]
+                    st.rerun()
+            
+            st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+            st.markdown('<div class="nav-section-label">Vitrine</div>', unsafe_allow_html=True)
+            public_items = [i for i in MENU_SECTIONS if i["key"] in ("home", "sobre", "contato")]
+            for item in public_items:
+                is_active = (st.session_state.section == item["key"] and st.session_state.page == "Home")
+                btn_label = f"{item['icon']}   {item['label']}"
+                if st.button(btn_label, key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
+                    st.session_state.section = item["key"]
+                    st.session_state.page = "Home"
+                    st.session_state.show_login_modal = False
+                    st.rerun()
+        else:
+            current = st.session_state.section
+            for item in MENU_SECTIONS:
+                is_active = (current == item["key"])
+                btn_label = f"{item['icon']}   {item['label']}"
+                if st.button(btn_label, key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
+                    st.session_state.section = item["key"]
+                    st.session_state.show_login_modal = False
+                    st.rerun()
         
         # Footer in sidebar
         st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
@@ -4446,14 +4477,15 @@ if page == "Home":
     
     # HOME SECTION - Hero
     if current_section == "home":
-        # Banner Único - Hero Section (Azure background)
+        if os.path.exists(LOGO_PATH):
+            st.image(LOGO_PATH, use_container_width=True)
         st.markdown("""
-            <div style="background-color: #18738c; padding: 4rem 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
-                <h1 style="color: white; font-size: 3rem; margin: 0; font-family: 'Open Sans', sans-serif; font-weight: 800;">
-                    Liderança Psicanalítica
+            <div style="background-color: #18738c; padding: 3rem 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
+                <h1 style="color: white; font-size: 2.8rem; margin: 0; font-family: 'Open Sans', sans-serif; font-weight: 800;">
+                    LPS - Lider Psicanalitico
                 </h1>
-                <p style="color: #d19f09; font-size: 1.5rem; margin-top: 1rem; font-family: 'Open Sans', sans-serif;">
-                    A ciência por trás da gestão de pessoas.
+                <p style="color: #d19f09; font-size: 1.4rem; margin-top: 1rem; font-family: 'Open Sans', sans-serif;">
+                    A ciencia por tras da gestao de pessoas.
                 </p>
             </div>
         """, unsafe_allow_html=True)
@@ -4510,17 +4542,50 @@ if page == "Home":
     
     # SOBRE SECTION
     elif current_section == "sobre":
-        st.markdown('<div class="section-title">Sobre o Programa LPS</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Sobre</div>', unsafe_allow_html=True)
         
-        st.subheader("Sobre a Autora")
-        st.markdown("""Viviane Nishiura é psicóloga (Mackenzie) com mais de 30 anos de trajetória conectando RH corporativo, gestão de projetos e clínica psicológica. Sua experiência permite identificar conflitos corporativos como manifestações de dinâmicas inconscientes. Atualmente lidera o LPS – Líder Psicanalítico, integrando teoria psicanalítica e visão sistêmica para ajudar líderes a sustentarem autoridade e limites com saúde mental.""")
+        st.markdown("""
+            <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #c5a059;">
+                <h2 style="color: #18738c; margin-top: 0;">SOBRE A AUTORA</h2>
+                <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
+                    Viviane Nishiura e psicologa formada pela Universidade Mackenzie, com mais de <strong>30 anos de experiencia</strong> 
+                    conectando RH corporativo, gestao de projetos e clinica psicologica. Ao longo de sua trajetoria, atuou em grandes 
+                    organizacoes e desenvolveu uma visao unica sobre os conflitos corporativos, identificando-os como manifestacoes de 
+                    dinamicas inconscientes que impactam diretamente a performance das equipes.
+                </p>
+                <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
+                    Sua formacao integra psicanalise, neurociencia aplicada e gestao estrategica de pessoas, o que lhe permite traduzir 
+                    conceitos complexos da psicologia profunda em ferramentas praticas para o dia a dia da lideranca. Atualmente, Viviane 
+                    lidera o <strong>LPS - Lider Psicanalitico</strong>, um programa inovador que ajuda gestores a sustentarem autoridade 
+                    e limites com saude mental, promovendo ambientes de trabalho mais conscientes e produtivos.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
         
-        st.subheader("Sobre o LPS (Líder Psicanalítico)")
-        st.markdown("""O LPS é um modelo de intervenção estruturado para o mundo corporativo. Baseia-se no princípio de que organizações ativam regressões emocionais. O programa foca em:
-
-- **Leitura Psíquica:** Entender o funcionamento invisível das equipes.
-- **Sustentação de Autoridade:** Tomar decisões estratégicas sem sobrecarga emocional.
-- **Performance:** Alinhamento do comportamento à tarefa organizacional.""")
+        st.markdown("""
+            <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #18738c;">
+                <h2 style="color: #18738c; margin-top: 0;">SOBRE O LPS</h2>
+                <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
+                    O <strong>LPS (Lider Psicanalitico)</strong> e um modelo de intervencao estruturado para o mundo corporativo, 
+                    baseado no principio de que organizacoes ativam regressoes emocionais que afetam a tomada de decisao, os 
+                    relacionamentos interpessoais e a produtividade das equipes.
+                </p>
+                <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
+                    A metodologia integra <strong>psicanalise e neurociencia</strong>, oferecendo aos lideres uma compreensao profunda 
+                    dos mecanismos inconscientes que operam nas dinamicas de grupo. O programa capacita gestores a:
+                </p>
+                <ul style="color: #333; line-height: 2; font-size: 1.05rem;">
+                    <li><strong>Leitura Psiquica:</strong> Entender o funcionamento invisivel das equipes e identificar padroes de comportamento inconscientes.</li>
+                    <li><strong>Sustentacao de Autoridade:</strong> Tomar decisoes estrategicas sem sobrecarga emocional, mantendo limites saudaveis.</li>
+                    <li><strong>Performance:</strong> Alinhar o comportamento a tarefa organizacional, reduzindo conflitos e aumentando a coesao do time.</li>
+                    <li><strong>Autoconhecimento:</strong> Desenvolver a capacidade de reconhecer as proprias defesas e pontos cegos na lideranca.</li>
+                </ul>
+                <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
+                    Atraves de assessments exclusivos, formacao teorica e mentoria individual, o LPS transforma a maneira como lideres 
+                    se relacionam com suas equipes, promovendo ambientes de trabalho mais saudaveis e resultados sustentaveis.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
         
         st.markdown("""
             <div style="text-align: center; margin-top: 1rem;">
@@ -4532,7 +4597,7 @@ if page == "Home":
     # CURSO SECTION - Module Cards with Paywall
     elif current_section == "curso":
         st.markdown('<div class="section-title">Programa de Formacao LPS</div>', unsafe_allow_html=True)
-        st.markdown('<p style="text-align: center; color: #000000; font-size: 1.1rem; margin-bottom: 2rem;">6 modulos completos para transformar sua lideranca</p>', unsafe_allow_html=True)
+        st.markdown('<p style="text-align: center; color: #000000; font-size: 1.1rem; margin-bottom: 2rem;">O essencial da psicologia diretamente aplicado no desempenho da Lideranca</p>', unsafe_allow_html=True)
         
         # Premium Module Card CSS
         st.markdown("""
@@ -4584,14 +4649,6 @@ if page == "Home":
                             <div class="premium-module-desc">{mod['description']}</div>
                         </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Saiba Mais", key=f"btn_mod_{mod['id']}", use_container_width=True):
-                        if not st.session_state.authenticated:
-                            st.session_state.show_login_modal = True
-                            st.rerun()
-                        else:
-                            st.session_state.selected_module = mod['id']
-                            st.session_state.page = "LPS Curso"
-                            st.rerun()
         
         st.write("")
         row2 = st.columns(4)
@@ -4607,14 +4664,6 @@ if page == "Home":
                             <div class="premium-module-desc">{mod['description']}</div>
                         </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Saiba Mais", key=f"btn_mod_{mod['id']}", use_container_width=True):
-                        if not st.session_state.authenticated:
-                            st.session_state.show_login_modal = True
-                            st.rerun()
-                        else:
-                            st.session_state.selected_module = mod['id']
-                            st.session_state.page = "LPS Curso"
-                            st.rerun()
         
         # Paywall Modal for non-logged users
         if st.session_state.show_login_modal:
@@ -4727,7 +4776,7 @@ if page == "Home":
                     <li>Análise do seu perfil LPTest</li>
                     <li>Supervisão de casos da sua equipe</li>
                     <li>Desenvolvimento de estratégias personalizadas</li>
-                    <li>Acompanhamento mensal do seu progresso</li>
+                    <li>Acompanhamento do seu progresso</li>
                 </ul>
             </div>
         """, unsafe_allow_html=True)
@@ -4791,7 +4840,7 @@ if page == "Home":
         st.markdown('<div class="section-title">Insights de Lideranca</div>', unsafe_allow_html=True)
         st.markdown("""
             <p style="text-align: center; color: #666; margin-bottom: 2rem;">
-                Artigos e conteudos semanais sobre Psicanalise, Neurociencia e Lideranca Consciente
+                Artigos e conteudos sobre Psicanalise, Neurociencia e Lideranca Consciente
             </p>
         """, unsafe_allow_html=True)
         
@@ -4859,7 +4908,7 @@ if page == "Home":
         
         st.markdown(f"""
             <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); border-radius: 15px;">
-                <h3 style="color: #d19f09; margin-bottom: 1rem;">Receba Conteudos Semanais</h3>
+                <h3 style="color: #d19f09; margin-bottom: 1rem;">Receba Conteudos Exclusivos</h3>
                 <p style="color: white; margin-bottom: 1.5rem;">Insights exclusivos sobre lideranca psicanalitica direto no seu WhatsApp</p>
                 <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
                     Receber Insights
@@ -4897,8 +4946,8 @@ if page == "Home":
         st.write("")
         st.markdown("""
             <div style="text-align: center; color: #666; margin-top: 2rem;">
-                <p><strong>E-mail:</strong> contato@liderancapsicanalitica.com.br</p>
-                <p><strong>Instagram:</strong> @liderancapsicanalitica</p>
+                <p><strong>E-mail:</strong> contato@lpshub.com.br</p>
+                <p><strong>Instagram:</strong> @lpshublider</p>
                 <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem;">
                     <a href="https://www.linkedin.com/company/lpshub" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #0A66C2; text-decoration: none; font-weight: bold; font-size: 1rem;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
