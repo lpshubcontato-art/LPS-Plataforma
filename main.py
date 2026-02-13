@@ -4477,18 +4477,12 @@ if page == "Home":
     
     # HOME SECTION - Hero
     if current_section == "home":
-        if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, use_container_width=True)
-        st.markdown("""
-            <div style="background-color: #18738c; padding: 3rem 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
-                <h1 style="color: white; font-size: 2.8rem; margin: 0; font-family: 'Open Sans', sans-serif; font-weight: 800;">
-                    LPS - Lider Psicanalitico
-                </h1>
-                <p style="color: #d19f09; font-size: 1.4rem; margin-top: 1rem; font-family: 'Open Sans', sans-serif;">
-                    A ciencia por tras da gestao de pessoas.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+        BANNER1_PATH = "attached_assets/banner1_1771011645716.jpeg"
+        BANNER2_PATH = "attached_assets/banner2_1771011645718.jpeg"
+        if os.path.exists(BANNER1_PATH):
+            st.image(BANNER1_PATH, use_container_width=True)
+        if os.path.exists(BANNER2_PATH):
+            st.image(BANNER2_PATH, use_container_width=True)
         
         # Video Intro (immediately after banner)
         vimeo_video("https://vimeo.com/1154882598")
