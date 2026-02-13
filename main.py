@@ -2510,15 +2510,15 @@ st.markdown(f'''
 
 # Navigation Menu Sections with Icons
 MENU_SECTIONS = [
-    {"key": "home", "label": "Home", "icon": "🏠"},
-    {"key": "sobre", "label": "Sobre", "icon": "👤"},
-    {"key": "curso", "label": "Curso", "icon": "📚"},
-    {"key": "lpstest", "label": "LPTest", "icon": "🧠"},
-    {"key": "lpschat", "label": "LPChat", "icon": "💬"},
-    {"key": "mentoria", "label": "Mentoria", "icon": "📅"},
-    {"key": "soluções", "label": "Trilha LPS", "icon": "💼"},
-    {"key": "insights", "label": "Insights", "icon": "📰"},
-    {"key": "contato", "label": "Contato", "icon": "📧"}
+    {"key": "home", "label": "Home"},
+    {"key": "sobre", "label": "Sobre"},
+    {"key": "curso", "label": "Curso"},
+    {"key": "lpstest", "label": "LPTest"},
+    {"key": "lpschat", "label": "LPChat"},
+    {"key": "mentoria", "label": "Mentoria"},
+    {"key": "soluções", "label": "Trilha LPS"},
+    {"key": "insights", "label": "Insights"},
+    {"key": "contato", "label": "Contato"}
 ]
 
 # Sidebar Navigation - Uses unique keys per page context
@@ -2556,6 +2556,28 @@ def render_sidebar_navigation():
             [data-testid="collapsedControl"]:hover {
                 background-color: #1a8ba6 !important;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+            }
+            /* Hide ALL Material Icon text fallback everywhere */
+            [data-testid="stIconMaterial"] {
+                font-size: 0 !important;
+                line-height: 0 !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                display: none !important;
+            }
+            /* Also target the expand sidebar button specifically */
+            [data-testid="stExpandSidebarButton"] span,
+            [data-testid="stBaseButton-headerNoPadding"] span[data-testid="stIconMaterial"],
+            button[aria-label*="sidebar"] span[data-testid="stIconMaterial"] {
+                display: none !important;
+            }
+            /* Hide any material icon span that renders text */
+            span.material-symbols-rounded,
+            span.material-symbols-outlined,
+            span[class*="material"] {
+                font-size: 0 !important;
+                display: none !important;
             }
             /* Also style any header buttons */
             button[kind="header"] {
@@ -2703,18 +2725,17 @@ def render_sidebar_navigation():
         if st.session_state.authenticated:
             st.markdown('<div class="nav-section-label">Minha Area</div>', unsafe_allow_html=True)
             auth_menu = [
-                {"key": "Dashboard", "label": "Dashboard", "icon": "📊", "page": "Dashboard"},
-                {"key": "LPTest", "label": "LPTest", "icon": "🧠", "page": "LPTest"},
-                {"key": "LPChat", "label": "LPChat", "icon": "💬", "page": "LPChat"},
-                {"key": "Equipe", "label": "Gestao de Equipe", "icon": "👥", "page": "TeamManagement"},
-                {"key": "Curso", "label": "Curso LPS", "icon": "📚", "page": "LPS Curso"},
+                {"key": "Dashboard", "label": "Dashboard", "page": "Dashboard"},
+                {"key": "LPTest", "label": "LPTest", "page": "LPTest"},
+                {"key": "LPChat", "label": "LPChat", "page": "LPChat"},
+                {"key": "Equipe", "label": "Gestao de Equipe", "page": "TeamManagement"},
+                {"key": "Curso", "label": "Curso LPS", "page": "LPS Curso"},
             ]
             if is_user_admin(st.session_state.user['id']):
-                auth_menu.append({"key": "GestaoLPS", "label": "Gestao LPS", "icon": "⚙️", "page": "GestaoLPS"})
+                auth_menu.append({"key": "GestaoLPS", "label": "Gestao LPS", "page": "GestaoLPS"})
             for item in auth_menu:
                 is_active = (st.session_state.page == item["page"])
-                btn_label = f"{item['icon']}   {item['label']}"
-                if st.button(btn_label, key=f"{key_prefix}auth_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
+                if st.button(item['label'], key=f"{key_prefix}auth_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
                     st.session_state.page = item["page"]
                     st.rerun()
             
@@ -2723,8 +2744,7 @@ def render_sidebar_navigation():
             public_items = [i for i in MENU_SECTIONS if i["key"] in ("home", "sobre", "contato")]
             for item in public_items:
                 is_active = (st.session_state.section == item["key"] and st.session_state.page == "Home")
-                btn_label = f"{item['icon']}   {item['label']}"
-                if st.button(btn_label, key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
+                if st.button(item['label'], key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
                     st.session_state.section = item["key"]
                     st.session_state.page = "Home"
                     st.session_state.show_login_modal = False
@@ -2733,8 +2753,7 @@ def render_sidebar_navigation():
             current = st.session_state.section
             for item in MENU_SECTIONS:
                 is_active = (current == item["key"])
-                btn_label = f"{item['icon']}   {item['label']}"
-                if st.button(btn_label, key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
+                if st.button(item['label'], key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
                     st.session_state.section = item["key"]
                     st.session_state.show_login_modal = False
                     st.rerun()
@@ -2873,50 +2892,6 @@ def render_login_page():
         st.write("")
         if st.button("Voltar para Vitrine", key="back_to_vitrine", use_container_width=True):
             st.session_state.page = "Vitrine"
-            st.rerun()
-
-# Sidebar (only for authenticated managers, not employees via token)
-if st.session_state.authenticated and not is_employee_access:
-    with st.sidebar:
-        if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=120)
-        st.title("LPS Hub")
-        if st.session_state.user:
-            st.caption(f"Olá, {st.session_state.user['name']}")
-        st.write("---")
-        if st.button("🏠 Home", key="nav_home"):
-            st.session_state.page = "Home"
-            st.rerun()
-        if st.button("🎓 LPS Curso", key="nav_curso"):
-            st.session_state.page = "LPS Curso"
-            st.rerun()
-        if st.button("📝 LPTest", key="nav_test"):
-            st.session_state.page = "LPTest"
-            st.rerun()
-        if st.button("👥 Gestão de Equipe", key="nav_team"):
-            st.session_state.page = "TeamManagement"
-            st.rerun()
-        if st.button("💬 LPChat", key="nav_chat"):
-            st.session_state.page = "LPChat"
-            st.rerun()
-        if st.button("📅 Mentoria", key="nav_mentoria"):
-            st.session_state.page = "Mentoria"
-            st.rerun()
-        if st.button("👤 Sobre", key="nav_sobre"):
-            st.session_state.page = "Sobre"
-            st.rerun()
-        if st.button("📚 Guia e Suporte", key="nav_guia"):
-            st.session_state.page = "GuiaSuporte"
-            st.rerun()
-        st.write("---")
-        st.markdown(f'[💬 Suporte via WhatsApp]({WHATSAPP_URL})')
-        st.write("---")
-        if st.button("🚪 Sair", key="nav_logout"):
-            st.session_state.authenticated = False
-            st.session_state.user = None
-            st.session_state.manager_data = None
-            st.session_state.page = "Home"
-            st.session_state.section = "home"
             st.rerun()
 
 page = st.session_state.page
