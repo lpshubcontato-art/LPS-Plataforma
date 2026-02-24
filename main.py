@@ -1310,20 +1310,24 @@ def get_ai_insights(manager_id, user_id):
     return insights[:3]  # Return max 3 insights
 
 def get_app_url():
-    """Get the current app URL for generating employee links"""
+    """Get the current app URL for generating employee links (absolute URL)"""
     try:
-        # Try to get from environment or use a default pattern
         replit_url = os.environ.get('REPLIT_DEV_DOMAIN', '')
         if replit_url:
             return f"https://{replit_url}"
-        # Fallback for production
+        replit_deployment = os.environ.get('REPLIT_DEPLOYMENT_URL', '')
+        if replit_deployment:
+            return f"https://{replit_deployment}"
         replit_slug = os.environ.get('REPL_SLUG', '')
         replit_owner = os.environ.get('REPL_OWNER', '')
         if replit_slug and replit_owner:
             return f"https://{replit_slug}.{replit_owner}.repl.co"
+        hostname = os.environ.get('HOSTNAME', '')
+        if hostname:
+            return f"https://{hostname}"
     except:
         pass
-    return ""
+    return "https://lps-app.replit.app"
 
 # Estilização Customizada
 st.markdown("""
@@ -1499,28 +1503,6 @@ st.markdown("""
         line-height: 1.4;
     }
     
-    .whatsapp-float {
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        background-color: #25D366;
-        color: white;
-        border-radius: 50px;
-        padding: 15px 25px;
-        font-weight: bold;
-        text-decoration: none;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: transform 0.2s;
-    }
-    
-    .whatsapp-float:hover {
-        transform: scale(1.05);
-        color: white;
-    }
     
     .header-bar {
         background: linear-gradient(135deg, var(--primary-blue) 0%, #1a5490 100%);
@@ -2494,19 +2476,6 @@ if st.session_state.get('employee_token') and not st.session_state.get('authenti
     st.session_state.page = "EmployeeAssessment"
     is_employee_access = True
 
-# Floating WhatsApp Button (appears on all pages) - Black text for readability
-st.markdown(f'''
-    <style>
-    .whatsapp-float {{
-        color: #000000 !important;
-        font-weight: bold;
-    }}
-    </style>
-    <a href="{WHATSAPP_URL}" target="_blank" class="whatsapp-float" style="color: #000000 !important;">
-        <span style="font-size: 1.5rem;">💬</span>
-        Falar com Consultor
-    </a>
-''', unsafe_allow_html=True)
 
 # Navigation Menu Sections with Icons
 MENU_SECTIONS = [
@@ -2684,13 +2653,6 @@ def render_sidebar_navigation():
                 letter-spacing: 1px;
                 padding-left: 1.25rem;
                 margin-bottom: 0.75rem;
-            }
-            /* WhatsApp buttons - Black text */
-            .whatsapp-float {
-                color: #000000 !important;
-            }
-            a[href*="wa.me"], a[href*="whatsapp"] {
-                color: #000000 !important;
             }
             /* Ensure banner doesn't overlap toggle button */
             .main .block-container {
@@ -4556,11 +4518,10 @@ if page == "Home":
             </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("""
-            <div style="text-align: center; margin-top: 1rem;">
-                <a href="#" style="color: #666; text-decoration: underline; font-size: 0.9rem;">Privacidade e Termos</a>
-            </div>
-        """, unsafe_allow_html=True)
+        if st.button("VOLTAR PARA HOME", key="footer_back_home_sobre", use_container_width=True):
+            st.session_state.section = "home"
+            st.session_state.page = "Home"
+            st.rerun()
 
     
     # CURSO SECTION - Module Cards with Paywall
@@ -6264,7 +6225,7 @@ FORMATO DE RESPOSTA:
                             chat_history += f"{role}: {msg['content']}\n\n"
                         
                         response = client.models.generate_content(
-                            model="gemini-1.5-flash",
+                            model="gemini-2.0-flash",
                             contents=chat_history
                         )
                         
@@ -6419,11 +6380,10 @@ elif page == "Sobre":
         </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("""
-        <div style="text-align: center; margin-top: 1rem;">
-            <a href="#" style="color: #666; text-decoration: underline; font-size: 0.9rem;">Privacidade e Termos</a>
-        </div>
-    """, unsafe_allow_html=True)
+    if st.button("VOLTAR PARA HOME", key="footer_back_home_contato", use_container_width=True):
+        st.session_state.section = "home"
+        st.session_state.page = "Home"
+        st.rerun()
 
 elif page == "GestaoLPS":
     if not st.session_state.authenticated:
@@ -6516,18 +6476,12 @@ elif page == "GestaoLPS":
             if st.session_state.get('last_generated_invite'):
                 token = st.session_state['last_generated_invite']
                 inv_type = st.session_state.get('last_invite_type', 'equipe')
-                try:
-                    base_url = st.query_params.get("base_url", "")
-                    if not base_url:
-                        import urllib.parse
-                        base_url = ""
-                except:
-                    base_url = ""
+                base_url = get_app_url()
                 
                 tipo_label = "Equipe" if inv_type == "equipe" else "Lider"
-                full_link = f"/?tipo={inv_type}&ref={token}"
+                full_link = f"{base_url}/?tipo={inv_type}&ref={token}"
                 st.success(f"Link de Convite {tipo_label} gerado com sucesso!")
-                st.markdown(f"<div class='invite-link-box'>{full_link}</div>", unsafe_allow_html=True)
+                st.code(full_link, language=None)
                 st.caption("Copie e envie este link para o convidado. Ele abrira a plataforma no teste correto.")
             
             st.markdown("</div>", unsafe_allow_html=True)
@@ -6604,7 +6558,7 @@ elif page == "GestaoLPS":
                     status_label = "Concluido" if au_status == "concluido" else ("Em Andamento" if au_status == "em_andamento" else "Pendente")
                     type_label = "Equipe" if au_type == "equipe" else "Lider"
                     
-                    col_info, col_action = st.columns([5, 1])
+                    col_info, col_send, col_action = st.columns([4, 1, 1])
                     with col_info:
                         st.markdown(f"""
                             <div class='auth-user-row'>
@@ -6619,6 +6573,17 @@ elif page == "GestaoLPS":
                                 </div>
                             </div>
                         """, unsafe_allow_html=True)
+                    with col_send:
+                        if au_status != "concluido":
+                            if st.button("Enviar Teste", key=f"send_test_{au_id}", type="primary"):
+                                invite_token = create_invite_link(au_type, user_id)
+                                invite_base = get_app_url()
+                                invite_full = f"{invite_base}/?tipo={au_type}&ref={invite_token}"
+                                st.session_state[f"invite_link_{au_id}"] = invite_full
+                                st.rerun()
+                            if st.session_state.get(f"invite_link_{au_id}"):
+                                st.code(st.session_state[f"invite_link_{au_id}"], language=None)
+                                st.caption(f"Copie e envie para {au_email}")
                     with col_action:
                         if au_status != "concluido":
                             if st.button("Remover", key=f"remove_auth_{au_id}", type="secondary"):
@@ -7164,9 +7129,7 @@ if not is_employee_access:
         </div>
     """, unsafe_allow_html=True)
     
-    # Privacy link button
-    col_footer = st.columns([3, 1, 3])
-    with col_footer[1]:
-        if st.button("Privacidade e Termos", key="footer-privacy-link", use_container_width=True):
-            st.session_state.page = "Privacy"
-            st.rerun()
+    if st.button("VOLTAR PARA HOME", key="footer_back_home_global", use_container_width=True):
+        st.session_state.section = "home"
+        st.session_state.page = "Home"
+        st.rerun()
