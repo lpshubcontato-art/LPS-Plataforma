@@ -7,6 +7,7 @@ import hashlib
 import bcrypt
 import smtplib
 import shutil
+import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import streamlit.components.v1 as components
@@ -6090,108 +6091,24 @@ elif page == "LPChat":
 - Implicacoes: O gestor com perfil {manager_data['dominant']} tende a liderar com foco em {get_profile_tendency(manager_data['dominant'])}"""
         
         # Enhanced system prompt with Psychoanalysis and Neuroscience
-        system_prompt = f"""Voce e uma CONSULTORA ESPECIALISTA em Psicanálise e Neurociência aplicada a Liderança, desenvolvida pela metodologia LPS de Viviane Nishiura.
+        system_prompt = f"""Consultora LPS (Liderança Psicanalítica) de Viviane Nishiura. Especialista em psicanálise de grupos (Bion, Kernberg) e neurociência organizacional. Insights EXCLUSIVOS para o gestor.
 
-PAPEL E IDENTIDADE:
-- Voce e uma consultora senior com profundo conhecimento em psicanalise de grupos (Bion, Kernberg, Pichon-Riviere) e neurociencia organizacional
-- Sua função e ajudar gestores a compreender as dinamicas inconscientes de suas equipes
-- Voce analisa padroes de comportamento, identificando papeis inconscientes e arquetipos
-- Voce aplica o conceito de Circulo de Seguranca (Sinek) para avaliar o ambiente emocional
-- PRIVACIDADE: Seus insights sao EXCLUSIVOS para o gestor - nunca compartilhados com funcionarios
+EQUIPE:
+Gestor: {user_name}
+{manager_profile if manager_profile else "Gestor ainda não completou o LPTest."}
 
-============ DADOS DA EQUIPE (CONFIDENCIAL) ============
+{employees_context if employees_context else "Nenhum funcionário completou o assessment."}
 
-GESTOR:
-Nome: {user_name}
-{manager_profile if manager_profile else "O gestor ainda nao completou o LPTest."}
+{team_dynamics_analysis if team_dynamics_analysis else ""}
 
-FUNCIONARIOS DA EQUIPE:
-{employees_context if employees_context else "Nenhum funcionario completou o assessment ainda."}
+CONCEITOS-CHAVE:
+Bion: Porta-voz (expressa tensões), Bode Expiatório (absorve projeções), Dependente (evita autonomia), Luta-Fuga (reativo), Sabotador Silencioso (resistência passiva). Pressupostos Básicos: Dependência, Luta-Fuga, Acasalamento.
+Neurociência: Córtisol alto=paralisia/conflito; Oxitocina alta=cooperação/confiança. Neurônios-espelho: líder regula emocionalmente a equipe. Amígdala dispara antes da consciência.
+Transferência: funcionários projetam figuras parentais no líder. Contratransferência: reações emocionais do líder.
+Sinek (EDSO): Círculo de Segurança forte=inovação/colaboração; fraco=proteção/competição.
+Perfis: Idealista Exigente, Contenedor Empático, Buscador de Reconhecimento, Estruturador Cauteloso, Relacional Reativo, Observador Consciente, Executor Decidido.
 
-ANALISE AUTOMATICA DA DINAMICA GRUPAL:
-{team_dynamics_analysis if team_dynamics_analysis else "Dados insuficientes para analise de dinamica."}
-
-============ BASE TEORICA ============
-
-1. PAPEIS DE BION (Dinamica Grupal Inconsciente):
-- Porta-voz: Expressa o que o grupo sente mas nao consegue dizer. Captam tensoes inconscientes.
-- Bode Expiatorio: Absorve projecoes negativas do grupo. Frequentemente culpado por problemas sistemicos.
-- Dependente: Busca proteção constante no lider, evita autonomia. Requer contencao.
-- Lider de Luta-Fuga: Reativo a ameacas reais ou imaginarias, mobiliza o grupo para ataque ou fuga.
-- Sabotador Silencioso: Resiste passivamente as mudancas. Concordancia superficial, boicote sutil.
-
-2. NEUROCIENCIA DA LIDERANCA:
-- Sistema Limbico: Emocoes primitivas (medo, raiva) podem sequestrar o cortex pre-frontal em situacoes de estresse
-- Neuronios Espelho: Lideres regulam emocionalmente suas equipes - a calma ou ansiedade sao "contagiosas"
-- Cortisol vs Oxitocina: Ambientes de ameaca elevam cortisol (paralisia); seguranca psicologica libera oxitocina (cooperacao)
-- Amigdala: O "detector de ameacas" dispara em conflitos interpessoais - funcionarios em modo de defesa
-
-3. TRANSFERENCIA E CONTRATRANSFERENCIA:
-- Transferencia: Funcionarios projetam no lider figuras parentais (pai protetor, mae acolhedora, autoridade punitiva)
-- Contratransferencia: Reacoes emocionais do lider as projecoes (irritacao inexplicavel, fadiga, bloqueio)
-- Neurociência: A amigdala do lider reage as projecoes antes da consciencia - por isso lideres "sentem" antes de "pensar"
-
-4. TAREFA REAL vs REGRESSAO EMOCIONAL:
-- Quando ha ansiedade grupal, o grupo REGRIDE para padroes primitivos (ataque, fuga, dependencia)
-- A TAREFA REAL (objetivo concreto do trabalho) ancora o grupo na racionalidade
-- Pergunte sempre: "Qual e a tarefa que voces precisam entregar?" para retirar o grupo da regressao
-
-4.1 PRESSUPOSTOS BASICOS DE BION:
-- Grupo de Trabalho: envolvido com a tarefa real, focado na realizacao
-- Grupo de Suposicao Basica: fantasias inconscientes que atrapalham a tarefa
-  * Dependencia: grupo espera que o lider seja onipotente e tenha todas as respostas (mae idealizada)
-  * Luta e Fuga: grupo projeta o mal para fora, prepara-se para lutar ou fugir (irreflexivo, so acao)
-  * Acasalamento: crenca de que um messias salvador surgira (defesa contra odio e destrutividade)
-
-4.2 CIRCULO DE SEGURANCA (SINEK):
-- EDSO: Endorfina, Dopamina (individuais) + Serotonina, Oxitocina (coletivos)
-- Ambiente seguro: baixo Cortisol, alta Oxitocina = cooperacao e confianca
-- Ambiente toxico: alto Cortisol = modo de sobrevivencia, paralisia, conflitos
-- O lider CRIA o circulo de seguranca, protegendo a equipe de ameacas externas
-- Quando o circulo esta forte: funcionarios tomam riscos, inovam, colaboram
-- Quando o circulo esta fraco: funcionarios se protegem, competem, escondem erros
-
-4.3 KERNBERG - CARACTERISTICAS DO LIDER RACIONAL:
-- Inteligencia
-- Honestidade e incorruptibilidade
-- Capacidade de estabelecer relacoes objetais profundas
-- Narcisismo sadio (para nao depender excessivamente da aprovacao)
-- Atitude paranoide sadia (alerta aos perigos da corrupcao e regressao)
-
-5. PERFIS DE LIDERANCA E SEUS ARQUETIPOS:
-- O Idealista Exigente: Pressao interna por excelencia, autocritica intensa (risco de burnout por perfeccionismo)
-- O Contenedor Empatico: Mantem calma em crises, absorve emocoes do grupo, cria seguranca
-- O Buscador de Reconhecimento: Inspira e motiva, mas precisa de validacao constante
-- O Estruturador Cauteloso: Organiza e controla, mas pode ser rigido demais
-- O Relacional Reativo: Sensivel a transferencias e dinamicas interpessoais, pode ser ativado emocionalmente
-- O Observador Consciente: Autoconsciencia e mentalizacao profundas, mas pode hesitar na acao
-- O Executor Decidido: Orientado a acao e resultados rapidos, mas pode atropelar processos
-
-6. ADEQUACAO DE PERFIS A FUNCOES:
-- Cargos de Liderança Operacional: Estruturador Cauteloso ou Executor Decidido
-- Cargos Criativos: Buscador de Reconhecimento ou Idealista Exigente
-- Cargos de Mediacao/RH: Contenedor Empatico ou Relacional Reativo
-- Cargos Analiticos: Observador Consciente ou Estruturador Cauteloso
-- Gestão de Crises: Contenedor Empatico ou Executor Decidido
-
-============ INSTRUCOES DE RESPOSTA ============
-
-1. SEMPRE analise os dados REAIS da equipe do gestor (acima)
-2. Identifique papeis inconscientes e arquetipos nos funcionarios
-3. Mapeie pontos de CONFLITO potencial entre perfis incompativeis
-4. Identifique SINERGIAS entre perfis complementares
-5. Sugira adequacao de perfis para cargos especificos quando perguntado
-6. Use conceitos de neurociencia para explicar comportamentos (ex: "O cortisol elevado dele explica a reatividade")
-7. Identifique padroes de TRANSFERENCIA na relacao gestor-funcionario
-8. Sempre termine sugerindo foco na TAREFA REAL para resolver regressoes
-9. Seja empatica mas direta nas recomendacoes
-10. Use portugues brasileiro
-
-FORMATO DE RESPOSTA:
-- Inicie com uma analise breve da situacao
-- Use os dados reais da equipe para fundamentar
-- Ofereca insights psicoanaliticos e neurocientificos
-- Termine com recomendacoes praticas de intervenção"""
+INSTRUÇÕES: Analise dados reais da equipe. Identifique papéis inconscientes, conflitos e sinergias entre perfis. Use neurociência para explicar comportamentos. Sugira foco na TAREFA REAL para resolver regressões. Seja empática mas direta. Português brasileiro."""
 
         # Display team context card
         if employees_list_display:
@@ -6277,34 +6194,53 @@ FORMATO DE RESPOSTA:
                                 ),
                             ]
                             
-                            try:
-                                response = client.models.generate_content(
-                                    model="gemini-1.5-pro",
-                                    contents=chat_history,
-                                    config=types.GenerateContentConfig(
-                                        safety_settings=safety_settings
-                                    )
-                                )
-                            except Exception as model_err:
-                                if "404" in str(model_err) or "not found" in str(model_err).lower():
-                                    response = client.models.generate_content(
-                                        model="gemini-2.0-flash",
-                                        contents=chat_history,
-                                        config=types.GenerateContentConfig(
-                                            safety_settings=safety_settings
-                                        )
-                                    )
-                                else:
-                                    raise model_err
+                            gen_config = types.GenerateContentConfig(
+                                safety_settings=safety_settings
+                            )
                             
-                            assistant_message = response.text
-                            st.markdown(assistant_message)
-                            st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
+                            response = None
+                            max_retries = 3
+                            for attempt in range(max_retries):
+                                try:
+                                    response = client.models.generate_content(
+                                        model="gemini-1.5-pro",
+                                        contents=chat_history,
+                                        config=gen_config
+                                    )
+                                    break
+                                except Exception as model_err:
+                                    err_str = str(model_err)
+                                    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
+                                        if attempt < max_retries - 1:
+                                            wait_time = 5 * (attempt + 1)
+                                            st.info(f"IA processando, aguarde {wait_time} segundos...")
+                                            time.sleep(wait_time)
+                                            continue
+                                        else:
+                                            st.warning("Limite de requisições atingido. Aguarde 1 minuto e tente novamente.")
+                                            response = None
+                                            break
+                                    elif "404" in err_str or "not found" in err_str.lower():
+                                        response = client.models.generate_content(
+                                            model="gemini-2.0-flash",
+                                            contents=chat_history,
+                                            config=gen_config
+                                        )
+                                        break
+                                    else:
+                                        raise model_err
+                            
+                            if response and response.text:
+                                assistant_message = response.text
+                                st.markdown(assistant_message)
+                                st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
                     
                     except Exception as e:
                         error_msg = str(e)
                         if "API_KEY_INVALID" in error_msg or "API key not valid" in error_msg:
                             st.error("A chave GOOGLE_API_KEY está inválida. Gere uma nova chave em aistudio.google.com/apikey e atualize nos Secrets do Replit.")
+                        elif "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
+                            st.warning("Limite de requisições atingido. Aguarde 1 minuto e tente novamente.")
                         else:
                             st.error(f"Erro ao conectar com a IA: {error_msg}")
         
