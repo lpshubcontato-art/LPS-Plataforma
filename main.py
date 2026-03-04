@@ -1310,24 +1310,18 @@ def get_ai_insights(manager_id, user_id):
     return insights[:3]  # Return max 3 insights
 
 def get_app_url():
-    """Get the current app URL for generating employee links (absolute URL)"""
-    try:
-        replit_url = os.environ.get('REPLIT_DEV_DOMAIN', '')
-        if replit_url:
-            return f"https://{replit_url}"
-        replit_deployment = os.environ.get('REPLIT_DEPLOYMENT_URL', '')
-        if replit_deployment:
-            return f"https://{replit_deployment}"
-        replit_slug = os.environ.get('REPL_SLUG', '')
-        replit_owner = os.environ.get('REPL_OWNER', '')
-        if replit_slug and replit_owner:
-            return f"https://{replit_slug}.{replit_owner}.repl.co"
-        hostname = os.environ.get('HOSTNAME', '')
-        if hostname:
-            return f"https://{hostname}"
-    except:
-        pass
-    return "https://lps-app.replit.app"
+    """Get the absolute base URL of this Replit app"""
+    domain = os.environ.get('REPLIT_DEV_DOMAIN', '')
+    if domain:
+        return f"https://{domain}"
+    deploy_url = os.environ.get('REPLIT_DEPLOYMENT_URL', '')
+    if deploy_url:
+        return deploy_url if deploy_url.startswith('https://') else f"https://{deploy_url}"
+    slug = os.environ.get('REPL_SLUG', '')
+    owner = os.environ.get('REPL_OWNER', '')
+    if slug and owner:
+        return f"https://{slug}-{owner}.replit.app"
+    return ""
 
 # Estilização Customizada
 st.markdown("""
@@ -5396,7 +5390,7 @@ elif page == "TeamManagement":
                     with col:
                         slot = i + 1
                         token = generate_employee_link(manager_id, slot)
-                        full_link = f"{base_url}?token={token}" if base_url else f"?token={token}"
+                        full_link = f"{base_url}/?token={token}"
                         
                         slot_employee = next((e for e in employees if e[3] == slot), None)
                         
@@ -5405,11 +5399,11 @@ elif page == "TeamManagement":
                             st.success("Concluido")
                         else:
                             st.markdown(f"**Funcionario {slot}**")
-                            st.code(full_link, language=None)
+                            st.text_input("Link", value=full_link, key=f"team_link_{slot}", disabled=False, label_visibility="collapsed")
                             if slot_employee:
                                 st.caption("Aguardando resposta")
                             else:
-                                st.caption("Copie e envie")
+                                st.caption("Selecione e copie")
         
         with tab_resultados:
             st.subheader("Resultados da Equipe")
@@ -6217,26 +6211,39 @@ FORMATO DE RESPOSTA:
             with st.chat_message("assistant"):
                 with st.spinner("Analisando dinamicas da equipe..."):
                     try:
-                        client = genai.Client(api_key=get_secret("GOOGLE_API_KEY", ""))
-                        
-                        chat_history = f"{system_prompt}\n\n"
-                        for msg in st.session_state.chat_messages:
-                            role = "Gestor" if msg["role"] == "user" else "Consultora LPS"
-                            chat_history += f"{role}: {msg['content']}\n\n"
-                        
-                        response = client.models.generate_content(
-                            model="gemini-2.0-flash",
-                            contents=chat_history
-                        )
-                        
-                        assistant_message = response.text
-                        st.markdown(assistant_message)
-                        st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
+                        api_key = get_secret("GOOGLE_API_KEY", "")
+                        if not api_key or len(api_key) < 10:
+                            st.error("A chave GOOGLE_API_KEY nos Secrets esta invalida ou nao configurada. Acesse os Secrets do Replit e insira uma chave valida do Google AI Studio (aistudio.google.com/apikey).")
+                        else:
+                            client = genai.Client(api_key=api_key)
+                            
+                            chat_history = f"{system_prompt}\n\n"
+                            for msg in st.session_state.chat_messages:
+                                role = "Gestor" if msg["role"] == "user" else "Consultora LPS"
+                                chat_history += f"{role}: {msg['content']}\n\n"
+                            
+                            try:
+                                response = client.models.generate_content(
+                                    model="gemini-1.5-flash",
+                                    contents=chat_history
+                                )
+                            except Exception as model_err:
+                                if "404" in str(model_err) or "not found" in str(model_err).lower():
+                                    response = client.models.generate_content(
+                                        model="gemini-2.0-flash",
+                                        contents=chat_history
+                                    )
+                                else:
+                                    raise model_err
+                            
+                            assistant_message = response.text
+                            st.markdown(assistant_message)
+                            st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
                     
                     except Exception as e:
                         error_msg = str(e)
-                        if "GOOGLE_API_KEY" in error_msg or "API key" in error_msg.lower():
-                            st.error("Chave da API do Google Gemini nao configurada. Configure GOOGLE_API_KEY nos secrets.")
+                        if "API_KEY_INVALID" in error_msg or "API key not valid" in error_msg:
+                            st.error("A chave GOOGLE_API_KEY esta invalida. Gere uma nova chave em aistudio.google.com/apikey e atualize nos Secrets do Replit.")
                         else:
                             st.error(f"Erro ao conectar com a IA: {error_msg}")
         
@@ -6481,8 +6488,8 @@ elif page == "GestaoLPS":
                 tipo_label = "Equipe" if inv_type == "equipe" else "Lider"
                 full_link = f"{base_url}/?tipo={inv_type}&ref={token}"
                 st.success(f"Link de Convite {tipo_label} gerado com sucesso!")
-                st.code(full_link, language=None)
-                st.caption("Copie e envie este link para o convidado. Ele abrira a plataforma no teste correto.")
+                st.text_input("Link para copiar:", value=full_link, key="gestao_generated_link", disabled=False)
+                st.caption("Selecione o link acima e copie. Envie para o convidado.")
             
             st.markdown("</div>", unsafe_allow_html=True)
             
@@ -6580,9 +6587,8 @@ elif page == "GestaoLPS":
                                 invite_base = get_app_url()
                                 invite_full = f"{invite_base}/?tipo={au_type}&ref={invite_token}"
                                 st.session_state[f"invite_link_{au_id}"] = invite_full
-                                st.rerun()
                             if st.session_state.get(f"invite_link_{au_id}"):
-                                st.code(st.session_state[f"invite_link_{au_id}"], language=None)
+                                st.text_input("Link", value=st.session_state[f"invite_link_{au_id}"], key=f"link_display_{au_id}", disabled=False, label_visibility="collapsed")
                                 st.caption(f"Copie e envie para {au_email}")
                     with col_action:
                         if au_status != "concluido":
