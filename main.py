@@ -55,7 +55,7 @@ def get_smtp_config():
             'port': int(get_secret("SMTP_PORT", "587")),
             'user': get_secret("SMTP_USER", ""),
             'password': get_secret("SMTP_PASSWORD", ""),
-            'from_name': get_secret("SMTP_FROM_NAME", "Lideranca Psicanalitica"),
+            'from_name': get_secret("SMTP_FROM_NAME", "Liderança Psicanalítica"),
             'from_email': get_secret("SMTP_FROM_EMAIL", "")
         }
     except:
@@ -98,7 +98,7 @@ def send_email(to_email, subject, html_content):
 
 def send_employee_result_email(employee_name, employee_email, dominant_profile, secondary_profile, bion_role, manager_name):
     """Send assessment result to employee"""
-    subject = "Seu Perfil LPS: Insights sobre sua Lideranca e Comportamento"
+    subject = "Seu Perfil LPS: Insights sobre sua Liderança e Comportamento"
     
     result_text = f"{dominant_profile} + {secondary_profile} ({bion_role})"
     
@@ -122,7 +122,7 @@ def send_employee_result_email(employee_name, employee_email, dominant_profile, 
     <body>
         <div class="container">
             <div class="header">
-                <h1>Lideranca Psicanalitica</h1>
+                <h1>Liderança Psicanalítica</h1>
                 <p>Seu Perfil LPS</p>
             </div>
             <div class="content">
@@ -130,14 +130,14 @@ def send_employee_result_email(employee_name, employee_email, dominant_profile, 
                 
                 <p>Voce acaba de concluir o LPTest, uma etapa fundamental na sua jornada de desenvolvimento dentro da Plataforma LPS.</p>
                 
-                <p>A analise do seu perfil combina os fundamentos da Psicanalise com as descobertas da Neurociencia para mapear nao apenas suas habilidades tecnicas, mas as forcas invisiveis e os mecanismos de defesa que moldam como voce se relaciona com sua equipe e seus lideres.</p>
+                <p>A analise do seu perfil combina os fundamentos da Psicanálise com as descobertas da Neurociência para mapear nao apenas suas habilidades tecnicas, mas as forcas invisiveis e os mecanismos de defesa que moldam como voce se relaciona com sua equipe e seus lideres.</p>
                 
                 <div class="result-box">
                     <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: #ccc;">Seu Resultado Principal:</p>
                     <h2>{result_text}</h2>
                 </div>
                 
-                <p>Compreender o funcionamento do seu "eu" profissional e o primeiro passo para uma lideranca consciente e um ambiente psicologicamente seguro.</p>
+                <p>Compreender o funcionamento do seu "eu" profissional e o primeiro passo para uma liderança consciente e um ambiente psicologicamente seguro.</p>
                 
                 <p>O seu gestor ja recebeu o mapeamento completo e, em breve, voces poderao discutir estrategias de alocacao e desenvolvimento baseadas nesses dados estrategicos.</p>
                 
@@ -147,7 +147,7 @@ def send_employee_result_email(employee_name, employee_email, dominant_profile, 
             </div>
             <div class="footer">
                 <p>Este e um e-mail automatico da Plataforma LPS.</p>
-                <p>Lideranca Psicanalitica - Transformando gestores em lideres conscientes.</p>
+                <p>Liderança Psicanalítica - Transformando gestores em lideres conscientes.</p>
             </div>
         </div>
     </body>
@@ -266,7 +266,7 @@ def send_welcome_email(user_email, user_name, password):
                 
                 <div class="features">
                     <h4 style="margin-top: 0; color: #18738c;">O que você terá acesso:</h4>
-                    <div class="feature-item">Curso completo com 8 modulos de Lideranca Psicanalitica</div>
+                    <div class="feature-item">Curso completo com 8 módulos de Liderança Psicanalítica</div>
                     <div class="feature-item">LPTest - Assessment de perfil de liderança</div>
                     <div class="feature-item">Gestão de Equipe - Mapeie até 4 colaboradores</div>
                     <div class="feature-item">LPChat - Consultor de IA especializado</div>
@@ -1855,7 +1855,7 @@ EMPLOYEE_ASSESSMENT_QUESTIONS = {
         "Busco oportunidades para apresentar ideias ou liderar iniciativas que me coloquem em evidencia.",
         "Sinto-me motivado(a) por elogios e pela admiracao dos meus colegas e superiores.",
         "Comparo meu desempenho com o dos outros e me esforco para ser um dos melhores da equipe.",
-        "Fico desapontado(a) ou ressentido(a) quando sinto que meu trabalho nao recebe a atencao que merece.",
+        "Fico desapontado(a) ou ressentido(a) quando sinto que meu trabalho nao recebe a atenção que merece.",
         "Tenho facilidade em 'vender' minhas ideias e influenciar a opiniao do grupo a meu favor.",
         "As vezes, posso exagerar um pouco minhas conquistas para causar uma boa impressao.",
         "A ideia de passar despercebido(a) ou ser apenas 'mais um' no grupo me incomoda.",
@@ -1912,7 +1912,7 @@ EMPLOYEE_ASSESSMENT_QUESTIONS = {
         "Sinto-me mais motivado(a) quando tenho autonomia total para decidir o como da execucao.",
         "Tenho facilidade em tomar decisoes rapidas, mesmo com informacoes incompletas.",
         "Em uma crise, meu foco principal e resolver o problema e garantir o resultado, deixando as emocoes para depois.",
-        "Sou visto(a) como alguem assertivo(a) e direto(a) na comunicacao, sem rodeios.",
+        "Sou visto(a) como alguem assertivo(a) e direto(a) na comunicação, sem rodeios.",
         "A lentidao ou a passividade de um colega me irritam profundamente e me fazem querer agir por ele.",
         "Priorizo o resultado final e o cumprimento da meta acima de quaisquer burocracias ou detalhes.",
         "Nao tenho medo de confrontar um problema ou uma pessoa se isso for necessario para alcancar o objetivo.",
@@ -2013,7 +2013,7 @@ def classify_bion_role(block_sums):
     Classifica o papel grupal segundo Bion (max 40 pontos por bloco, 8 questoes x 5):
     - Porta-voz: Alta Autoridade + Alta Observacao (expressa o que o grupo sente)
     - Bode Expiatorio: Alto Relacional + Baixa Contencao (absorve projecoes negativas)
-    - Dependente: Alta Contencao + Baixa Autoridade (busca protecao no lider)
+    - Dependente: Alta Contencao + Baixa Autoridade (busca proteção no lider)
     - Lider de Luta-Fuga: Alto Narcisismo + Alta Execucao (reativo a ameacas)
     - Sabotador Silencioso: Alta Estrutura + Baixa Observacao (resiste passivamente)
     - Harmonizador Ansioso: Alto Relacional + Alta Contencao (evita conflitos a todo custo)
@@ -2047,7 +2047,7 @@ def classify_bion_role(block_sums):
 BION_DESCRIPTIONS = {
     "Porta-voz": "Expressa verbalmente o que o grupo sente mas nao consegue dizer. Canaliza tensoes coletivas.",
     "Bode Expiatorio": "Absorve projecoes negativas do grupo. Frequentemente culpado por falhas sistemicas.",
-    "Dependente": "Busca protecao e direcao no lider. Evita autonomia e delega responsabilidade emocional.",
+    "Dependente": "Busca proteção e direcao no lider. Evita autonomia e delega responsabilidade emocional.",
     "Lider de Luta-Fuga": "Reativo a ameacas reais ou imaginarias. Mobiliza o grupo para atacar ou fugir.",
     "Sabotador Silencioso": "Resiste passivamente as mudancas. Cumpre tarefas sem engajamento emocional.",
     "Harmonizador Ansioso": "Evita conflitos a todo custo. Busca manter harmonia mesmo sacrificando a autenticidade.",
@@ -2110,7 +2110,7 @@ PROFILES_DB = {
             "recomendacoes": "Acao: Diferencie entre buscar excelencia por valores internos e buscar aprovacao externa, priorizando o primeiro. Acao: Pratique reconhecer publicamente as contribuicoes dos outros, fortalecendo a equipe e sua propria lideranca. Acao: Desenvolva fontes internas de validacao para reduzir a dependencia de aplausos externos."
         },
         "O Estruturador Cauteloso": {
-            "forcas": "Forca: Combina altos padroes de qualidade com planejamento meticuloso e organizacao impecavel. Forca: Cria sistemas e processos que sustentam a excelencia de forma consistente e previsivel. Forca: A atencao ao detalhe do estruturador potencializa a busca por perfeicao do idealista.",
+            "forcas": "Forca: Combina altos padroes de qualidade com planejamento meticuloso e organizacao impecavel. Forca: Cria sistemas e processos que sustentam a excelencia de forma consistente e previsivel. Forca: A atenção ao detalhe do estruturador potencializa a busca por perfeicao do idealista.",
             "riscos": "Risco: Pode criar ambientes rigidos demais onde a busca por perfeicao se transforma em burocracia paralisante. Risco: Tende a microgerenciar obsessivamente cada etapa, gerando lentidao e desmotivacao na equipe. Risco: A combinacao de perfeccionismo com necessidade de controle pode impedir a inovacao e a adaptacao.",
             "recomendacoes": "Acao: Defina quais processos realmente precisam de controle rigoroso e quais podem ser mais flexiveis. Acao: Aceite que nem tudo precisa ser perfeito e estruturado ao mesmo tempo, priorizando o que gera mais impacto. Acao: Delegue etapas do processo confiando na competencia da equipe, mesmo que o resultado nao seja identico ao seu padrao."
         },
@@ -2157,7 +2157,7 @@ PROFILES_DB = {
             "recomendacoes": "Acao: Permita-se sentir e acolher antes de analisar, usando a reflexao como complemento e nao substituto da empatia. Acao: Use a autoconsciencia para identificar quando esta se distanciando emocionalmente e reconecte-se. Acao: Confie na sua intuicao emocional tanto quanto na sua capacidade analitica."
         },
         "O Executor Decidido": {
-            "forcas": "Forca: A decisividade permite agir rapidamente quando a equipe precisa de intervencao emocional urgente. Forca: Combina cuidado com pragmatismo, oferecendo suporte que resulta em acoes concretas. Forca: A orientacao para acao impede que o acolhimento emocional se torne passividade ou estagnacao.",
+            "forcas": "Forca: A decisividade permite agir rapidamente quando a equipe precisa de intervenção emocional urgente. Forca: Combina cuidado com pragmatismo, oferecendo suporte que resulta em acoes concretas. Forca: A orientacao para acao impede que o acolhimento emocional se torne passividade ou estagnacao.",
             "riscos": "Risco: Pode atropelar processos emocionais do grupo por impaciencia, querendo resolver sentimentos como se fossem problemas tecnicos. Risco: Tende a oferecer solucoes rapidas quando as pessoas precisam apenas ser ouvidas. Risco: A urgencia de agir pode criar a impressao de que emocoes sao obstaculos a serem eliminados.",
             "recomendacoes": "Acao: Pratique a escuta ativa sem necessidade de resolver imediatamente, reconhecendo que processar emocoes leva tempo. Acao: Diferencie entre situacoes que exigem acao rapida e aquelas que precisam de espaco emocional. Acao: Use sua energia de execucao para criar estruturas de apoio duradouras, nao apenas intervencoes pontuais."
         }
@@ -2206,7 +2206,7 @@ PROFILES_DB = {
             "recomendacoes": "Acao: Reconheca que emocoes nao seguem cronogramas e permita flexibilidade nos processos quando o momento emocional exigir. Acao: Use a estrutura para criar espacos seguros de dialogo, nao para controlar o que pode ser dito. Acao: Pratique estar presente emocionalmente mesmo quando a situacao foge dos seus planos."
         },
         "O Buscador de Reconhecimento": {
-            "forcas": "Forca: O carisma do buscador de reconhecimento torna os processos estruturados mais atrativos e faceis de adotar pela equipe. Forca: A necessidade de visibilidade motiva a criacao de sistemas que geram resultados mensuraveisos e celebraveis. Forca: A combinacao de organizacao com comunicacao carismatica fortalece a adesao da equipe a processos.",
+            "forcas": "Forca: O carisma do buscador de reconhecimento torna os processos estruturados mais atrativos e faceis de adotar pela equipe. Forca: A necessidade de visibilidade motiva a criacao de sistemas que geram resultados mensuraveisos e celebraveis. Forca: A combinacao de organizacao com comunicação carismatica fortalece a adesao da equipe a processos.",
             "riscos": "Risco: Pode criar processos elaborados mais para impressionar do que para resolver problemas reais. Risco: Tende a resistir a mudancas nos processos que nao foram propostas por si mesmo, protegendo a autoria. Risco: A necessidade de reconhecimento pode fazer com que os processos sirvam ao ego do lider em vez de servir a equipe.",
             "recomendacoes": "Acao: Avalie seus processos pela eficacia real e nao pela impressao que causam em superiores ou pares. Acao: Encoraje a equipe a melhorar processos e reconheca publicamente essas contribuicoes. Acao: Foque em criar sistemas que funcionem independentemente de quem receba o credito."
         },
@@ -2330,7 +2330,7 @@ MODULES_DATA = [
         "id": 0, 
         "name": "Introducao: A Jornada LPS", 
         "title": "A Jornada LPS", 
-        "description": "Apresentacao da metodologia, boas-vindas da Viviane Nishiura e o mapa da jornada entre Neurociencia e Psicanalise. Conheca o caminho que vai transformar sua lideranca.", 
+        "description": "Apresentacao da metodologia, boas-vindas da Viviane Nishiura e o mapa da jornada entre Neurociência e Psicanálise. Conheca o caminho que vai transformar sua lideranca.", 
         "icon": "🚀", 
         "file": "attached_assets/introdução_1768431876966.pdf", 
         "videos": [
@@ -2341,8 +2341,8 @@ MODULES_DATA = [
     },
     {
         "id": 1, 
-        "name": "Modulo 1: Neurociencia da Lideranca", 
-        "title": "Neurociencia da Lideranca", 
+        "name": "Modulo 1: Neurociência da Liderança", 
+        "title": "Neurociência da Liderança", 
         "description": "Foco em quimicos cerebrais (dopamina, ocitocina) e o Circulo de Seguranca. Entenda como o cerebro processa decisoes e aprenda a usar a neurociencia para liderar com mais eficacia.", 
         "icon": "🧠", 
         "file": "attached_assets/Módulo_1_1768431876967.pdf", 
@@ -2391,7 +2391,7 @@ MODULES_DATA = [
         "id": 4, 
         "name": "Modulo 4: Autoconsciencia", 
         "title": "Autoconsciencia", 
-        "description": "Identificacao do seu arquetipo de lideranca psicanalitica. Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como lider.", 
+        "description": "Identificacao do seu arquetipo de lideranca psicanalítica. Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como lider.", 
         "icon": "🪞", 
         "file": "attached_assets/Módulo_4_1768431876970.pdf", 
         "videos": [
@@ -2418,7 +2418,7 @@ MODULES_DATA = [
         "id": 6, 
         "name": "Modulo 6: Aplicacao Pratica", 
         "title": "Aplicacao Pratica", 
-        "description": "Analise de casos reais e construcao do plano de acao personalizado. Coloque em pratica as ferramentas psicanaliticas no dia a dia da lideranca.", 
+        "description": "Analise de casos reais e construcao do plano de acao personalizado. Coloque em pratica as ferramentas psicanalíticas no dia a dia da lideranca.", 
         "icon": "🛠️", 
         "file": "attached_assets/Módulo_6_1768431876972.pdf", 
         "videos": [
@@ -2430,8 +2430,8 @@ MODULES_DATA = [
     },
     {
         "id": 7, 
-        "name": "Modulo 7: Lideranca de Alta Performance", 
-        "title": "Lideranca de Alta Performance e Sustentabilidade", 
+        "name": "Modulo 7: Liderança de Alta Performance", 
+        "title": "Liderança de Alta Performance e Sustentabilidade", 
         "description": "Como manter os resultados a longo prazo, gestao da cultura organizacional e o fechamento do ciclo de desenvolvimento. Consolide sua transformacao como lider.", 
         "icon": "🏆", 
         "file": "attached_assets/Módulo_7_1768431876973.pdf", 
@@ -2470,6 +2470,10 @@ if st.session_state.get('employee_token') and not st.session_state.get('authenti
     st.session_state.page = "EmployeeAssessment"
     is_employee_access = True
 
+# Default: if not authenticated and no token/invite, show Login
+if not st.session_state.get('authenticated') and not is_employee_access and not st.session_state.get('invite_ref'):
+    if st.session_state.page not in ("Login", "InviteWelcome", "EmployeeAssessment"):
+        st.session_state.page = "Login"
 
 # Navigation Menu Sections with Icons
 MENU_SECTIONS = [
@@ -2535,12 +2539,24 @@ def render_sidebar_navigation():
             button[aria-label*="sidebar"] span[data-testid="stIconMaterial"] {
                 display: none !important;
             }
-            /* Hide any material icon span that renders text */
+            /* Hide any material icon span that renders text - including expander arrows */
             span.material-symbols-rounded,
             span.material-symbols-outlined,
             span[class*="material"] {
                 font-size: 0 !important;
                 display: none !important;
+            }
+            /* Hide expander icon text fallback (Arrow_light etc) */
+            [data-testid="stExpander"] span[data-testid="stIconMaterial"],
+            [data-testid="stExpanderToggleIcon"] span,
+            details summary span[class*="material"],
+            .streamlit-expanderHeader span[class*="material"] {
+                font-size: 0 !important;
+                display: none !important;
+                visibility: hidden !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
             }
             /* Also style any header buttons */
             button[kind="header"] {
@@ -2684,11 +2700,11 @@ def render_sidebar_navigation():
                 {"key": "Dashboard", "label": "Dashboard", "page": "Dashboard"},
                 {"key": "LPTest", "label": "LPTest", "page": "LPTest"},
                 {"key": "LPChat", "label": "LPChat", "page": "LPChat"},
-                {"key": "Equipe", "label": "Gestao de Equipe", "page": "TeamManagement"},
+                {"key": "Equipe", "label": "Gestão de Equipe", "page": "TeamManagement"},
                 {"key": "Curso", "label": "Curso LPS", "page": "LPS Curso"},
             ]
             if is_user_admin(st.session_state.user['id']):
-                auth_menu.append({"key": "GestaoLPS", "label": "Gestao LPS", "page": "GestaoLPS"})
+                auth_menu.append({"key": "GestaoLPS", "label": "Gestão LPS", "page": "GestaoLPS"})
             for item in auth_menu:
                 is_active = (st.session_state.page == item["page"])
                 if st.button(item['label'], key=f"{key_prefix}auth_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
@@ -2788,7 +2804,7 @@ def render_login_page():
             <div class="login-card" style="margin: 0 auto;">
                 <div class="login-header">
                     {logo_html}
-                    <h2>Lideranca Psicanalitica</h2>
+                    <h2>Liderança Psicanalítica</h2>
                     <p>Transforme sua lideranca com a ciencia do inconsciente</p>
                 </div>
                 <div class="login-divider"></div>
@@ -2846,8 +2862,9 @@ def render_login_page():
                             st.error(error)
         
         st.write("")
-        if st.button("Voltar para Vitrine", key="back_to_vitrine", use_container_width=True):
-            st.session_state.page = "Vitrine"
+        if st.button("Voltar para Home", key="back_to_vitrine", use_container_width=True):
+            st.session_state.section = "home"
+            st.session_state.page = "Home"
             st.rerun()
 
 page = st.session_state.page
@@ -3015,13 +3032,13 @@ def create_pdf_header_table():
         logo = Image(logo_path, width=1.2*inch, height=1.2*inch)
         header_data = [[
             logo,
-            Paragraph("<font color='white' size='14'><b>Lideranca Psicanalitica</b></font><br/><font color='#d19f09' size='10'>Viviane Nishiura & Equipe LPS</font>", getSampleStyleSheet()['Normal'])
+            Paragraph("<font color='white' size='14'><b>Liderança Psicanalítica</b></font><br/><font color='#d19f09' size='10'>Viviane Nishiura & Equipe LPS</font>", getSampleStyleSheet()['Normal'])
         ]]
     else:
         # Fallback to text-based header if logo not found
         header_data = [[
             Paragraph("<font color='#d19f09' size='28'><b>LPS</b></font>", getSampleStyleSheet()['Normal']),
-            Paragraph("<font color='white' size='12'>Lideranca Psicanalitica<br/><font size='9'>Viviane Nishiura & Equipe</font></font>", getSampleStyleSheet()['Normal'])
+            Paragraph("<font color='white' size='12'>Liderança Psicanalítica<br/><font size='9'>Viviane Nishiura & Equipe</font></font>", getSampleStyleSheet()['Normal'])
         ]]
     
     header_table = Table(header_data, colWidths=[1.5*inch, 4*inch])
@@ -3098,7 +3115,7 @@ def generate_team_pdf_report(manager_name, employees_data, include_date=True):
     # Footer
     elements.append(Spacer(1, 30))
     elements.append(Paragraph("_" * 60, styles['LPSInfo']))
-    elements.append(Paragraph("Gerado pela Plataforma LPS - Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Paragraph("Gerado pela Plataforma LPS - Liderança Psicanalítica", styles['LPSInfo']))
     elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
     
     doc.build(elements)
@@ -3130,7 +3147,7 @@ def generate_individual_pdf_report(employee_data, manager_name):
     elements.append(Spacer(1, 25))
     
     # Profile section
-    elements.append(Paragraph("Perfil de Lideranca", styles['LPSSection']))
+    elements.append(Paragraph("Perfil de Liderança", styles['LPSSection']))
     elements.append(Paragraph(f"<b>Perfil Dominante:</b> {employee_data[6] or 'N/A'}", styles['LPSBody']))
     elements.append(Paragraph(f"<b>Perfil Secundario:</b> {employee_data[7] or 'N/A'}", styles['LPSBody']))
     elements.append(Spacer(1, 15))
@@ -3144,7 +3161,7 @@ def generate_individual_pdf_report(employee_data, manager_name):
     bion_descriptions = {
         "Porta-voz": "Expressa o que o grupo sente mas nao consegue dizer. Captam tensoes inconscientes do grupo.",
         "Bode Expiatorio": "Absorve projecoes negativas do grupo. Frequentemente culpado por problemas sistemicos.",
-        "Dependente": "Busca protecao constante no lider, evita autonomia. Requer contencao e orientacao.",
+        "Dependente": "Busca proteção constante no lider, evita autonomia. Requer contencao e orientacao.",
         "Lider de Luta-Fuga": "Reativo a ameacas reais ou imaginarias, mobiliza o grupo para ataque ou fuga.",
         "Sabotador Silencioso": "Resiste passivamente as mudancas. Concordancia superficial, boicote sutil."
     }
@@ -3154,7 +3171,7 @@ def generate_individual_pdf_report(employee_data, manager_name):
     # Footer
     elements.append(Spacer(1, 40))
     elements.append(Paragraph("_" * 60, styles['LPSInfo']))
-    elements.append(Paragraph("Gerado pela Plataforma LPS - Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Paragraph("Gerado pela Plataforma LPS - Liderança Psicanalítica", styles['LPSInfo']))
     elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
     
     doc.build(elements)
@@ -3182,7 +3199,7 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     elements.append(Spacer(1, 20))
     
     # Team summary
-    elements.append(Paragraph("Composicao da Equipe Analisada", styles['LPSSection']))
+    elements.append(Paragraph("Composição da Equipe Analisada", styles['LPSSection']))
     completed_count = sum(1 for emp in employees_data if emp[10] == 1)
     elements.append(Paragraph(f"<b>Funcionarios mapeados:</b> {completed_count}", styles['LPSBody']))
     
@@ -3220,7 +3237,7 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
     # Footer
     elements.append(Spacer(1, 30))
     elements.append(Paragraph("_" * 60, styles['LPSInfo']))
-    elements.append(Paragraph("Analise gerada pela LPChat - Consultora de IA em Psicanalise e Neurociencia", styles['LPSInfo']))
+    elements.append(Paragraph("Analise gerada pela LPChat - Consultora de IA em Psicanálise e Neurociência", styles['LPSInfo']))
     elements.append(Paragraph("Plataforma LPS - Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
     
     doc.build(elements)
@@ -3393,7 +3410,7 @@ def generate_manager_guide_pdf():
     
     # Title
     elements.append(Paragraph("Manual do Gestor LPS", styles['LPSTitle']))
-    elements.append(Paragraph("Guia Pratico para Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Paragraph("Guia Pratico para Liderança Psicanalítica", styles['LPSInfo']))
     elements.append(Spacer(1, 30))
     
     # Section 1: Como interpretar seu Perfil
@@ -3408,19 +3425,19 @@ def generate_manager_guide_pdf():
     # Profile descriptions
     profiles = [
         ("O Idealista Exigente", "Pressao interna constante por excelencia. Seu ponto forte e manter padroes altos de qualidade. "
-         "Atencao: autocritica excessiva pode gerar esgotamento e paralisia."),
+         "Atenção: autocritica excessiva pode gerar esgotamento e paralisia."),
         ("O Contenedor Empatico", "Absorve tensoes do grupo e cria seguranca emocional. Essencial em crises. "
-         "Atencao: risco de sobrecarga emocional e esgotamento."),
+         "Atenção: risco de sobrecarga emocional e esgotamento."),
         ("O Buscador de Reconhecimento", "Inspira e motiva atraves de carisma e visao. Mobiliza a equipe para grandes objetivos. "
-         "Atencao: pode depender demais de validacao externa."),
+         "Atenção: pode depender demais de validacao externa."),
         ("O Estruturador Cauteloso", "Organiza processos e garante previsibilidade. Equipes bem estruturadas. "
-         "Atencao: rigidez excessiva pode inibir criatividade e inovacao."),
+         "Atenção: rigidez excessiva pode inibir criatividade e inovacao."),
         ("O Relacional Reativo", "Sensivel as dinamicas interpessoais e transferencias. Percebe padroes relacionais. "
-         "Atencao: pode ser ativado emocionalmente por conflitos, reagindo de forma desproporcional."),
+         "Atenção: pode ser ativado emocionalmente por conflitos, reagindo de forma desproporcional."),
         ("O Observador Consciente", "Analisa profundamente e reflete antes de agir. Decisoes ponderadas e conscientes. "
-         "Atencao: pode parecer distante ou demorar demais para decidir."),
+         "Atenção: pode parecer distante ou demorar demais para decidir."),
         ("O Executor Decidido", "Orientado a acao e resultados rapidos. Faz as coisas acontecerem. "
-         "Atencao: pode atropelar processos e pessoas por impaciencia.")
+         "Atenção: pode atropelar processos e pessoas por impaciencia.")
     ]
     
     for name, desc in profiles:
@@ -3483,7 +3500,7 @@ def generate_manager_guide_pdf():
     elements.append(Paragraph("4. Passo a Passo da Mentoria", styles['LPSSection']))
     elements.append(Spacer(1, 10))
     elements.append(Paragraph(
-        "A Mentoria Executiva LPS e o momento de aprofundar sua jornada de lideranca consciente. "
+        "A Mentoria Executiva LPS e o momento de aprofundar sua jornada de liderança consciente. "
         "Prepare-se adequadamente para maximizar os resultados.",
         styles['LPSBody']))
     elements.append(Spacer(1, 8))
@@ -3509,7 +3526,7 @@ def generate_manager_guide_pdf():
     # Footer
     elements.append(Spacer(1, 30))
     elements.append(Paragraph("_" * 60, styles['LPSInfo']))
-    elements.append(Paragraph("Plataforma LPS - Lideranca Psicanalitica", styles['LPSInfo']))
+    elements.append(Paragraph("Plataforma LPS - Liderança Psicanalítica", styles['LPSInfo']))
     elements.append(Paragraph("Viviane Nishiura & Equipe LPS", styles['LPSInfo']))
     elements.append(Paragraph(f"Versao: {datetime.now().strftime('%m/%Y')}", styles['LPSInfo']))
     
@@ -3548,10 +3565,10 @@ def generate_team_chart(employees_data, manager_name):
         labels1 = list(profile_counts.keys())
         sizes1 = list(profile_counts.values())
         ax1.pie(sizes1, labels=labels1, colors=colors_profile[:len(labels1)], autopct='%1.0f%%', startangle=90)
-        ax1.set_title('Perfis de Lideranca', fontsize=12, color='#18738c')
+        ax1.set_title('Perfis de Liderança', fontsize=12, color='#18738c')
     else:
         ax1.text(0.5, 0.5, 'Sem dados', ha='center', va='center')
-        ax1.set_title('Perfis de Lideranca', fontsize=12, color='#18738c')
+        ax1.set_title('Perfis de Liderança', fontsize=12, color='#18738c')
     
     # Bion roles bar chart
     if bion_counts:
@@ -3634,7 +3651,7 @@ def generate_radar_chart(block_sums, profile_name=""):
     ax.set_yticklabels(['20%', '40%', '60%', '80%', '100%'], size=8, color='gray')
     
     # Title
-    title = f'Perfil de Lideranca: {profile_name}' if profile_name else 'Perfil de Lideranca'
+    title = f'Perfil de Liderança: {profile_name}' if profile_name else 'Perfil de Liderança'
     ax.set_title(title, size=14, color='#18738c', fontweight='bold', pad=20)
     
     # Style
@@ -3717,11 +3734,11 @@ GESTOR_HEADER_PATTERNS = [
         "visão geral",
         "visao geral",
     ]),
-    ("2. Essencia Psicanalitica", [
+    ("2. Essencia Psicanalítica", [
         "essência psicanalítica",
-        "essencia psicanalitica",
+        "essencia psicanalítica",
     ]),
-    ("3. Motivacoes Inconscientes", [
+    ("3. Motivações Inconscientes", [
         "motivações inconscientes",
         "motivacoes inconscientes",
     ]),
@@ -3737,7 +3754,7 @@ GESTOR_HEADER_PATTERNS = [
         "sombra (riscos)",
         "sombra",
     ]),
-    ("6. Estilo de Lideranca e Impacto", [
+    ("6. Estilo de Liderança e Impacto", [
         "estilo de liderança e impacto",
         "estilo de lideranca e impacto",
         "estilo de liderança",
@@ -3745,9 +3762,9 @@ GESTOR_HEADER_PATTERNS = [
         "impacto no círculo de segurança",
         "impacto no circulo de seguranca",
     ]),
-    ("7. Funcao de Lideranca", [
+    ("7. Função de Liderança", [
         "função de liderança",
-        "funcao de lideranca",
+        "função de lideranca",
     ]),
     ("8. Dinamica Emocional (Sinek)", [
         "dinâmica emocional (sinek + neurociência)",
@@ -3760,12 +3777,12 @@ GESTOR_HEADER_PATTERNS = [
         "melhor aproveitamento do lider",
         "melhor aproveitamento",
     ]),
-    ("10. Riscos de Alocacao", [
+    ("10. Riscos de Alocação", [
         "riscos se mal alocado",
         "riscos de alocação",
         "riscos de alocacao",
     ]),
-    ("11. Recomendacoes de Desenvolvimento", [
+    ("11. Recomendações de Desenvolvimento", [
         "recomendações de desenvolvimento",
         "recomendacoes de desenvolvimento",
     ]),
@@ -3780,11 +3797,11 @@ FUNCIONARIO_HEADER_PATTERNS = [
         "visão geral",
         "visao geral",
     ]),
-    ("2. Essencia Psicanalitica", [
+    ("2. Essencia Psicanalítica", [
         "essência psicanalítica",
-        "essencia psicanalitica",
+        "essencia psicanalítica",
     ]),
-    ("3. Motivacoes Inconscientes", [
+    ("3. Motivações Inconscientes", [
         "motivações inconscientes",
         "motivacoes inconscientes",
     ]),
@@ -3813,16 +3830,16 @@ FUNCIONARIO_HEADER_PATTERNS = [
         "melhor aproveitamento na equipe",
         "melhor aproveitamento",
     ]),
-    ("9. Riscos de Alocacao", [
+    ("9. Riscos de Alocação", [
         "riscos se mal alocado",
         "riscos de alocação",
         "riscos de alocacao",
     ]),
-    ("10. Recomendacoes ao Gestor", [
+    ("10. Recomendações ao Gestor", [
         "recomendações ao gestor",
         "recomendacoes ao gestor",
     ]),
-    ("11. Reflexoes para o Proprio Perfil", [
+    ("11. Reflexões para o Proprio Perfil", [
         "reflexões para o próprio perfil",
         "reflexoes para o proprio perfil",
     ]),
@@ -4109,13 +4126,13 @@ def render_paywall():
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("👤 Já sou aluno - Entrar", use_container_width=True, key="paywall_login"):
+        if st.button("Já sou aluno - Entrar", use_container_width=True, key="paywall_login"):
             st.session_state.page = "Login"
             st.rerun()
     with col2:
-        st.markdown(f"""
-            <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; background-color: #25D366; color: #000000;">
-                💬 Comprar Curso
+        st.markdown("""
+            <a href="mailto:contato@lpshub.com.br" class="cta-button" style="display: block; text-align: center; background-color: #d19f09; color: #18738c;">
+                Adquirir Acesso
             </a>
         """, unsafe_allow_html=True)
 
@@ -4430,7 +4447,7 @@ if page == "Home":
                     <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background-color: #18738c; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                         <span style="color: white; font-weight: bold; font-size: 1.5rem;">N+P</span>
                     </div>
-                    <h4 style="color: #18738c;">Neurociencia + Psicanalise</h4>
+                    <h4 style="color: #18738c;">Neurociência + Psicanálise</h4>
                     <p style="color: #666;">Metodologia unica que une ciencia do cerebro com analise profunda do comportamento.</p>
                 </div>
             """, unsafe_allow_html=True)
@@ -4491,7 +4508,7 @@ if page == "Home":
             <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #18738c;">
                 <h2 style="color: #18738c; margin-top: 0;">SOBRE O LPS</h2>
                 <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
-                    O <strong>LPS (Lider Psicanalitico)</strong> e um modelo de intervencao estruturado para o mundo corporativo, 
+                    O <strong>LPS (Lider Psicanalitico)</strong> e um modelo de intervenção estruturado para o mundo corporativo, 
                     baseado no principio de que organizacoes ativam regressoes emocionais que afetam a tomada de decisao, os 
                     relacionamentos interpessoais e a produtividade das equipes.
                 </p>
@@ -4520,8 +4537,8 @@ if page == "Home":
     
     # CURSO SECTION - Module Cards with Paywall
     elif current_section == "curso":
-        st.markdown('<div class="section-title">Programa de Formacao LPS</div>', unsafe_allow_html=True)
-        st.markdown('<p style="text-align: center; color: #000000; font-size: 1.1rem; margin-bottom: 2rem;">O essencial da psicologia diretamente aplicado no desempenho da Lideranca</p>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Programa de Formação LPS</div>', unsafe_allow_html=True)
+        st.markdown('<p style="text-align: center; color: #000000; font-size: 1.1rem; margin-bottom: 2rem;">O essencial da psicologia diretamente aplicado no desempenho da Liderança</p>', unsafe_allow_html=True)
         
         # Premium Module Card CSS
         st.markdown("""
@@ -4592,13 +4609,10 @@ if page == "Home":
         # Paywall Modal for non-logged users
         if st.session_state.show_login_modal:
             st.write("")
-            st.markdown(f"""
+            st.markdown("""
                 <div style="background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #d19f09; margin: 1rem 0;">
-                    <h3 style="color: #18738c; margin-top: 0;">Conteudo Exclusivo para Alunos</h3>
-                    <p style="color: #333;">O acesso ao curso completo e liberado apos a confirmacao do pagamento. Entre em contato via WhatsApp para adquirir seu acesso.</p>
-                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 0.5rem;">
-                        Falar com Consultor
-                    </a>
+                    <h3 style="color: #18738c; margin-top: 0;">Conteúdo Exclusivo para Alunos</h3>
+                    <p style="color: #333;">O acesso ao curso completo é liberado após a confirmação do pagamento. Entre em contato pelo e-mail contato@lpshub.com.br para adquirir seu acesso.</p>
                 </div>
             """, unsafe_allow_html=True)
             if st.button("Fechar", key="close_modal"):
@@ -4621,10 +4635,10 @@ if page == "Home":
         
         st.markdown("""
             <div class="about-card">
-                <h3 style="color: #18738c;">Descubra Seu Perfil de Lideranca</h3>
+                <h3 style="color: #18738c;">Descubra Seu Perfil de Liderança</h3>
                 <p>O LPTest e um assessment exclusivo, desenvolvido com bases teoricas na psicologia e neurociencia 
                 a partir de avaliacoes comportamentais e de personalidade. As questoes mapeiam seu perfil atraves 
-                de <strong>7 dimensoes psicanaliticas + 1 bloco de temperamento</strong>:</p>
+                de <strong>7 dimensoes psicanalíticas + 1 bloco de temperamento</strong>:</p>
                 <ul style="color: #666;">
                     <li><strong>Autoridade/Superego</strong> - Pressao interna e exigencia consigo mesmo</li>
                     <li><strong>Contencao Emocional</strong> - Empatia e criacao de seguranca no grupo</li>
@@ -4723,14 +4737,14 @@ if page == "Home":
             st.markdown("""
                 <div class="solution-card">
                     <div class="solution-title">1 - O Curso LPS</div>
-                    <p>Formacao teorica completa com 8 modulos sobre psicanalise aplicada a lideranca, neurociencia organizacional e dinamicas grupais de Bion.</p>
+                    <p>Formação teorica completa com 8 modulos sobre psicanalise aplicada a lideranca, neurociencia organizacional e dinamicas grupais de Bion.</p>
                 </div>
             """, unsafe_allow_html=True)
         with sol_cols[1]:
             st.markdown("""
                 <div class="solution-card">
                     <div class="solution-title">2 - LPTest</div>
-                    <p>Assessment exclusivo com 70 questoes que mapeia seu perfil de lideranca atraves de dimensoes psicanaliticas, identificando seu arquetipo dominante e papel grupal.</p>
+                    <p>Assessment exclusivo com 70 questoes que mapeia seu perfil de lideranca atraves de dimensoes psicanalíticas, identificando seu arquetipo dominante e papel grupal.</p>
                 </div>
             """, unsafe_allow_html=True)
         
@@ -4740,7 +4754,7 @@ if page == "Home":
             st.markdown("""
                 <div class="solution-card">
                     <div class="solution-title">3 - Mentoria</div>
-                    <p>Sessoes individuais com consultora senior para aprofundar seu desenvolvimento, analisar dinamicas da sua equipe e criar estrategias personalizadas de intervencao.</p>
+                    <p>Sessões individuais com consultora senior para aprofundar seu desenvolvimento, analisar dinamicas da sua equipe e criar estrategias personalizadas de intervenção.</p>
                 </div>
             """, unsafe_allow_html=True)
         with sol_cols2[1]:
@@ -4761,10 +4775,10 @@ if page == "Home":
     
     # INSIGHTS/BLOG SECTION (SEO)
     elif current_section == "insights":
-        st.markdown('<div class="section-title">Insights de Lideranca</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Insights de Liderança</div>', unsafe_allow_html=True)
         st.markdown("""
             <p style="text-align: center; color: #666; margin-bottom: 2rem;">
-                Artigos e conteudos sobre Psicanalise, Neurociencia e Lideranca Consciente
+                Artigos e conteudos sobre Psicanálise, Neurociência e Liderança Consciente
             </p>
         """, unsafe_allow_html=True)
         
@@ -4773,25 +4787,25 @@ if page == "Home":
             {
                 "title": "Os 5 Arquetipos Inconscientes que Todo Lider Possui",
                 "excerpt": "Descubra como padroes ocultos influenciam suas decisoes e o comportamento da sua equipe. Aprenda a identificar seu arquetipo dominante.",
-                "category": "Psicanalise",
+                "category": "Psicanálise",
                 "date": "Janeiro 2025"
             },
             {
-                "title": "Neurociencia do Estresse: Como o Cortisol Afeta sua Lideranca",
+                "title": "Neurociência do Estresse: Como o Cortisol Afeta sua Liderança",
                 "excerpt": "Entenda os mecanismos cerebrais por tras do estresse cronico e como gestores podem criar ambientes que promovem produtividade.",
-                "category": "Neurociencia",
+                "category": "Neurociência",
                 "date": "Janeiro 2025"
             },
             {
                 "title": "Transferencia e Contratransferencia no Ambiente Corporativo",
                 "excerpt": "Por que alguns funcionarios 'ativam' reacoes intensas em voce? A resposta esta nas dinamicas inconscientes de transferencia.",
-                "category": "Psicanalise",
+                "category": "Psicanálise",
                 "date": "Dezembro 2024"
             },
             {
                 "title": "Como Reduzir Turnover com Mapeamento de Perfis",
                 "excerpt": "Estudo de caso: empresa reduziu rotatividade em 40% apos aplicar LPTest e realocar funcionarios por perfil.",
-                "category": "Gestao",
+                "category": "Gestão",
                 "date": "Dezembro 2024"
             },
             {
@@ -4801,9 +4815,9 @@ if page == "Home":
                 "date": "Novembro 2024"
             },
             {
-                "title": "Neuronios-Espelho e Empatia: A Base Neurologica da Lideranca",
+                "title": "Neuronios-Espelho e Empatia: A Base Neurologica da Liderança",
                 "excerpt": "Como seu cerebro 'espelha' emocoes da equipe e por que isso e crucial para liderar com autenticidade.",
-                "category": "Neurociencia",
+                "category": "Neurociência",
                 "date": "Novembro 2024"
             }
         ]
@@ -4815,9 +4829,9 @@ if page == "Home":
             
             with cols[i % 2]:
                 category_color = {
-                    "Psicanalise": "#18738c",
-                    "Neurociencia": "#28a745",
-                    "Gestao": "#d19f09",
+                    "Psicanálise": "#18738c",
+                    "Neurociência": "#28a745",
+                    "Gestão": "#d19f09",
                     "Dinamica Grupal": "#6c757d"
                 }.get(post["category"], "#18738c")
                 
@@ -4833,7 +4847,7 @@ if page == "Home":
         st.markdown(f"""
             <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); border-radius: 15px;">
                 <h3 style="color: #d19f09; margin-bottom: 1rem;">Receba Conteudos Exclusivos</h3>
-                <p style="color: white; margin-bottom: 1.5rem;">Insights exclusivos sobre lideranca psicanalitica direto no seu WhatsApp</p>
+                <p style="color: white; margin-bottom: 1.5rem;">Insights exclusivos sobre lideranca psicanalítica direto no seu WhatsApp</p>
                 <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
                     Receber Insights
                 </a>
@@ -4886,6 +4900,7 @@ if page == "Home":
         """, unsafe_allow_html=True)
 
 elif page == "Login":
+    render_sidebar_navigation()
     render_login_page()
 
 elif page == "Dashboard":
@@ -4903,6 +4918,15 @@ elif page == "Dashboard":
     manager_id = manager_data['id'] if manager_data else None
     
     st.markdown(f"<h2 style='color: #18738c;'>Bem-vindo(a), {st.session_state.user['name']}!</h2>", unsafe_allow_html=True)
+    
+    if is_user_admin(user_id):
+        if not st.session_state.get('admin_test_token'):
+            st.session_state.admin_test_token = create_invite_link("equipe", user_id)
+        base_url = get_app_url()
+        test_link = f"{base_url}/?tipo=equipe&ref={st.session_state.admin_test_token}"
+        st.info("**Link de teste (Admin):** Copie o link abaixo para testar o fluxo de convite de funcionário.")
+        st.text_input("Link de convite para teste:", value=test_link, key="admin_test_link", disabled=False)
+        st.caption("Use este link em uma aba anônima para simular o acesso de um funcionário.")
     
     # Dashboard CSS
     st.markdown("""
@@ -5035,7 +5059,7 @@ elif page == "Dashboard":
         # Radar Chart Card - Manager Profile
         manager_profile = get_manager_profile_by_user(user_id)
         if manager_profile:
-            st.markdown("<div class='dashboard-card'><h3>Seu Perfil de Lideranca</h3>", unsafe_allow_html=True)
+            st.markdown("<div class='dashboard-card'><h3>Seu Perfil de Liderança</h3>", unsafe_allow_html=True)
             
             # Try to get block sums from assessment responses
             block_sums = get_assessment_block_sums(user_id, "manager")
@@ -5164,7 +5188,7 @@ elif page == "Dashboard":
                 st.session_state.page = "Home"
                 st.rerun()
         with admin_col2:
-            if st.button("Gestao LPS", key="btn-gestao", use_container_width=True, type="primary"):
+            if st.button("Gestão LPS", key="btn-gestao", use_container_width=True, type="primary"):
                 st.session_state.page = "GestaoLPS"
                 st.rerun()
         with admin_col3:
@@ -5320,7 +5344,7 @@ elif page == "TeamManagement":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
-    st.title("Gestao de Equipe")
+    st.title("Gestão de Equipe")
     
     manager_data = st.session_state.manager_data
     if not manager_data:
@@ -5614,7 +5638,7 @@ elif page == "InviteWelcome":
                 <span class='welcome-badge'>{tipo_label}</span>
                 <div class='welcome-title'>Bem-vindo(a) a Plataforma LPS</div>
                 <p class='welcome-subtitle'>
-                    Voce foi convidado(a) para participar do {tipo_label} da Lideranca Psicanalitica.
+                    Voce foi convidado(a) para participar do {tipo_label} da Liderança Psicanalítica.
                     Para comecar, confirme o seu e-mail cadastrado abaixo.
                 </p>
             </div>
@@ -5779,7 +5803,7 @@ elif page == "EmployeeAssessment":
             
             st.write("---")
             responses = render_assessment_form("employee", is_employee=True)
-            submit = st.form_submit_button("Concluir Avaliacao", use_container_width=True)
+            submit = st.form_submit_button("Concluir Avaliação", use_container_width=True)
             
             if submit:
                 # Validation
@@ -5932,7 +5956,7 @@ elif page == "LPChat":
     st.markdown("""
         <div class="chat-header">
             <h1>LPChat</h1>
-            <p>Consultora de IA em Psicanalise e Neurociencia aplicada a Lideranca</p>
+            <p>Consultora de IA em Psicanálise e Neurociência aplicada a Liderança</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -5941,24 +5965,21 @@ elif page == "LPChat":
         
         # Show different message based on what's missing
         if not access_status['payment_active']:
-            st.markdown(f"""
+            st.markdown("""
                 <div style='background-color: #f8d7da; padding: 2rem; border-radius: 10px; border-left: 4px solid #dc3545;'>
-                    <h3 style='color: #721c24; margin-top: 0;'>Conteudo Exclusivo para Alunos</h3>
+                    <h3 style='color: #721c24; margin-top: 0;'>Conteúdo Exclusivo para Alunos</h3>
                     <p style='color: #721c24;'>
-                        O acesso ao LPChat e liberado apos a confirmacao do pagamento.
-                        Entre em contato via WhatsApp para adquirir seu acesso.
+                        O acesso ao LPChat é liberado após a confirmação do pagamento.
+                        Entre em contato pelo e-mail contato@lpshub.com.br para adquirir seu acesso.
                     </p>
-                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
-                        Falar com Suporte
-                    </a>
                 </div>
             """, unsafe_allow_html=True)
         elif not access_status['course_completed']:
             st.markdown("""
                 <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
-                    <h3 style='color: #856404; margin-top: 0;'>Complete os modulos teoricos para liberar o LPChat</h3>
+                    <h3 style='color: #856404; margin-top: 0;'>Complete os módulos teóricos para liberar o LPChat</h3>
                     <p style='color: #856404;'>
-                        O acesso ao consultor de IA e liberado apos a conclusao dos 5 primeiros modulos do curso.
+                        O acesso ao consultor de IA e liberado apos a conclusão dos 5 primeiros modulos do curso.
                         Isso garante que voce tenha a base teorica necessaria para aproveitar ao maximo as analises da IA.
                     </p>
                 </div>
@@ -5966,7 +5987,7 @@ elif page == "LPChat":
             
             # Show progress
             module_status = get_module_completion_status(user_id)
-            st.markdown("<h4 style='color: #18738c; margin-top: 2rem;'>Seu progresso nos modulos teoricos:</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color: #18738c; margin-top: 2rem;'>Seu progresso nos módulos teóricos:</h4>", unsafe_allow_html=True)
             
             theoretical_modules = [1, 2, 3, 4, 5]
             for mod_id in theoretical_modules:
@@ -6054,11 +6075,11 @@ elif page == "LPChat":
 - Implicacoes: O gestor com perfil {manager_data['dominant']} tende a liderar com foco em {get_profile_tendency(manager_data['dominant'])}"""
         
         # Enhanced system prompt with Psychoanalysis and Neuroscience
-        system_prompt = f"""Voce e uma CONSULTORA ESPECIALISTA em Psicanalise e Neurociencia aplicada a Lideranca, desenvolvida pela metodologia LPS de Viviane Nishiura.
+        system_prompt = f"""Voce e uma CONSULTORA ESPECIALISTA em Psicanálise e Neurociência aplicada a Liderança, desenvolvida pela metodologia LPS de Viviane Nishiura.
 
 PAPEL E IDENTIDADE:
 - Voce e uma consultora senior com profundo conhecimento em psicanalise de grupos (Bion, Kernberg, Pichon-Riviere) e neurociencia organizacional
-- Sua funcao e ajudar gestores a compreender as dinamicas inconscientes de suas equipes
+- Sua função e ajudar gestores a compreender as dinamicas inconscientes de suas equipes
 - Voce analisa padroes de comportamento, identificando papeis inconscientes e arquetipos
 - Voce aplica o conceito de Circulo de Seguranca (Sinek) para avaliar o ambiente emocional
 - PRIVACIDADE: Seus insights sao EXCLUSIVOS para o gestor - nunca compartilhados com funcionarios
@@ -6080,7 +6101,7 @@ ANALISE AUTOMATICA DA DINAMICA GRUPAL:
 1. PAPEIS DE BION (Dinamica Grupal Inconsciente):
 - Porta-voz: Expressa o que o grupo sente mas nao consegue dizer. Captam tensoes inconscientes.
 - Bode Expiatorio: Absorve projecoes negativas do grupo. Frequentemente culpado por problemas sistemicos.
-- Dependente: Busca protecao constante no lider, evita autonomia. Requer contencao.
+- Dependente: Busca proteção constante no lider, evita autonomia. Requer contencao.
 - Lider de Luta-Fuga: Reativo a ameacas reais ou imaginarias, mobiliza o grupo para ataque ou fuga.
 - Sabotador Silencioso: Resiste passivamente as mudancas. Concordancia superficial, boicote sutil.
 
@@ -6093,7 +6114,7 @@ ANALISE AUTOMATICA DA DINAMICA GRUPAL:
 3. TRANSFERENCIA E CONTRATRANSFERENCIA:
 - Transferencia: Funcionarios projetam no lider figuras parentais (pai protetor, mae acolhedora, autoridade punitiva)
 - Contratransferencia: Reacoes emocionais do lider as projecoes (irritacao inexplicavel, fadiga, bloqueio)
-- Neurociencia: A amigdala do lider reage as projecoes antes da consciencia - por isso lideres "sentem" antes de "pensar"
+- Neurociência: A amigdala do lider reage as projecoes antes da consciencia - por isso lideres "sentem" antes de "pensar"
 
 4. TAREFA REAL vs REGRESSAO EMOCIONAL:
 - Quando ha ansiedade grupal, o grupo REGRIDE para padroes primitivos (ataque, fuga, dependencia)
@@ -6132,11 +6153,11 @@ ANALISE AUTOMATICA DA DINAMICA GRUPAL:
 - O Executor Decidido: Orientado a acao e resultados rapidos, mas pode atropelar processos
 
 6. ADEQUACAO DE PERFIS A FUNCOES:
-- Cargos de Lideranca Operacional: Estruturador Cauteloso ou Executor Decidido
+- Cargos de Liderança Operacional: Estruturador Cauteloso ou Executor Decidido
 - Cargos Criativos: Buscador de Reconhecimento ou Idealista Exigente
 - Cargos de Mediacao/RH: Contenedor Empatico ou Relacional Reativo
 - Cargos Analiticos: Observador Consciente ou Estruturador Cauteloso
-- Gestao de Crises: Contenedor Empatico ou Executor Decidido
+- Gestão de Crises: Contenedor Empatico ou Executor Decidido
 
 ============ INSTRUCOES DE RESPOSTA ============
 
@@ -6155,7 +6176,7 @@ FORMATO DE RESPOSTA:
 - Inicie com uma analise breve da situacao
 - Use os dados reais da equipe para fundamentar
 - Ofereca insights psicoanaliticos e neurocientificos
-- Termine com recomendacoes praticas de intervencao"""
+- Termine com recomendacoes praticas de intervenção"""
 
         # Display team context card
         if employees_list_display:
@@ -6294,23 +6315,20 @@ elif page == "Mentoria":
     st.markdown("""
         <div style="text-align: center; margin-bottom: 2rem;">
             <h1 style="color: #18738c;">Mentoria Executiva LPS</h1>
-            <p style="color: #666;">Sessoes individuais para aprofundar sua jornada de lideranca consciente</p>
+            <p style="color: #666;">Sessões individuais para aprofundar sua jornada de liderança consciente</p>
         </div>
     """, unsafe_allow_html=True)
     
     if not access_status['can_access']:
         # Show paywall
         if not access_status['payment_active']:
-            st.markdown(f"""
+            st.markdown("""
                 <div style='background-color: #f8d7da; padding: 2rem; border-radius: 10px; border-left: 4px solid #dc3545; margin-bottom: 2rem;'>
-                    <h3 style='color: #721c24; margin-top: 0;'>Conteudo Exclusivo para Alunos</h3>
+                    <h3 style='color: #721c24; margin-top: 0;'>Conteúdo Exclusivo para Alunos</h3>
                     <p style='color: #721c24;'>
-                        O agendamento de mentoria e liberado apos a confirmacao do pagamento.
-                        Entre em contato via WhatsApp para adquirir seu acesso.
+                        O agendamento de mentoria é liberado após a confirmação do pagamento.
+                        Entre em contato pelo e-mail contato@lpshub.com.br para adquirir seu acesso.
                     </p>
-                    <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
-                        Falar com Suporte
-                    </a>
                 </div>
             """, unsafe_allow_html=True)
         else:
@@ -6318,7 +6336,7 @@ elif page == "Mentoria":
                 <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107; margin-bottom: 2rem;'>
                     <h3 style='color: #856404; margin-top: 0;'>Complete o curso para liberar a Mentoria</h3>
                     <p style='color: #856404;'>
-                        O acesso a mentoria e liberado apos a conclusao dos modulos teoricos do curso.
+                        O acesso a mentoria e liberado apos a conclusão dos módulos teóricos do curso.
                         Isso garante uma base solida para aproveitar ao maximo sua sessao.
                     </p>
                 </div>
@@ -6407,7 +6425,7 @@ elif page == "GestaoLPS":
         render_sidebar_navigation()
         render_public_header()
         
-        st.markdown("<h2 style='color: #18738c;'>Gestao LPS - Painel Administrativo</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='color: #18738c;'>Gestão LPS - Painel Administrativo</h2>", unsafe_allow_html=True)
         
         st.markdown("""
             <style>
@@ -6644,7 +6662,7 @@ elif page == "GestaoLPS":
                 with ldr_header[3]:
                     st.markdown("<strong style='color: #18738c;'>Perfil Secundario</strong>", unsafe_allow_html=True)
                 with ldr_header[4]:
-                    st.markdown("<strong style='color: #18738c;'>Acoes</strong>", unsafe_allow_html=True)
+                    st.markdown("<strong style='color: #18738c;'>Ações</strong>", unsafe_allow_html=True)
                 
                 st.markdown("<hr style='margin: 0.5rem 0; border-color: #eee;'>", unsafe_allow_html=True)
                 
@@ -6726,7 +6744,7 @@ elif page == "GestaoLPS":
                 with emp_header[3]:
                     st.markdown("<strong style='color: #18738c;'>Gestor</strong>", unsafe_allow_html=True)
                 with emp_header[4]:
-                    st.markdown("<strong style='color: #18738c;'>Acoes</strong>", unsafe_allow_html=True)
+                    st.markdown("<strong style='color: #18738c;'>Ações</strong>", unsafe_allow_html=True)
                 
                 st.markdown("<hr style='margin: 0.5rem 0; border-color: #eee;'>", unsafe_allow_html=True)
                 
@@ -6905,7 +6923,7 @@ elif page == "GuiaSuporte":
     st.markdown("""
         <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
             <h2 style="color: #d19f09; margin-bottom: 1rem;">Manual do Gestor LPS</h2>
-            <p style="color: white; margin-bottom: 1.5rem;">Guia completo com tudo que voce precisa saber para aplicar a Lideranca Psicanalitica na sua equipe.</p>
+            <p style="color: white; margin-bottom: 1.5rem;">Guia completo com tudo que voce precisa saber para aplicar a Liderança Psicanalítica na sua equipe.</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -6938,7 +6956,7 @@ elif page == "GuiaSuporte":
                 <li><strong>O Observador Consciente:</strong> Autoconsciencia e analise profunda</li>
                 <li><strong>O Executor Decidido:</strong> Acao decisiva e foco em resultados</li>
             </ul>
-            <p><em>Cada perfil tem seus pontos fortes e areas de atencao. O LPTest mostra seu perfil dominante e secundario.</em></p>
+            <p><em>Cada perfil tem seus pontos fortes e areas de atenção. O LPTest mostra seu perfil dominante e secundario.</em></p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -6985,7 +7003,7 @@ elif page == "GuiaSuporte":
     st.markdown(f"""
         <div class="about-card">
             <h3 style="color: #18738c;">4. Passo a Passo da Mentoria</h3>
-            <p>A Mentoria Executiva LPS e o momento de aprofundar sua jornada de lideranca consciente. 
+            <p>A Mentoria Executiva LPS e o momento de aprofundar sua jornada de liderança consciente. 
             Prepare-se adequadamente para maximizar os resultados.</p>
             <h4 style="color: #18738c;">Antes da sessao:</h4>
             <ol>
@@ -7024,7 +7042,7 @@ elif page == "Privacy":
     st.markdown("""
         <div class="about-card">
             <h3 style="color: #18738c;">Politica de Privacidade - LGPD</h3>
-            <p>A Plataforma LPS (Lideranca Psicanalitica) esta comprometida com a protecao dos dados pessoais de todos os usuarios, 
+            <p>A Plataforma LPS (Liderança Psicanalítica) esta comprometida com a proteção dos dados pessoais de todos os usuarios, 
             em conformidade com a Lei Geral de Protecao de Dados (LGPD - Lei 13.709/2018).</p>
         </div>
     """, unsafe_allow_html=True)
@@ -7106,9 +7124,9 @@ elif page == "Privacy":
     st.markdown("""
         <div class="about-card">
             <h3 style="color: #18738c;">Contato</h3>
-            <p>Para duvidas sobre privacidade e protecao de dados:</p>
+            <p>Para duvidas sobre privacidade e proteção de dados:</p>
             <p><strong>Responsavel:</strong> Viviane Nishiura</p>
-            <p><strong>E-mail:</strong> contato@liderancapsicanalitica.com.br</p>
+            <p><strong>E-mail:</strong> contato@liderancapsicanalítica.com.br</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -7124,14 +7142,11 @@ elif page == "Privacy":
 
 # Footer for all pages (except employee assessment)
 if not is_employee_access:
-    st.markdown(f"""
+    st.markdown("""
         <div style="margin-top: 3rem; padding: 1.5rem; background-color: #f5f5f5; border-radius: 8px; text-align: center;">
-            <p style="margin: 0 0 10px 0; color: #666; font-size: 0.9rem;">
-                Lideranca Psicanalitica - Viviane Nishiura & Equipe
+            <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                Liderança Psicanalítica - Viviane Nishiura & Equipe
             </p>
-            <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 25px; background-color: #25D366; color: white; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 0.95rem;">
-                Fale Conosco no WhatsApp
-            </a>
         </div>
     """, unsafe_allow_html=True)
     
