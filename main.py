@@ -12,6 +12,7 @@ from email.mime.multipart import MIMEMultipart
 import streamlit.components.v1 as components
 from datetime import datetime, timedelta
 from google import genai
+from google.genai import types
 import io
 import matplotlib
 matplotlib.use('Agg')
@@ -6257,16 +6258,41 @@ FORMATO DE RESPOSTA:
                                 role = "Gestor" if msg["role"] == "user" else "Consultora LPS"
                                 chat_history += f"{role}: {msg['content']}\n\n"
                             
+                            safety_settings = [
+                                types.SafetySetting(
+                                    category="HARM_CATEGORY_HARASSMENT",
+                                    threshold="BLOCK_NONE"
+                                ),
+                                types.SafetySetting(
+                                    category="HARM_CATEGORY_HATE_SPEECH",
+                                    threshold="BLOCK_NONE"
+                                ),
+                                types.SafetySetting(
+                                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                                    threshold="BLOCK_NONE"
+                                ),
+                                types.SafetySetting(
+                                    category="HARM_CATEGORY_DANGEROUS_CONTENT",
+                                    threshold="BLOCK_NONE"
+                                ),
+                            ]
+                            
                             try:
                                 response = client.models.generate_content(
-                                    model="gemini-1.5-flash",
-                                    contents=chat_history
+                                    model="gemini-1.5-pro",
+                                    contents=chat_history,
+                                    config=types.GenerateContentConfig(
+                                        safety_settings=safety_settings
+                                    )
                                 )
                             except Exception as model_err:
                                 if "404" in str(model_err) or "not found" in str(model_err).lower():
                                     response = client.models.generate_content(
                                         model="gemini-2.0-flash",
-                                        contents=chat_history
+                                        contents=chat_history,
+                                        config=types.GenerateContentConfig(
+                                            safety_settings=safety_settings
+                                        )
                                     )
                                 else:
                                     raise model_err
