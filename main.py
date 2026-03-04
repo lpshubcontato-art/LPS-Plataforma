@@ -301,6 +301,32 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+st.markdown("""
+<style>
+/* Nuclear option: hide ALL material symbol icon text fallback globally */
+span.material-symbols-rounded,
+span.material-symbols-outlined,
+.material-symbols-rounded,
+[class*="material-symbols"] {
+    font-size: 0 !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}
+</style>
+<script>
+(function hideIconText() {
+    var parent = window.parent.document || document;
+    parent.querySelectorAll('span').forEach(function(el) {
+        var t = (el.textContent || '').trim();
+        if (t.indexOf('keyboard_double') === 0 || t === 'Arrow_light' || t === 'arrow_right' || t === 'chevron_right') {
+            el.style.cssText = 'font-size:0!important;width:0!important;height:0!important;overflow:hidden!important;display:inline-block!important;color:transparent!important;';
+        }
+    });
+    setTimeout(hideIconText, 300);
+})();
+</script>
+""", unsafe_allow_html=True)
+
 # Password hashing functions using bcrypt
 def hash_password(password):
     """Hash password using bcrypt for secure storage."""
@@ -636,6 +662,32 @@ def ensure_master_admin():
     conn.close()
 
 ensure_master_admin()
+
+def ensure_viviane_admin():
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    c.execute("SELECT id FROM users WHERE email = ?", ("viviane@lps.com.br",))
+    existing = c.fetchone()
+    if existing:
+        c.execute("UPDATE users SET password_hash = ?, is_admin = 1 WHERE email = ?",
+                  (hash_password("lps_viviane_2026"), "viviane@lps.com.br"))
+        conn.commit()
+        conn.close()
+        return
+    user_id = str(uuid.uuid4())
+    password_hash = hash_password("lps_viviane_2026")
+    c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
+              (user_id, "viviane@lps.com.br", password_hash, "Viviane Nishiura"))
+    manager_id = str(uuid.uuid4())
+    c.execute("INSERT INTO managers (id, user_id, email, name) VALUES (?, ?, ?, ?)",
+              (manager_id, user_id, "viviane@lps.com.br", "Viviane Nishiura"))
+    c.execute("INSERT OR IGNORE INTO course_progress (user_id, module_id, completed) VALUES (?, ?, 1)",
+              (user_id, "all"))
+    c.execute("UPDATE managers SET payment_confirmed = 1 WHERE user_id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+
+ensure_viviane_admin()
 
 def ensure_test_employee():
     """Ensure test employee account exists for testing."""
@@ -2566,7 +2618,11 @@ def render_sidebar_navigation():
             [data-testid="collapsedControl"] span,
             [data-testid="stSidebarCollapseButton"] span,
             button[data-testid="baseButton-headerNoPadding"] span,
-            [data-testid="stSidebarCollapsedControl"] span {
+            [data-testid="stSidebarCollapsedControl"] span,
+            button[kind="header"] span,
+            [data-testid="stHeader"] button span,
+            [data-testid="stSidebarNav"] span[class*="material"],
+            [data-testid="stSidebarNavLink"] span[class*="material"] {
                 font-size: 0 !important;
                 color: transparent !important;
                 overflow: hidden !important;
@@ -2575,10 +2631,23 @@ def render_sidebar_navigation():
                 display: inline-block !important;
                 line-height: 0 !important;
             }
+            /* Force Material Symbols font to load and render as icons not text */
             @font-face {
                 font-family: 'Material Symbols Rounded';
                 font-style: normal;
                 font-display: block;
+            }
+            /* Catch-all: any span whose text is a known icon name */
+            [data-testid="stHeader"] button,
+            [data-testid="stSidebarCollapsedControl"] button {
+                font-size: 0 !important;
+                line-height: 0 !important;
+            }
+            [data-testid="stHeader"] button svg,
+            [data-testid="stSidebarCollapsedControl"] button svg {
+                font-size: initial !important;
+                width: 24px !important;
+                height: 24px !important;
             }
             /* Also style any header buttons */
             button[kind="header"] {
@@ -2734,6 +2803,14 @@ def render_sidebar_navigation():
                     st.rerun()
             
             st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
+            st.markdown("""<style>
+            [data-testid="stSidebar"] button[kind="secondary"]:last-of-type {
+                background-color: #c5a059 !important;
+                color: white !important;
+                border: none !important;
+                font-weight: bold !important;
+            }
+            </style>""", unsafe_allow_html=True)
             if st.button("Voltar ao Dashboard", key=f"{key_prefix}back_home", use_container_width=True, type="secondary"):
                 st.session_state.page = "Dashboard"
                 st.rerun()
@@ -3521,14 +3598,14 @@ def generate_manager_guide_pdf():
         styles['LPSBody']))
     elements.append(Spacer(1, 8))
     
-    elements.append(Paragraph("<b>Antes da sessao:</b>", styles['LPSBody']))
+    elements.append(Paragraph("<b>Antes da sessão:</b>", styles['LPSBody']))
     elements.append(Paragraph("1. Revise seu perfil de lideranca no Dashboard", styles['LPSBody']))
     elements.append(Paragraph("2. Analise os resultados do mapeamento de equipe", styles['LPSBody']))
     elements.append(Paragraph("3. Identifique 2-3 desafios especificos que deseja abordar", styles['LPSBody']))
     elements.append(Paragraph("4. Anote situacoes concretas para discutir", styles['LPSBody']))
     elements.append(Spacer(1, 8))
     
-    elements.append(Paragraph("<b>Durante a sessao:</b>", styles['LPSBody']))
+    elements.append(Paragraph("<b>Durante a sessão:</b>", styles['LPSBody']))
     elements.append(Paragraph("- Compartilhe abertamente seus desafios", styles['LPSBody']))
     elements.append(Paragraph("- Pergunte sobre padroes inconscientes que nao consegue ver", styles['LPSBody']))
     elements.append(Paragraph("- Solicite exercicios praticos para aplicar no dia-a-dia", styles['LPSBody']))
@@ -4770,7 +4847,7 @@ if page == "Home":
             st.markdown("""
                 <div class="solution-card">
                     <div class="solution-title">3 - Mentoria</div>
-                    <p>Sessões individuais com consultora senior para aprofundar seu desenvolvimento, analisar dinamicas da sua equipe e criar estrategias personalizadas de intervenção.</p>
+                    <p>Sessões individuais com consultora sênior para aprofundar seu desenvolvimento, analisar dinâmicas da sua equipe e criar estratégias personalizadas de intervenção.</p>
                 </div>
             """, unsafe_allow_html=True)
         with sol_cols2[1]:
@@ -6108,7 +6185,12 @@ Transferência: funcionários projetam figuras parentais no líder. Contratransf
 Sinek (EDSO): Círculo de Segurança forte=inovação/colaboração; fraco=proteção/competição.
 Perfis: Idealista Exigente, Contenedor Empático, Buscador de Reconhecimento, Estruturador Cauteloso, Relacional Reativo, Observador Consciente, Executor Decidido.
 
-INSTRUÇÕES: Analise dados reais da equipe. Identifique papéis inconscientes, conflitos e sinergias entre perfis. Use neurociência para explicar comportamentos. Sugira foco na TAREFA REAL para resolver regressões. Seja empática mas direta. Português brasileiro."""
+INSTRUÇÕES:
+- Ao iniciar uma conversa, apresente-se: "Olá! Sou o assistente especializado da Plataforma LPS. Como posso ajudar em sua jornada de Liderança, Psicanálise e Neurociência hoje?"
+- Analise dados reais da equipe. Identifique papéis inconscientes, conflitos e sinergias entre perfis.
+- Use neurociência para explicar comportamentos. Quando usar termos técnicos, explique-os brevemente entre parênteses.
+- Sugira foco na TAREFA REAL para resolver regressões.
+- Seja empática, profunda mas acessível. Português brasileiro."""
 
         # Display team context card
         if employees_list_display:
@@ -6162,7 +6244,7 @@ INSTRUÇÕES: Analise dados reais da equipe. Identifique papéis inconscientes, 
             
             # Generate AI response
             with st.chat_message("assistant"):
-                with st.spinner("Analisando dinamicas da equipe..."):
+                with st.spinner("Analisando dinâmicas da equipe..."):
                     try:
                         api_key = get_secret("GOOGLE_API_KEY", "")
                         if not api_key or len(api_key) < 10:
@@ -6213,7 +6295,7 @@ INSTRUÇÕES: Analise dados reais da equipe. Identifique papéis inconscientes, 
                                     if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
                                         if attempt < max_retries - 1:
                                             wait_time = 5 * (attempt + 1)
-                                            st.info(f"IA processando, aguarde {wait_time} segundos...")
+                                            st.info(f"A metodologia LPS exige profundidade! Estou processando, aguarde {wait_time} segundos...")
                                             time.sleep(wait_time)
                                             continue
                                         else:
@@ -7003,24 +7085,24 @@ elif page == "GuiaSuporte":
     st.markdown(f"""
         <div class="about-card">
             <h3 style="color: #18738c;">4. Passo a Passo da Mentoria</h3>
-            <p>A Mentoria Executiva LPS e o momento de aprofundar sua jornada de liderança consciente. 
+            <p>A Mentoria Executiva LPS é o momento de aprofundar sua jornada de liderança consciente. 
             Prepare-se adequadamente para maximizar os resultados.</p>
-            <h4 style="color: #18738c;">Antes da sessao:</h4>
+            <h4 style="color: #18738c;">Antes da sessão:</h4>
             <ol>
-                <li>Revise seu perfil de lideranca no Dashboard</li>
+                <li>Revise seu perfil de liderança no Dashboard</li>
                 <li>Analise os resultados do mapeamento de equipe</li>
-                <li>Identifique 2-3 desafios especificos que deseja abordar</li>
-                <li>Anote situacoes concretas para discutir</li>
+                <li>Identifique 2-3 desafios específicos que deseja abordar</li>
+                <li>Anote situações concretas para discutir</li>
             </ol>
-            <h4 style="color: #18738c;">Durante a sessao:</h4>
+            <h4 style="color: #18738c;">Durante a sessão:</h4>
             <ul>
                 <li>Compartilhe abertamente seus desafios</li>
-                <li>Pergunte sobre padroes inconscientes que nao consegue ver</li>
-                <li>Solicite exercicios praticos para aplicar no dia-a-dia</li>
+                <li>Pergunte sobre padrões inconscientes que não consegue ver</li>
+                <li>Solicite exercícios práticos para aplicar no dia a dia</li>
             </ul>
             <h4 style="color: #18738c;">Como agendar:</h4>
-            <p>Acesse o menu <strong>Mentoria</strong> no Dashboard ou envie mensagem via 
-            <a href="{WHATSAPP_URL}" target="_blank" style="color: #18738c;">WhatsApp</a> para agendar sua sessao.</p>
+            <p>Acesse o menu <strong>Mentoria</strong> no Dashboard ou envie e-mail para 
+            <a href="mailto:contato@lpshub.com.br" style="color: #18738c;">contato@lpshub.com.br</a> para agendar sua sessão.</p>
         </div>
     """, unsafe_allow_html=True)
     
