@@ -38,3 +38,10 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[userenv]
+
+[userenv.production]
+
+[userenv.shared]
+GOOGLE_API_KEY = "gen-lang-client-0350223632"

@@ -2330,7 +2330,7 @@ MODULES_DATA = [
         "id": 0, 
         "name": "Introducao: A Jornada LPS", 
         "title": "A Jornada LPS", 
-        "description": "Apresentacao da metodologia, boas-vindas da Viviane Nishiura e o mapa da jornada entre Neurociência e Psicanálise. Conheca o caminho que vai transformar sua lideranca.", 
+        "description": "Apresentação da metodologia, boas-vindas da Viviane Nishiura e o mapa da jornada entre Neurociência e Psicanálise. Conheça o caminho que vai transformar sua liderança.", 
         "icon": "🚀", 
         "file": "attached_assets/introdução_1768431876966.pdf", 
         "videos": [
@@ -2343,7 +2343,7 @@ MODULES_DATA = [
         "id": 1, 
         "name": "Modulo 1: Neurociência da Liderança", 
         "title": "Neurociência da Liderança", 
-        "description": "Foco em quimicos cerebrais (dopamina, ocitocina) e o Circulo de Seguranca. Entenda como o cerebro processa decisoes e aprenda a usar a neurociencia para liderar com mais eficacia.", 
+        "description": "Foco em químicos cerebrais (dopamina, ocitocina) e o Círculo de Segurança. Entenda como o cérebro processa decisões e aprenda a usar a neurociência para liderar com mais eficácia.", 
         "icon": "🧠", 
         "file": "attached_assets/Módulo_1_1768431876967.pdf", 
         "videos": [
@@ -2360,7 +2360,7 @@ MODULES_DATA = [
         "id": 2, 
         "name": "Modulo 2: Mergulho no Inconsciente", 
         "title": "Mergulho no Inconsciente", 
-        "description": "Estudo do Id, Ego, Superego e mecanismos de defesa. Explore as camadas profundas da mente e descubra como padroes inconscientes influenciam sua lideranca.", 
+        "description": "Estudo do Id, Ego, Superego e mecanismos de defesa. Explore as camadas profundas da mente e descubra como padrões inconscientes influenciam sua liderança.", 
         "icon": "🌊", 
         "file": "attached_assets/Módulo_2_1768431876968.pdf", 
         "videos": [
@@ -2376,7 +2376,7 @@ MODULES_DATA = [
         "id": 3, 
         "name": "Modulo 3: Relacoes e Transferencia", 
         "title": "Relacoes e Transferencia", 
-        "description": "Dinamicas lider-liderado e manejo de contratransferencia. Compreenda as dinamicas de transferencia nas relacoes profissionais e como usa-las a seu favor.", 
+        "description": "Dinâmicas líder-liderado e manejo de contratransferência. Compreenda as dinâmicas de transferência nas relações profissionais e como usá-las a seu favor.", 
         "icon": "🔄", 
         "file": "attached_assets/Módulo_3_1768431876969.pdf", 
         "videos": [
@@ -2391,7 +2391,7 @@ MODULES_DATA = [
         "id": 4, 
         "name": "Modulo 4: Autoconsciencia", 
         "title": "Autoconsciencia", 
-        "description": "Identificacao do seu arquetipo de lideranca psicanalítica. Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como lider.", 
+        "description": "Identificação do seu arquétipo de liderança psicanalítica. Desenvolva autoconhecimento profundo e identifique seus gatilhos emocionais como líder.", 
         "icon": "🪞", 
         "file": "attached_assets/Módulo_4_1768431876970.pdf", 
         "videos": [
@@ -2405,7 +2405,7 @@ MODULES_DATA = [
         "id": 5, 
         "name": "Modulo 5: Entendendo a Equipe", 
         "title": "Entendendo a Equipe", 
-        "description": "Mapeamento com assessments e os papeis grupais de Bion. Aprenda a mapear perfis e dinamicas grupais usando conceitos psicanaliticos.", 
+        "description": "Mapeamento com assessments e os papéis grupais de Bion. Aprenda a mapear perfis e dinâmicas grupais usando conceitos psicanalíticos.", 
         "icon": "👥", 
         "file": "attached_assets/Módulo_5_1768431876971.pdf", 
         "videos": [
@@ -2418,7 +2418,7 @@ MODULES_DATA = [
         "id": 6, 
         "name": "Modulo 6: Aplicacao Pratica", 
         "title": "Aplicacao Pratica", 
-        "description": "Analise de casos reais e construcao do plano de acao personalizado. Coloque em pratica as ferramentas psicanalíticas no dia a dia da lideranca.", 
+        "description": "Análise de casos reais e construção do plano de ação personalizado. Coloque em prática as ferramentas psicanalíticas no dia a dia da liderança.", 
         "icon": "🛠️", 
         "file": "attached_assets/Módulo_6_1768431876972.pdf", 
         "videos": [
@@ -2432,7 +2432,7 @@ MODULES_DATA = [
         "id": 7, 
         "name": "Modulo 7: Liderança de Alta Performance", 
         "title": "Liderança de Alta Performance e Sustentabilidade", 
-        "description": "Como manter os resultados a longo prazo, gestao da cultura organizacional e o fechamento do ciclo de desenvolvimento. Consolide sua transformacao como lider.", 
+        "description": "Como manter os resultados a longo prazo, gestão da cultura organizacional e o fechamento do ciclo de desenvolvimento. Consolide sua transformação como líder.", 
         "icon": "🏆", 
         "file": "attached_assets/Módulo_7_1768431876973.pdf", 
         "videos": [
@@ -2557,6 +2557,26 @@ def render_sidebar_navigation():
                 width: 0 !important;
                 height: 0 !important;
                 overflow: hidden !important;
+            }
+            /* Global: hide ALL material icon text fallback everywhere */
+            [data-testid="stIconMaterial"],
+            span[data-testid="stIconMaterial"],
+            [data-testid="collapsedControl"] span,
+            [data-testid="stSidebarCollapseButton"] span,
+            button[data-testid="baseButton-headerNoPadding"] span,
+            [data-testid="stSidebarCollapsedControl"] span {
+                font-size: 0 !important;
+                color: transparent !important;
+                overflow: hidden !important;
+                width: 0 !important;
+                height: 0 !important;
+                display: inline-block !important;
+                line-height: 0 !important;
+            }
+            @font-face {
+                font-family: 'Material Symbols Rounded';
+                font-style: normal;
+                font-display: block;
             }
             /* Also style any header buttons */
             button[kind="header"] {
@@ -2695,7 +2715,7 @@ def render_sidebar_navigation():
         st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
         
         if st.session_state.authenticated:
-            st.markdown('<div class="nav-section-label">Minha Area</div>', unsafe_allow_html=True)
+            st.markdown('<div class="nav-section-label">Minha Área</div>', unsafe_allow_html=True)
             auth_menu = [
                 {"key": "Dashboard", "label": "Dashboard", "page": "Dashboard"},
                 {"key": "LPTest", "label": "LPTest", "page": "LPTest"},
@@ -2712,15 +2732,9 @@ def render_sidebar_navigation():
                     st.rerun()
             
             st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
-            st.markdown('<div class="nav-section-label">Vitrine</div>', unsafe_allow_html=True)
-            public_items = [i for i in MENU_SECTIONS if i["key"] in ("home", "sobre", "contato")]
-            for item in public_items:
-                is_active = (st.session_state.section == item["key"] and st.session_state.page == "Home")
-                if st.button(item['label'], key=f"{key_prefix}nav_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
-                    st.session_state.section = item["key"]
-                    st.session_state.page = "Home"
-                    st.session_state.show_login_modal = False
-                    st.rerun()
+            if st.button("Voltar ao Dashboard", key=f"{key_prefix}back_home", use_container_width=True, type="secondary"):
+                st.session_state.page = "Dashboard"
+                st.rerun()
         else:
             current = st.session_state.section
             for item in MENU_SECTIONS:
@@ -2851,13 +2865,13 @@ def render_login_page():
                     if not all([name, email, password, password2]):
                         st.error("Preencha todos os campos.")
                     elif password != password2:
-                        st.error("As senhas nao coincidem.")
+                        st.error("As senhas não coincidem.")
                     elif len(password) < 6:
-                        st.error("Senha deve ter no minimo 6 caracteres.")
+                        st.error("Senha deve ter no mínimo 6 caracteres.")
                     else:
                         user_id, error = register_user(email, password, name)
                         if user_id:
-                            st.success("Conta criada! Faca login para continuar.")
+                            st.success("Conta criada! Faça login para continuar.")
                         else:
                             st.error(error)
         
@@ -3478,8 +3492,8 @@ def generate_manager_guide_pdf():
     elements.append(Paragraph("3. Uso Estrategico do LPChat", styles['LPSSection']))
     elements.append(Spacer(1, 10))
     elements.append(Paragraph(
-        "O LPChat e sua consultora de IA especializada em psicanalise e neurociencia aplicada a lideranca. "
-        "Para obter os melhores insights, faca perguntas especificas sobre sua equipe.",
+        "O LPChat é sua consultora de IA especializada em psicanálise e neurociência aplicada à liderança. "
+        "Para obter os melhores insights, faça perguntas específicas sobre sua equipe.",
         styles['LPSBody']))
     elements.append(Spacer(1, 8))
     
@@ -4490,16 +4504,16 @@ if page == "Home":
             <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #c5a059;">
                 <h2 style="color: #18738c; margin-top: 0;">SOBRE A AUTORA</h2>
                 <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
-                    Viviane Nishiura e psicologa formada pela Universidade Mackenzie, com mais de <strong>30 anos de experiencia</strong> 
-                    conectando RH corporativo, gestao de projetos e clinica psicologica. Ao longo de sua trajetoria, atuou em grandes 
-                    organizacoes e desenvolveu uma visao unica sobre os conflitos corporativos, identificando-os como manifestacoes de 
-                    dinamicas inconscientes que impactam diretamente a performance das equipes.
+                    Viviane Nishiura é psicóloga formada pela Universidade Mackenzie, com mais de <strong>30 anos de experiência</strong> 
+                    conectando RH corporativo, gestão de projetos e clínica psicológica. Ao longo de sua trajetória, atuou em grandes 
+                    organizações e desenvolveu uma visão única sobre os conflitos corporativos, identificando-os como manifestações de 
+                    dinâmicas inconscientes que impactam diretamente a performance das equipes.
                 </p>
                 <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
-                    Sua formacao integra psicanalise, neurociencia aplicada e gestao estrategica de pessoas, o que lhe permite traduzir 
-                    conceitos complexos da psicologia profunda em ferramentas praticas para o dia a dia da lideranca. Atualmente, Viviane 
-                    lidera o <strong>LPS - Lider Psicanalitico</strong>, um programa inovador que ajuda gestores a sustentarem autoridade 
-                    e limites com saude mental, promovendo ambientes de trabalho mais conscientes e produtivos.
+                    Sua formação integra psicanálise, neurociência aplicada e gestão estratégica de pessoas, o que lhe permite traduzir 
+                    conceitos complexos da psicologia profunda em ferramentas práticas para o dia a dia da liderança. Atualmente, Viviane 
+                    lidera o <strong>LPS - Líder Psicanalítico</strong>, um programa inovador que ajuda gestores a sustentarem autoridade 
+                    e limites com saúde mental, promovendo ambientes de trabalho mais conscientes e produtivos.
                 </p>
             </div>
         """, unsafe_allow_html=True)
@@ -4508,23 +4522,23 @@ if page == "Home":
             <div style="background: white; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #18738c;">
                 <h2 style="color: #18738c; margin-top: 0;">SOBRE O LPS</h2>
                 <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
-                    O <strong>LPS (Lider Psicanalitico)</strong> e um modelo de intervenção estruturado para o mundo corporativo, 
-                    baseado no principio de que organizacoes ativam regressoes emocionais que afetam a tomada de decisao, os 
+                    O <strong>LPS (Líder Psicanalítico)</strong> é um modelo de intervenção estruturado para o mundo corporativo, 
+                    baseado no princípio de que organizações ativam regressões emocionais que afetam a tomada de decisão, os 
                     relacionamentos interpessoais e a produtividade das equipes.
                 </p>
                 <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
-                    A metodologia integra <strong>psicanalise e neurociencia</strong>, oferecendo aos lideres uma compreensao profunda 
-                    dos mecanismos inconscientes que operam nas dinamicas de grupo. O programa capacita gestores a:
+                    A metodologia integra <strong>psicanálise e neurociência</strong>, oferecendo aos líderes uma compreensão profunda 
+                    dos mecanismos inconscientes que operam nas dinâmicas de grupo. O programa capacita gestores a:
                 </p>
                 <ul style="color: #333; line-height: 2; font-size: 1.05rem;">
-                    <li><strong>Leitura Psiquica:</strong> Entender o funcionamento invisivel das equipes e identificar padroes de comportamento inconscientes.</li>
-                    <li><strong>Sustentacao de Autoridade:</strong> Tomar decisoes estrategicas sem sobrecarga emocional, mantendo limites saudaveis.</li>
-                    <li><strong>Performance:</strong> Alinhar o comportamento a tarefa organizacional, reduzindo conflitos e aumentando a coesao do time.</li>
-                    <li><strong>Autoconhecimento:</strong> Desenvolver a capacidade de reconhecer as proprias defesas e pontos cegos na lideranca.</li>
+                    <li><strong>Leitura Psíquica:</strong> Entender o funcionamento invisível das equipes e identificar padrões de comportamento inconscientes.</li>
+                    <li><strong>Sustentação de Autoridade:</strong> Tomar decisões estratégicas sem sobrecarga emocional, mantendo limites saudáveis.</li>
+                    <li><strong>Performance:</strong> Alinhar o comportamento à tarefa organizacional, reduzindo conflitos e aumentando a coesão do time.</li>
+                    <li><strong>Autoconhecimento:</strong> Desenvolver a capacidade de reconhecer as próprias defesas e pontos cegos na liderança.</li>
                 </ul>
                 <p style="color: #333; line-height: 1.8; font-size: 1.05rem;">
-                    Atraves de assessments exclusivos, formacao teorica e mentoria individual, o LPS transforma a maneira como lideres 
-                    se relacionam com suas equipes, promovendo ambientes de trabalho mais saudaveis e resultados sustentaveis.
+                    Através de assessments exclusivos, formação teórica e mentoria individual, o LPS transforma a maneira como líderes 
+                    se relacionam com suas equipes, promovendo ambientes de trabalho mais saudáveis e resultados sustentáveis.
                 </p>
             </div>
         """, unsafe_allow_html=True)
@@ -4636,17 +4650,17 @@ if page == "Home":
         st.markdown("""
             <div class="about-card">
                 <h3 style="color: #18738c;">Descubra Seu Perfil de Liderança</h3>
-                <p>O LPTest e um assessment exclusivo, desenvolvido com bases teoricas na psicologia e neurociencia 
-                a partir de avaliacoes comportamentais e de personalidade. As questoes mapeiam seu perfil atraves 
-                de <strong>7 dimensoes psicanalíticas + 1 bloco de temperamento</strong>:</p>
+                <p>O LPTest é um assessment exclusivo, desenvolvido com bases teóricas na psicologia e neurociência 
+                a partir de avaliações comportamentais e de personalidade. As questões mapeiam seu perfil através 
+                de <strong>7 dimensões psicanalíticas + 1 bloco de temperamento</strong>:</p>
                 <ul style="color: #666;">
-                    <li><strong>Autoridade/Superego</strong> - Pressao interna e exigencia consigo mesmo</li>
-                    <li><strong>Contencao Emocional</strong> - Empatia e criacao de seguranca no grupo</li>
-                    <li><strong>Narcisismo/Motivacao</strong> - Sua relacao com reconhecimento e validacao</li>
-                    <li><strong>Estrutura/Controle</strong> - Necessidade de ordem e tolerancia a ambiguidade</li>
-                    <li><strong>Dinamicas Relacionais</strong> - Transferencia e contratransferencia com a equipe</li>
-                    <li><strong>Autoconsciencia</strong> - Mentalizacao e defesas do ego</li>
-                    <li><strong>Execucao/Urgencia</strong> - Foco em acao e resultados</li>
+                    <li><strong>Autoridade/Superego</strong> - Pressão interna e exigência consigo mesmo</li>
+                    <li><strong>Contenção Emocional</strong> - Empatia e criação de segurança no grupo</li>
+                    <li><strong>Narcisismo/Motivação</strong> - Sua relação com reconhecimento e validação</li>
+                    <li><strong>Estrutura/Controle</strong> - Necessidade de ordem e tolerância à ambiguidade</li>
+                    <li><strong>Dinâmicas Relacionais</strong> - Transferência e contratransferência com a equipe</li>
+                    <li><strong>Autoconsciência</strong> - Mentalização e defesas do ego</li>
+                    <li><strong>Execução/Urgência</strong> - Foco em ação e resultados</li>
                 </ul>
             </div>
         """, unsafe_allow_html=True)
@@ -4737,7 +4751,7 @@ if page == "Home":
             st.markdown("""
                 <div class="solution-card">
                     <div class="solution-title">1 - O Curso LPS</div>
-                    <p>Formação teorica completa com 8 modulos sobre psicanalise aplicada a lideranca, neurociencia organizacional e dinamicas grupais de Bion.</p>
+                    <p>Formação teórica completa com 8 módulos sobre psicanálise aplicada à liderança, neurociência organizacional e dinâmicas grupais de Bion.</p>
                 </div>
             """, unsafe_allow_html=True)
         with sol_cols[1]:
@@ -4761,7 +4775,7 @@ if page == "Home":
             st.markdown("""
                 <div class="solution-card">
                     <div class="solution-title">4 - LPChat</div>
-                    <p>Consultor virtual de IA treinado com a metodologia LPS, que analisa o perfil da sua equipe e oferece insights psicanaliticos e de neurociencia em tempo real.</p>
+                    <p>Consultor virtual de IA treinado com a metodologia LPS, que analisa o perfil da sua equipe e oferece insights psicanalíticos e de neurociência em tempo real.</p>
                 </div>
             """, unsafe_allow_html=True)
         
@@ -5248,7 +5262,7 @@ elif page == "LPTest":
     saved_profile = get_manager_profile_by_user(st.session_state.user['id'])
     
     if saved_profile:
-        st.success("Seu perfil ja esta salvo! Voce pode refazer o teste a qualquer momento.")
+        st.success("Seu perfil já está salvo! Você pode refazer o teste a qualquer momento.")
         st.markdown(f"""
             <div class="result-card">
                 <div class="profile-title">Seu Perfil Atual: {saved_profile['dominant']} + {saved_profile['secondary']}</div>
@@ -5338,7 +5352,7 @@ elif page == "LPTest":
                         if mgr_user_id:
                             save_laudo(mgr_user_id, "gestor", manager_name, res['dominant'], res['secondary'], res['bion_role'], docx_text)
                 else:
-                    st.warning("Arquivo .docx do perfil nao encontrado. Verifique se os documentos estao no diretorio attached_assets/.")
+                    st.warning("Arquivo .docx do perfil não encontrado. Verifique se os documentos estão no diretório attached_assets/.")
 
 elif page == "TeamManagement":
     if not st.session_state.authenticated:
@@ -5348,7 +5362,7 @@ elif page == "TeamManagement":
     
     manager_data = st.session_state.manager_data
     if not manager_data:
-        st.error("Dados do gestor nao encontrados. Por favor, faca login novamente.")
+        st.error("Dados do gestor não encontrados. Por favor, faça login novamente.")
     else:
         manager_id = manager_data['id']
         user_id = st.session_state.user['id']
@@ -5544,9 +5558,9 @@ elif page == "TeamManagement":
                             """, unsafe_allow_html=True)
                             st.write("---")
                 else:
-                    st.info("Nenhum funcionario respondeu ainda. Os resultados aparecerao aqui assim que completarem o assessment.")
+                    st.info("Nenhum funcionário respondeu ainda. Os resultados aparecerão aqui assim que completarem o assessment.")
             else:
-                st.info("Nenhum convite gerado ainda. Va para a aba 'Gerar Convites' para criar links.")
+                st.info("Nenhum convite gerado ainda. Vá para a aba 'Gerar Convites' para criar links.")
 
 elif page == "InviteWelcome":
     invite_ref = st.session_state.get('invite_ref', '')
@@ -5620,14 +5634,14 @@ elif page == "InviteWelcome":
     elif invite_data[5] == 1:
         st.markdown(f"""
             <div class='welcome-card'>
-                <div class='welcome-title'>Convite ja Utilizado</div>
+                <div class='welcome-title'>Convite já Utilizado</div>
                 <p class='welcome-subtitle'>
-                    Este link de convite ja foi utilizado por <strong>{invite_data[4] or 'um participante'}</strong>.
-                    Solicite um novo link ao seu gestor se necessario.
+                    Este link de convite já foi utilizado por <strong>{invite_data[4] or 'um participante'}</strong>.
+                    Solicite um novo link ao seu gestor se necessário.
                 </p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("Ir para a pagina inicial", key="invite_used_home", use_container_width=True):
+        if st.button("Ir para a página inicial", key="invite_used_home", use_container_width=True):
             st.session_state.invite_ref = None
             st.session_state.invite_tipo = None
             st.session_state.page = "Home"
@@ -5659,7 +5673,7 @@ elif page == "InviteWelcome":
                         invite_creator = invite_data[3] if invite_data else None
                         auth_inviter = auth_user[5]
                         if invite_creator and auth_inviter and invite_creator != auth_inviter:
-                            st.error("Este e-mail nao esta vinculado ao gestor que gerou este convite. Verifique com seu gestor.")
+                            st.error("Este e-mail não está vinculado ao gestor que gerou este convite. Verifique com seu gestor.")
                         else:
                             mark_invite_used(invite_ref, verify_email)
                             update_authorized_user_status(verify_email, "em_andamento")
@@ -5690,13 +5704,13 @@ elif page == "InviteWelcome":
                                         st.session_state.employee_token = new_token
                                         st.session_state.page = "EmployeeAssessment"
                                     else:
-                                        st.warning("O limite de 4 colaboradores para este gestor ja foi atingido.")
+                                        st.warning("O limite de 4 colaboradores para este gestor já foi atingido.")
                                 else:
-                                    st.warning("Gestor nao encontrado. Contate o administrador.")
+                                    st.warning("Gestor não encontrado. Contate o administrador.")
                             
                             st.rerun()
                     else:
-                        st.error("E-mail nao encontrado na lista de autorizados. Verifique com seu gestor se o e-mail esta correto.")
+                        st.error("E-mail não encontrado na lista de autorizados. Verifique com seu gestor se o e-mail está correto.")
     
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -5979,8 +5993,8 @@ elif page == "LPChat":
                 <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
                     <h3 style='color: #856404; margin-top: 0;'>Complete os módulos teóricos para liberar o LPChat</h3>
                     <p style='color: #856404;'>
-                        O acesso ao consultor de IA e liberado apos a conclusão dos 5 primeiros modulos do curso.
-                        Isso garante que voce tenha a base teorica necessaria para aproveitar ao maximo as analises da IA.
+                        O acesso ao consultor de IA é liberado após a conclusão dos 5 primeiros módulos do curso.
+                        Isso garante que você tenha a base teórica necessária para aproveitar ao máximo as análises da IA.
                     </p>
                 </div>
             """, unsafe_allow_html=True)
@@ -6196,7 +6210,7 @@ FORMATO DE RESPOSTA:
                 """, unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
         else:
-            st.info("Nenhum funcionario completou o assessment ainda. Gere links de convite na area de Equipe.")
+            st.info("Nenhum funcionário completou o assessment ainda. Gere links de convite na área de Equipe.")
         
         # Example questions section
         st.markdown("""
@@ -6234,7 +6248,7 @@ FORMATO DE RESPOSTA:
                     try:
                         api_key = get_secret("GOOGLE_API_KEY", "")
                         if not api_key or len(api_key) < 10:
-                            st.error("A chave GOOGLE_API_KEY nos Secrets esta invalida ou nao configurada. Acesse os Secrets do Replit e insira uma chave valida do Google AI Studio (aistudio.google.com/apikey).")
+                            st.error("A chave GOOGLE_API_KEY nos Secrets está inválida ou não configurada. Acesse os Secrets do Replit e insira uma chave válida do Google AI Studio (aistudio.google.com/apikey).")
                         else:
                             client = genai.Client(api_key=api_key)
                             
@@ -6264,7 +6278,7 @@ FORMATO DE RESPOSTA:
                     except Exception as e:
                         error_msg = str(e)
                         if "API_KEY_INVALID" in error_msg or "API key not valid" in error_msg:
-                            st.error("A chave GOOGLE_API_KEY esta invalida. Gere uma nova chave em aistudio.google.com/apikey e atualize nos Secrets do Replit.")
+                            st.error("A chave GOOGLE_API_KEY está inválida. Gere uma nova chave em aistudio.google.com/apikey e atualize nos Secrets do Replit.")
                         else:
                             st.error(f"Erro ao conectar com a IA: {error_msg}")
         
@@ -6336,8 +6350,8 @@ elif page == "Mentoria":
                 <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107; margin-bottom: 2rem;'>
                     <h3 style='color: #856404; margin-top: 0;'>Complete o curso para liberar a Mentoria</h3>
                     <p style='color: #856404;'>
-                        O acesso a mentoria e liberado apos a conclusão dos módulos teóricos do curso.
-                        Isso garante uma base solida para aproveitar ao maximo sua sessao.
+                        O acesso à mentoria é liberado após a conclusão dos módulos teóricos do curso.
+                        Isso garante uma base sólida para aproveitar ao máximo sua sessão.
                     </p>
                 </div>
             """, unsafe_allow_html=True)
@@ -6350,10 +6364,10 @@ elif page == "Mentoria":
             <div class="about-card">
                 <h3 style="color: #18738c;">O que esperar da Mentoria</h3>
                 <ul>
-                    <li><strong>Sessao individual de 1 hora</strong> com consultor senior</li>
-                    <li>Analise aprofundada do seu perfil de lideranca</li>
-                    <li>Discussao sobre dinamicas de equipe e conflitos inconscientes</li>
-                    <li>Estrategias praticas baseadas em psicanalise e neurociencia</li>
+                    <li><strong>Sessão individual de 1 hora</strong> com consultor sênior</li>
+                    <li>Análise aprofundada do seu perfil de liderança</li>
+                    <li>Discussão sobre dinâmicas de equipe e conflitos inconscientes</li>
+                    <li>Estratégias práticas baseadas em psicanálise e neurociência</li>
                     <li>Acompanhamento personalizado para seu desenvolvimento</li>
                 </ul>
             </div>
@@ -6600,14 +6614,38 @@ elif page == "GestaoLPS":
                         """, unsafe_allow_html=True)
                     with col_send:
                         if au_status != "concluido":
-                            if st.button("Enviar Teste", key=f"send_test_{au_id}", type="primary"):
-                                invite_token = create_invite_link(au_type, user_id)
-                                invite_base = get_app_url()
-                                invite_full = f"{invite_base}/?tipo={au_type}&ref={invite_token}"
-                                st.session_state[f"invite_link_{au_id}"] = invite_full
+                            if not st.session_state.get(f"invite_link_{au_id}"):
+                                if st.button("Gerar Link", key=f"send_test_{au_id}", type="primary"):
+                                    invite_token = create_invite_link(au_type, user_id)
+                                    invite_base = get_app_url()
+                                    invite_full = f"{invite_base}/?tipo={au_type}&ref={invite_token}"
+                                    st.session_state[f"invite_link_{au_id}"] = invite_full
+                                    invite_subject = "Convite LPS - Complete seu Assessment de Liderança"
+                                    invite_html = f"""
+                                    <html><body>
+                                    <h2 style="color:#18738c;">Olá, {au_name}!</h2>
+                                    <p>Você foi convidado(a) para realizar o <strong>LPTest</strong> - Assessment de Liderança Psicanalítica.</p>
+                                    <p>Clique no link abaixo para iniciar:</p>
+                                    <p><a href="{invite_full}" style="background-color:#18738c;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Iniciar Assessment</a></p>
+                                    <p style="color:#666;font-size:0.9rem;">Link direto: {invite_full}</p>
+                                    <hr><p style="color:#999;font-size:0.8rem;">Liderança Psicanalítica - Viviane Nishiura</p>
+                                    </body></html>
+                                    """
+                                    success, msg = send_email(au_email, invite_subject, invite_html)
+                                    if success:
+                                        st.session_state[f"email_sent_{au_id}"] = True
+                                    else:
+                                        st.session_state[f"email_failed_{au_id}"] = True
+                                    st.rerun()
                             if st.session_state.get(f"invite_link_{au_id}"):
-                                st.text_input("Link", value=st.session_state[f"invite_link_{au_id}"], key=f"link_display_{au_id}", disabled=False, label_visibility="collapsed")
-                                st.caption(f"Copie e envie para {au_email}")
+                                link_val = st.session_state[f"invite_link_{au_id}"]
+                                st.text_input("Link", value=link_val, key=f"link_display_{au_id}", disabled=False, label_visibility="collapsed")
+                                if st.session_state.get(f"email_sent_{au_id}"):
+                                    st.caption(f"✓ E-mail enviado para {au_email}")
+                                elif st.session_state.get(f"email_failed_{au_id}"):
+                                    st.caption(f"⚠ E-mail não enviado (SMTP não configurado). Copie o link acima.")
+                                else:
+                                    st.caption(f"Copie e envie para {au_email}")
                     with col_action:
                         if au_status != "concluido":
                             if st.button("Remover", key=f"remove_auth_{au_id}", type="secondary"):
@@ -6984,18 +7022,18 @@ elif page == "GuiaSuporte":
     # Section 3: Uso Estratégico do LPChat
     st.markdown("""
         <div class="about-card">
-            <h3 style="color: #18738c;">3. Uso Estrategico do LPChat</h3>
-            <p>O LPChat e sua <strong>consultora de IA especializada</strong> em psicanalise e neurociencia aplicada a lideranca. 
-            Para obter os melhores insights, faca perguntas especificas sobre sua equipe.</p>
+            <h3 style="color: #18738c;">3. Uso Estratégico do LPChat</h3>
+            <p>O LPChat é sua <strong>consultora de IA especializada</strong> em psicanálise e neurociência aplicada à liderança. 
+            Para obter os melhores insights, faça perguntas específicas sobre sua equipe.</p>
             <h4 style="color: #18738c;">Perguntas recomendadas:</h4>
             <ul>
-                <li>"Quais conflitos inconscientes podem surgir entre [Funcionario A] e [Funcionario B]?"</li>
-                <li>"Qual funcionario seria ideal para liderar o projeto X, considerando os perfis mapeados?"</li>
-                <li>"Como posso dar feedback construtivo para um Dependente sem gerar mais dependencia?"</li>
-                <li>"Quais dinamicas de transferencia podem estar afetando minha relacao com a equipe?"</li>
-                <li>"Como aplicar conceitos de neurociencia para reduzir o estresse no time?"</li>
+                <li>"Quais conflitos inconscientes podem surgir entre [Funcionário A] e [Funcionário B]?"</li>
+                <li>"Qual funcionário seria ideal para liderar o projeto X, considerando os perfis mapeados?"</li>
+                <li>"Como posso dar feedback construtivo para um Dependente sem gerar mais dependência?"</li>
+                <li>"Quais dinâmicas de transferência podem estar afetando minha relação com a equipe?"</li>
+                <li>"Como aplicar conceitos de neurociência para reduzir o estresse no time?"</li>
             </ul>
-            <p><em>Dica: Quanto mais especifica a pergunta, melhor sera a resposta da IA.</em></p>
+            <p><em>Dica: Quanto mais específica a pergunta, melhor será a resposta da IA.</em></p>
         </div>
     """, unsafe_allow_html=True)
     
