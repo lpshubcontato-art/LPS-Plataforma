@@ -6107,6 +6107,8 @@ elif page == "LPChat":
         # Initialize chat history
         if 'chat_messages' not in st.session_state:
             st.session_state.chat_messages = []
+        if 'last_chat_request_time' not in st.session_state:
+            st.session_state.last_chat_request_time = 0
         
         # Get manager and employee data for context
         manager_data = st.session_state.manager_data
@@ -6244,92 +6246,96 @@ INSTRUÇÕES:
         
         # Chat input
         if prompt := st.chat_input("Descreva a situacao da sua equipe ou faca uma pergunta..."):
-            # Add user message to history
-            st.session_state.chat_messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
-            
-            # Generate AI response
-            with st.chat_message("assistant"):
-                with st.spinner("Analisando dinâmicas da equipe..."):
-                    try:
-                        client = get_gemini_client()
-                        if not client:
-                            st.error("A chave GOOGLE_API_KEY nos Secrets está inválida ou não configurada. Acesse os Secrets do Replit e insira uma chave válida do Google AI Studio (aistudio.google.com/apikey).")
-                        else:
+            now = time.time()
+            time_since_last = now - st.session_state.last_chat_request_time
+            if time_since_last < 5:
+                st.info("O sistema está processando uma análise densa de neurociência. Por favor, aguarde um instante enquanto a conexão é estabilizada.")
+            else:
+                st.session_state.last_chat_request_time = now
+                st.session_state.chat_messages.append({"role": "user", "content": prompt})
+                with st.chat_message("user"):
+                    st.markdown(prompt)
+                
+                with st.chat_message("assistant"):
+                    with st.spinner("Analisando dinâmicas da equipe..."):
+                        try:
+                            client = get_gemini_client()
+                            if not client:
+                                st.error("A chave GOOGLE_API_KEY nos Secrets está inválida ou não configurada. Acesse os Secrets do Replit e insira uma chave válida do Google AI Studio (aistudio.google.com/apikey).")
+                            else:
+                                recent_messages = st.session_state.chat_messages[-6:]
+                                chat_history = f"{system_prompt}\n\n"
+                                for msg in recent_messages:
+                                    role = "Gestor" if msg["role"] == "user" else "Consultora LPS"
+                                    chat_history += f"{role}: {msg['content']}\n\n"
                             
-                            chat_history = f"{system_prompt}\n\n"
-                            for msg in st.session_state.chat_messages:
-                                role = "Gestor" if msg["role"] == "user" else "Consultora LPS"
-                                chat_history += f"{role}: {msg['content']}\n\n"
-                            
-                            safety_settings = [
-                                types.SafetySetting(
-                                    category="HARM_CATEGORY_HARASSMENT",
-                                    threshold="BLOCK_NONE"
-                                ),
-                                types.SafetySetting(
-                                    category="HARM_CATEGORY_HATE_SPEECH",
-                                    threshold="BLOCK_NONE"
-                                ),
-                                types.SafetySetting(
-                                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                                    threshold="BLOCK_NONE"
-                                ),
-                                types.SafetySetting(
-                                    category="HARM_CATEGORY_DANGEROUS_CONTENT",
-                                    threshold="BLOCK_NONE"
-                                ),
-                            ]
-                            
-                            gen_config = types.GenerateContentConfig(
-                                safety_settings=safety_settings
-                            )
-                            
-                            response = None
-                            models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash"]
-                            max_retries = 4
-                            for attempt in range(max_retries):
-                                try:
-                                    model_name = models_to_try[0] if attempt < 3 else models_to_try[1]
-                                    response = client.models.generate_content(
-                                        model=model_name,
-                                        contents=chat_history,
-                                        config=gen_config
-                                    )
-                                    break
-                                except Exception as model_err:
-                                    err_str = str(model_err)
-                                    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
-                                        if attempt < max_retries - 1:
-                                            st.info("A IA está processando sua análise profunda, por favor aguarde 10 segundos...")
-                                            time.sleep(10)
-                                            continue
+                                safety_settings = [
+                                    types.SafetySetting(
+                                        category="HARM_CATEGORY_HARASSMENT",
+                                        threshold="BLOCK_NONE"
+                                    ),
+                                    types.SafetySetting(
+                                        category="HARM_CATEGORY_HATE_SPEECH",
+                                        threshold="BLOCK_NONE"
+                                    ),
+                                    types.SafetySetting(
+                                        category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                                        threshold="BLOCK_NONE"
+                                    ),
+                                    types.SafetySetting(
+                                        category="HARM_CATEGORY_DANGEROUS_CONTENT",
+                                        threshold="BLOCK_NONE"
+                                    ),
+                                ]
+                                
+                                gen_config = types.GenerateContentConfig(
+                                    safety_settings=safety_settings
+                                )
+                                
+                                response = None
+                                models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash"]
+                                max_retries = 4
+                                for attempt in range(max_retries):
+                                    try:
+                                        model_name = models_to_try[0] if attempt < 3 else models_to_try[1]
+                                        response = client.models.generate_content(
+                                            model=model_name,
+                                            contents=chat_history,
+                                            config=gen_config
+                                        )
+                                        break
+                                    except Exception as model_err:
+                                        err_str = str(model_err)
+                                        if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
+                                            if attempt < max_retries - 1:
+                                                st.info("O sistema está processando uma análise densa de neurociência. Por favor, aguarde um instante enquanto a conexão é estabilizada.")
+                                                time.sleep(15)
+                                                continue
+                                            else:
+                                                response = None
+                                                break
+                                        elif "404" in err_str or "not found" in err_str.lower():
+                                            if attempt < max_retries - 1:
+                                                continue
+                                            else:
+                                                response = None
+                                                break
                                         else:
-                                            response = None
-                                            break
-                                    elif "404" in err_str or "not found" in err_str.lower():
-                                        if attempt < max_retries - 1:
-                                            continue
-                                        else:
-                                            response = None
-                                            break
-                                    else:
-                                        raise model_err
-                            
-                            if response and response.text:
-                                assistant_message = response.text
-                                st.markdown(assistant_message)
-                                st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
-                            elif response is None:
-                                st.info("A IA está em alta demanda no momento. Por favor, envie sua mensagem novamente em alguns segundos.")
-                    
-                    except Exception as e:
-                        error_msg = str(e)
-                        if "API_KEY_INVALID" in error_msg or "API key not valid" in error_msg:
-                            st.error("A chave GOOGLE_API_KEY está inválida. Gere uma nova chave em aistudio.google.com/apikey e atualize nos Secrets do Replit.")
-                        else:
-                            st.info("A IA está processando sua análise profunda, por favor aguarde 10 segundos e tente novamente.")
+                                            raise model_err
+                                
+                                if response and response.text:
+                                    assistant_message = response.text
+                                    st.markdown(assistant_message)
+                                    st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
+                                elif response is None:
+                                    st.info("O sistema está processando uma análise densa de neurociência. Por favor, aguarde um instante enquanto a conexão é estabilizada.")
+                        
+                        except Exception as e:
+                            error_msg = str(e)
+                            if "API_KEY_INVALID" in error_msg or "API key not valid" in error_msg:
+                                st.error("A chave GOOGLE_API_KEY está inválida. Gere uma nova chave em aistudio.google.com/apikey e atualize nos Secrets do Replit.")
+                            else:
+                                st.info("O sistema está processando uma análise densa de neurociência. Por favor, aguarde um instante enquanto a conexão é estabilizada.")
         
         # Export and Clear buttons with styling
         if st.session_state.chat_messages:
