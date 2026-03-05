@@ -1,7 +1,23 @@
 [server]
 headless = true
-port = 8501
+port = 5000
+address = "0.0.0.0"
+enableCORS = false
+enableXsrfProtection = false
+maxUploadSize = 200
+runOnSave = false
 folderWatchBlacklist = ['venv', '.git', '__pycache__']
 
 [browser]
 gatherUsageStats = false
+serverAddress = "0.0.0.0"
+serverPort = 5000
+
+[client]
+showSidebarNavigation = true
+
+[theme]
+primaryColor = "#18738c"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f0f2f6"
+textColor = "#262730"
