@@ -6294,11 +6294,7 @@ INSTRUÇÕES:
                                     st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
                         
                         except Exception as e:
-                            error_msg = str(e)
-                            if "invalid_api_key" in error_msg.lower() or "incorrect api key" in error_msg.lower():
-                                st.error("A chave OPENAI_API_KEY está inválida. Atualize nos Secrets do Replit com uma chave válida da OpenAI.")
-                            else:
-                                st.warning("Ocorreu um erro temporário. Por favor, tente novamente.")
+                            st.error(f"Erro técnico: {str(e)}")
         
         # Export and Clear buttons with styling
         if st.session_state.chat_messages:
