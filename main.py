@@ -6287,11 +6287,13 @@ INSTRUÇÕES:
                             )
                             
                             response = None
-                            max_retries = 3
+                            models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash"]
+                            max_retries = 4
                             for attempt in range(max_retries):
                                 try:
+                                    model_name = models_to_try[0] if attempt < 3 else models_to_try[1]
                                     response = client.models.generate_content(
-                                        model="gemini-1.5-pro",
+                                        model=model_name,
                                         contents=chat_history,
                                         config=gen_config
                                     )
@@ -6300,20 +6302,18 @@ INSTRUÇÕES:
                                     err_str = str(model_err)
                                     if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
                                         if attempt < max_retries - 1:
-                                            st.info("A metodologia LPS exige profundidade! Estou processando, aguarde 5 segundos...")
-                                            time.sleep(5)
+                                            st.info("A IA está processando sua análise profunda, por favor aguarde 10 segundos...")
+                                            time.sleep(10)
                                             continue
                                         else:
-                                            st.warning("Limite temporário atingido. Aguarde alguns segundos e tente novamente.")
                                             response = None
                                             break
                                     elif "404" in err_str or "not found" in err_str.lower():
-                                        response = client.models.generate_content(
-                                            model="gemini-2.0-flash",
-                                            contents=chat_history,
-                                            config=gen_config
-                                        )
-                                        break
+                                        if attempt < max_retries - 1:
+                                            continue
+                                        else:
+                                            response = None
+                                            break
                                     else:
                                         raise model_err
                             
@@ -6321,15 +6321,15 @@ INSTRUÇÕES:
                                 assistant_message = response.text
                                 st.markdown(assistant_message)
                                 st.session_state.chat_messages.append({"role": "assistant", "content": assistant_message})
+                            elif response is None:
+                                st.info("A IA está em alta demanda no momento. Por favor, envie sua mensagem novamente em alguns segundos.")
                     
                     except Exception as e:
                         error_msg = str(e)
                         if "API_KEY_INVALID" in error_msg or "API key not valid" in error_msg:
                             st.error("A chave GOOGLE_API_KEY está inválida. Gere uma nova chave em aistudio.google.com/apikey e atualize nos Secrets do Replit.")
-                        elif "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
-                            st.warning("Limite de requisições atingido. Aguarde 1 minuto e tente novamente.")
                         else:
-                            st.error(f"Erro ao conectar com a IA: {error_msg}")
+                            st.info("A IA está processando sua análise profunda, por favor aguarde 10 segundos e tente novamente.")
         
         # Export and Clear buttons with styling
         if st.session_state.chat_messages:
