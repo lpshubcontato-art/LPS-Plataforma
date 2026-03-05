@@ -785,6 +785,13 @@ def get_manager_by_user(user_id):
         }
     return None
 
+@st.cache_resource
+def get_gemini_client():
+    api_key = get_secret("GOOGLE_API_KEY", "")
+    if api_key and len(api_key) >= 10:
+        return genai.Client(api_key=api_key)
+    return None
+
 def get_db():
     return sqlite3.connect('lps_data.db')
 
@@ -6246,11 +6253,10 @@ INSTRUÇÕES:
             with st.chat_message("assistant"):
                 with st.spinner("Analisando dinâmicas da equipe..."):
                     try:
-                        api_key = get_secret("GOOGLE_API_KEY", "")
-                        if not api_key or len(api_key) < 10:
+                        client = get_gemini_client()
+                        if not client:
                             st.error("A chave GOOGLE_API_KEY nos Secrets está inválida ou não configurada. Acesse os Secrets do Replit e insira uma chave válida do Google AI Studio (aistudio.google.com/apikey).")
                         else:
-                            client = genai.Client(api_key=api_key)
                             
                             chat_history = f"{system_prompt}\n\n"
                             for msg in st.session_state.chat_messages:
@@ -6294,12 +6300,11 @@ INSTRUÇÕES:
                                     err_str = str(model_err)
                                     if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
                                         if attempt < max_retries - 1:
-                                            wait_time = 5 * (attempt + 1)
-                                            st.info(f"A metodologia LPS exige profundidade! Estou processando, aguarde {wait_time} segundos...")
-                                            time.sleep(wait_time)
+                                            st.info("A metodologia LPS exige profundidade! Estou processando, aguarde 5 segundos...")
+                                            time.sleep(5)
                                             continue
                                         else:
-                                            st.warning("Limite de requisições atingido. Aguarde 1 minuto e tente novamente.")
+                                            st.warning("Limite temporário atingido. Aguarde alguns segundos e tente novamente.")
                                             response = None
                                             break
                                     elif "404" in err_str or "not found" in err_str.lower():
