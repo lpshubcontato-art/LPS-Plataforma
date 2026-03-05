@@ -11,3 +11,4 @@ sift-stack-py
 python-docx
 python-docx
 PyPDF2
+openai
