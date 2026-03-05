@@ -6257,7 +6257,7 @@ INSTRUÇÕES:
             now = time.time()
             time_since_last = now - st.session_state.last_chat_request_time
             if time_since_last < 5:
-                st.info("O sistema está processando uma análise densa de neurociência. Por favor, aguarde um instante enquanto a conexão é estabilizada.")
+                st.info("Aguarde alguns segundos antes de enviar uma nova mensagem.")
             else:
                 st.session_state.last_chat_request_time = now
                 st.session_state.chat_messages.append({"role": "user", "content": prompt})
@@ -6293,7 +6293,7 @@ INSTRUÇÕES:
                             if "invalid_api_key" in error_msg.lower() or "incorrect api key" in error_msg.lower():
                                 st.error("A chave OPENAI_API_KEY está inválida. Atualize nos Secrets do Replit com uma chave válida da OpenAI.")
                             else:
-                                st.info("O sistema está processando uma análise densa de neurociência. Por favor, aguarde um instante e tente novamente.")
+                                st.warning("Ocorreu um erro temporário. Por favor, tente novamente.")
         
         # Export and Clear buttons with styling
         if st.session_state.chat_messages:
