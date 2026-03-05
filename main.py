@@ -1322,6 +1322,96 @@ def get_access_message(payment_active, course_completed):
         return "Complete os módulos teóricos do curso para liberar este recurso."
     return None
 
+def render_premium_gate(feature_name="esta funcionalidade"):
+    st.markdown("""
+        <style>
+        .premium-gate-card {
+            max-width: 600px;
+            margin: 80px auto;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #c5a059;
+            border-radius: 16px;
+            padding: 48px 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            font-family: 'Open Sans', sans-serif;
+        }
+        .premium-gate-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .premium-gate-title {
+            font-family: 'Ubuntu', sans-serif;
+            color: #18738c;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .premium-gate-text {
+            color: #444;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+        .premium-gate-divider {
+            width: 60px;
+            height: 3px;
+            background: #c5a059;
+            margin: 20px auto;
+            border-radius: 2px;
+        }
+        .premium-gate-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, #c5a059 0%, #d4af37 100%);
+            color: white !important;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 14px 36px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(197,160,89,0.3);
+        }
+        .premium-gate-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(197,160,89,0.4);
+            color: white !important;
+        }
+        .premium-gate-footer {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(f"""
+        <div class="premium-gate-card">
+            <div class="premium-gate-icon">🔒</div>
+            <div class="premium-gate-title">Conteúdo Exclusivo para Membros LPS</div>
+            <div class="premium-gate-divider"></div>
+            <div class="premium-gate-text">
+                <strong>{feature_name}</strong> é uma funcionalidade exclusiva para membros da Plataforma LPS.<br>
+                Deseja liberar seu acesso agora?
+            </div>
+            <a href="https://wa.me/5511999999999?text=Olá! Gostaria de liberar meu acesso à Plataforma LPS." 
+               target="_blank" class="premium-gate-cta">
+                Liberar Acesso via WhatsApp
+            </a>
+            <div class="premium-gate-footer">
+                Após a confirmação do pagamento, seu acesso será ativado em até 24 horas.
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    return True
+
+def is_user_premium(user_id):
+    if is_user_admin(user_id):
+        return True
+    payment_status = get_user_payment_status(user_id)
+    return payment_status['active']
+
 def log_ai_chat(user_id, manager_id, message_type, message_content, response_content, tokens_used=0):
     """Log AI chat interactions"""
     conn = get_db()
@@ -5321,6 +5411,11 @@ elif page == "LPS Curso":
         st.session_state.page = "Login"
         st.rerun()
     
+    if not is_user_premium(st.session_state.user['id']):
+        render_sidebar_navigation()
+        render_premium_gate("O Programa LPS (Curso completo)")
+        st.stop()
+    
     st.title("Programa LPS")
     
     # Load progress from database
@@ -5355,6 +5450,12 @@ elif page == "LPTest":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
+    
+    if not is_user_premium(st.session_state.user['id']):
+        render_sidebar_navigation()
+        render_premium_gate("O LPTest (Assessment de Liderança)")
+        st.stop()
+    
     st.title("📝 LPTest Assessment - Seu Perfil")
     
     # Check for existing saved profile from database
@@ -5960,8 +6061,11 @@ elif page == "LPChat":
         st.session_state.page = "Login"
         st.rerun()
     
-    # PRIVACY: Only managers can access - employees are blocked globally
-    # Access control: check payment status AND course completion
+    if not is_user_premium(st.session_state.user['id']):
+        render_sidebar_navigation()
+        render_premium_gate("O LPChat (Consultora de IA)")
+        st.stop()
+    
     user_id = st.session_state.user['id']
     access_status = can_access_premium_features(user_id)
     course_completed = access_status['course_completed']
@@ -6333,10 +6437,14 @@ elif page == "Mentoria":
         st.session_state.page = "Login"
         st.rerun()
     
+    if not is_user_premium(st.session_state.user['id']):
+        render_sidebar_navigation()
+        render_premium_gate("A Mentoria Executiva")
+        st.stop()
+    
     render_sidebar_navigation()
     render_public_header()
     
-    # Access control for Mentoria
     user_id = st.session_state.user['id']
     access_status = can_access_premium_features(user_id)
     
