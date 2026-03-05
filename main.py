@@ -671,28 +671,65 @@ ensure_master_admin()
 def ensure_viviane_admin():
     conn = sqlite3.connect('lps_data.db')
     c = conn.cursor()
-    c.execute("SELECT id FROM users WHERE email = ?", ("viviane@lps.com.br",))
+    c.execute("SELECT id FROM users WHERE email = ?", ("viviane.lps",))
     existing = c.fetchone()
     if existing:
-        c.execute("UPDATE users SET password_hash = ?, is_admin = 1 WHERE email = ?",
-                  (hash_password("lps_viviane_2026"), "viviane@lps.com.br"))
+        c.execute("UPDATE users SET password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
+                  (hash_password("LPS@2026"), "Viviane Nishiura", "viviane.lps"))
+        conn.commit()
+        conn.close()
+        return
+    c.execute("SELECT id FROM users WHERE email = ?", ("viviane@lps.com.br",))
+    old_existing = c.fetchone()
+    if old_existing:
+        c.execute("UPDATE users SET email = ?, password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
+                  ("viviane.lps", hash_password("LPS@2026"), "Viviane Nishiura", "viviane@lps.com.br"))
+        c.execute("UPDATE managers SET email = ? WHERE email = ?", ("viviane.lps", "viviane@lps.com.br"))
         conn.commit()
         conn.close()
         return
     user_id = str(uuid.uuid4())
-    password_hash = hash_password("lps_viviane_2026")
+    password_hash = hash_password("LPS@2026")
     c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
-              (user_id, "viviane@lps.com.br", password_hash, "Viviane Nishiura"))
+              (user_id, "viviane.lps", password_hash, "Viviane Nishiura"))
     manager_id = str(uuid.uuid4())
     c.execute("INSERT INTO managers (id, user_id, email, name) VALUES (?, ?, ?, ?)",
-              (manager_id, user_id, "viviane@lps.com.br", "Viviane Nishiura"))
-    c.execute("INSERT OR IGNORE INTO course_progress (user_id, module_id, completed) VALUES (?, ?, 1)",
-              (user_id, "all"))
-    c.execute("UPDATE managers SET payment_confirmed = 1 WHERE user_id = ?", (user_id,))
+              (manager_id, user_id, "viviane.lps", "Viviane Nishiura"))
+    import json as _json
+    all_complete = {}
+    for mod_id in range(1, 9):
+        for v_idx in range(5):
+            all_complete[f"m{mod_id}_v{v_idx}"] = True
+    progress_id = str(uuid.uuid4())
+    c.execute("INSERT OR IGNORE INTO course_progress (id, user_id, progress_data) VALUES (?, ?, ?)",
+              (progress_id, user_id, _json.dumps(all_complete)))
     conn.commit()
     conn.close()
 
 ensure_viviane_admin()
+
+def ensure_dev_admin():
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    c.execute("SELECT id FROM users WHERE email = ?", ("dev.lps",))
+    existing = c.fetchone()
+    if existing:
+        c.execute("UPDATE users SET password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
+                  (hash_password("Dev@LPS"), "Desenvolvedor LPS", "dev.lps"))
+        conn.commit()
+        conn.close()
+        return
+    user_id = str(uuid.uuid4())
+    password_hash = hash_password("Dev@LPS")
+    c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
+              (user_id, "dev.lps", password_hash, "Desenvolvedor LPS"))
+    manager_id = str(uuid.uuid4())
+    c.execute("INSERT INTO managers (id, user_id, email, name) VALUES (?, ?, ?, ?)",
+              (manager_id, user_id, "dev.lps", "Desenvolvedor LPS"))
+    conn.commit()
+    conn.close()
+
+ensure_dev_admin()
 
 def ensure_test_employee():
     """Ensure test employee account exists for testing."""
@@ -3030,6 +3067,7 @@ def render_login_page():
                             st.session_state.authenticated = True
                             st.session_state.user = user
                             st.session_state.manager_data = get_manager_by_user(user['id'])
+                            st.session_state.show_welcome = True
                             st.session_state.page = "Home"
                             st.rerun()
                         else:
@@ -5121,7 +5159,21 @@ elif page == "Dashboard":
     user_id = st.session_state.user['id']
     manager_id = manager_data['id'] if manager_data else None
     
-    st.markdown(f"<h2 style='color: #18738c;'>Bem-vindo(a), {st.session_state.user['name']}!</h2>", unsafe_allow_html=True)
+    if st.session_state.get('show_welcome'):
+        user_name = st.session_state.user['name']
+        user_email = st.session_state.user.get('email', '')
+        if user_email == 'viviane.lps':
+            welcome_msg = "Bem-vinda, Viviane. Sua plataforma de Liderança Psicanalítica está pronta."
+        else:
+            welcome_msg = f"Bem-vindo(a), {user_name}. Sua plataforma de Liderança Psicanalítica está pronta."
+        st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); color: white; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center;">
+                <p style="font-family: 'Open Sans', sans-serif; font-size: 1.25rem; margin: 0; font-weight: 400;">{welcome_msg}</p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.session_state.show_welcome = False
+    else:
+        st.markdown(f"<h2 style='color: #18738c;'>Bem-vindo(a), {st.session_state.user['name']}!</h2>", unsafe_allow_html=True)
     
     if is_user_admin(user_id):
         if not st.session_state.get('admin_test_token'):
