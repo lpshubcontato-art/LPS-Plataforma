@@ -1327,9 +1327,9 @@ def render_premium_gate(feature_name="esta funcionalidade"):
         <style>
         .premium-gate-card {
             max-width: 600px;
-            margin: 80px auto;
+            margin: 40px auto;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border: 2px solid #c5a059;
+            border: 2px solid #d19f09;
             border-radius: 16px;
             padding: 48px 40px;
             text-align: center;
@@ -1341,13 +1341,14 @@ def render_premium_gate(feature_name="esta funcionalidade"):
             margin-bottom: 16px;
         }
         .premium-gate-title {
-            font-family: 'Ubuntu', sans-serif;
+            font-family: 'Open Sans', sans-serif;
             color: #18738c;
             font-size: 1.6rem;
             font-weight: 700;
             margin-bottom: 12px;
         }
         .premium-gate-text {
+            font-family: 'Ubuntu', sans-serif;
             color: #444;
             font-size: 1.05rem;
             line-height: 1.7;
@@ -1356,13 +1357,13 @@ def render_premium_gate(feature_name="esta funcionalidade"):
         .premium-gate-divider {
             width: 60px;
             height: 3px;
-            background: #c5a059;
+            background: #d19f09;
             margin: 20px auto;
             border-radius: 2px;
         }
         .premium-gate-cta {
             display: inline-block;
-            background: linear-gradient(135deg, #c5a059 0%, #d4af37 100%);
+            background: linear-gradient(135deg, #d19f09 0%, #c5a059 100%);
             color: white !important;
             font-family: 'Ubuntu', sans-serif;
             font-weight: 700;
@@ -1371,11 +1372,11 @@ def render_premium_gate(feature_name="esta funcionalidade"):
             border-radius: 8px;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(197,160,89,0.3);
+            box-shadow: 0 4px 12px rgba(209,159,9,0.3);
         }
         .premium-gate-cta:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(197,160,89,0.4);
+            box-shadow: 0 6px 20px rgba(209,159,9,0.4);
             color: white !important;
         }
         .premium-gate-footer {
@@ -1389,11 +1390,11 @@ def render_premium_gate(feature_name="esta funcionalidade"):
     st.markdown(f"""
         <div class="premium-gate-card">
             <div class="premium-gate-icon">🔒</div>
-            <div class="premium-gate-title">Conteúdo Exclusivo para Membros LPS</div>
+            <div class="premium-gate-title">Desbloqueie seu Potencial de Liderança</div>
             <div class="premium-gate-divider"></div>
             <div class="premium-gate-text">
-                <strong>{feature_name}</strong> é uma funcionalidade exclusiva para membros da Plataforma LPS.<br>
-                Deseja liberar seu acesso agora?
+                O acesso completo a esta ferramenta e aos conteúdos exclusivos da Metodologia LPS
+                está disponível para membros oficiais.
             </div>
             <a href="https://wa.me/5511999999999?text=Olá! Gostaria de liberar meu acesso à Plataforma LPS." 
                target="_blank" class="premium-gate-cta">
@@ -5411,54 +5412,71 @@ elif page == "LPS Curso":
         st.session_state.page = "Login"
         st.rerun()
     
-    if not is_user_premium(st.session_state.user['id']):
-        render_sidebar_navigation()
-        render_premium_gate("O Programa LPS (Curso completo)")
-        st.stop()
+    user_premium = is_user_premium(st.session_state.user['id'])
     
     st.title("Programa LPS")
     
-    # Load progress from database
-    user_id = st.session_state.user['id']
-    db_progress = get_course_progress(user_id)
-    if db_progress:
-        st.session_state.progress = db_progress
-    
-    total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
-    completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
-    
-    # Overall progress bar
-    st.markdown(f"<p style='color: #18738c; font-weight: bold;'>Progresso Geral: {completed_lessons}/{total_lessons} aulas concluídas</p>", unsafe_allow_html=True)
-    st.progress(completed_lessons / total_lessons if total_lessons > 0 else 0)
+    if user_premium:
+        user_id = st.session_state.user['id']
+        db_progress = get_course_progress(user_id)
+        if db_progress:
+            st.session_state.progress = db_progress
+        
+        total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
+        completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
+        
+        st.markdown(f"<p style='color: #18738c; font-weight: bold;'>Progresso Geral: {completed_lessons}/{total_lessons} aulas concluídas</p>", unsafe_allow_html=True)
+        st.progress(completed_lessons / total_lessons if total_lessons > 0 else 0)
     
     st.write("---")
     
     for mod in MODULES_DATA:
         with st.expander(mod['name']):
-            for v_idx, v_url in enumerate(mod['videos']):
-                lesson_id = f"m{mod['id']}_v{v_idx}"
-                vimeo_video(v_url)
-                new_value = st.checkbox("Concluí esta aula", value=st.session_state.progress.get(lesson_id, False), key=lesson_id)
-                if new_value != st.session_state.progress.get(lesson_id, False):
-                    st.session_state.progress[lesson_id] = new_value
-                    save_course_progress(user_id, st.session_state.progress)
-            if os.path.exists(mod['file']):
-                with open(mod['file'], "rb") as f:
-                    st.download_button("Material de Apoio", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
+            st.markdown(f"<p style='color: #18738c;'>{mod.get('description', 'Conteúdo do módulo')}</p>", unsafe_allow_html=True)
+            if user_premium:
+                user_id = st.session_state.user['id']
+                for v_idx, v_url in enumerate(mod['videos']):
+                    lesson_id = f"m{mod['id']}_v{v_idx}"
+                    vimeo_video(v_url)
+                    new_value = st.checkbox("Concluí esta aula", value=st.session_state.progress.get(lesson_id, False), key=lesson_id)
+                    if new_value != st.session_state.progress.get(lesson_id, False):
+                        st.session_state.progress[lesson_id] = new_value
+                        save_course_progress(user_id, st.session_state.progress)
+                if os.path.exists(mod['file']):
+                    with open(mod['file'], "rb") as f:
+                        st.download_button("Material de Apoio", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
+            else:
+                render_premium_gate()
 
 elif page == "LPTest":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
     
-    if not is_user_premium(st.session_state.user['id']):
-        render_sidebar_navigation()
-        render_premium_gate("O LPTest (Assessment de Liderança)")
-        st.stop()
+    user_premium = is_user_premium(st.session_state.user['id'])
     
     st.title("📝 LPTest Assessment - Seu Perfil")
     
-    # Check for existing saved profile from database
+    st.markdown("""
+        <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); color: white; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem;">
+            <h3 style="color: #d19f09; margin-top: 0;">Assessment de Liderança em 7 Eixos</h3>
+            <p style="margin-bottom: 0.5rem;">O LPTest mapeia seu perfil de liderança através de 70 questões distribuídas em 7 dimensões psicanalíticas:</p>
+            <p style="font-size: 0.9rem; opacity: 0.9;">
+                <strong>1.</strong> Autoridade Interna &nbsp;|&nbsp;
+                <strong>2.</strong> Vínculo e Empatia &nbsp;|&nbsp;
+                <strong>3.</strong> Potência Realizadora &nbsp;|&nbsp;
+                <strong>4.</strong> Resiliência &nbsp;|&nbsp;
+                <strong>5.</strong> Pensamento Estratégico &nbsp;|&nbsp;
+                <strong>6.</strong> Expressão e Influência &nbsp;|&nbsp;
+                <strong>7.</strong> Integração e Sabedoria
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    if not user_premium:
+        render_premium_gate()
+        st.stop()
+    
     saved_profile = get_manager_profile_by_user(st.session_state.user['id'])
     
     if saved_profile:
@@ -6061,10 +6079,7 @@ elif page == "LPChat":
         st.session_state.page = "Login"
         st.rerun()
     
-    if not is_user_premium(st.session_state.user['id']):
-        render_sidebar_navigation()
-        render_premium_gate("O LPChat (Consultora de IA)")
-        st.stop()
+    user_premium = is_user_premium(st.session_state.user['id'])
     
     user_id = st.session_state.user['id']
     access_status = can_access_premium_features(user_id)
@@ -6177,21 +6192,21 @@ elif page == "LPChat":
         </div>
     """, unsafe_allow_html=True)
     
+    if not user_premium:
+        st.markdown("""
+            <div class="example-questions">
+                <h4>O que o LPChat pode fazer por você:</h4>
+                <div class="example-q">Análise de dinâmicas inconscientes na sua equipe</div>
+                <div class="example-q">Mapeamento de conflitos e pontos de tensão grupal</div>
+                <div class="example-q">Recomendações baseadas em Neurociência e Psicanálise</div>
+                <div class="example-q">Estratégias de liderança personalizadas para seu perfil</div>
+            </div>
+        """, unsafe_allow_html=True)
+        render_premium_gate()
+        st.stop()
+    
     if not access_status['can_access']:
-        st.warning("Acesso Bloqueado")
-        
-        # Show different message based on what's missing
-        if not access_status['payment_active']:
-            st.markdown("""
-                <div style='background-color: #f8d7da; padding: 2rem; border-radius: 10px; border-left: 4px solid #dc3545;'>
-                    <h3 style='color: #721c24; margin-top: 0;'>Conteúdo Exclusivo para Alunos</h3>
-                    <p style='color: #721c24;'>
-                        O acesso ao LPChat é liberado após a confirmação do pagamento.
-                        Entre em contato pelo e-mail contato@lpshub.com.br para adquirir seu acesso.
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
-        elif not access_status['course_completed']:
+        if not access_status['course_completed']:
             st.markdown("""
                 <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
                     <h3 style='color: #856404; margin-top: 0;'>Complete os módulos teóricos para liberar o LPChat</h3>
@@ -6437,10 +6452,7 @@ elif page == "Mentoria":
         st.session_state.page = "Login"
         st.rerun()
     
-    if not is_user_premium(st.session_state.user['id']):
-        render_sidebar_navigation()
-        render_premium_gate("A Mentoria Executiva")
-        st.stop()
+    user_premium = is_user_premium(st.session_state.user['id'])
     
     render_sidebar_navigation()
     render_public_header()
@@ -6454,6 +6466,21 @@ elif page == "Mentoria":
             <p style="color: #666;">Sessões individuais para aprofundar sua jornada de liderança consciente</p>
         </div>
     """, unsafe_allow_html=True)
+    
+    if not user_premium:
+        st.markdown("""
+            <div style="background: #f8f9fa; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e0e0e0;">
+                <h4 style="color: #18738c; margin-top: 0;">O que inclui a Mentoria Executiva:</h4>
+                <ul style="color: #444; line-height: 2;">
+                    <li>Sessões individuais com Viviane Nishiura</li>
+                    <li>Análise aprofundada de dinâmicas de liderança</li>
+                    <li>Estratégias personalizadas baseadas em Psicanálise e Neurociência</li>
+                    <li>Acompanhamento de exercícios práticos e padrões comportamentais</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+        render_premium_gate()
+        st.stop()
     
     if not access_status['can_access']:
         # Show paywall
