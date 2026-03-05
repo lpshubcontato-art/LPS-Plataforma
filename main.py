@@ -301,6 +301,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+if 'cache_cleared' not in st.session_state:
+    st.cache_data.clear()
+    st.cache_resource.clear()
+    st.session_state.cache_cleared = True
+
 st.markdown("""
 <style>
 /* Nuclear option: hide ALL material symbol icon text fallback globally */
