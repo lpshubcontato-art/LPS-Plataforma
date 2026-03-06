@@ -1,0 +1,35 @@
+IMPORTANTE: Execute apenas as alterações listadas abaixo. Não altere a lógica do modelo de IA (Gemini) nem a paleta de cores base (Azure #18738c e Amarelo #d19f09), exceto onde especificado.
+
+1. Navegação, Acesso e Fluxo (UX)
+Fim do Loop de Login: Corrija a lógica de redirecionamento para que visitantes não logados possam navegar pela "vitrine" da plataforma (menus básicos e Home) sem serem forçados de volta à tela de login.
+
+Contraste do Menu: Altere a cor do botão do Menu lateral (ícone hambúrguer) para Branco ou Amarelo (#d19f09) para garantir visibilidade total contra o fundo da barra.
+
+Experiência Aluno: Para usuários logados, remova o botão "Comprar Curso / Solicitar Orçamento".
+
+Reorganização do Menu: No menu lateral da "Minha Área", mova o item "Curso LPS" para ser a primeira opção da lista.
+
+2. Estética e Legibilidade (UI)
+Cores de Texto: Altere para BRANCO a cor da fonte dos títulos nos banners do LPTest ("Assessment de Liderança em 7 eixos") e do LPChat ("LPChat").
+
+Padronização Cinza (#555555):
+
+Curso: Altere a cor dos botões dos módulos do curso para cinza escuro (#555555).
+
+LPChat: Altere as bordas e detalhes das caixas de "Exemplos de perguntas" para cinza escuro (#555555).
+
+Limpeza de Ícones: Remova o texto de erro keyboard_arrow_right que aparece sobreposto aos títulos dos módulos no Curso LPS.
+
+3. Funcionalidades e Conteúdo
+Desbloqueio de IA: Ative o botão do LPChat imediatamente para todos os usuários logados, removendo qualquer trava de progressão teórica.
+
+Limpeza do Dashboard: Exclua a seção "Insights da IA sobre sua Equipe" e o texto que indica o número de funcionários mapeados abaixo do gráfico principal.
+
+Remoção de Botão: Exclua o botão "Material de Apoio" dentro da área do curso.
+
+Gramática LPTest: Revise as 70 questões do assessment, aplicando a ortografia correta da língua portuguesa (incluindo cedilhas, tis e acentos faltantes).
+
+4. Gestão e Links
+Unificação de Menus: Integre as funcionalidades de "Gestão LPS" dentro de "Gestão de Equipe" e remova o menu "Gestão LPS" para evitar duplicidade.
+
+Correção de Ferramentas: Conserte a geração de links de convite e a funcionalidade do botão "Enviar Teste" no cadastro de e-mails para que operem corretamente.

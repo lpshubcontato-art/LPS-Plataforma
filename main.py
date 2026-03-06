@@ -1936,213 +1936,220 @@ LOGO_PATH = "attached_assets/logotipo_2__1768529013163.jpeg"
 # Definicoes das questoes do Assessment (8 blocos: 7x8 + 1x14 = 70 questoes totais)
 ASSESSMENT_QUESTIONS = {
     "Bloco 1 – Autoridade Interna, Autoimagem e Superego": [
-        "Quando recebo um feedback negativo sobre minha lideranca, minha primeira reacao interna costuma ser de justificativa ou defesa.",
-        "Sinto uma pressao interna para corresponder a um ideal de lider perfeito, mesmo que isso me desgaste.",
-        "Tenho dificuldade em admitir nao sei ou pedir ajuda a minha equipe, pois temo parecer fraco(a).",
-        "A opiniao dos meus superiores sobre mim tem um peso significativo na minha autoconfianca como lider.",
-        "Hesito em tomar decisoes que possam desagradar a equipe, mesmo que sejam necessarias para o negocio.",
-        "Quando um projeto sob minha lideranca falha, sinto uma culpa ou responsabilidade desproporcional.",
+        "Quando recebo um feedback negativo sobre minha liderança, minha primeira reação interna costuma ser de justificativa ou defesa.",
+        "Sinto uma pressão interna para corresponder a um ideal de líder perfeito, mesmo que isso me desgaste.",
+        "Tenho dificuldade em admitir não sei ou pedir ajuda à minha equipe, pois temo parecer fraco(a).",
+        "A opinião dos meus superiores sobre mim tem um peso significativo na minha autoconfiança como líder.",
+        "Hesito em tomar decisões que possam desagradar a equipe, mesmo que sejam necessárias para o negócio.",
+        "Quando um projeto sob minha liderança falha, sinto uma culpa ou responsabilidade desproporcional.",
         "Prefiro manter uma postura mais distante e formal para garantir o respeito da equipe.",
-        "Fico ruminando criticas ou comentarios negativos sobre meu trabalho por mais tempo do que gostaria."
+        "Fico ruminando críticas ou comentários negativos sobre meu trabalho por mais tempo do que gostaria."
     ],
-    "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": [
-        "Em momentos de alta tensao na equipe, consigo manter minha calma interna e pensar com clareza.",
-        "Percebo quando minha propria ansiedade ou frustracao esta contaminando o clima da equipe.",
-        "Sinto-me confortavel em abordar conversas dificeis sobre emocoes ou conflitos interpessoais no time.",
-        "Consigo ouvir reclamacoes ou desabafos da equipe sem me sentir pessoalmente atacado(a) ou sobrecarregado(a).",
-        "Priorizo ativamente a criacao de um ambiente onde as pessoas se sintam seguras para expressar opinioes divergentes ou admitir erros.",
-        "Tenho facilidade em ler o estado emocional nao verbal da equipe (linguagem corporal, tom de voz).",
-        "Apos reunioes emocionalmente carregadas, preciso de um tempo consideravel para me recuperar energeticamente.",
-        "Hesito em dar mas noticias ou feedbacks corretivos por medo da reacao emocional da equipe."
+    "Bloco 2 – Contenção Emocional, Empatia e Círculo de Segurança": [
+        "Em momentos de alta tensão na equipe, consigo manter minha calma interna e pensar com clareza.",
+        "Percebo quando minha própria ansiedade ou frustração está contaminando o clima da equipe.",
+        "Sinto-me confortável em abordar conversas difíceis sobre emoções ou conflitos interpessoais no time.",
+        "Consigo ouvir reclamações ou desabafos da equipe sem me sentir pessoalmente atacado(a) ou sobrecarregado(a).",
+        "Priorizo ativamente a criação de um ambiente onde as pessoas se sintam seguras para expressar opiniões divergentes ou admitir erros.",
+        "Tenho facilidade em ler o estado emocional não verbal da equipe (linguagem corporal, tom de voz).",
+        "Após reuniões emocionalmente carregadas, preciso de um tempo considerável para me recuperar energeticamente.",
+        "Hesito em dar más notícias ou feedbacks corretivos por medo da reação emocional da equipe."
     ],
-    "Bloco 3 – Narcisismo, Reconhecimento e Motivacao": [
-        "Sinto uma satisfacao particular quando minhas ideias ou projetos recebem destaque e admiracao.",
-        "Fico genuinamente incomodado(a) quando o credito por um trabalho meu e dado a outra pessoa.",
-        "A ausencia de feedback positivo sobre meu desempenho me desmotiva significativamente.",
-        "Tenho uma tendencia a comparar meus resultados e reconhecimento com os de outros lideres que admiro.",
-        "Em discussoes, foco mais em defender meu ponto de vista do que em entender a perspectiva do outro.",
-        "Busco ativamente projetos ou tarefas que me coloquem em evidencia ou aumentem minha visibilidade.",
-        "Tenho dificuldade em celebrar o sucesso de outros lideres, especialmente se me sinto em competicao.",
-        "Uso historias sobre meus proprios sucessos para inspirar ou motivar a equipe."
+    "Bloco 3 – Narcisismo, Reconhecimento e Motivação": [
+        "Sinto uma satisfação particular quando minhas ideias ou projetos recebem destaque e admiração.",
+        "Fico genuinamente incomodado(a) quando o crédito por um trabalho meu é dado a outra pessoa.",
+        "A ausência de feedback positivo sobre meu desempenho me desmotiva significativamente.",
+        "Tenho uma tendência a comparar meus resultados e reconhecimento com os de outros líderes que admiro.",
+        "Em discussões, foco mais em defender meu ponto de vista do que em entender a perspectiva do outro.",
+        "Busco ativamente projetos ou tarefas que me coloquem em evidência ou aumentem minha visibilidade.",
+        "Tenho dificuldade em celebrar o sucesso de outros líderes, especialmente se me sinto em competição.",
+        "Uso histórias sobre meus próprios sucessos para inspirar ou motivar a equipe."
     ],
-    "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade": [
-        "Sinto-me desconfortavel ou ansioso(a) quando os planos mudam inesperadamente ou ha falta de clareza nas diretrizes.",
+    "Bloco 4 – Estrutura, Controle e Tolerância à Ambiguidade": [
+        "Sinto-me desconfortável ou ansioso(a) quando os planos mudam inesperadamente ou há falta de clareza nas diretrizes.",
         "Prefiro ter controle sobre os detalhes das tarefas da equipe para garantir que tudo saia conforme o esperado.",
-        "Tenho dificuldade em delegar tarefas criticas, preferindo faze-las eu mesmo(a) para assegurar a qualidade.",
-        "Acredito que regras e processos bem definidos sao a melhor forma de evitar o caos e garantir a produtividade.",
-        "Intervenho rapidamente quando percebo que um membro da equipe esta se desviando do processo estabelecido.",
-        "Valorizo mais a previsibilidade e a estabilidade do que a flexibilidade e a experimentacao.",
-        "Sinto uma necessidade de preencher o vazio com tarefas, mesmo quando nao ha urgencia real.",
+        "Tenho dificuldade em delegar tarefas críticas, preferindo fazê-las eu mesmo(a) para assegurar a qualidade.",
+        "Acredito que regras e processos bem definidos são a melhor forma de evitar o caos e garantir a produtividade.",
+        "Intervenho rapidamente quando percebo que um membro da equipe está se desviando do processo estabelecido.",
+        "Valorizo mais a previsibilidade e a estabilidade do que a flexibilidade e a experimentação.",
+        "Sinto uma necessidade de preencher o vazio com tarefas, mesmo quando não há urgência real.",
         "Foco mais em identificar e prevenir riscos do que em explorar novas oportunidades que envolvam incerteza."
     ],
-    "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia": [
-        "Percebo que certos tipos de pessoas na equipe despertam em mim reacoes emocionais (positivas ou negativas) mais intensas que outras.",
-        "Ja me peguei tratando um membro da equipe de forma semelhante a como lidei com figuras importantes do meu passado (pais, irmaos, professores).",
-        "Sinto que alguns membros da equipe me colocam em um papel especifico (o salvador, o critico, o idealizado) que nao corresponde totalmente a realidade.",
+    "Bloco 5 – Dinâmicas Relacionais, Transferência e Contratransferência": [
+        "Percebo que certos tipos de pessoas na equipe despertam em mim reações emocionais (positivas ou negativas) mais intensas que outras.",
+        "Já me peguei tratando um membro da equipe de forma semelhante a como lidei com figuras importantes do meu passado (pais, irmãos, professores).",
+        "Sinto que alguns membros da equipe me colocam em um papel específico (o salvador, o crítico, o idealizado) que não corresponde totalmente à realidade.",
         "Tenho dificuldade em manter a neutralidade emocional com membros da equipe que me lembram pessoas com quem tive conflitos no passado.",
-        "Noto padroes repetitivos na forma como diferentes membros da equipe se relacionam comigo (ex: sempre buscando aprovacao, sempre desafiando).",
-        "Minhas reacoes a um determinado funcionario as vezes me surpreendem pela sua intensidade ou inadequacao.",
-        "Sinto necessidade de manter uma distancia segura de certos membros da equipe para nao me envolver emocionalmente.",
-        "Reflito sobre como minhas proprias experiencias e fantasmas do passado podem estar influenciando minhas interacoes atuais com a equipe."
+        "Noto padrões repetitivos na forma como diferentes membros da equipe se relacionam comigo (ex: sempre buscando aprovação, sempre desafiando).",
+        "Minhas reações a um determinado funcionário às vezes me surpreendem pela sua intensidade ou inadequação.",
+        "Sinto necessidade de manter uma distância segura de certos membros da equipe para não me envolver emocionalmente.",
+        "Reflito sobre como minhas próprias experiências e fantasmas do passado podem estar influenciando minhas interações atuais com a equipe."
     ],
-    "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego": [
-        "Consigo identificar quando estou usando um mecanismo de defesa (ex: racionalizacao, negacao, projecao) para lidar com uma situacao desconfortavel.",
-        "Sou capaz de analisar minhas proprias motivacoes (conscientes e talvez inconscientes) por tras de uma decisao importante.",
-        "Busco ativamente feedback sobre meus pontos cegos, mesmo que seja desconfortavel ouvi-los.",
-        "Consigo diferenciar uma critica ao meu comportamento/decisao de um ataque pessoal a minha identidade.",
-        "Reflito sobre o impacto do meu estado emocional (cansaco, estresse, empolgacao) na minha forma de liderar.",
-        "Estou aberto(a) a revisar minhas crencas e meu estilo de lideranca com base em novas experiencias ou aprendizados.",
-        "Consigo mentalizar, ou seja, imaginar o que se passa na mente do outro (seus pensamentos, sentimentos, intencoes) sem projetar excessivamente minhas proprias ideias.",
-        "Reconheco que minha percepcao da realidade e subjetiva e pode ser influenciada por meus vieses e historia pessoal."
+    "Bloco 6 – Autoconsciência, Mentalização e Defesas do Ego": [
+        "Consigo identificar quando estou usando um mecanismo de defesa (ex: racionalização, negação, projeção) para lidar com uma situação desconfortável.",
+        "Sou capaz de analisar minhas próprias motivações (conscientes e talvez inconscientes) por trás de uma decisão importante.",
+        "Busco ativamente feedback sobre meus pontos cegos, mesmo que seja desconfortável ouvi-los.",
+        "Consigo diferenciar uma crítica ao meu comportamento/decisão de um ataque pessoal à minha identidade.",
+        "Reflito sobre o impacto do meu estado emocional (cansaço, estresse, empolgação) na minha forma de liderar.",
+        "Estou aberto(a) a revisar minhas crenças e meu estilo de liderança com base em novas experiências ou aprendizados.",
+        "Consigo mentalizar, ou seja, imaginar o que se passa na mente do outro (seus pensamentos, sentimentos, intenções) sem projetar excessivamente minhas próprias ideias.",
+        "Reconheço que minha percepção da realidade é subjetiva e pode ser influenciada por meus vieses e história pessoal."
     ],
-    "Bloco 7 – Acao, Urgencia e Foco na Entrega": [
-        "Quando ha indecisao na equipe, sinto um forte impulso para intervir e dar a direcao final imediatamente.",
-        "Minha principal metrica de sucesso na lideranca e a capacidade de fazer as coisas acontecerem de forma rapida.",
-        "Prefiro resolver um problema com acao direta do que gastar tempo excessivo em analise ou discussoes emocionais.",
-        "Tomo decisoes criticas rapidamente, mesmo que isso implique risco ou desagrade alguns membros da equipe.",
-        "Sinto uma frustracao intensa quando a equipe demonstra lentidao, passividade ou falta de senso de urgencia.",
-        "Sou mais eficaz em situacoes de crise ou pressao, onde minha assertividade e foco sao necessarios.",
-        "Valorizo mais a autonomia e a liberdade de acao do que a necessidade de seguir processos rigidos.",
-        "Tenho dificuldade em delegar tarefas de alta prioridade, preferindo a garantia da minha propria execucao."
+    "Bloco 7 – Ação, Urgência e Foco na Entrega": [
+        "Quando há indecisão na equipe, sinto um forte impulso para intervir e dar a direção final imediatamente.",
+        "Minha principal métrica de sucesso na liderança é a capacidade de fazer as coisas acontecerem de forma rápida.",
+        "Prefiro resolver um problema com ação direta do que gastar tempo excessivo em análise ou discussões emocionais.",
+        "Tomo decisões críticas rapidamente, mesmo que isso implique risco ou desagrade alguns membros da equipe.",
+        "Sinto uma frustração intensa quando a equipe demonstra lentidão, passividade ou falta de senso de urgência.",
+        "Sou mais eficaz em situações de crise ou pressão, onde minha assertividade e foco são necessários.",
+        "Valorizo mais a autonomia e a liberdade de ação do que a necessidade de seguir processos rígidos.",
+        "Tenho dificuldade em delegar tarefas de alta prioridade, preferindo a garantia da minha própria execução."
     ],
-    "Bloco 8 – Temperamento e Carater (Cloninger)": [
+    "Bloco 8 – Temperamento e Caráter (Cloninger)": [
         "Sinto vontade de experimentar coisas novas regularmente. (Busca de Novidade - BN)",
-        "Gosto de desafios e situacoes nao previsiveis. (Busca de Novidade - BN)",
-        "Sinto ansiedade em situacoes de risco ou incerteza. (Evitacao de Dano - ED)",
-        "Evito decisoes que possam gerar criticas ou falhas. (Evitacao de Dano - ED)",
-        "Busco apoio e aprovacao de outros antes de decidir. (Dependencia de Recompensa - DR)",
-        "Sinto motivacao extra quando sou reconhecido publicamente. (Dependencia de Recompensa - DR)",
-        "Continuo esforcos mesmo diante de frustracoes. (Persistencia - P)",
-        "Finalizo tarefas mesmo quando enfrentam resistencia. (Persistencia - P)",
-        "Tenho clareza de objetivos e valores que guiam decisoes. (Autodirecao - AD)",
-        "Assumo responsabilidade pelos resultados, bons ou ruins. (Autodirecao - AD)",
+        "Gosto de desafios e situações não previsíveis. (Busca de Novidade - BN)",
+        "Sinto ansiedade em situações de risco ou incerteza. (Evitação de Dano - ED)",
+        "Evito decisões que possam gerar críticas ou falhas. (Evitação de Dano - ED)",
+        "Busco apoio e aprovação de outros antes de decidir. (Dependência de Recompensa - DR)",
+        "Sinto motivação extra quando sou reconhecido publicamente. (Dependência de Recompensa - DR)",
+        "Continuo esforços mesmo diante de frustrações. (Persistência - P)",
+        "Finalizo tarefas mesmo quando enfrentam resistência. (Persistência - P)",
+        "Tenho clareza de objetivos e valores que guiam decisões. (Autodireção - AD)",
+        "Assumo responsabilidade pelos resultados, bons ou ruins. (Autodireção - AD)",
         "Tento entender perspectiva de todos antes de agir. (Cooperatividade - C)",
-        "Priorizo harmonia e colaboracao sobre competicao. (Cooperatividade - C)",
-        "Busco proposito maior no que faco. (Autotranscendencia - AT)",
-        "Sinto-me conectado(a) a algo maior que minhas tarefas diarias. (Autotranscendencia - AT)"
+        "Priorizo harmonia e colaboração sobre competição. (Cooperatividade - C)",
+        "Busco propósito maior no que faço. (Autotranscendência - AT)",
+        "Sinto-me conectado(a) a algo maior que minhas tarefas diárias. (Autotranscendência - AT)"
     ]
 }
 
 EMPLOYEE_ASSESSMENT_QUESTIONS = {
-    "Bloco 1 – Idealista Exigente (Funcionario)": [
-        "Busco constantemente a excelencia em tudo que faco, mesmo que isso exija mais esforco da equipe.",
-        "Tenho dificuldade em aceitar trabalhos ou resultados que nao atendam aos meus altos padroes de qualidade.",
-        "Quando percebo um erro ou falha no grupo, sinto a necessidade de aponta-lo para que seja corrigido.",
-        "Frequentemente me vejo tentando inspirar a equipe a alcancar um objetivo maior ou uma visao mais ambiciosa.",
+    "Bloco 1 – Idealista Exigente (Funcionário)": [
+        "Busco constantemente a excelência em tudo que faço, mesmo que isso exija mais esforço da equipe.",
+        "Tenho dificuldade em aceitar trabalhos ou resultados que não atendam aos meus altos padrões de qualidade.",
+        "Quando percebo um erro ou falha no grupo, sinto a necessidade de apontá-lo para que seja corrigido.",
+        "Frequentemente me vejo tentando inspirar a equipe a alcançar um objetivo maior ou uma visão mais ambiciosa.",
         "Sinto-me frustrado(a) quando o grupo parece satisfeito com resultados medianos ou 'bons o suficiente'.",
-        "Acredito que a disciplina e o rigor sao fundamentais para o sucesso de qualquer projeto em equipe.",
-        "Se sinto que minhas ideias ou padroes nao sao valorizados, posso me tornar critico(a) em relacao ao progresso do grupo.",
-        "Prefiro trabalhar com pessoas que compartilham meu nivel de exigencia e comprometimento.",
-        "Em discussoes de grupo, foco mais nos padroes e na qualidade do que nas relacoes interpessoais.",
-        "As vezes, sinto que minhas criticas, mesmo bem-intencionadas, me isolam ou me tornam alvo de ressentimento no grupo.",
-        "Tenho uma visao clara de como as coisas deveriam ser feitas e tento guiar o grupo nessa direcao.",
-        "A mediocridade ou a falta de ambicao no grupo me incomodam profundamente."
+        "Acredito que a disciplina e o rigor são fundamentais para o sucesso de qualquer projeto em equipe.",
+        "Se sinto que minhas ideias ou padrões não são valorizados, posso me tornar crítico(a) em relação ao progresso do grupo.",
+        "Prefiro trabalhar com pessoas que compartilham meu nível de exigência e comprometimento.",
+        "Em discussões de grupo, foco mais nos padrões e na qualidade do que nas relações interpessoais.",
+        "Às vezes, sinto que minhas críticas, mesmo bem-intencionadas, me isolam ou me tornam alvo de ressentimento no grupo.",
+        "Tenho uma visão clara de como as coisas deveriam ser feitas e tento guiar o grupo nessa direção.",
+        "A mediocridade ou a falta de ambição no grupo me incomodam profundamente."
     ],
-    "Bloco 2 – Contenedor Empatico (Funcionario)": [
+    "Bloco 2 – Contenedor Empático (Funcionário)": [
         "Sou frequentemente procurado(a) por colegas para desabafar ou buscar apoio emocional.",
-        "Percebo facilmente o clima emocional do grupo e tento agir para torna-lo mais harmonioso.",
-        "Priorizo o bem-estar e as boas relacoes na equipe, mesmo que isso signifique ceder em alguns pontos.",
-        "Sinto-me responsavel por ajudar colegas que estao passando por dificuldades ou estresse.",
+        "Percebo facilmente o clima emocional do grupo e tento agir para torná-lo mais harmonioso.",
+        "Priorizo o bem-estar e as boas relações na equipe, mesmo que isso signifique ceder em alguns pontos.",
+        "Sinto-me responsável por ajudar colegas que estão passando por dificuldades ou estresse.",
         "Tenho facilidade em ouvir diferentes pontos de vista e mediar conflitos na equipe.",
-        "Em momentos de tensao no grupo, minha primeira reacao e tentar acalmar os animos.",
-        "As vezes, sinto que absorvo demais os problemas ou a negatividade dos outros no ambiente de trabalho.",
-        "Acredito que um ambiente de seguranca psicologica e essencial para a produtividade da equipe.",
-        "Consigo manter a calma e oferecer suporte mesmo quando o grupo esta sob pressao.",
-        "Preocupo-me mais em garantir que todos se sintam incluidos e ouvidos do que em impor minha propria opiniao.",
-        "Evito confrontos diretos e busco solucoes que agradem a maioria das pessoas no grupo.",
+        "Em momentos de tensão no grupo, minha primeira reação é tentar acalmar os ânimos.",
+        "Às vezes, sinto que absorvo demais os problemas ou a negatividade dos outros no ambiente de trabalho.",
+        "Acredito que um ambiente de segurança psicológica é essencial para a produtividade da equipe.",
+        "Consigo manter a calma e oferecer suporte mesmo quando o grupo está sob pressão.",
+        "Preocupo-me mais em garantir que todos se sintam incluídos e ouvidos do que em impor minha própria opinião.",
+        "Evito confrontos diretos e busco soluções que agradem a maioria das pessoas no grupo.",
         "Sinto-me energizado(a) ao ajudar a equipe a superar desafios emocionais ou relacionais."
     ],
-    "Bloco 3 – Buscador de Reconhecimento (Funcionario)": [
-        "Gosto quando minhas contribuicoes sao publicamente reconhecidas pelo lider ou pela equipe.",
-        "Busco oportunidades para apresentar ideias ou liderar iniciativas que me coloquem em evidencia.",
-        "Sinto-me motivado(a) por elogios e pela admiracao dos meus colegas e superiores.",
-        "Comparo meu desempenho com o dos outros e me esforco para ser um dos melhores da equipe.",
-        "Fico desapontado(a) ou ressentido(a) quando sinto que meu trabalho nao recebe a atenção que merece.",
-        "Tenho facilidade em 'vender' minhas ideias e influenciar a opiniao do grupo a meu favor.",
-        "As vezes, posso exagerar um pouco minhas conquistas para causar uma boa impressao.",
+    "Bloco 3 – Buscador de Reconhecimento (Funcionário)": [
+        "Gosto quando minhas contribuições são publicamente reconhecidas pelo líder ou pela equipe.",
+        "Busco oportunidades para apresentar ideias ou liderar iniciativas que me coloquem em evidência.",
+        "Sinto-me motivado(a) por elogios e pela admiração dos meus colegas e superiores.",
+        "Comparo meu desempenho com o dos outros e me esforço para ser um dos melhores da equipe.",
+        "Fico desapontado(a) ou ressentido(a) quando sinto que meu trabalho não recebe a atenção que merece.",
+        "Tenho facilidade em 'vender' minhas ideias e influenciar a opinião do grupo a meu favor.",
+        "Às vezes, posso exagerar um pouco minhas conquistas para causar uma boa impressão.",
         "A ideia de passar despercebido(a) ou ser apenas 'mais um' no grupo me incomoda.",
-        "Se sinto que outro colega esta recebendo mais destaque, posso sentir inveja ou tentar minimizar suas conquistas.",
-        "Acredito que minha presenca e minhas ideias agregam um valor especial a equipe.",
-        "Em reunioes, faco questao de participar ativamente para que minhas opinioes sejam ouvidas.",
-        "Ja fui criticado(a) por parecer buscar demais os holofotes ou por ser competitivo(a) demais."
+        "Se sinto que outro colega está recebendo mais destaque, posso sentir inveja ou tentar minimizar suas conquistas.",
+        "Acredito que minha presença e minhas ideias agregam um valor especial à equipe.",
+        "Em reuniões, faço questão de participar ativamente para que minhas opiniões sejam ouvidas.",
+        "Já fui criticado(a) por parecer buscar demais os holofotes ou por ser competitivo(a) demais."
     ],
-    "Bloco 4 – Estruturador Cauteloso (Funcionario)": [
-        "Sinto-me mais confortavel quando ha regras claras, processos definidos e um plano bem estruturado.",
-        "Preocupo-me com os riscos e prefiro analisar cuidadosamente antes de tomar decisoes ou apoiar novas ideias.",
-        "Tenho o habito de verificar se os procedimentos estao sendo seguidos corretamente pela equipe.",
-        "Resisto a mudancas repentinas ou a abordagens que me parecam desorganizadas ou impulsivas.",
-        "Prefiro metodos comprovados e seguros a experimentar solucoes inovadoras, mas incertas.",
-        "Em situacoes de caos ou incerteza no grupo, tento trazer ordem e estrutura para a discussao.",
+    "Bloco 4 – Estruturador Cauteloso (Funcionário)": [
+        "Sinto-me mais confortável quando há regras claras, processos definidos e um plano bem estruturado.",
+        "Preocupo-me com os riscos e prefiro analisar cuidadosamente antes de tomar decisões ou apoiar novas ideias.",
+        "Tenho o hábito de verificar se os procedimentos estão sendo seguidos corretamente pela equipe.",
+        "Resisto a mudanças repentinas ou a abordagens que me pareçam desorganizadas ou impulsivas.",
+        "Prefiro métodos comprovados e seguros a experimentar soluções inovadoras, mas incertas.",
+        "Em situações de caos ou incerteza no grupo, tento trazer ordem e estrutura para a discussão.",
         "A falta de planejamento ou a ambiguidade nas tarefas me gera ansiedade.",
         "Valorizo a estabilidade e a previsibilidade no ambiente de trabalho.",
-        "Quando surgem conflitos, foco em encontrar solucoes praticas e racionais, evitando discussoes emocionais.",
-        "Sou detalhista e atento(a) a possiveis problemas ou inconsistencias nos planos da equipe.",
-        "Posso ser visto(a) como alguem resistente a novas ideias ou que 'coloca dificuldade' em propostas mais ousadas.",
-        "Acredito que seguir as regras e a melhor forma de evitar problemas e garantir a eficiencia do grupo."
+        "Quando surgem conflitos, foco em encontrar soluções práticas e racionais, evitando discussões emocionais.",
+        "Sou detalhista e atento(a) a possíveis problemas ou inconsistências nos planos da equipe.",
+        "Posso ser visto(a) como alguém resistente a novas ideias ou que 'coloca dificuldade' em propostas mais ousadas.",
+        "Acredito que seguir as regras é a melhor forma de evitar problemas e garantir a eficiência do grupo."
     ],
-    "Bloco 5 – Relacional Reativo (Funcionario)": [
-        "Sou muito sensivel ao clima interpessoal e percebo facilmente quando ha tensoes nao ditas no grupo.",
+    "Bloco 5 – Relacional Reativo (Funcionário)": [
+        "Sou muito sensível ao clima interpessoal e percebo facilmente quando há tensões não ditas no grupo.",
         "Preocupo-me bastante com o que os outros pensam de mim e evito fazer coisas que possam desagradar.",
-        "Tenho dificuldade em dizer 'nao' ou em expressar opinioes que possam gerar conflito.",
-        "Adapto meu comportamento para me encaixar melhor no grupo ou para evitar ser excluido(a).",
-        "Em situacoes de conflito, tendo a ficar quieto(a) ou a concordar com a maioria para evitar problemas.",
-        "Sinto-me desconfortavel ou ansioso(a) quando percebo criticas ou desaprovacao, mesmo que indiretas.",
-        "Ja me senti injusticado(a) ou culpabilizado(a) por problemas do grupo, mesmo sem ter responsabilidade direta.",
-        "Prefiro seguir o fluxo do grupo a tentar impor minhas proprias ideias ou vontades.",
-        "Se me sinto ameacado(a) ou desvalorizado(a), posso me retrair ou expressar meu descontentamento de forma indireta (ex: fofoca, atrasos).",
-        "Busco constantemente a aprovacao e a aceitacao dos meus colegas e do meu lider.",
-        "Tenho medo de ser mal interpretado(a) ou de causar uma ma impressao no grupo.",
-        "As vezes, sinto que minhas proprias necessidades ficam em segundo plano para manter a harmonia do grupo."
+        "Tenho dificuldade em dizer 'não' ou em expressar opiniões que possam gerar conflito.",
+        "Adapto meu comportamento para me encaixar melhor no grupo ou para evitar ser excluído(a).",
+        "Em situações de conflito, tendo a ficar quieto(a) ou a concordar com a maioria para evitar problemas.",
+        "Sinto-me desconfortável ou ansioso(a) quando percebo críticas ou desaprovação, mesmo que indiretas.",
+        "Já me senti injustiçado(a) ou culpabilizado(a) por problemas do grupo, mesmo sem ter responsabilidade direta.",
+        "Prefiro seguir o fluxo do grupo a tentar impor minhas próprias ideias ou vontades.",
+        "Se me sinto ameaçado(a) ou desvalorizado(a), posso me retrair ou expressar meu descontentamento de forma indireta (ex: fofoca, atrasos).",
+        "Busco constantemente a aprovação e a aceitação dos meus colegas e do meu líder.",
+        "Tenho medo de ser mal interpretado(a) ou de causar uma má impressão no grupo.",
+        "Às vezes, sinto que minhas próprias necessidades ficam em segundo plano para manter a harmonia do grupo."
     ],
-    "Bloco 6 – Observador Consciente (Funcionario)": [
-        "Prefiro analisar as situacoes de forma logica e objetiva antes de me envolver emocionalmente.",
-        "Mantenho um certo distanciamento emocional para conseguir avaliar melhor as dinamicas do grupo.",
-        "Frequentemente ofereco insights ou analises que ajudam o grupo a entender melhor um problema.",
-        "Tenho dificuldade em lidar com explosoes emocionais ou dramas interpessoais no ambiente de trabalho.",
-        "Baseio minhas opinioes e decisoes em fatos e dados, mais do que em intuicao ou sentimentos.",
-        "Posso ser percebido(a) como alguem frio(a) ou indiferente as questoes emocionais do grupo.",
-        "Em discussoes acaloradas, costumo observar mais do que participar ativamente.",
-        "Acredito que a logica e a razao sao as melhores ferramentas para resolver os problemas da equipe.",
-        "Avalio a coerencia e a logica dos argumentos dos outros, apontando falhas quando as percebo.",
-        "Nao me deixo levar facilmente pelo 'entusiasmo' ou pela 'pressao' do grupo.",
-        "Meu distanciamento as vezes e interpretado como falta de comprometimento ou critica velada.",
-        "Busco entender as causas raizes dos problemas do grupo, em vez de focar apenas nos sintomas."
+    "Bloco 6 – Observador Consciente (Funcionário)": [
+        "Prefiro analisar as situações de forma lógica e objetiva antes de me envolver emocionalmente.",
+        "Mantenho um certo distanciamento emocional para conseguir avaliar melhor as dinâmicas do grupo.",
+        "Frequentemente ofereço insights ou análises que ajudam o grupo a entender melhor um problema.",
+        "Tenho dificuldade em lidar com explosões emocionais ou dramas interpessoais no ambiente de trabalho.",
+        "Baseio minhas opiniões e decisões em fatos e dados, mais do que em intuição ou sentimentos.",
+        "Posso ser percebido(a) como alguém frio(a) ou indiferente às questões emocionais do grupo.",
+        "Em discussões acaloradas, costumo observar mais do que participar ativamente.",
+        "Acredito que a lógica e a razão são as melhores ferramentas para resolver os problemas da equipe.",
+        "Avalio a coerência e a lógica dos argumentos dos outros, apontando falhas quando as percebo.",
+        "Não me deixo levar facilmente pelo 'entusiasmo' ou pela 'pressão' do grupo.",
+        "Meu distanciamento às vezes é interpretado como falta de comprometimento ou crítica velada.",
+        "Busco entender as causas raízes dos problemas do grupo, em vez de focar apenas nos sintomas."
     ],
-    "Bloco 7 – Executor Decidido (Funcionario)": [
-        "Em vez de ficar analisando, prefiro partir logo para a acao e corrigir o curso se for preciso.",
-        "Quando ha indecisao na equipe, eu tomo a frente e dou a direcao.",
-        "Sinto-me mais motivado(a) quando tenho autonomia total para decidir o como da execucao.",
-        "Tenho facilidade em tomar decisoes rapidas, mesmo com informacoes incompletas.",
-        "Em uma crise, meu foco principal e resolver o problema e garantir o resultado, deixando as emocoes para depois.",
-        "Sou visto(a) como alguem assertivo(a) e direto(a) na comunicação, sem rodeios.",
-        "A lentidao ou a passividade de um colega me irritam profundamente e me fazem querer agir por ele.",
+    "Bloco 7 – Executor Decidido (Funcionário)": [
+        "Em vez de ficar analisando, prefiro partir logo para a ação e corrigir o curso se for preciso.",
+        "Quando há indecisão na equipe, eu tomo a frente e dou a direção.",
+        "Sinto-me mais motivado(a) quando tenho autonomia total para decidir o como da execução.",
+        "Tenho facilidade em tomar decisões rápidas, mesmo com informações incompletas.",
+        "Em uma crise, meu foco principal é resolver o problema e garantir o resultado, deixando as emoções para depois.",
+        "Sou visto(a) como alguém assertivo(a) e direto(a) na comunicação, sem rodeios.",
+        "A lentidão ou a passividade de um colega me irritam profundamente e me fazem querer agir por ele.",
         "Priorizo o resultado final e o cumprimento da meta acima de quaisquer burocracias ou detalhes.",
-        "Nao tenho medo de confrontar um problema ou uma pessoa se isso for necessario para alcancar o objetivo.",
-        "Sinto-me energizado(a) pela pressao e pelos desafios que exigem uma reacao imediata.",
-        "Minha principal contribuicao para a equipe e a capacidade de fazer as coisas acontecerem.",
-        "Acredito que o tempo e um recurso valioso e me esforco para manter um alto senso de urgencia."
+        "Não tenho medo de confrontar um problema ou uma pessoa se isso for necessário para alcançar o objetivo.",
+        "Sinto-me energizado(a) pela pressão e pelos desafios que exigem uma reação imediata.",
+        "Minha principal contribuição para a equipe é a capacidade de fazer as coisas acontecerem.",
+        "Acredito que o tempo é um recurso valioso e me esforço para manter um alto senso de urgência."
     ],
-    "Bloco 8 – Temperamento e Carater (Cloninger Funcionario)": [
-        "Busco frequentemente experiencias novas e estimulos variados (BN).",
-        "Sinto ansiedade em situacoes de risco ou desconhecidas (ED).",
-        "Procuro recompensas externas e aceitacao social em minhas decisoes (DR).",
-        "Persevero em tarefas mesmo quando dificeis ou frustrantes (P).",
-        "Estabeleco metas claras e sigo principios proprios de forma consistente (AD).",
+    "Bloco 8 – Temperamento e Caráter (Cloninger Funcionário)": [
+        "Busco frequentemente experiências novas e estímulos variados (BN).",
+        "Sinto ansiedade em situações de risco ou desconhecidas (ED).",
+        "Procuro recompensas externas e aceitação social em minhas decisões (DR).",
+        "Persevero em tarefas mesmo quando difíceis ou frustrantes (P).",
+        "Estabeleço metas claras e sigo princípios próprios de forma consistente (AD).",
         "Colaboro com os outros e sou compreensivo(a) mesmo em conflitos (C).",
-        "Sinto conexao com algo maior ou proposito transcendente (AT).",
-        "Evito riscos desnecessarios mesmo que perca oportunidades (ED).",
-        "Procuro desafios e novas experiencias mesmo que envolvam riscos (BN).",
-        "Tenho dificuldade em cooperar quando meus objetivos individuais estao em jogo (C).",
-        "Ajusto meu comportamento para agradar os outros ou obter aprovacao (DR).",
-        "Sigo minhas conviccoes pessoais mesmo quando nao reconhecido pelos outros (AD).",
-        "Sou flexivel e me adapto a mudancas e incertezas (P).",
+        "Sinto conexão com algo maior ou propósito transcendente (AT).",
+        "Evito riscos desnecessários mesmo que perca oportunidades (ED).",
+        "Procuro desafios e novas experiências mesmo que envolvam riscos (BN).",
+        "Tenho dificuldade em cooperar quando meus objetivos individuais estão em jogo (C).",
+        "Ajusto meu comportamento para agradar os outros ou obter aprovação (DR).",
+        "Sigo minhas convicções pessoais mesmo quando não reconhecido pelos outros (AD).",
+        "Sou flexível e me adapto a mudanças e incertezas (P).",
         "Sinto que minha vida tem um sentido maior ou espiritual (AT)."
     ]
 }
 
 EMPLOYEE_BLOCK_TO_PROFILE = {
+    "Bloco 1 – Idealista Exigente (Funcionário)": "O Idealista Exigente",
+    "Bloco 2 – Contenedor Empático (Funcionário)": "O Contenedor Empático",
+    "Bloco 3 – Buscador de Reconhecimento (Funcionário)": "O Buscador de Reconhecimento",
+    "Bloco 4 – Estruturador Cauteloso (Funcionário)": "O Estruturador Cauteloso",
+    "Bloco 5 – Relacional Reativo (Funcionário)": "O Relacional Reativo",
+    "Bloco 6 – Observador Consciente (Funcionário)": "O Observador Consciente",
+    "Bloco 7 – Executor Decidido (Funcionário)": "O Executor Decidido",
     "Bloco 1 – Idealista Exigente (Funcionario)": "O Idealista Exigente",
-    "Bloco 2 – Contenedor Empatico (Funcionario)": "O Contenedor Empatico",
+    "Bloco 2 – Contenedor Empatico (Funcionario)": "O Contenedor Empático",
     "Bloco 3 – Buscador de Reconhecimento (Funcionario)": "O Buscador de Reconhecimento",
     "Bloco 4 – Estruturador Cauteloso (Funcionario)": "O Estruturador Cauteloso",
     "Bloco 5 – Relacional Reativo (Funcionario)": "O Relacional Reativo",
@@ -2151,27 +2158,35 @@ EMPLOYEE_BLOCK_TO_PROFILE = {
 }
 
 EMPLOYEE_BLOCK_SHORT_NAMES = {
+    "Bloco 1 – Idealista Exigente (Funcionário)": "Autoridade",
+    "Bloco 2 – Contenedor Empático (Funcionário)": "Contenção",
+    "Bloco 3 – Buscador de Reconhecimento (Funcionário)": "Narcisismo",
+    "Bloco 4 – Estruturador Cauteloso (Funcionário)": "Estrutura",
+    "Bloco 5 – Relacional Reativo (Funcionário)": "Relacional",
+    "Bloco 6 – Observador Consciente (Funcionário)": "Observação",
+    "Bloco 7 – Executor Decidido (Funcionário)": "Execução",
     "Bloco 1 – Idealista Exigente (Funcionario)": "Autoridade",
-    "Bloco 2 – Contenedor Empatico (Funcionario)": "Contencao",
+    "Bloco 2 – Contenedor Empatico (Funcionario)": "Contenção",
     "Bloco 3 – Buscador de Reconhecimento (Funcionario)": "Narcisismo",
     "Bloco 4 – Estruturador Cauteloso (Funcionario)": "Estrutura",
     "Bloco 5 – Relacional Reativo (Funcionario)": "Relacional",
-    "Bloco 6 – Observador Consciente (Funcionario)": "Observacao",
-    "Bloco 7 – Executor Decidido (Funcionario)": "Execucao"
+    "Bloco 6 – Observador Consciente (Funcionario)": "Observação",
+    "Bloco 7 – Executor Decidido (Funcionario)": "Execução"
 }
 
 EMPLOYEE_CLONINGER_SUBDIMENSIONS = {
     "BN": {"name": "Busca de Novidade", "questions": [0, 8]},
-    "ED": {"name": "Evitacao de Dano", "questions": [1, 7]},
-    "DR": {"name": "Dependencia de Recompensa", "questions": [2, 10]},
-    "P": {"name": "Persistencia", "questions": [3, 12]},
-    "AD": {"name": "Autodirecao", "questions": [4, 11]},
+    "ED": {"name": "Evitação de Dano", "questions": [1, 7]},
+    "DR": {"name": "Dependência de Recompensa", "questions": [2, 10]},
+    "P": {"name": "Persistência", "questions": [3, 12]},
+    "AD": {"name": "Autodireção", "questions": [4, 11]},
     "C": {"name": "Cooperatividade", "questions": [5, 9]},
-    "AT": {"name": "Autotranscendencia", "questions": [6, 13]}
+    "AT": {"name": "Autotranscendência", "questions": [6, 13]}
 }
 
 ARCHETYPE_TO_SIGLA = {
     "O Idealista Exigente": "IE",
+    "O Contenedor Empático": "CE",
     "O Contenedor Empatico": "CE",
     "O Buscador de Reconhecimento": "BR",
     "O Estruturador Cauteloso": "EC",
@@ -2182,27 +2197,39 @@ ARCHETYPE_TO_SIGLA = {
 
 CLONINGER_SUBDIMENSIONS = {
     "BN": {"name": "Busca de Novidade", "questions": [0, 1]},
-    "ED": {"name": "Evitacao de Dano", "questions": [2, 3]},
-    "DR": {"name": "Dependencia de Recompensa", "questions": [4, 5]},
-    "P": {"name": "Persistencia", "questions": [6, 7]},
-    "AD": {"name": "Autodirecao", "questions": [8, 9]},
+    "ED": {"name": "Evitação de Dano", "questions": [2, 3]},
+    "DR": {"name": "Dependência de Recompensa", "questions": [4, 5]},
+    "P": {"name": "Persistência", "questions": [6, 7]},
+    "AD": {"name": "Autodireção", "questions": [8, 9]},
     "C": {"name": "Cooperatividade", "questions": [10, 11]},
-    "AT": {"name": "Autotranscendencia", "questions": [12, 13]}
+    "AT": {"name": "Autotranscendência", "questions": [12, 13]}
 }
 
 BLOCK_SHORT_NAMES = {
     "Bloco 1 – Autoridade Interna, Autoimagem e Superego": "Autoridade",
-    "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": "Contencao",
+    "Bloco 2 – Contenção Emocional, Empatia e Círculo de Segurança": "Contenção",
+    "Bloco 3 – Narcisismo, Reconhecimento e Motivação": "Narcisismo",
+    "Bloco 4 – Estrutura, Controle e Tolerância à Ambiguidade": "Estrutura",
+    "Bloco 5 – Dinâmicas Relacionais, Transferência e Contratransferência": "Relacional",
+    "Bloco 6 – Autoconsciência, Mentalização e Defesas do Ego": "Observação",
+    "Bloco 7 – Ação, Urgência e Foco na Entrega": "Execução",
+    "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": "Contenção",
     "Bloco 3 – Narcisismo, Reconhecimento e Motivacao": "Narcisismo",
     "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade": "Estrutura",
     "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia": "Relacional",
-    "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego": "Observacao",
-    "Bloco 7 – Acao, Urgencia e Foco na Entrega": "Execucao"
+    "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego": "Observação",
+    "Bloco 7 – Acao, Urgencia e Foco na Entrega": "Execução"
 }
 
 BLOCK_TO_PROFILE = {
     "Bloco 1 – Autoridade Interna, Autoimagem e Superego": "O Idealista Exigente",
-    "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": "O Contenedor Empatico",
+    "Bloco 2 – Contenção Emocional, Empatia e Círculo de Segurança": "O Contenedor Empático",
+    "Bloco 3 – Narcisismo, Reconhecimento e Motivação": "O Buscador de Reconhecimento",
+    "Bloco 4 – Estrutura, Controle e Tolerância à Ambiguidade": "O Estruturador Cauteloso",
+    "Bloco 5 – Dinâmicas Relacionais, Transferência e Contratransferência": "O Relacional Reativo",
+    "Bloco 6 – Autoconsciência, Mentalização e Defesas do Ego": "O Observador Consciente",
+    "Bloco 7 – Ação, Urgência e Foco na Entrega": "O Executor Decidido",
+    "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca": "O Contenedor Empático",
     "Bloco 3 – Narcisismo, Reconhecimento e Motivacao": "O Buscador de Reconhecimento",
     "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade": "O Estruturador Cauteloso",
     "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia": "O Relacional Reativo",
@@ -2672,10 +2699,10 @@ if st.session_state.get('employee_token') and not st.session_state.get('authenti
     st.session_state.page = "EmployeeAssessment"
     is_employee_access = True
 
-# Default: if not authenticated and no token/invite, show Login
+# Default: if not authenticated and no token/invite, show Home (vitrine)
 if not st.session_state.get('authenticated') and not is_employee_access and not st.session_state.get('invite_ref'):
-    if st.session_state.page not in ("Login", "InviteWelcome", "EmployeeAssessment"):
-        st.session_state.page = "Login"
+    if st.session_state.page not in ("Home", "Login", "InviteWelcome", "EmployeeAssessment"):
+        st.session_state.page = "Home"
 
 # Navigation Menu Sections with Icons
 MENU_SECTIONS = [
@@ -2719,8 +2746,8 @@ def render_sidebar_navigation():
                 box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
             }
             [data-testid="collapsedControl"] svg {
-                fill: white !important;
-                stroke: white !important;
+                fill: #d19f09 !important;
+                stroke: #d19f09 !important;
             }
             [data-testid="collapsedControl"]:hover {
                 background-color: #1a8ba6 !important;
@@ -2936,14 +2963,12 @@ def render_sidebar_navigation():
         if st.session_state.authenticated:
             st.markdown('<div class="nav-section-label">Minha Área</div>', unsafe_allow_html=True)
             auth_menu = [
+                {"key": "Curso", "label": "Curso LPS", "page": "LPS Curso"},
                 {"key": "Dashboard", "label": "Dashboard", "page": "Dashboard"},
                 {"key": "LPTest", "label": "LPTest", "page": "LPTest"},
                 {"key": "LPChat", "label": "LPChat", "page": "LPChat"},
                 {"key": "Equipe", "label": "Gestão de Equipe", "page": "TeamManagement"},
-                {"key": "Curso", "label": "Curso LPS", "page": "LPS Curso"},
             ]
-            if is_user_admin(st.session_state.user['id']):
-                auth_menu.append({"key": "GestaoLPS", "label": "Gestão LPS", "page": "GestaoLPS"})
             for item in auth_menu:
                 is_active = (st.session_state.page == item["page"])
                 if st.button(item['label'], key=f"{key_prefix}auth_{item['key']}", use_container_width=True, type="primary" if is_active else "secondary"):
@@ -3116,11 +3141,11 @@ def render_assessment_form(form_key, is_employee=False):
     responses = {}
     if is_employee:
         questions_dict = EMPLOYEE_ASSESSMENT_QUESTIONS
-        cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger Funcionario)"
+        cloninger_block = "Bloco 8 – Temperamento e Caráter (Cloninger Funcionário)"
         cloninger_dims = EMPLOYEE_CLONINGER_SUBDIMENSIONS
     else:
         questions_dict = ASSESSMENT_QUESTIONS
-        cloninger_block = "Bloco 8 – Temperamento e Carater (Cloninger)"
+        cloninger_block = "Bloco 8 – Temperamento e Caráter (Cloninger)"
         cloninger_dims = CLONINGER_SUBDIMENSIONS
 
     total_blocks = len(questions_dict)
@@ -3851,12 +3876,12 @@ def generate_radar_chart(block_sums, profile_name=""):
     
     block_keys = [
         "Bloco 1 – Autoridade Interna, Autoimagem e Superego",
-        "Bloco 2 – Contencao Emocional, Empatia e Circulo de Seguranca",
-        "Bloco 3 – Narcisismo, Reconhecimento e Motivacao",
-        "Bloco 4 – Estrutura, Controle e Tolerancia a Ambiguidade",
-        "Bloco 5 – Dinamicas Relacionais, Transferencia e Contratransferencia",
-        "Bloco 6 – Autoconsciencia, Mentalizacao e Defesas do Ego",
-        "Bloco 7 – Acao, Urgencia e Foco na Entrega"
+        "Bloco 2 – Contenção Emocional, Empatia e Círculo de Segurança",
+        "Bloco 3 – Narcisismo, Reconhecimento e Motivação",
+        "Bloco 4 – Estrutura, Controle e Tolerância à Ambiguidade",
+        "Bloco 5 – Dinâmicas Relacionais, Transferência e Contratransferência",
+        "Bloco 6 – Autoconsciência, Mentalização e Defesas do Ego",
+        "Bloco 7 – Ação, Urgência e Foco na Entrega"
     ]
     
     values = []
@@ -4714,15 +4739,15 @@ if page == "Home":
                 </div>
             """, unsafe_allow_html=True)
         
-        # CTA
-        st.write("")
-        cta_cols = st.columns([1, 2, 1])
-        with cta_cols[1]:
-            st.markdown(f"""
-                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.2rem;">
-                    Comprar Curso / Solicitar Orcamento
-                </a>
-            """, unsafe_allow_html=True)
+        if not st.session_state.get('authenticated'):
+            st.write("")
+            cta_cols = st.columns([1, 2, 1])
+            with cta_cols[1]:
+                st.markdown(f"""
+                    <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.2rem;">
+                        Comprar Curso / Solicitar Orcamento
+                    </a>
+                """, unsafe_allow_html=True)
     
     # SOBRE SECTION
     elif current_section == "sobre":
@@ -4861,15 +4886,15 @@ if page == "Home":
                 st.session_state.show_login_modal = False
                 st.rerun()
         
-        # CTA
-        st.write("---")
-        cta_cols = st.columns([1, 2, 1])
-        with cta_cols[1]:
-            st.markdown(f"""
-                <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.1rem; background-color: #d19f09; color: #18738c;">
-                    Comprar Curso Completo
-                </a>
-            """, unsafe_allow_html=True)
+        if not st.session_state.get('authenticated'):
+            st.write("---")
+            cta_cols = st.columns([1, 2, 1])
+            with cta_cols[1]:
+                st.markdown(f"""
+                    <a href="{WHATSAPP_URL}" target="_blank" class="cta-button" style="display: block; text-align: center; font-size: 1.1rem; background-color: #d19f09; color: #18738c;">
+                        Comprar Curso Completo
+                    </a>
+                """, unsafe_allow_html=True)
     
     # LPSTEST SECTION - Preview with Paywall
     elif current_section == "lpstest":
@@ -5340,20 +5365,6 @@ elif page == "Dashboard":
             
             st.markdown("</div>", unsafe_allow_html=True)
         
-        # AI Insights Card
-        if manager_id:
-            st.markdown("<div class='dashboard-card'><h3>Insights da IA sobre sua Equipe</h3>", unsafe_allow_html=True)
-            
-            insights = get_ai_insights(manager_id, user_id)
-            if insights:
-                for insight in insights:
-                    insight_class = f"insight-{insight['type']}"
-                    icon = {'warning': 'O', 'info': 'i', 'alert': '!', 'success': '✓'}.get(insight['type'], 'i')
-                    st.markdown(f"<div class='insight-item {insight_class}'>{insight['message']}</div>", unsafe_allow_html=True)
-            else:
-                st.markdown("<p style='color: #666;'>Nenhum insight disponível ainda. Complete o LPTest e mapeie sua equipe.</p>", unsafe_allow_html=True)
-            
-            st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
         # Assessment Stats Card
@@ -5420,16 +5431,9 @@ elif page == "Dashboard":
             st.session_state.page = "TeamManagement"
             st.rerun()
     with dash_cols[3]:
-        # LPChat with access control
-        course_completed = is_course_completed(user_id)
-        if course_completed:
-            if st.button("LPChat", key="btn-dash-chat", use_container_width=True):
-                st.session_state.page = "LPChat"
-                st.rerun()
-        else:
-            if st.button("LPChat (Bloqueado)", key="btn-dash-chat-locked", use_container_width=True, disabled=True):
-                pass
-            st.caption("Complete os módulos teóricos para liberar")
+        if st.button("LPChat", key="btn-dash-chat", use_container_width=True):
+            st.session_state.page = "LPChat"
+            st.rerun()
     
     st.write("---")
     
@@ -5468,6 +5472,18 @@ elif page == "LPS Curso":
     
     st.title("Programa LPS")
     
+    st.markdown("""
+        <style>
+        [data-testid="stExpander"] summary {
+            color: #555555 !important;
+            font-weight: 600 !important;
+        }
+        [data-testid="stExpander"] {
+            border-color: #555555 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     if user_premium:
         user_id = st.session_state.user['id']
         db_progress = get_course_progress(user_id)
@@ -5494,9 +5510,6 @@ elif page == "LPS Curso":
                     if new_value != st.session_state.progress.get(lesson_id, False):
                         st.session_state.progress[lesson_id] = new_value
                         save_course_progress(user_id, st.session_state.progress)
-                if os.path.exists(mod['file']):
-                    with open(mod['file'], "rb") as f:
-                        st.download_button("Material de Apoio", f, os.path.basename(mod['file']), key=f"dl_{mod['id']}")
             else:
                 render_premium_gate()
 
@@ -5511,7 +5524,7 @@ elif page == "LPTest":
     
     st.markdown("""
         <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); color: white; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem;">
-            <h3 style="color: #d19f09; margin-top: 0;">Assessment de Liderança em 7 Eixos</h3>
+            <h3 style="color: #FFFFFF; margin-top: 0;">Assessment de Liderança em 7 Eixos</h3>
             <p style="margin-bottom: 0.5rem;">O LPTest mapeia seu perfil de liderança através de 70 questões distribuídas em 7 dimensões psicanalíticas:</p>
             <p style="font-size: 0.9rem; opacity: 0.9;">
                 <strong>1.</strong> Autoridade Interna &nbsp;|&nbsp;
@@ -5647,8 +5660,11 @@ elif page == "TeamManagement":
         
         has_existing_links = len(employees) > 0
         
-        # Create tabs for organization
-        tab_convite, tab_resultados = st.tabs(["Gerar Convites", "Resultados da Equipe"])
+        is_admin = is_user_admin(user_id)
+        if is_admin:
+            tab_convite, tab_resultados, tab_admin_convites, tab_admin_emails, tab_admin_monitoramento = st.tabs(["Gerar Convites", "Resultados da Equipe", "Convites Avançados", "Cadastro de E-mails", "Monitoramento"])
+        else:
+            tab_convite, tab_resultados = st.tabs(["Gerar Convites", "Resultados da Equipe"])
         
         with tab_convite:
             # Show Manager Profile First
@@ -5831,6 +5847,264 @@ elif page == "TeamManagement":
                     st.info("Nenhum funcionário respondeu ainda. Os resultados aparecerão aqui assim que completarem o assessment.")
             else:
                 st.info("Nenhum convite gerado ainda. Vá para a aba 'Gerar Convites' para criar links.")
+        
+        if is_admin:
+            with tab_admin_convites:
+                st.markdown("""
+                    <style>
+                    .gestao-card {
+                        background: white; border-radius: 12px; padding: 1.5rem;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #d19f09; margin-bottom: 1.5rem;
+                    }
+                    .gestao-card h3 { color: #18738c; margin: 0 0 1rem 0; font-size: 1.1rem; }
+                    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+                    .status-pendente { background: #fff3cd; color: #856404; }
+                    .status-andamento { background: #cce5ff; color: #004085; }
+                    .status-concluido { background: #d4edda; color: #155724; }
+                    .invite-link-box { background: #f8f9fa; border: 2px dashed #18738c; border-radius: 8px; padding: 1rem; text-align: center; word-break: break-all; font-family: monospace; color: #18738c; font-weight: bold; margin: 0.5rem 0; }
+                    .auth-user-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-bottom: 1px solid #eee; }
+                    .auth-user-row:last-child { border-bottom: none; }
+                    </style>
+                """, unsafe_allow_html=True)
+                
+                st.markdown("<div class='gestao-card'><h3>Gerar Links de Convite Avançados</h3>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Crie links únicos para convidar líderes ou equipes para o assessment.</p>", unsafe_allow_html=True)
+                
+                col_type, col_btn = st.columns([2, 1])
+                with col_type:
+                    invite_type = st.selectbox("Tipo de Convite", ["equipe", "lider"], format_func=lambda x: "Convite Equipe" if x == "equipe" else "Convite Líder", key="tm_gestao_invite_type")
+                with col_btn:
+                    st.write("")
+                    st.write("")
+                    if st.button("Gerar Novo Link", key="tm_gestao_gen_link", use_container_width=True, type="primary"):
+                        token = create_invite_link(invite_type, user_id)
+                        st.session_state['last_generated_invite'] = token
+                        st.session_state['last_invite_type'] = invite_type
+                        st.rerun()
+                
+                if st.session_state.get('last_generated_invite'):
+                    token = st.session_state['last_generated_invite']
+                    inv_type = st.session_state.get('last_invite_type', 'equipe')
+                    base_url = get_app_url()
+                    tipo_label = "Equipe" if inv_type == "equipe" else "Líder"
+                    full_link = f"{base_url}/?tipo={inv_type}&ref={token}"
+                    st.success(f"Link de Convite {tipo_label} gerado com sucesso!")
+                    st.text_input("Link para copiar:", value=full_link, key="tm_gestao_generated_link", disabled=False)
+                    st.caption("Selecione o link acima e copie. Envie para o convidado.")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                st.markdown("<div class='gestao-card'><h3>Histórico de Convites</h3>", unsafe_allow_html=True)
+                invite_links = get_invite_links(user_id)
+                if invite_links:
+                    for link in invite_links:
+                        link_token = link[1]
+                        link_type = link[2]
+                        is_used = link[5]
+                        used_email = link[4] or "-"
+                        created = link[6][:16] if link[6] else "-"
+                        status_class = "status-concluido" if is_used else "status-pendente"
+                        status_text = "Utilizado" if is_used else "Disponível"
+                        type_label = "Equipe" if link_type == "equipe" else "Líder"
+                        st.markdown(f"""
+                            <div class='auth-user-row'>
+                                <div><strong style='color: #18738c;'>{type_label}</strong> <span style='color: #999; margin-left: 8px; font-family: monospace; font-size: 0.85rem;'>ref={link_token}</span></div>
+                                <div><span class='status-badge {status_class}'>{status_text}</span> <span style='color: #999; font-size: 0.8rem; margin-left: 8px;'>{created}</span></div>
+                            </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.info("Nenhum convite gerado ainda.")
+                st.markdown("</div>", unsafe_allow_html=True)
+            
+            with tab_admin_emails:
+                st.markdown("<div class='gestao-card'><h3>Cadastro de E-mails Autorizados</h3>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Pré-cadastre os e-mails dos colaboradores. Apenas e-mails cadastrados aqui poderão iniciar o teste.</p>", unsafe_allow_html=True)
+                
+                with st.form("tm_add_auth_email_form", clear_on_submit=True):
+                    col_name, col_email, col_type = st.columns([2, 2, 1])
+                    with col_name:
+                        auth_name = st.text_input("Nome do Colaborador", placeholder="Ex: Maria Silva", key="tm_auth_name_input")
+                    with col_email:
+                        auth_email = st.text_input("E-mail do Colaborador", placeholder="maria@empresa.com", key="tm_auth_email_input")
+                    with col_type:
+                        auth_type = st.selectbox("Tipo", ["equipe", "lider"], format_func=lambda x: "Equipe" if x == "equipe" else "Líder", key="tm_auth_type_select")
+                    
+                    submit_auth = st.form_submit_button("Cadastrar E-mail", use_container_width=True, type="primary")
+                    if submit_auth:
+                        if auth_name and auth_email:
+                            success, error = add_authorized_user(auth_email, auth_name, auth_type, user_id)
+                            if success:
+                                st.success(f"E-mail {auth_email} cadastrado com sucesso!")
+                                st.rerun()
+                            else:
+                                st.warning(error)
+                        else:
+                            st.error("Preencha o nome e o e-mail do colaborador.")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                st.markdown("<div class='gestao-card'><h3>E-mails Cadastrados</h3>", unsafe_allow_html=True)
+                auth_users = get_authorized_users(user_id)
+                if auth_users:
+                    for au in auth_users:
+                        au_id = au[0]
+                        au_email = au[1]
+                        au_name = au[2]
+                        au_type = au[3]
+                        au_status = au[4]
+                        au_date = au[7][:16] if au[7] else "-"
+                        status_class = "status-concluido" if au_status == "concluido" else ("status-andamento" if au_status == "em_andamento" else "status-pendente")
+                        status_label = "Concluído" if au_status == "concluido" else ("Em Andamento" if au_status == "em_andamento" else "Pendente")
+                        type_label = "Equipe" if au_type == "equipe" else "Líder"
+                        
+                        col_info, col_send, col_action = st.columns([4, 1, 1])
+                        with col_info:
+                            st.markdown(f"""
+                                <div class='auth-user-row'>
+                                    <div><strong>{au_name}</strong> <span style='color: #666; margin-left: 8px;'>{au_email}</span> <span style='color: #999; margin-left: 8px; font-size: 0.8rem;'>({type_label})</span></div>
+                                    <div><span class='status-badge {status_class}'>{status_label}</span> <span style='color: #999; font-size: 0.8rem; margin-left: 8px;'>{au_date}</span></div>
+                                </div>
+                            """, unsafe_allow_html=True)
+                        with col_send:
+                            if au_status != "concluido":
+                                if not st.session_state.get(f"tm_invite_link_{au_id}"):
+                                    if st.button("Enviar Teste", key=f"tm_send_test_{au_id}", type="primary"):
+                                        invite_token = create_invite_link(au_type, user_id)
+                                        invite_base = get_app_url()
+                                        invite_full = f"{invite_base}/?tipo={au_type}&ref={invite_token}"
+                                        st.session_state[f"tm_invite_link_{au_id}"] = invite_full
+                                        invite_subject = "Convite LPS - Complete seu Assessment de Liderança"
+                                        invite_html = f"""
+                                        <html><body>
+                                        <h2 style="color:#18738c;">Olá, {au_name}!</h2>
+                                        <p>Você foi convidado(a) para realizar o <strong>LPTest</strong> - Assessment de Liderança Psicanalítica.</p>
+                                        <p>Clique no link abaixo para iniciar:</p>
+                                        <p><a href="{invite_full}" style="background-color:#18738c;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Iniciar Assessment</a></p>
+                                        <p style="color:#666;font-size:0.9rem;">Link direto: {invite_full}</p>
+                                        <hr><p style="color:#999;font-size:0.8rem;">Liderança Psicanalítica - Viviane Nishiura</p>
+                                        </body></html>
+                                        """
+                                        success_email, msg = send_email(au_email, invite_subject, invite_html)
+                                        if success_email:
+                                            st.session_state[f"tm_email_sent_{au_id}"] = True
+                                        else:
+                                            st.session_state[f"tm_email_failed_{au_id}"] = True
+                                        st.rerun()
+                                if st.session_state.get(f"tm_invite_link_{au_id}"):
+                                    link_val = st.session_state[f"tm_invite_link_{au_id}"]
+                                    st.text_input("Link", value=link_val, key=f"tm_link_display_{au_id}", disabled=False, label_visibility="collapsed")
+                                    if st.session_state.get(f"tm_email_sent_{au_id}"):
+                                        st.caption(f"E-mail enviado para {au_email}")
+                                    elif st.session_state.get(f"tm_email_failed_{au_id}"):
+                                        st.caption(f"E-mail não enviado (SMTP não configurado). Copie o link acima.")
+                                    else:
+                                        st.caption(f"Copie e envie para {au_email}")
+                        with col_action:
+                            if au_status != "concluido":
+                                if st.button("Remover", key=f"tm_remove_auth_{au_id}", type="secondary"):
+                                    delete_authorized_user(au_id)
+                                    st.rerun()
+                else:
+                    st.info("Nenhum e-mail cadastrado ainda.")
+                st.markdown("</div>", unsafe_allow_html=True)
+            
+            with tab_admin_monitoramento:
+                st.markdown("<div class='gestao-card'><h3>Monitoramento em Tempo Real</h3>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Acompanhe os resultados de todos os assessments realizados na plataforma.</p>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                leaders_data = get_all_leaders_results()
+                employees_data = get_all_employees_results()
+                monitoring_data = get_admin_monitoring_data(user_id)
+                
+                st.markdown("""
+                    <div class='gestao-card'>
+                        <h3 style='color: #18738c; border-bottom: 2px solid #d19f09; padding-bottom: 0.5rem; margin-bottom: 1rem;'>Resultados do LPTest Líder</h3>
+                        <p style='color: #666; font-size: 0.85rem; margin-bottom: 1rem;'>Gestores que completaram o assessment de liderança.</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                if leaders_data:
+                    ldr_header = st.columns([2, 2, 2, 2, 2])
+                    with ldr_header[0]: st.markdown("<strong style='color: #18738c;'>Nome</strong>", unsafe_allow_html=True)
+                    with ldr_header[1]: st.markdown("<strong style='color: #18738c;'>E-mail</strong>", unsafe_allow_html=True)
+                    with ldr_header[2]: st.markdown("<strong style='color: #18738c;'>Perfil Dominante</strong>", unsafe_allow_html=True)
+                    with ldr_header[3]: st.markdown("<strong style='color: #18738c;'>Perfil Secundário</strong>", unsafe_allow_html=True)
+                    with ldr_header[4]: st.markdown("<strong style='color: #18738c;'>Ações</strong>", unsafe_allow_html=True)
+                    st.markdown("<hr style='margin: 0.5rem 0; border-color: #eee;'>", unsafe_allow_html=True)
+                    
+                    csv_leaders = "Nome,E-mail,Perfil Dominante,Perfil Secundário,Papel Bion,Data\n"
+                    for ldr in leaders_data:
+                        l_mgr_id = ldr[0]; l_user_id = ldr[1]; l_name = ldr[2] or "-"; l_email = ldr[3] or "-"
+                        l_dominant = ldr[4] or "-"; l_secondary = ldr[5] or "-"
+                        l_details = json.loads(ldr[6]) if ldr[6] else {}
+                        l_bion = l_details.get("bion_role", "-") if isinstance(l_details, dict) else "-"
+                        l_date = ldr[7][:16] if ldr[7] else "-"
+                        csv_leaders += f'"{l_name}","{l_email}","{l_dominant}","{l_secondary}","{l_bion}","{l_date}"\n'
+                        
+                        ldr_cols = st.columns([2, 2, 2, 2, 2])
+                        with ldr_cols[0]: st.write(l_name)
+                        with ldr_cols[1]: st.write(l_email)
+                        with ldr_cols[2]: st.markdown(f"<span class='status-badge status-concluido'>{l_dominant}</span>", unsafe_allow_html=True)
+                        with ldr_cols[3]: st.write(l_secondary)
+                        with ldr_cols[4]:
+                            pdf_data_ldr = generate_laudo_pdf("", l_name, l_dominant or "O Idealista Exigente", l_secondary or "O Contenedor Empático", l_bion, respondent_type="gestor")
+                            st.download_button("Baixar Laudo (PDF)", data=pdf_data_ldr, file_name=f"laudo_lider_{l_name.replace(' ','_').lower()}.pdf", mime="application/pdf", key=f"tm_dl_laudo_ldr_{l_mgr_id}", use_container_width=True, type="primary")
+                    
+                    st.write("---")
+                    st.download_button("Exportar Líderes (CSV)", data=csv_leaders, file_name="relatorio_lideres_lps.csv", mime="text/csv", key="tm_export_leaders_csv", use_container_width=True)
+                else:
+                    st.info("Nenhum gestor completou o LPTest Líder ainda.")
+                
+                st.write("")
+                st.markdown("""
+                    <div class='gestao-card'>
+                        <h3 style='color: #18738c; border-bottom: 2px solid #d19f09; padding-bottom: 0.5rem; margin-bottom: 1rem;'>Resultados do LPTest Equipe</h3>
+                        <p style='color: #666; font-size: 0.85rem; margin-bottom: 1rem;'>Colaboradores que completaram o assessment de equipe.</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                if employees_data:
+                    emp_header = st.columns([2, 2, 2, 1, 2])
+                    with emp_header[0]: st.markdown("<strong style='color: #18738c;'>Nome</strong>", unsafe_allow_html=True)
+                    with emp_header[1]: st.markdown("<strong style='color: #18738c;'>E-mail</strong>", unsafe_allow_html=True)
+                    with emp_header[2]: st.markdown("<strong style='color: #18738c;'>Perfil</strong>", unsafe_allow_html=True)
+                    with emp_header[3]: st.markdown("<strong style='color: #18738c;'>Gestor</strong>", unsafe_allow_html=True)
+                    with emp_header[4]: st.markdown("<strong style='color: #18738c;'>Ações</strong>", unsafe_allow_html=True)
+                    st.markdown("<hr style='margin: 0.5rem 0; border-color: #eee;'>", unsafe_allow_html=True)
+                    
+                    csv_employees = "Nome,E-mail,Perfil Dominante,Perfil Secundário,Papel Bion,Gestor,Data\n"
+                    for emp_row in employees_data:
+                        e_id = emp_row[0]; e_name = emp_row[1] or "-"; e_email = emp_row[2] or "-"
+                        e_dominant = emp_row[3] or "-"; e_secondary = emp_row[4] or "-"; e_bion = emp_row[5] or "-"
+                        e_manager_name = emp_row[9] or "-"; e_date = emp_row[10][:16] if emp_row[10] else "-"
+                        csv_employees += f'"{e_name}","{e_email}","{e_dominant}","{e_secondary}","{e_bion}","{e_manager_name}","{e_date}"\n'
+                        
+                        emp_cols = st.columns([2, 2, 2, 1, 2])
+                        with emp_cols[0]: st.write(e_name)
+                        with emp_cols[1]: st.write(e_email)
+                        with emp_cols[2]: st.markdown(f"<span class='status-badge status-concluido'>{e_dominant}</span>", unsafe_allow_html=True)
+                        with emp_cols[3]: st.write(e_manager_name)
+                        with emp_cols[4]:
+                            pdf_data_emp = generate_laudo_pdf("", e_name, e_dominant or "O Idealista Exigente", e_secondary or "O Contenedor Empático", e_bion, respondent_type="funcionario")
+                            st.download_button("Baixar Laudo (PDF)", data=pdf_data_emp, file_name=f"laudo_equipe_{e_name.replace(' ','_').lower()}.pdf", mime="application/pdf", key=f"tm_dl_laudo_emp_{e_id}", use_container_width=True, type="primary")
+                    
+                    st.write("---")
+                    st.download_button("Exportar Equipes (CSV)", data=csv_employees, file_name="relatorio_equipes_lps.csv", mime="text/csv", key="tm_export_employees_csv", use_container_width=True)
+                else:
+                    st.info("Nenhum colaborador completou o LPTest Equipe ainda.")
+                
+                st.markdown("<div class='gestao-card'><h3>Resumo Geral</h3>", unsafe_allow_html=True)
+                total_leaders = len(leaders_data) if leaders_data else 0
+                total_employees = len(employees_data) if employees_data else 0
+                total_auth = len(monitoring_data) if monitoring_data else 0
+                total_completed = len([r for r in monitoring_data if r[3] == "concluido"]) if monitoring_data else 0
+                sum_cols = st.columns(4)
+                with sum_cols[0]: st.metric("Líderes Avaliados", total_leaders)
+                with sum_cols[1]: st.metric("Colaboradores Avaliados", total_employees)
+                with sum_cols[2]: st.metric("Total Convidados", total_auth)
+                with sum_cols[3]: st.metric("Convites Concluídos", total_completed)
+                st.markdown("</div>", unsafe_allow_html=True)
 
 elif page == "InviteWelcome":
     invite_ref = st.session_state.get('invite_ref', '')
@@ -6150,7 +6424,7 @@ elif page == "LPChat":
             box-shadow: 0 4px 15px rgba(13, 59, 102, 0.3);
         }
         .chat-header h1 {
-            color: #d19f09;
+            color: #FFFFFF;
             margin: 0;
             font-size: 2rem;
         }
@@ -6165,8 +6439,8 @@ elif page == "LPChat":
             border: 2px solid #e9ecef;
         }
         .example-questions {
-            background: linear-gradient(135deg, rgba(209, 159, 9, 0.15) 0%, rgba(209, 159, 9, 0.05) 100%);
-            border: 1px solid #d19f09;
+            background: linear-gradient(135deg, rgba(85, 85, 85, 0.08) 0%, rgba(85, 85, 85, 0.03) 100%);
+            border: 1px solid #555555;
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
@@ -6180,7 +6454,7 @@ elif page == "LPChat":
             padding: 0.75rem 1rem;
             border-radius: 8px;
             margin: 0.5rem 0;
-            border-left: 3px solid #d19f09;
+            border-left: 3px solid #555555;
             color: #333;
             font-style: italic;
             cursor: pointer;
@@ -6257,37 +6531,7 @@ elif page == "LPChat":
         render_premium_gate()
         st.stop()
     
-    if not access_status['can_access']:
-        if not access_status['course_completed']:
-            st.markdown("""
-                <div style='background-color: #fff3cd; padding: 2rem; border-radius: 10px; border-left: 4px solid #ffc107;'>
-                    <h3 style='color: #856404; margin-top: 0;'>Complete os módulos teóricos para liberar o LPChat</h3>
-                    <p style='color: #856404;'>
-                        O acesso ao consultor de IA é liberado após a conclusão dos 5 primeiros módulos do curso.
-                        Isso garante que você tenha a base teórica necessária para aproveitar ao máximo as análises da IA.
-                    </p>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            # Show progress
-            module_status = get_module_completion_status(user_id)
-            st.markdown("<h4 style='color: #18738c; margin-top: 2rem;'>Seu progresso nos módulos teóricos:</h4>", unsafe_allow_html=True)
-            
-            theoretical_modules = [1, 2, 3, 4, 5]
-            for mod_id in theoretical_modules:
-                if mod_id in module_status:
-                    status = module_status[mod_id]
-                    progress_pct = int(status['percentage'])
-                    if progress_pct == 100:
-                        st.markdown(f"[Completo] **{status['name']}**: {progress_pct}%")
-                    else:
-                        st.markdown(f"[Em andamento] **{status['name']}**: {progress_pct}%")
-            
-            st.write("---")
-            if st.button("Ir para o Curso", key="btn-goto-curso"):
-                st.session_state.page = "LPS Curso"
-                st.rerun()
-    else:
+    if True:
         # Initialize chat history
         if 'chat_messages' not in st.session_state:
             st.session_state.chat_messages = []
@@ -6626,6 +6870,10 @@ elif page == "Sobre":
         st.rerun()
 
 elif page == "GestaoLPS":
+    st.session_state.page = "TeamManagement"
+    st.rerun()
+
+elif page == "GestaoLPS_LEGACY_DISABLED":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
