@@ -640,6 +640,12 @@ def init_db():
     if 'is_admin' not in user_columns:
         c.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0")
     
+    # Migration: Add invite_token column to authorized_users if it doesn't exist
+    c.execute("PRAGMA table_info(authorized_users)")
+    au_columns = [col[1] for col in c.fetchall()]
+    if 'invite_token' not in au_columns:
+        c.execute("ALTER TABLE authorized_users ADD COLUMN invite_token TEXT")
+    
     conn.commit()
     conn.close()
 
@@ -1064,14 +1070,18 @@ def add_authorized_user(email, name, invite_type, invited_by):
     c = conn.cursor()
     try:
         auth_id = str(uuid.uuid4())
-        c.execute("INSERT INTO authorized_users (id, email, name, invite_type, invited_by) VALUES (?, ?, ?, ?, ?)",
-                  (auth_id, email.lower().strip(), name, invite_type, invited_by))
+        invite_token = str(uuid.uuid4())[:12]
+        link_id = str(uuid.uuid4())
+        c.execute("INSERT INTO authorized_users (id, email, name, invite_type, invited_by, invite_token) VALUES (?, ?, ?, ?, ?, ?)",
+                  (auth_id, email.lower().strip(), name, invite_type, invited_by, invite_token))
+        c.execute("INSERT INTO invite_links (id, token, invite_type, created_by) VALUES (?, ?, ?, ?)",
+                  (link_id, invite_token, invite_type, invited_by))
         conn.commit()
         conn.close()
         return True, None
     except sqlite3.IntegrityError:
         conn.close()
-        return False, "E-mail ja cadastrado na lista de autorizados."
+        return False, "E-mail já cadastrado na lista de autorizados."
 
 def get_authorized_users(invited_by=None):
     conn = get_db()
@@ -5877,26 +5887,28 @@ elif page == "TeamManagement":
                     st.write("")
                     st.write("")
                     if st.button("Gerar Novo Link", key="tm_gestao_gen_link", use_container_width=True, type="primary"):
-                        token = create_invite_link(invite_type, user_id)
-                        st.session_state['last_generated_invite'] = token
-                        st.session_state['last_invite_type'] = invite_type
+                        create_invite_link(invite_type, user_id)
                         st.rerun()
                 
-                if st.session_state.get('last_generated_invite'):
-                    token = st.session_state['last_generated_invite']
-                    inv_type = st.session_state.get('last_invite_type', 'equipe')
+                all_links_for_user = get_invite_links(user_id)
+                unused_links = [l for l in all_links_for_user if not l[5]]
+                if unused_links:
+                    newest = unused_links[0]
+                    newest_token = newest[1]
+                    newest_type = newest[2]
                     base_url = get_app_url()
-                    tipo_label = "Equipe" if inv_type == "equipe" else "Líder"
-                    full_link = f"{base_url}/?tipo={inv_type}&ref={token}"
-                    st.success(f"Link de Convite {tipo_label} gerado com sucesso!")
+                    tipo_label = "Equipe" if newest_type == "equipe" else "Líder"
+                    full_link = f"{base_url}/?tipo={newest_type}&ref={newest_token}"
+                    st.success(f"Último link disponível ({tipo_label}) — copie abaixo:")
                     st.text_input("Link para copiar:", value=full_link, key="tm_gestao_generated_link", disabled=False)
-                    st.caption("Selecione o link acima e copie. Envie para o convidado.")
+                    st.caption("Selecione o link acima e copie. Envie por WhatsApp ou e-mail.")
                 
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 st.markdown("<div class='gestao-card'><h3>Histórico de Convites</h3>", unsafe_allow_html=True)
                 invite_links = get_invite_links(user_id)
                 if invite_links:
+                    base_url_hist = get_app_url()
                     for link in invite_links:
                         link_token = link[1]
                         link_type = link[2]
@@ -5906,12 +5918,26 @@ elif page == "TeamManagement":
                         status_class = "status-concluido" if is_used else "status-pendente"
                         status_text = "Utilizado" if is_used else "Disponível"
                         type_label = "Equipe" if link_type == "equipe" else "Líder"
+                        full_hist_link = f"{base_url_hist}/?tipo={link_type}&ref={link_token}"
                         st.markdown(f"""
-                            <div class='auth-user-row'>
-                                <div><strong style='color: #18738c;'>{type_label}</strong> <span style='color: #999; margin-left: 8px; font-family: monospace; font-size: 0.85rem;'>ref={link_token}</span></div>
-                                <div><span class='status-badge {status_class}'>{status_text}</span> <span style='color: #999; font-size: 0.8rem; margin-left: 8px;'>{created}</span></div>
+                            <div style='padding: 0.5rem 0; border-bottom: 1px solid #eee;'>
+                                <div style='display:flex; align-items:center; gap:8px;'>
+                                    <strong style='color:#18738c;'>{type_label}</strong>
+                                    <span class='status-badge {status_class}'>{status_text}</span>
+                                    <span style='color:#999; font-size:0.8rem; margin-left:auto;'>{created}</span>
+                                </div>
                             </div>
                         """, unsafe_allow_html=True)
+                        if not is_used:
+                            st.text_input(
+                                f"link_{link_token}",
+                                value=full_hist_link,
+                                key=f"hist_link_{link_token}",
+                                label_visibility="collapsed",
+                                help="Selecione e copie para enviar"
+                            )
+                        else:
+                            st.caption(f"Usado por: {used_email}")
                 else:
                     st.info("Nenhum convite gerado ainda.")
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -5944,8 +5970,10 @@ elif page == "TeamManagement":
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 st.markdown("<div class='gestao-card'><h3>E-mails Cadastrados</h3>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666; font-size: 0.85rem;'>Copie o link ao lado de cada colaborador e envie por WhatsApp ou e-mail.</p>", unsafe_allow_html=True)
                 auth_users = get_authorized_users(user_id)
                 if auth_users:
+                    base_url = get_app_url()
                     for au in auth_users:
                         au_id = au[0]
                         au_email = au[1]
@@ -5953,57 +5981,61 @@ elif page == "TeamManagement":
                         au_type = au[3]
                         au_status = au[4]
                         au_date = au[7][:16] if au[7] else "-"
+                        au_token = au[8] if len(au) > 8 else None
+                        
                         status_class = "status-concluido" if au_status == "concluido" else ("status-andamento" if au_status == "em_andamento" else "status-pendente")
                         status_label = "Concluído" if au_status == "concluido" else ("Em Andamento" if au_status == "em_andamento" else "Pendente")
                         type_label = "Equipe" if au_type == "equipe" else "Líder"
                         
-                        col_info, col_send, col_action = st.columns([4, 1, 1])
-                        with col_info:
-                            st.markdown(f"""
-                                <div class='auth-user-row'>
-                                    <div><strong>{au_name}</strong> <span style='color: #666; margin-left: 8px;'>{au_email}</span> <span style='color: #999; margin-left: 8px; font-size: 0.8rem;'>({type_label})</span></div>
-                                    <div><span class='status-badge {status_class}'>{status_label}</span> <span style='color: #999; font-size: 0.8rem; margin-left: 8px;'>{au_date}</span></div>
+                        st.markdown(f"""
+                            <div style='padding: 0.6rem 0; border-bottom: 1px solid #eee;'>
+                                <div style='display:flex; align-items:center; gap:8px; flex-wrap:wrap;'>
+                                    <strong style='color:#18738c;'>{au_name}</strong>
+                                    <span style='color:#666; font-size:0.85rem;'>{au_email}</span>
+                                    <span style='color:#999; font-size:0.8rem;'>({type_label})</span>
+                                    <span class='status-badge {status_class}' style='margin-left:auto;'>{status_label}</span>
                                 </div>
-                            """, unsafe_allow_html=True)
-                        with col_send:
-                            if au_status != "concluido":
-                                if not st.session_state.get(f"tm_invite_link_{au_id}"):
-                                    if st.button("Enviar Teste", key=f"tm_send_test_{au_id}", type="primary"):
-                                        invite_token = create_invite_link(au_type, user_id)
-                                        invite_base = get_app_url()
-                                        invite_full = f"{invite_base}/?tipo={au_type}&ref={invite_token}"
-                                        st.session_state[f"tm_invite_link_{au_id}"] = invite_full
-                                        invite_subject = "Convite LPS - Complete seu Assessment de Liderança"
-                                        invite_html = f"""
-                                        <html><body>
-                                        <h2 style="color:#18738c;">Olá, {au_name}!</h2>
-                                        <p>Você foi convidado(a) para realizar o <strong>LPTest</strong> - Assessment de Liderança Psicanalítica.</p>
-                                        <p>Clique no link abaixo para iniciar:</p>
-                                        <p><a href="{invite_full}" style="background-color:#18738c;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Iniciar Assessment</a></p>
-                                        <p style="color:#666;font-size:0.9rem;">Link direto: {invite_full}</p>
-                                        <hr><p style="color:#999;font-size:0.8rem;">Liderança Psicanalítica - Viviane Nishiura</p>
-                                        </body></html>
-                                        """
-                                        success_email, msg = send_email(au_email, invite_subject, invite_html)
-                                        if success_email:
-                                            st.session_state[f"tm_email_sent_{au_id}"] = True
-                                        else:
-                                            st.session_state[f"tm_email_failed_{au_id}"] = True
+                            </div>
+                        """, unsafe_allow_html=True)
+                        
+                        if au_status != "concluido":
+                            if au_token:
+                                tipo_param = "lider" if au_type == "lider" else "equipe"
+                                full_link = f"{base_url}/?tipo={tipo_param}&ref={au_token}"
+                                col_link, col_del = st.columns([5, 1])
+                                with col_link:
+                                    st.text_input(
+                                        f"Link de convite — {au_name}",
+                                        value=full_link,
+                                        key=f"au_link_{au_id}",
+                                        label_visibility="collapsed",
+                                        help="Selecione e copie este link. Envie por WhatsApp ou e-mail."
+                                    )
+                                with col_del:
+                                    if st.button("🗑", key=f"tm_remove_auth_{au_id}", help="Remover cadastro"):
+                                        delete_authorized_user(au_id)
                                         st.rerun()
-                                if st.session_state.get(f"tm_invite_link_{au_id}"):
-                                    link_val = st.session_state[f"tm_invite_link_{au_id}"]
-                                    st.text_input("Link", value=link_val, key=f"tm_link_display_{au_id}", disabled=False, label_visibility="collapsed")
-                                    if st.session_state.get(f"tm_email_sent_{au_id}"):
-                                        st.caption(f"E-mail enviado para {au_email}")
-                                    elif st.session_state.get(f"tm_email_failed_{au_id}"):
-                                        st.caption(f"E-mail não enviado (SMTP não configurado). Copie o link acima.")
-                                    else:
-                                        st.caption(f"Copie e envie para {au_email}")
-                        with col_action:
-                            if au_status != "concluido":
-                                if st.button("Remover", key=f"tm_remove_auth_{au_id}", type="secondary"):
-                                    delete_authorized_user(au_id)
-                                    st.rerun()
+                            else:
+                                col_regen, col_del = st.columns([5, 1])
+                                with col_regen:
+                                    if st.button(f"Gerar link para {au_name}", key=f"tm_regen_{au_id}", type="primary"):
+                                        new_token = str(uuid.uuid4())[:12]
+                                        link_id = str(uuid.uuid4())
+                                        conn_t = get_db()
+                                        c_t = conn_t.cursor()
+                                        c_t.execute("UPDATE authorized_users SET invite_token = ? WHERE id = ?", (new_token, au_id))
+                                        c_t.execute("INSERT INTO invite_links (id, token, invite_type, created_by) VALUES (?, ?, ?, ?)", (link_id, new_token, au_type, user_id))
+                                        conn_t.commit()
+                                        conn_t.close()
+                                        st.rerun()
+                                with col_del:
+                                    if st.button("🗑", key=f"tm_remove_auth_{au_id}", help="Remover cadastro"):
+                                        delete_authorized_user(au_id)
+                                        st.rerun()
+                        else:
+                            st.caption(f"✅ Assessment concluído em {au_date}")
+                        
+                        st.write("")
                 else:
                     st.info("Nenhum e-mail cadastrado ainda.")
                 st.markdown("</div>", unsafe_allow_html=True)
