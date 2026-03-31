@@ -1533,7 +1533,7 @@ def get_app_url():
     owner = os.environ.get('REPL_OWNER', '')
     if slug and owner:
         return f"https://{slug}-{owner}.replit.app"
-    return ""
+    return "https://lps-plataforma.replit.app"
 
 # Estilização Customizada
 st.markdown("""
@@ -5672,72 +5672,73 @@ elif page == "TeamManagement":
         
         is_admin = is_user_admin(user_id)
         if is_admin:
-            tab_convite, tab_resultados, tab_admin_convites, tab_admin_emails, tab_admin_monitoramento = st.tabs(["Gerar Convites", "Resultados da Equipe", "Convites Avançados", "Cadastro de E-mails", "Monitoramento"])
+            tab_admin_emails, tab_resultados, tab_admin_monitoramento = st.tabs(["Cadastro de E-mails", "Resultados da Equipe", "Monitoramento"])
         else:
             tab_convite, tab_resultados = st.tabs(["Gerar Convites", "Resultados da Equipe"])
         
-        with tab_convite:
-            # Show Manager Profile First
-            if manager_profile:
-                st.markdown(f"""
-                    <div class="result-card" style="margin-bottom: 20px;">
-                        <div class="profile-title">Seu Perfil (Gestor)</div>
-                        <p style="text-align: center; font-size: 1.3rem;"><strong>{manager_profile['dominant']} + {manager_profile['secondary']}</strong></p>
-                    </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.warning("Complete seu LPTest primeiro para ver a comparacao com sua equipe.")
-            
-            st.write("---")
-            st.subheader("Gerar Link de Convite para Equipe")
-            
-            if not st.session_state.show_employee_links and not has_existing_links:
-                st.markdown("""
-                    <div style='background-color: #e8f4f8; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;'>
-                        <p style='margin: 0; color: #18738c;'>
-                            <strong>Como funciona:</strong> Clique no botao abaixo para gerar links unicos para ate 4 funcionarios. 
-                            Envie cada link por WhatsApp ou e-mail. Ao clicar, eles responderao o assessment e voce recebera os resultados aqui.
-                        </p>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                if st.button("Gerar Link de Convite para Equipe", key="btn-generate-team-links", use_container_width=True, type="primary"):
-                    for slot in range(1, 5):
-                        generate_employee_link(manager_id, slot)
+        if not is_admin:
+            with tab_convite:
+                # Show Manager Profile First
+                if manager_profile:
+                    st.markdown(f"""
+                        <div class="result-card" style="margin-bottom: 20px;">
+                            <div class="profile-title">Seu Perfil (Gestor)</div>
+                            <p style="text-align: center; font-size: 1.3rem;"><strong>{manager_profile['dominant']} + {manager_profile['secondary']}</strong></p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.warning("Complete seu LPTest primeiro para ver a comparacao com sua equipe.")
+
+                st.write("---")
+                st.subheader("Gerar Link de Convite para Equipe")
+
+                if not st.session_state.show_employee_links and not has_existing_links:
+                    st.markdown("""
+                        <div style='background-color: #e8f4f8; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;'>
+                            <p style='margin: 0; color: #18738c;'>
+                                <strong>Como funciona:</strong> Clique no botao abaixo para gerar links unicos para ate 4 funcionarios.
+                                Envie cada link por WhatsApp ou e-mail. Ao clicar, eles responderao o assessment e voce recebera os resultados aqui.
+                            </p>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+                    if st.button("Gerar Link de Convite para Equipe", key="btn-generate-team-links", use_container_width=True, type="primary"):
+                        for slot in range(1, 5):
+                            generate_employee_link(manager_id, slot)
+                        st.session_state.show_employee_links = True
+                        st.rerun()
+                else:
                     st.session_state.show_employee_links = True
-                    st.rerun()
-            else:
-                st.session_state.show_employee_links = True
-                
-                st.markdown("""
-                    <div style='background-color: #d4edda; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;'>
-                        <p style='margin: 0; color: #155724;'>
-                            Links gerados! Copie cada link e envie para o funcionario correspondente.
-                        </p>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                base_url = get_app_url()
-                cols = st.columns(4)
-                
-                for i, col in enumerate(cols):
-                    with col:
-                        slot = i + 1
-                        token = generate_employee_link(manager_id, slot)
-                        full_link = f"{base_url}/?token={token}"
-                        
-                        slot_employee = next((e for e in employees if e[3] == slot), None)
-                        
-                        if slot_employee and slot_employee[10] == 1:
-                            st.markdown(f"**{slot_employee[4] or 'Funcionario ' + str(slot)}**")
-                            st.success("Concluido")
-                        else:
-                            st.markdown(f"**Funcionario {slot}**")
-                            st.text_input("Link", value=full_link, key=f"team_link_{slot}", disabled=False, label_visibility="collapsed")
-                            if slot_employee:
-                                st.caption("Aguardando resposta")
+
+                    st.markdown("""
+                        <div style='background-color: #d4edda; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;'>
+                            <p style='margin: 0; color: #155724;'>
+                                Links gerados! Copie cada link e envie para o funcionario correspondente.
+                            </p>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+                    base_url = get_app_url()
+                    cols = st.columns(4)
+
+                    for i, col in enumerate(cols):
+                        with col:
+                            slot = i + 1
+                            token = generate_employee_link(manager_id, slot)
+                            full_link = f"{base_url}/?token={token}"
+
+                            slot_employee = next((e for e in employees if e[3] == slot), None)
+
+                            if slot_employee and slot_employee[10] == 1:
+                                st.markdown(f"**{slot_employee[4] or 'Funcionario ' + str(slot)}**")
+                                st.success("Concluido")
                             else:
-                                st.caption("Selecione e copie")
+                                st.markdown(f"**Funcionario {slot}**")
+                                st.text_input("Link", value=full_link, key=f"team_link_{slot}", disabled=False, label_visibility="collapsed")
+                                if slot_employee:
+                                    st.caption("Aguardando resposta")
+                                else:
+                                    st.caption("Selecione e copie")
         
         with tab_resultados:
             st.subheader("Resultados da Equipe")
@@ -5856,10 +5857,13 @@ elif page == "TeamManagement":
                 else:
                     st.info("Nenhum funcionário respondeu ainda. Os resultados aparecerão aqui assim que completarem o assessment.")
             else:
-                st.info("Nenhum convite gerado ainda. Vá para a aba 'Gerar Convites' para criar links.")
+                if is_admin:
+                    st.info("Nenhum colaborador cadastrado ainda. Use a aba 'Cadastro de E-mails' para gerar links de convite.")
+                else:
+                    st.info("Nenhum convite gerado ainda. Vá para a aba 'Gerar Convites' para criar links.")
         
         if is_admin:
-            with tab_admin_convites:
+            with tab_admin_emails:
                 st.markdown("""
                     <style>
                     .gestao-card {
@@ -5871,78 +5875,10 @@ elif page == "TeamManagement":
                     .status-pendente { background: #fff3cd; color: #856404; }
                     .status-andamento { background: #cce5ff; color: #004085; }
                     .status-concluido { background: #d4edda; color: #155724; }
-                    .invite-link-box { background: #f8f9fa; border: 2px dashed #18738c; border-radius: 8px; padding: 1rem; text-align: center; word-break: break-all; font-family: monospace; color: #18738c; font-weight: bold; margin: 0.5rem 0; }
                     .auth-user-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-bottom: 1px solid #eee; }
                     .auth-user-row:last-child { border-bottom: none; }
                     </style>
                 """, unsafe_allow_html=True)
-                
-                st.markdown("<div class='gestao-card'><h3>Gerar Links de Convite Avançados</h3>", unsafe_allow_html=True)
-                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Crie links únicos para convidar líderes ou equipes para o assessment.</p>", unsafe_allow_html=True)
-                
-                col_type, col_btn = st.columns([2, 1])
-                with col_type:
-                    invite_type = st.selectbox("Tipo de Convite", ["equipe", "lider"], format_func=lambda x: "Convite Equipe" if x == "equipe" else "Convite Líder", key="tm_gestao_invite_type")
-                with col_btn:
-                    st.write("")
-                    st.write("")
-                    if st.button("Gerar Novo Link", key="tm_gestao_gen_link", use_container_width=True, type="primary"):
-                        create_invite_link(invite_type, user_id)
-                        st.rerun()
-                
-                all_links_for_user = get_invite_links(user_id)
-                unused_links = [l for l in all_links_for_user if not l[5]]
-                if unused_links:
-                    newest = unused_links[0]
-                    newest_token = newest[1]
-                    newest_type = newest[2]
-                    base_url = get_app_url()
-                    tipo_label = "Equipe" if newest_type == "equipe" else "Líder"
-                    full_link = f"{base_url}/?tipo={newest_type}&ref={newest_token}"
-                    st.success(f"Último link disponível ({tipo_label}) — copie abaixo:")
-                    st.text_input("Link para copiar:", value=full_link, key="tm_gestao_generated_link", disabled=False)
-                    st.caption("Selecione o link acima e copie. Envie por WhatsApp ou e-mail.")
-                
-                st.markdown("</div>", unsafe_allow_html=True)
-                
-                st.markdown("<div class='gestao-card'><h3>Histórico de Convites</h3>", unsafe_allow_html=True)
-                invite_links = get_invite_links(user_id)
-                if invite_links:
-                    base_url_hist = get_app_url()
-                    for link in invite_links:
-                        link_token = link[1]
-                        link_type = link[2]
-                        is_used = link[5]
-                        used_email = link[4] or "-"
-                        created = link[6][:16] if link[6] else "-"
-                        status_class = "status-concluido" if is_used else "status-pendente"
-                        status_text = "Utilizado" if is_used else "Disponível"
-                        type_label = "Equipe" if link_type == "equipe" else "Líder"
-                        full_hist_link = f"{base_url_hist}/?tipo={link_type}&ref={link_token}"
-                        st.markdown(f"""
-                            <div style='padding: 0.5rem 0; border-bottom: 1px solid #eee;'>
-                                <div style='display:flex; align-items:center; gap:8px;'>
-                                    <strong style='color:#18738c;'>{type_label}</strong>
-                                    <span class='status-badge {status_class}'>{status_text}</span>
-                                    <span style='color:#999; font-size:0.8rem; margin-left:auto;'>{created}</span>
-                                </div>
-                            </div>
-                        """, unsafe_allow_html=True)
-                        if not is_used:
-                            st.text_input(
-                                f"link_{link_token}",
-                                value=full_hist_link,
-                                key=f"hist_link_{link_token}",
-                                label_visibility="collapsed",
-                                help="Selecione e copie para enviar"
-                            )
-                        else:
-                            st.caption(f"Usado por: {used_email}")
-                else:
-                    st.info("Nenhum convite gerado ainda.")
-                st.markdown("</div>", unsafe_allow_html=True)
-            
-            with tab_admin_emails:
                 st.markdown("<div class='gestao-card'><h3>Cadastro de E-mails Autorizados</h3>", unsafe_allow_html=True)
                 st.markdown("<p style='color: #666; font-size: 0.9rem;'>Pré-cadastre os e-mails dos colaboradores. Apenas e-mails cadastrados aqui poderão iniciar o teste.</p>", unsafe_allow_html=True)
                 
