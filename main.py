@@ -316,6 +316,22 @@ span.material-symbols-outlined,
     font-size: 0 !important;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    display: inline-block !important;
+}
+/* Target expander toggle icon text explicitly */
+[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"],
+[data-testid="stExpander"] summary span,
+details > summary span.material-symbols-rounded,
+details > summary [data-testid="stIconMaterial"] {
+    font-size: 0 !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    display: inline-block !important;
 }
 </style>
 <script>
@@ -323,7 +339,14 @@ span.material-symbols-outlined,
     var parent = window.parent.document || document;
     parent.querySelectorAll('span').forEach(function(el) {
         var t = (el.textContent || '').trim();
-        if (t.indexOf('keyboard_double') === 0 || t === 'Arrow_light' || t === 'arrow_right' || t === 'chevron_right') {
+        if (
+            t.indexOf('keyboard_double') === 0 ||
+            t.indexOf('keyboard_arrow') === 0 ||
+            t === 'Arrow_light' || t === 'arrow_right' ||
+            t === 'chevron_right' || t === 'chevron_left' ||
+            t === 'expand_more' || t === 'expand_less' ||
+            t === 'arrow_forward_ios' || t === 'arrow_back_ios'
+        ) {
             el.style.cssText = 'font-size:0!important;width:0!important;height:0!important;overflow:hidden!important;display:inline-block!important;color:transparent!important;';
         }
     });
@@ -2748,20 +2771,30 @@ def render_sidebar_navigation():
             .stApp .stMarkdown p, .stApp .stMarkdown li, .stApp .stMarkdown span {
                 color: #000000;
             }
-            /* Style the native Streamlit sidebar toggle button - Azure color */
-            [data-testid="collapsedControl"] {
-                background-color: #18738c !important;
+            /* Style the native Streamlit sidebar toggle button */
+            [data-testid="collapsedControl"],
+            [data-testid="stBaseButton-headerNoPadding"],
+            button[data-testid="collapsedControl"] {
+                background-color: #d19f09 !important;
                 border-radius: 8px !important;
-                border: none !important;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+                border: 2px solid #d19f09 !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-width: 36px !important;
+                min-height: 36px !important;
             }
-            [data-testid="collapsedControl"] svg {
-                fill: #d19f09 !important;
-                stroke: #d19f09 !important;
+            [data-testid="collapsedControl"] svg,
+            [data-testid="stBaseButton-headerNoPadding"] svg {
+                fill: #FFFFFF !important;
+                stroke: #FFFFFF !important;
+                color: #FFFFFF !important;
             }
-            [data-testid="collapsedControl"]:hover {
-                background-color: #1a8ba6 !important;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+            [data-testid="collapsedControl"]:hover,
+            [data-testid="stBaseButton-headerNoPadding"]:hover {
+                background-color: #c5a059 !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
             }
             /* Hide ALL Material Icon text fallback everywhere */
             [data-testid="stIconMaterial"] {
@@ -5534,9 +5567,9 @@ elif page == "LPTest":
     
     st.markdown("""
         <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); color: white; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem;">
-            <h3 style="color: #FFFFFF; margin-top: 0;">Assessment de Liderança em 7 Eixos</h3>
-            <p style="margin-bottom: 0.5rem;">O LPTest mapeia seu perfil de liderança através de 70 questões distribuídas em 7 dimensões psicanalíticas:</p>
-            <p style="font-size: 0.9rem; opacity: 0.9;">
+            <h3 style="color: #FFFFFF !important; margin-top: 0;">Assessment de Liderança em 7 Eixos</h3>
+            <p style="margin-bottom: 0.5rem; color: #FFFFFF !important;">O LPTest mapeia seu perfil de liderança através de 70 questões distribuídas em 7 dimensões psicanalíticas:</p>
+            <p style="font-size: 0.9rem; opacity: 0.9; color: #FFFFFF !important;">
                 <strong>1.</strong> Autoridade Interna &nbsp;|&nbsp;
                 <strong>2.</strong> Vínculo e Empatia &nbsp;|&nbsp;
                 <strong>3.</strong> Potência Realizadora &nbsp;|&nbsp;
@@ -6392,9 +6425,10 @@ elif page == "LPChat":
             box-shadow: 0 4px 15px rgba(13, 59, 102, 0.3);
         }
         .chat-header h1 {
-            color: #FFFFFF;
+            color: #FFFFFF !important;
             margin: 0;
             font-size: 2rem;
+            -webkit-text-fill-color: #FFFFFF !important;
         }
         .chat-header p {
             color: rgba(255,255,255,0.9);
@@ -6429,7 +6463,8 @@ elif page == "LPChat":
             transition: all 0.2s;
         }
         .example-q:hover {
-            background: #fffef5;
+            background: #f0f0f0;
+            border-left-color: #555555;
             transform: translateX(5px);
         }
         .team-context-card {
