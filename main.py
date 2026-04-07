@@ -1583,6 +1583,58 @@ st.markdown("""
         --light-gold: #FFF9E6;
     }
     
+    /* ============================================================
+       WHITE-LABEL: hide all Streamlit-native UI chrome
+       ============================================================ */
+    /* Three-dots menu (Settings, Rerun, Print, etc.) — all Streamlit versions */
+    #MainMenu { display: none !important; visibility: hidden !important; }
+    [data-testid="stMainMenu"] { display: none !important; }
+    [data-testid="stMainMenuPopover"] { display: none !important; }
+    /* "Made with Streamlit" footer */
+    footer { display: none !important; visibility: hidden !important; }
+    footer + div { display: none !important; }
+    [data-testid="stFooter"] { display: none !important; }
+    /* Coloured decoration stripe at the very top */
+    [data-testid="stDecoration"] { display: none !important; }
+    /* Right-side toolbar (Deploy button, status widget) */
+    [data-testid="stToolbar"] { display: none !important; }
+    [data-testid="stToolbarActions"] { display: none !important; }
+    [data-testid="stStatusWidget"] { display: none !important; }
+    .stDeployButton { display: none !important; }
+    button[title="Deploy this app"] { display: none !important; }
+    /* ============================================================
+       HAMBURGER / SIDEBAR TOGGLE — always gold, always visible
+       ============================================================ */
+    /* The sidebar expand button shown when sidebar is collapsed */
+    [data-testid="collapsedControl"],
+    [data-testid="stExpandSidebarButton"],
+    button[data-testid="collapsedControl"] {
+        background-color: #d19f09 !important;
+        border-radius: 8px !important;
+        border: 2px solid #d19f09 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    [data-testid="collapsedControl"] svg,
+    [data-testid="stExpandSidebarButton"] svg {
+        fill: #FFFFFF !important;
+        stroke: #FFFFFF !important;
+        color: #FFFFFF !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
+    [data-testid="collapsedControl"]:hover,
+    [data-testid="stExpandSidebarButton"]:hover {
+        background-color: #c5a059 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+    }
+
     .main { background-color: var(--bg-gray); }
     h1, h2, h3 { 
         color: var(--primary-blue) !important;
@@ -2880,9 +2932,12 @@ def render_sidebar_navigation():
                 width: 24px !important;
                 height: 24px !important;
             }
-            /* Also style any header buttons */
-            button[kind="header"] {
-                background-color: #18738c !important;
+            /* Sidebar toggle / hamburger always overrides any generic header button rule */
+            [data-testid="collapsedControl"],
+            [data-testid="stExpandSidebarButton"] {
+                background-color: #d19f09 !important;
+                border: 2px solid #d19f09 !important;
+                border-radius: 8px !important;
                 color: white !important;
             }
             /* Sidebar styling */
