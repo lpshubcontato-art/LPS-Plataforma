@@ -308,23 +308,28 @@ if 'cache_cleared' not in st.session_state:
 
 st.markdown("""
 <style>
-/* Nuclear option: hide ALL material symbol icon text fallback globally */
+/* Hide ALL material symbol icon text (font fallback) globally */
 span.material-symbols-rounded,
 span.material-symbols-outlined,
 .material-symbols-rounded,
-[class*="material-symbols"] {
+.material-symbols-outlined,
+[class*="material-symbols"],
+[class*="material-icons"] {
     font-size: 0 !important;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
     width: 0 !important;
     overflow: hidden !important;
     display: inline-block !important;
+    line-height: 0 !important;
 }
-/* Target expander toggle icon text explicitly */
+/* Target Streamlit expander toggle icon text explicitly */
 [data-testid="stExpander"] [data-testid="stExpanderToggleIcon"],
 [data-testid="stExpander"] summary span,
+[data-testid="stExpander"] details > summary span,
 details > summary span.material-symbols-rounded,
-details > summary [data-testid="stIconMaterial"] {
+details > summary [data-testid="stIconMaterial"],
+.streamlit-expanderHeader span[class*="material"] {
     font-size: 0 !important;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
@@ -332,25 +337,33 @@ details > summary [data-testid="stIconMaterial"] {
     height: 0 !important;
     overflow: hidden !important;
     display: inline-block !important;
+    line-height: 0 !important;
 }
 </style>
 <script>
 (function hideIconText() {
-    var parent = window.parent.document || document;
-    parent.querySelectorAll('span').forEach(function(el) {
-        var t = (el.textContent || '').trim();
-        if (
-            t.indexOf('keyboard_double') === 0 ||
-            t.indexOf('keyboard_arrow') === 0 ||
-            t === 'Arrow_light' || t === 'arrow_right' ||
-            t === 'chevron_right' || t === 'chevron_left' ||
-            t === 'expand_more' || t === 'expand_less' ||
-            t === 'arrow_forward_ios' || t === 'arrow_back_ios'
-        ) {
-            el.style.cssText = 'font-size:0!important;width:0!important;height:0!important;overflow:hidden!important;display:inline-block!important;color:transparent!important;';
-        }
+    var docs = [document];
+    try { if (window.parent && window.parent.document !== document) docs.push(window.parent.document); } catch(e) {}
+    docs.forEach(function(d) {
+        d.querySelectorAll('span').forEach(function(el) {
+            var t = (el.textContent || '').trim();
+            if (
+                t.indexOf('keyboard_double') === 0 ||
+                t.indexOf('keyboard_arrow') === 0 ||
+                t === 'Arrow_light' || t === 'arrow_right' ||
+                t === 'chevron_right' || t === 'chevron_left' ||
+                t === 'expand_more' || t === 'expand_less' ||
+                t === 'arrow_forward_ios' || t === 'arrow_back_ios' ||
+                t === 'keyboard_arrow_right' || t === 'keyboard_arrow_down'
+            ) {
+                el.style.cssText = 'font-size:0!important;width:0!important;height:0!important;overflow:hidden!important;display:inline-block!important;color:transparent!important;line-height:0!important;';
+                el.setAttribute('aria-hidden', 'true');
+            }
+        });
     });
-    setTimeout(hideIconText, 300);
+    setTimeout(hideIconText, 100);
+    setTimeout(hideIconText, 500);
+    setTimeout(hideIconText, 1500);
 })();
 </script>
 """, unsafe_allow_html=True)
@@ -5707,71 +5720,7 @@ elif page == "TeamManagement":
         if is_admin:
             tab_admin_emails, tab_resultados, tab_admin_monitoramento = st.tabs(["Cadastro de E-mails", "Resultados da Equipe", "Monitoramento"])
         else:
-            tab_convite, tab_resultados = st.tabs(["Gerar Convites", "Resultados da Equipe"])
-        
-        if not is_admin:
-            with tab_convite:
-                # Show Manager Profile First
-                if manager_profile:
-                    st.markdown(f"""
-                        <div class="result-card" style="margin-bottom: 20px;">
-                            <div class="profile-title">Seu Perfil (Gestor)</div>
-                            <p style="text-align: center; font-size: 1.3rem;"><strong>{manager_profile['dominant']} + {manager_profile['secondary']}</strong></p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.warning("Complete seu LPTest primeiro para ver a comparacao com sua equipe.")
-
-                st.write("---")
-                st.subheader("Gerar Link de Convite para Equipe")
-
-                if not st.session_state.show_employee_links and not has_existing_links:
-                    st.markdown("""
-                        <div style='background-color: #e8f4f8; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;'>
-                            <p style='margin: 0; color: #18738c;'>
-                                <strong>Como funciona:</strong> Clique no botao abaixo para gerar links unicos para ate 4 funcionarios.
-                                Envie cada link por WhatsApp ou e-mail. Ao clicar, eles responderao o assessment e voce recebera os resultados aqui.
-                            </p>
-                        </div>
-                    """, unsafe_allow_html=True)
-
-                    if st.button("Gerar Link de Convite para Equipe", key="btn-generate-team-links", use_container_width=True, type="primary"):
-                        for slot in range(1, 5):
-                            generate_employee_link(manager_id, slot)
-                        st.session_state.show_employee_links = True
-                        st.rerun()
-                else:
-                    st.session_state.show_employee_links = True
-
-                    st.markdown("""
-                        <div style='background-color: #d4edda; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;'>
-                            <p style='margin: 0; color: #155724;'>
-                                Links gerados! Copie cada link e envie para o funcionario correspondente.
-                            </p>
-                        </div>
-                    """, unsafe_allow_html=True)
-
-                    base_url = get_app_url()
-                    cols = st.columns(4)
-
-                    for i, col in enumerate(cols):
-                        with col:
-                            slot = i + 1
-                            token = generate_employee_link(manager_id, slot)
-                            full_link = f"{base_url}/?token={token}"
-
-                            slot_employee = next((e for e in employees if e[3] == slot), None)
-
-                            if slot_employee and slot_employee[10] == 1:
-                                st.markdown(f"**{slot_employee[4] or 'Funcionario ' + str(slot)}**")
-                                st.success("Concluido")
-                            else:
-                                st.markdown(f"**Funcionario {slot}**")
-                                st.text_input("Link", value=full_link, key=f"team_link_{slot}", disabled=False, label_visibility="collapsed")
-                                if slot_employee:
-                                    st.caption("Aguardando resposta")
-                                else:
-                                    st.caption("Selecione e copie")
+            tab_admin_emails, tab_resultados = st.tabs(["Cadastro de E-mails", "Resultados da Equipe"])
         
         with tab_resultados:
             st.subheader("Resultados da Equipe")
@@ -5890,13 +5839,9 @@ elif page == "TeamManagement":
                 else:
                     st.info("Nenhum funcionário respondeu ainda. Os resultados aparecerão aqui assim que completarem o assessment.")
             else:
-                if is_admin:
-                    st.info("Nenhum colaborador cadastrado ainda. Use a aba 'Cadastro de E-mails' para gerar links de convite.")
-                else:
-                    st.info("Nenhum convite gerado ainda. Vá para a aba 'Gerar Convites' para criar links.")
+                st.info("Nenhum colaborador cadastrado ainda. Use a aba 'Cadastro de E-mails' para gerar links de convite.")
         
-        if is_admin:
-            with tab_admin_emails:
+        with tab_admin_emails:
                 st.markdown("""
                     <style>
                     .gestao-card {
@@ -5913,7 +5858,7 @@ elif page == "TeamManagement":
                     </style>
                 """, unsafe_allow_html=True)
                 st.markdown("<div class='gestao-card'><h3>Cadastro de E-mails Autorizados</h3>", unsafe_allow_html=True)
-                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Pré-cadastre os e-mails dos colaboradores. Apenas e-mails cadastrados aqui poderão iniciar o teste.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Cadastre os colaboradores e compartilhe o link de convite gerado. Ao clicar no link, eles acessam diretamente o assessment.</p>", unsafe_allow_html=True)
                 
                 with st.form("tm_add_auth_email_form", clear_on_submit=True):
                     col_name, col_email, col_type = st.columns([2, 2, 1])
@@ -6008,7 +5953,8 @@ elif page == "TeamManagement":
                 else:
                     st.info("Nenhum e-mail cadastrado ainda.")
                 st.markdown("</div>", unsafe_allow_html=True)
-            
+        
+        if is_admin:
             with tab_admin_monitoramento:
                 st.markdown("<div class='gestao-card'><h3>Monitoramento em Tempo Real</h3>", unsafe_allow_html=True)
                 st.markdown("<p style='color: #666; font-size: 0.9rem;'>Acompanhe os resultados de todos os assessments realizados na plataforma.</p>", unsafe_allow_html=True)
@@ -6192,70 +6138,55 @@ elif page == "InviteWelcome":
             st.session_state.page = "Home"
             st.rerun()
     else:
+        invite_creator_user_id = invite_data[3] if invite_data else None
+
         st.markdown(f"""
             <div class='welcome-card'>
                 <span class='welcome-badge'>{tipo_label}</span>
-                <div class='welcome-title'>Bem-vindo(a) a Plataforma LPS</div>
+                <div class='welcome-title'>Bem-vindo(a) à Plataforma LPS</div>
                 <p class='welcome-subtitle'>
-                    Voce foi convidado(a) para participar do {tipo_label} da Liderança Psicanalítica.
-                    Para comecar, confirme o seu e-mail cadastrado abaixo.
+                    Você foi convidado(a) para participar do {tipo_label} da Liderança Psicanalítica.
+                    Preencha seus dados abaixo para começar.
                 </p>
             </div>
         """, unsafe_allow_html=True)
-        
+
         st.write("")
-        
-        with st.form("invite_email_verify", clear_on_submit=False):
-            verify_email = st.text_input("Confirme seu e-mail", placeholder="seu-email@empresa.com", key="invite_verify_email")
-            submit_verify = st.form_submit_button("Confirmar e Iniciar", use_container_width=True, type="primary")
-            
-            if submit_verify:
-                if not verify_email:
-                    st.error("Digite seu e-mail para continuar.")
+
+        with st.form("invite_start_form", clear_on_submit=False):
+            participant_name = st.text_input("Seu nome completo", placeholder="Ex: Maria Silva", key="invite_name_input")
+            participant_email = st.text_input("Seu e-mail", placeholder="maria@empresa.com", key="invite_email_input")
+            submit_start = st.form_submit_button("Iniciar Assessment", use_container_width=True, type="primary")
+
+            if submit_start:
+                if not participant_name or not participant_email:
+                    st.error("Preencha seu nome e e-mail para continuar.")
                 else:
-                    auth_user = check_email_authorized(verify_email)
-                    if auth_user:
-                        invite_creator = invite_data[3] if invite_data else None
-                        auth_inviter = auth_user[5]
-                        if invite_creator and auth_inviter and invite_creator != auth_inviter:
-                            st.error("Este e-mail não está vinculado ao gestor que gerou este convite. Verifique com seu gestor.")
-                        else:
-                            mark_invite_used(invite_ref, verify_email)
-                            update_authorized_user_status(verify_email, "em_andamento")
-                            
-                            st.session_state.invite_email_verified = True
-                            st.session_state.invite_verified_email = verify_email.lower().strip()
-                            st.session_state.invite_verified_name = auth_user[2] or ""
-                            st.session_state.invite_verified_type = invite_tipo
-                            
-                            if invite_tipo == "lider":
-                                st.session_state.page = "Login"
-                            else:
-                                manager_id_for_invite = None
-                                if auth_user[5]:
-                                    conn = get_db()
-                                    c = conn.cursor()
-                                    c.execute("SELECT id FROM managers WHERE user_id = ?", (auth_user[5],))
-                                    mgr = c.fetchone()
-                                    conn.close()
-                                    if mgr:
-                                        manager_id_for_invite = mgr[0]
-                                
-                                if manager_id_for_invite:
-                                    existing_slots = get_manager_employees(manager_id_for_invite)
-                                    next_slot = len(existing_slots) + 1
-                                    if next_slot <= 4:
-                                        new_token = generate_employee_link(manager_id_for_invite, next_slot)
-                                        st.session_state.employee_token = new_token
-                                        st.session_state.page = "EmployeeAssessment"
-                                    else:
-                                        st.warning("O limite de 4 colaboradores para este gestor já foi atingido.")
-                                else:
-                                    st.warning("Gestor não encontrado. Contate o administrador.")
-                            
-                            st.rerun()
+                    manager_id_for_invite = None
+                    if invite_creator_user_id:
+                        conn = get_db()
+                        c = conn.cursor()
+                        c.execute("SELECT id FROM managers WHERE user_id = ?", (invite_creator_user_id,))
+                        mgr = c.fetchone()
+                        conn.close()
+                        if mgr:
+                            manager_id_for_invite = mgr[0]
+
+                    if manager_id_for_invite:
+                        existing_slots = get_manager_employees(manager_id_for_invite)
+                        next_slot = len(existing_slots) + 1
+                        new_token = generate_employee_link(manager_id_for_invite, next_slot)
+                        mark_invite_used(invite_ref, participant_email.lower().strip())
+                        auth_check = check_email_authorized(participant_email)
+                        if auth_check:
+                            update_authorized_user_status(participant_email, "em_andamento")
+                        st.session_state.employee_token = new_token
+                        st.session_state.invite_verified_name = participant_name.strip()
+                        st.session_state.invite_verified_email = participant_email.lower().strip()
+                        st.session_state.page = "EmployeeAssessment"
+                        st.rerun()
                     else:
-                        st.error("E-mail não encontrado na lista de autorizados. Verifique com seu gestor se o e-mail está correto.")
+                        st.error("Não foi possível identificar o gestor associado a este convite. Entre em contato: contato@lpshub.com.br")
     
     st.markdown("</div>", unsafe_allow_html=True)
 
