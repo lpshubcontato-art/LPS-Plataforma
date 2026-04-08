@@ -306,7 +306,19 @@ if 'cache_cleared' not in st.session_state:
     st.cache_resource.clear()
     st.session_state.cache_cleared = True
 
-st.markdown("<style>[data-testid='stExpander'] p { color: #18738c !important; display: block !important; visibility: visible !important; opacity: 1 !important; }</style>", unsafe_allow_html=True)
+st.markdown("""<style>
+[data-testid='stExpander'] summary p,
+[data-testid='stExpander'] summary span,
+[data-testid='stExpander'] summary div,
+[data-testid='stExpander'] p {
+    color: #18738c !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+}
+</style>""", unsafe_allow_html=True)
 
 # Password hashing functions using bcrypt
 def hash_password(password):
@@ -1854,25 +1866,12 @@ st.markdown("""
 
 def vimeo_video(url):
     video_id = url.split('/')[-1].split('?')[0]
-    embed_url = (
-        f"https://player.vimeo.com/video/{video_id}"
-        f"?badge=0&autopause=0&player_id=0&app_id=58479&byline=0&portrait=0&title=0"
+    st.markdown(
+        f'<iframe src="https://player.vimeo.com/video/{video_id}" '
+        f'width="100%" height="360" frameborder="0" '
+        f'allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>',
+        unsafe_allow_html=True
     )
-    iframe_html = f"""
-    <div style="padding:56.25% 0 0 0;position:relative;margin-bottom:1rem;">
-        <iframe
-            src="{embed_url}"
-            frameborder="0"
-            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
-            allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade"
-            style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:8px;border:none;"
-            title="LPS Video"
-        ></iframe>
-    </div>
-    <script src="https://player.vimeo.com/api/player.js"></script>
-    """
-    st.markdown(iframe_html, unsafe_allow_html=True)
 
 # Inicialização do Estado de Sessão
 if 'page' not in st.session_state:
@@ -5396,12 +5395,15 @@ elif page == "LPS Curso":
     
     st.markdown("""
         <style>
-        [data-testid="stExpander"] summary {
-            color: #555555 !important;
-            font-weight: 600 !important;
-        }
-        [data-testid="stExpander"] {
-            border-color: #555555 !important;
+        [data-testid="stExpander"] summary p,
+        [data-testid="stExpander"] summary span,
+        [data-testid="stExpander"] summary div {
+            color: #18738c !important;
+            font-weight: 700 !important;
+            font-size: 1.05rem !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         </style>
     """, unsafe_allow_html=True)
