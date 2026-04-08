@@ -308,29 +308,13 @@ if 'cache_cleared' not in st.session_state:
 
 st.markdown("""
 <style>
-/* Hide ALL material symbol icon text (font fallback) globally */
+/* ── Minimal, safe icon-text hiding ──────────────────────────────────────
+   ONLY target spans that explicitly carry the Material Symbols CSS class.
+   These class names are unique to icon elements — they are NEVER applied
+   to Streamlit text, expander titles, or layout containers.
+   ────────────────────────────────────────────────────────────────────── */
 span.material-symbols-rounded,
-span.material-symbols-outlined,
-.material-symbols-rounded,
-.material-symbols-outlined,
-[class*="material-symbols"],
-[class*="material-icons"] {
-    font-size: 0 !important;
-    color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
-    width: 0 !important;
-    overflow: hidden !important;
-    display: inline-block !important;
-    line-height: 0 !important;
-}
-/* Hide ONLY the expander toggle icon text (keyboard_arrow_right / down),
-   NOT the expander title — so module names stay visible */
-[data-testid="stExpander"] [data-testid="stExpanderToggleIcon"],
-[data-testid="stExpander"] [data-testid="stIconMaterial"],
-details > summary [data-testid="stIconMaterial"],
-details > summary span.material-symbols-rounded,
-details > summary span.material-symbols-outlined,
-.streamlit-expanderHeader span[class*="material"] {
+span.material-symbols-outlined {
     font-size: 0 !important;
     color: transparent !important;
     -webkit-text-fill-color: transparent !important;
@@ -339,45 +323,55 @@ details > summary span.material-symbols-outlined,
     overflow: hidden !important;
     display: inline-block !important;
     line-height: 0 !important;
+    pointer-events: none !important;
 }
-/* Always keep the actual expander title paragraph visible */
+/* ── Expander title: ALWAYS visible ──────────────────────────────────── */
 [data-testid="stExpander"] summary p,
-[data-testid="stExpander"] details > summary p {
+[data-testid="stExpander"] details > summary p,
+details > summary > p,
+.streamlit-expanderHeader p {
     font-size: 1rem !important;
     color: #18738c !important;
-    font-weight: bold !important;
+    font-weight: 600 !important;
     -webkit-text-fill-color: #18738c !important;
     width: auto !important;
     height: auto !important;
     overflow: visible !important;
     display: block !important;
     line-height: 1.4 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 </style>
 <script>
+/* JS: hide ONLY spans whose sole text content is a known icon name.
+   This is surgical — it can never accidentally hide a module title.   */
 (function hideIconText() {
-    var docs = [document];
-    try { if (window.parent && window.parent.document !== document) docs.push(window.parent.document); } catch(e) {}
-    docs.forEach(function(d) {
-        d.querySelectorAll('span').forEach(function(el) {
-            var t = (el.textContent || '').trim();
-            if (
-                t.indexOf('keyboard_double') === 0 ||
-                t.indexOf('keyboard_arrow') === 0 ||
-                t === 'Arrow_light' || t === 'arrow_right' ||
-                t === 'chevron_right' || t === 'chevron_left' ||
-                t === 'expand_more' || t === 'expand_less' ||
-                t === 'arrow_forward_ios' || t === 'arrow_back_ios' ||
-                t === 'keyboard_arrow_right' || t === 'keyboard_arrow_down'
-            ) {
-                el.style.cssText = 'font-size:0!important;width:0!important;height:0!important;overflow:hidden!important;display:inline-block!important;color:transparent!important;line-height:0!important;';
-                el.setAttribute('aria-hidden', 'true');
-            }
+    var ICON_NAMES = {
+        'keyboard_arrow_right':1,'keyboard_arrow_down':1,'keyboard_arrow_left':1,
+        'keyboard_arrow_up':1,'keyboard_double_arrow_right':1,
+        'keyboard_double_arrow_down':1,'expand_more':1,'expand_less':1,
+        'chevron_right':1,'chevron_left':1,'arrow_forward_ios':1,
+        'arrow_back_ios':1,'Arrow_light':1,'arrow_right':1
+    };
+    var HIDE = 'font-size:0!important;width:0!important;height:0!important;overflow:hidden!important;display:inline-block!important;color:transparent!important;-webkit-text-fill-color:transparent!important;line-height:0!important;pointer-events:none!important;';
+    function run() {
+        var docs = [document];
+        try { if (window.parent && window.parent.document !== document) docs.push(window.parent.document); } catch(e) {}
+        docs.forEach(function(d) {
+            d.querySelectorAll('span').forEach(function(el) {
+                var t = (el.textContent || '').trim();
+                if (ICON_NAMES[t] || t.indexOf('keyboard_arrow') === 0 || t.indexOf('keyboard_double') === 0) {
+                    el.style.cssText = HIDE;
+                    el.setAttribute('aria-hidden', 'true');
+                }
+            });
         });
-    });
-    setTimeout(hideIconText, 100);
-    setTimeout(hideIconText, 500);
-    setTimeout(hideIconText, 1500);
+    }
+    run();
+    setTimeout(run, 150);
+    setTimeout(run, 600);
+    setTimeout(run, 1800);
 })();
 </script>
 """, unsafe_allow_html=True)
@@ -1572,17 +1566,22 @@ def get_ai_insights(manager_id, user_id):
     return insights[:3]  # Return max 3 insights
 
 def get_app_url():
-    """Get the absolute base URL of this Replit app"""
-    domain = os.environ.get('REPLIT_DEV_DOMAIN', '')
-    if domain:
-        return f"https://{domain}"
+    """Get the public-facing base URL of this app (used for invite links).
+    Priority: deployed production URL > known production domain.
+    Never uses the dev-workspace domain (REPLIT_DEV_DOMAIN) because
+    that URL requires Replit login and employees cannot access it.
+    """
+    # 1. Deployment URL (set when the app is published/deployed)
     deploy_url = os.environ.get('REPLIT_DEPLOYMENT_URL', '')
     if deploy_url:
-        return deploy_url if deploy_url.startswith('https://') else f"https://{deploy_url}"
-    slug = os.environ.get('REPL_SLUG', '')
-    owner = os.environ.get('REPL_OWNER', '')
-    if slug and owner:
-        return f"https://{slug}-{owner}.replit.app"
+        return deploy_url.rstrip('/') if deploy_url.startswith('https://') else f"https://{deploy_url.rstrip('/')}"
+    # 2. REPLIT_DOMAINS env var (available on deployed apps, comma-separated)
+    domains_env = os.environ.get('REPLIT_DOMAINS', '')
+    if domains_env:
+        first_domain = domains_env.split(',')[0].strip()
+        if first_domain:
+            return f"https://{first_domain}"
+    # 3. Hardcoded production URL — safe fallback for sharing
     return "https://lps-plataforma.replit.app"
 
 # Estilização Customizada
