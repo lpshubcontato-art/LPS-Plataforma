@@ -751,6 +751,62 @@ def ensure_dev_admin():
 
 ensure_dev_admin()
 
+def ensure_contato_admin():
+    """Ensure contato@lps.com.br (Viviane official email) always exists and is admin/premium."""
+    import json as _json
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    c.execute("SELECT id FROM users WHERE email = ?", ("contato@lps.com.br",))
+    existing = c.fetchone()
+    if existing:
+        c.execute("UPDATE users SET password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
+                  (hash_password("lps2024"), "Viviane Nishiura", "contato@lps.com.br"))
+        conn.commit()
+        conn.close()
+        return
+    user_id = str(uuid.uuid4())
+    password_hash = hash_password("lps2024")
+    c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
+              (user_id, "contato@lps.com.br", password_hash, "Viviane Nishiura"))
+    manager_id = str(uuid.uuid4())
+    c.execute("INSERT INTO managers (id, user_id, email, name) VALUES (?, ?, ?, ?)",
+              (manager_id, user_id, "contato@lps.com.br", "Viviane Nishiura"))
+    all_complete = {}
+    for mod_id in range(1, 9):
+        for v_idx in range(5):
+            all_complete[f"m{mod_id}_v{v_idx}"] = True
+    progress_id = str(uuid.uuid4())
+    c.execute("INSERT OR IGNORE INTO course_progress (id, user_id, progress_data) VALUES (?, ?, ?)",
+              (progress_id, user_id, _json.dumps(all_complete)))
+    conn.commit()
+    conn.close()
+
+ensure_contato_admin()
+
+def ensure_dev_email_admin():
+    """Ensure dev@lps.com.br always exists and is admin/premium."""
+    conn = sqlite3.connect('lps_data.db')
+    c = conn.cursor()
+    c.execute("SELECT id FROM users WHERE email = ?", ("dev@lps.com.br",))
+    existing = c.fetchone()
+    if existing:
+        c.execute("UPDATE users SET password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
+                  (hash_password("lpsdev2024"), "Desenvolvedor LPS", "dev@lps.com.br"))
+        conn.commit()
+        conn.close()
+        return
+    user_id = str(uuid.uuid4())
+    password_hash = hash_password("lpsdev2024")
+    c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
+              (user_id, "dev@lps.com.br", password_hash, "Desenvolvedor LPS"))
+    manager_id = str(uuid.uuid4())
+    c.execute("INSERT INTO managers (id, user_id, email, name) VALUES (?, ?, ?, ?)",
+              (manager_id, user_id, "dev@lps.com.br", "Desenvolvedor LPS"))
+    conn.commit()
+    conn.close()
+
+ensure_dev_email_admin()
+
 def ensure_test_employee():
     """Ensure test employee account exists for testing."""
     conn = sqlite3.connect('lps_data.db')
