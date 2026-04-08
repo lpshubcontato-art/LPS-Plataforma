@@ -309,19 +309,13 @@ if 'cache_cleared' not in st.session_state:
 st.markdown("""
 <style>
 /* ══════════════════════════════════════════════════════════════
-   EXPANDER TITLE RESTORATION — every possible selector path
-   Uses stMarkdownContainer as reliable anchor, plus fallbacks.
-   NO icon hiding here — let Streamlit render arrows naturally.
+   EXPANDER TITLE — force visible text with LPS colours.
+   Icons render correctly via Material Symbols font (see fix
+   in main CSS block). No icon hiding needed here.
    ══════════════════════════════════════════════════════════════ */
-
-/* Primary: via stMarkdownContainer (most reliable) */
-[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"] p,
-[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"],
-/* Fallback paths */
 [data-testid="stExpander"] summary p,
+[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"] p,
 [data-testid="stExpander"] summary div p,
-[data-testid="stExpander"] summary span p,
-[data-testid="stExpander"] summary span div p,
 [data-testid="stExpander"] summary span div div p {
     opacity: 1 !important;
     visibility: visible !important;
@@ -330,21 +324,7 @@ st.markdown("""
     font-size: 1.1rem !important;
     font-weight: 600 !important;
     display: block !important;
-    max-height: none !important;
-    overflow: visible !important;
     line-height: 1.4 !important;
-}
-
-/* Ensure no ancestor inside summary clips or hides the title */
-[data-testid="stExpander"] summary,
-[data-testid="stExpander"] summary > *,
-[data-testid="stExpander"] summary span,
-[data-testid="stExpander"] summary span > div,
-[data-testid="stExpander"] summary span > div > div {
-    overflow: visible !important;
-    max-height: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1668,8 +1648,17 @@ st.markdown("""
         color: var(--primary-blue) !important;
         font-family: 'Open Sans', sans-serif !important;
     }
-    body, p, span, div, label {
+    body, p, div, label {
         font-family: 'Ubuntu', sans-serif !important;
+    }
+    /* Do NOT override font on icon spans — they need Material Symbols font */
+    span:not([data-testid="stIconMaterial"]):not([translate="no"]) {
+        font-family: 'Ubuntu', sans-serif !important;
+    }
+    /* Restore Material Symbols font for Streamlit icon spans */
+    [data-testid="stIconMaterial"],
+    span[translate="no"] {
+        font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
     }
     
     .stButton>button {
