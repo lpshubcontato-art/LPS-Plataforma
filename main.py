@@ -5856,7 +5856,7 @@ elif page == "TeamManagement":
                 else:
                     st.info("Nenhum funcionário respondeu ainda. Os resultados aparecerão aqui assim que completarem o assessment.")
             else:
-                st.info("Nenhum colaborador cadastrado ainda. Use a aba 'Cadastro de E-mails' para gerar links de convite.")
+                st.info("Nenhum colaborador cadastrado ainda. Use a aba 'Convites' para gerar links de convite.")
         
         with tab_admin_emails:
                 st.markdown("""
@@ -5933,16 +5933,18 @@ elif page == "TeamManagement":
                             if au_token:
                                 tipo_param = "lider" if au_type == "lider" else "equipe"
                                 full_link = f"{base_url}/?tipo={tipo_param}&ref={au_token}"
-                                col_link, col_del = st.columns([5.5, 0.7])
-                                with col_link:
-                                    st.text_input(
-                                        f"Link de convite — {au_name}",
-                                        value=full_link,
-                                        key=f"au_link_{au_id}",
-                                        label_visibility="collapsed",
-                                        help="Selecione e copie este link. Envie por WhatsApp."
+                                import urllib.parse as _urlparse
+                                wa_msg = _urlparse.quote(f"Olá, {au_name}! Acesse seu assessment da Plataforma LPS pelo link: {full_link}")
+                                wa_url = f"https://wa.me/?text={wa_msg}"
+                                st.caption("🔗 Link de convite — clique no ícone de copiar à direita:")
+                                st.code(full_link, language=None)
+                                btn_wa, btn_del = st.columns([5, 1])
+                                with btn_wa:
+                                    st.markdown(
+                                        f'<a href="{wa_url}" target="_blank" style="display:inline-block;background:#25D366;color:white;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:0.85rem;font-weight:600;">📲 Enviar pelo WhatsApp</a>',
+                                        unsafe_allow_html=True
                                     )
-                                with col_del:
+                                with btn_del:
                                     if st.button("🗑", key=f"tm_remove_auth_{au_id}", help="Remover cadastro"):
                                         delete_authorized_user(au_id)
                                         st.rerun()
@@ -5968,7 +5970,7 @@ elif page == "TeamManagement":
                         
                         st.write("")
                 else:
-                    st.info("Nenhum e-mail cadastrado ainda.")
+                    st.info("Nenhum colaborador cadastrado ainda.")
                 st.markdown("</div>", unsafe_allow_html=True)
         
         if is_admin:
@@ -6286,7 +6288,7 @@ elif page == "EmployeeAssessment":
             with col1:
                 name = st.text_input("Seu Nome Completo", placeholder="Maria Silva")
             with col2:
-                email = st.text_input("Seu E-mail (recebera seu resultado)", placeholder="maria@email.com")
+                email = st.text_input("Seu E-mail", placeholder="maria@empresa.com")
             
             st.write("---")
             
