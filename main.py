@@ -661,9 +661,13 @@ def _ensure_admin_user(email, password, name, is_viviane=False):
     conn.commit()
     conn.close()
 
-# ── OFFICIAL ACCOUNTS — the only two admin users on this platform ─────────
-_ensure_admin_user("viviane@lps.com.br", "lps2024",    "Viviane Nishiura", is_viviane=True)
-_ensure_admin_user("dev@lps.com.br",     "lpsdev2026", "Dev LPS",          is_viviane=False)
+# ── OFFICIAL ACCOUNTS ─────────────────────────────────────────────────────
+# Viviane – todos os emails possíveis apontam para ela, mesma senha
+_ensure_admin_user("viviane@lps.com.br",  "lps2024",    "Viviane Nishiura", is_viviane=True)
+_ensure_admin_user("contato@lps.com.br",  "lps2024",    "Viviane Nishiura", is_viviane=True)
+# Suporte / Dev – dois emails, mesma senha
+_ensure_admin_user("dev@lps.com.br",      "lpsdev2026", "Suporte LPS",      is_viviane=False)
+_ensure_admin_user("suporte@lps.com.br",  "lpsdev2026", "Suporte LPS",      is_viviane=False)
 
 # Run automatic backup on startup (once per day)
 auto_backup_on_startup()
