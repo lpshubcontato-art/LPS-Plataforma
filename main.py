@@ -323,12 +323,13 @@ span.material-symbols-outlined,
     display: inline-block !important;
     line-height: 0 !important;
 }
-/* Target Streamlit expander toggle icon text explicitly */
+/* Hide ONLY the expander toggle icon text (keyboard_arrow_right / down),
+   NOT the expander title — so module names stay visible */
 [data-testid="stExpander"] [data-testid="stExpanderToggleIcon"],
-[data-testid="stExpander"] summary span,
-[data-testid="stExpander"] details > summary span,
-details > summary span.material-symbols-rounded,
+[data-testid="stExpander"] [data-testid="stIconMaterial"],
 details > summary [data-testid="stIconMaterial"],
+details > summary span.material-symbols-rounded,
+details > summary span.material-symbols-outlined,
 .streamlit-expanderHeader span[class*="material"] {
     font-size: 0 !important;
     color: transparent !important;
@@ -338,6 +339,19 @@ details > summary [data-testid="stIconMaterial"],
     overflow: hidden !important;
     display: inline-block !important;
     line-height: 0 !important;
+}
+/* Always keep the actual expander title paragraph visible */
+[data-testid="stExpander"] summary p,
+[data-testid="stExpander"] details > summary p {
+    font-size: 1rem !important;
+    color: #18738c !important;
+    font-weight: bold !important;
+    -webkit-text-fill-color: #18738c !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    line-height: 1.4 !important;
 }
 </style>
 <script>
@@ -1584,24 +1598,22 @@ st.markdown("""
     }
     
     /* ============================================================
-       WHITE-LABEL: hide all Streamlit-native UI chrome
+       WHITE-LABEL: hide Streamlit chrome — safe selectors only
        ============================================================ */
-    /* Three-dots menu (Settings, Rerun, Print, etc.) — all Streamlit versions */
+    /* Three-dots menu (Settings / Rerun / Print) */
     #MainMenu { display: none !important; visibility: hidden !important; }
     [data-testid="stMainMenu"] { display: none !important; }
     [data-testid="stMainMenuPopover"] { display: none !important; }
-    /* "Made with Streamlit" footer */
+    /* "Made with Streamlit" footer text only — NOT footer siblings */
     footer { display: none !important; visibility: hidden !important; }
-    footer + div { display: none !important; }
     [data-testid="stFooter"] { display: none !important; }
-    /* Coloured decoration stripe at the very top */
+    /* Top coloured decoration stripe */
     [data-testid="stDecoration"] { display: none !important; }
-    /* Right-side toolbar (Deploy button, status widget) */
-    [data-testid="stToolbar"] { display: none !important; }
-    [data-testid="stToolbarActions"] { display: none !important; }
-    [data-testid="stStatusWidget"] { display: none !important; }
+    /* Deploy button only (not the whole toolbar, to avoid breaking iframes) */
     .stDeployButton { display: none !important; }
     button[title="Deploy this app"] { display: none !important; }
+    /* Hide only the status/running indicator inside the toolbar */
+    [data-testid="stStatusWidget"] { display: none !important; }
     /* ============================================================
        HAMBURGER / SIDEBAR TOGGLE — always gold, always visible
        ============================================================ */
@@ -1995,8 +2007,20 @@ st.markdown("""
 
 def vimeo_video(url):
     video_id = url.split('/')[-1]
-    embed_url = f"https://player.vimeo.com/video/{video_id}"
-    components.iframe(embed_url, height=450, scrolling=False)
+    embed_url = f"https://player.vimeo.com/video/{video_id}?dnt=1&badge=0&autopause=0&player_id=0&app_id=58479"
+    iframe_html = f"""
+    <div style="padding:56.25% 0 0 0;position:relative;margin-bottom:1rem;">
+        <iframe
+            src="{embed_url}"
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+            allowfullscreen
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:8px;"
+            title="LPS Video"
+        ></iframe>
+    </div>
+    """
+    st.markdown(iframe_html, unsafe_allow_html=True)
 
 # Inicialização do Estado de Sessão
 if 'page' not in st.session_state:
