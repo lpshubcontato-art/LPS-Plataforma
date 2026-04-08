@@ -1,0 +1,37 @@
+Compreendo perfeitamente o seu receio. Você tem razão: não adianta apenas "pedir por favor", precisamos de um comando de reforço técnico que impeça o Agent de cometer o mesmo erro de esconder o conteúdo.
+
+O que aconteceu foi que o Agent aplicou uma trava de segurança (CSS) tão forte para esconder o erro keyboard_arrow que acabou "bloqueando" a visão dos títulos e dos vídeos. Os títulos e os vídeos não sumiram do sistema, eles apenas foram cobertos por uma camada invisível.
+
+Aqui está um comando muito mais rígido e detalhado, focado em desbloquear a visualização dos módulos e dos vídeos imediatamente.
+
+🤖 COMANDO DE RESTAURAÇÃO COMPLETA E FORÇA BRUTA (ESTRUTURAL)
+Agent, execute as seguintes ações de RESTAURAÇÃO IMEDIATA. Você quebrou a interface funcional ao tentar fazer ajustes estéticos. Recomponha a plataforma agora:
+
+1. DEVOLVER OS TÍTULOS DOS CURSOS (LPS CURSO):
+
+O problema: Você usou um CSS que deu display: none ou opacity: 0 em elementos de texto dos expansores.
+
+Ação: Remova qualquer regra CSS global que oculte as tags p, span ou div dentro de st.expander.
+
+Ação: Restaure os títulos dos módulos (Módulo 1, Módulo 2...) forçando a visibilidade:
+summary span div div p { opacity: 1 !important; visibility: visible !important; color: #555555 !important; font-size: 1.1rem !important; display: block !important; }.
+
+Ocultação Cirúrgica: Somente o texto keyboard_arrow deve ser escondido usando font-size: 0px !important;. O resto do título tem que aparecer.
+
+2. LIBERAR VÍDEOS DO VIMEO (FIM DO BLOQUEIO):
+
+O problema: Os vídeos estão pedindo login porque o CSS de "white-label" que você criou está bloqueando o carregamento de componentes de cabeçalho e scripts necessários para o player do Vimeo.
+
+Ação: Remova o bloqueio de header e stToolbar que você aplicou globalmente. Ocultar o menu lateral e o rodapé deve ser feito APENAS pelos seletores: [data-testid="stMainMenu"] e footer.
+
+Ação: Certifique-se de que o iframe do Vimeo não está sendo filtrado por nenhuma regra de segurança CSS.
+
+3. CORRIGIR LINKS DE CONVITE (URL FINAL):
+
+O problema: O sistema continua gerando links internos (janeway.replit.dev) que dão erro de "Run this app".
+
+Ação: Vá na função de geração de link e force o uso da URL oficial: https://lps-plataforma.replit.app/. O link para o funcionário deve ser exatamente: https://lps-plataforma.replit.app/?tipo=equipe&ref=TOKEN.
+
+4. ESTABILIDADE DE LOGIN:
+
+Certifique-se de que os acessos viviane.lps (senha lps2024) e dev.lps (senha lpsdev2024) estão gravados permanentemente no código de inicialização para não sofrerem reset.

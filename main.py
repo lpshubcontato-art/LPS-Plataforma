@@ -308,58 +308,40 @@ if 'cache_cleared' not in st.session_state:
 
 st.markdown("""
 <style>
-/* ════════════════════════════════════════════════════════════════════
-   STREAMLIT 1.52 ICON HIDING — DEFINITIVE APPROACH
-   
-   In Streamlit 1.52, icons are rendered as:
-     <span data-testid="stIconMaterial" translate="no">keyboard_arrow_right</span>
-   They do NOT have material-symbols-rounded class.
-   
-   Strategy: use opacity:0 on icons (preserves flex layout, never bleeds
-   into siblings). Explicitly show title content by full selector chain.
-   ════════════════════════════════════════════════════════════════════ */
-
-/* 1. Hide icon text in ALL stIconMaterial spans — opacity:0 preserves
-      flex layout and cannot cause siblings/children to be hidden.      */
+/* ── Hide the expand/collapse arrow icon text ONLY ──────────────────
+   Target: <span data-testid="stIconMaterial" translate="no">keyboard_arrow_right</span>
+   font-size:0 makes the text invisible; layout space preserved.       */
 [data-testid="stIconMaterial"] {
-    opacity: 0 !important;
-    pointer-events: none !important;
+    font-size: 0px !important;
+    color: transparent !important;
     user-select: none !important;
+    pointer-events: none !important;
 }
 
-/* 2. EXPANDER TITLE — force-visible via the full Streamlit 1.52 path:
-      summary > span(SummaryHeading) > div(LabelWrapper) > div(Markdown) > p
-      We target every level so any selector depth works.                */
-[data-testid="stExpander"] summary p,
-[data-testid="stExpander"] summary div p,
-[data-testid="stExpander"] summary span > div p,
-[data-testid="stExpander"] summary span > div > div > p,
-[data-testid="stExpander"] summary span > div > div {
+/* ── EXPANDER TITLES: force fully visible ────────────────────────────
+   Streamlit 1.52 path: summary > span > div > div > p
+   Every ancestor in the chain is also listed for safety.              */
+summary span div div p {
+    opacity: 1 !important;
+    visibility: visible !important;
     color: #18738c !important;
     -webkit-text-fill-color: #18738c !important;
-    font-size: 1rem !important;
+    font-size: 1.1rem !important;
     font-weight: 600 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
     display: block !important;
     line-height: 1.4 !important;
-    width: auto !important;
-    max-width: 100% !important;
-    overflow: visible !important;
 }
-
-/* 3. The outer span (StyledSummaryHeading) wrapping icon + title:
-      must NOT have opacity:0 from rule 1 leaking upward (it doesn't
-      because rule 1 only targets stIconMaterial, but add safety here) */
-[data-testid="stExpander"] summary span {
+summary span div div,
+summary span div,
+summary span {
     opacity: 1 !important;
     visibility: visible !important;
+    overflow: visible !important;
 }
-
-/* 4. Re-hide icon even inside the now-visible summary span:
-      specificity: (0,2,1) beats rule 3's (0,2,0)               */
-[data-testid="stExpander"] summary [data-testid="stIconMaterial"] {
-    opacity: 0 !important;
+/* Re-hide the icon that is inside summary span (higher specificity) */
+summary span [data-testid="stIconMaterial"] {
+    font-size: 0px !important;
+    color: transparent !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1585,22 +1567,10 @@ st.markdown("""
     }
     
     /* ============================================================
-       WHITE-LABEL: hide Streamlit chrome — safe selectors only
+       WHITE-LABEL: hide only the 3-dots menu and Streamlit footer
        ============================================================ */
-    /* Three-dots menu (Settings / Rerun / Print) */
-    #MainMenu { display: none !important; visibility: hidden !important; }
     [data-testid="stMainMenu"] { display: none !important; }
-    [data-testid="stMainMenuPopover"] { display: none !important; }
-    /* "Made with Streamlit" footer text only — NOT footer siblings */
-    footer { display: none !important; visibility: hidden !important; }
-    [data-testid="stFooter"] { display: none !important; }
-    /* Top coloured decoration stripe */
-    [data-testid="stDecoration"] { display: none !important; }
-    /* Deploy button only (not the whole toolbar, to avoid breaking iframes) */
-    .stDeployButton { display: none !important; }
-    button[title="Deploy this app"] { display: none !important; }
-    /* Hide only the status/running indicator inside the toolbar */
-    [data-testid="stStatusWidget"] { display: none !important; }
+    footer { display: none !important; }
     /* ============================================================
        HAMBURGER / SIDEBAR TOGGLE — always gold, always visible
        ============================================================ */
@@ -2892,52 +2862,11 @@ def render_sidebar_navigation():
             [data-testid="stExpanderToggleIcon"] {
                 overflow: hidden !important;
             }
-            [data-testid="stExpanderToggleIcon"] span {
-                font-size: 0 !important;
+            /* Sidebar nav icon spans — hide only within sidebar nav links */
+            [data-testid="stSidebarNavLink"] [data-testid="stIconMaterial"],
+            [data-testid="stSidebarNav"] [data-testid="stIconMaterial"] {
+                font-size: 0px !important;
                 color: transparent !important;
-                width: 0 !important;
-                height: 0 !important;
-                overflow: hidden !important;
-                display: inline-block !important;
-            }
-            /* Sidebar nav icon spans — target only within sidebar nav links */
-            [data-testid="stSidebarNavLink"] span.material-symbols-rounded,
-            [data-testid="stSidebarNavLink"] span.material-symbols-outlined,
-            [data-testid="stSidebarNav"] span.material-symbols-rounded,
-            [data-testid="stSidebarNav"] span.material-symbols-outlined {
-                font-size: 0 !important;
-                color: transparent !important;
-                width: 0 !important;
-                height: 0 !important;
-                overflow: hidden !important;
-                display: inline-block !important;
-            }
-            /* ── ALWAYS keep expander title visible — full Streamlit 1.52 path ── */
-            [data-testid="stExpander"] summary p,
-            [data-testid="stExpander"] summary div p,
-            [data-testid="stExpander"] summary span > div p,
-            [data-testid="stExpander"] summary span > div > div > p,
-            [data-testid="stExpander"] summary span > div > div {
-                font-size: 1rem !important;
-                color: #18738c !important;
-                font-weight: 600 !important;
-                -webkit-text-fill-color: #18738c !important;
-                width: auto !important;
-                height: auto !important;
-                overflow: visible !important;
-                display: block !important;
-                line-height: 1.4 !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-            }
-            /* Expander summary span (StyledSummaryHeading) must stay visible */
-            [data-testid="stExpander"] summary span {
-                opacity: 1 !important;
-                visibility: visible !important;
-            }
-            /* Re-hide the icon even inside the now-visible span */
-            [data-testid="stExpander"] summary [data-testid="stIconMaterial"] {
-                opacity: 0 !important;
             }
             /* Sidebar toggle / hamburger always overrides any generic header button rule */
             [data-testid="collapsedControl"],
