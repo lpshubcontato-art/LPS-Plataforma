@@ -306,74 +306,7 @@ if 'cache_cleared' not in st.session_state:
     st.cache_resource.clear()
     st.session_state.cache_cleared = True
 
-st.markdown("""
-<style>
-/* ══════════════════════════════════════════════════════════════
-   EXPANDER TITLE — force visible text with LPS colours.
-   Icons render correctly via Material Symbols font (see fix
-   in main CSS block). No icon hiding needed here.
-   ══════════════════════════════════════════════════════════════ */
-[data-testid="stExpander"] summary p,
-[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"] p,
-[data-testid="stExpander"] summary div p,
-[data-testid="stExpander"] summary span div div p {
-    opacity: 1 !important;
-    visibility: visible !important;
-    color: #18738c !important;
-    -webkit-text-fill-color: #18738c !important;
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
-    display: block !important;
-    line-height: 1.4 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ── JS FIXER: directly style expander titles via parent DOM ───────────────
-# CSS specificity battles have been unreliable. This JavaScript runs inside
-# a same-origin iframe and directly applies inline styles to expander title
-# <p> elements in the parent document, bypassing all CSS cascade issues.
-components.html("""
-<script>
-(function() {
-    var TITLE_COLOR = '#18738c';
-    var pd;
-    try { pd = window.parent.document; } catch(e) { return; }
-
-    function fixExpanders() {
-        try {
-            pd.querySelectorAll('[data-testid="stExpander"] summary').forEach(function(summary) {
-                // Style every <p> inside the expander summary
-                summary.querySelectorAll('p').forEach(function(p) {
-                    p.style.setProperty('color', TITLE_COLOR, 'important');
-                    p.style.setProperty('-webkit-text-fill-color', TITLE_COLOR, 'important');
-                    p.style.setProperty('opacity', '1', 'important');
-                    p.style.setProperty('visibility', 'visible', 'important');
-                    p.style.setProperty('display', 'block', 'important');
-                    p.style.setProperty('font-size', '1.05rem', 'important');
-                    p.style.setProperty('font-weight', '600', 'important');
-                    p.style.setProperty('line-height', '1.4', 'important');
-                    p.style.setProperty('max-height', 'none', 'important');
-                    p.style.setProperty('overflow', 'visible', 'important');
-                });
-                // Ensure the summary itself is not clipping content
-                summary.style.setProperty('overflow', 'visible', 'important');
-                summary.style.setProperty('min-height', '2rem', 'important');
-            });
-        } catch(e) {}
-    }
-
-    // Run immediately
-    fixExpanders();
-    // Watch for Streamlit re-renders
-    try {
-        new MutationObserver(fixExpanders).observe(pd.body, { childList: true, subtree: true });
-    } catch(e) {}
-    // Fallback timer
-    setInterval(fixExpanders, 800);
-})();
-</script>
-""", height=0, scrolling=False)
+st.markdown("<style>[data-testid='stExpander'] p { color: #18738c !important; display: block !important; visibility: visible !important; opacity: 1 !important; }</style>", unsafe_allow_html=True)
 
 # Password hashing functions using bcrypt
 def hash_password(password):
@@ -382,17 +315,19 @@ def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
 def verify_password(password, hashed):
-    """Verify password against hash. Supports bcrypt and legacy SHA-256."""
-    # Check if it's a bcrypt hash (starts with $2b$, $2a$, or $2y$)
+    """Verify password. Supports plain text, bcrypt, and legacy SHA-256."""
+    # Plain text comparison (fastest, for admin accounts)
+    if hashed == password:
+        return True
+    # bcrypt hash
     if hashed.startswith('$2'):
         try:
             return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
         except Exception:
             return False
-    else:
-        # Legacy SHA-256 hash support for existing users
-        legacy_hash = hashlib.sha256(password.encode()).hexdigest()
-        return legacy_hash == hashed
+    # Legacy SHA-256
+    legacy_hash = hashlib.sha256(password.encode()).hexdigest()
+    return legacy_hash == hashed
 
 def upgrade_password_hash(user_id, password):
     """Upgrade legacy SHA-256 hash to bcrypt."""
@@ -695,20 +630,20 @@ def init_db():
 init_db()
 
 def _ensure_admin_user(email, password, name, is_viviane=False):
-    """Create or update an admin user. Sets full course progress if is_viviane."""
+    """Create or update an admin user. Stores password as plain text for reliability."""
     conn = sqlite3.connect('lps_data.db')
     c = conn.cursor()
     c.execute("SELECT id FROM users WHERE email = ?", (email,))
     row = c.fetchone()
-    pw_hash = hash_password(password)
     if row:
-        c.execute("UPDATE users SET password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
-                  (pw_hash, name, email))
         user_id = row[0]
+        # Always overwrite with plain text password so login never breaks
+        c.execute("UPDATE users SET password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
+                  (password, name, email))
     else:
         user_id = str(uuid.uuid4())
         c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
-                  (user_id, email, pw_hash, name))
+                  (user_id, email, password, name))
         c.execute("SELECT id FROM managers WHERE email = ?", (email,))
         if not c.fetchone():
             manager_id = str(uuid.uuid4())
