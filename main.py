@@ -737,7 +737,14 @@ def _ensure_admin_user(email, password, name, is_viviane=False):
             c.execute("INSERT INTO managers (id, user_id, email, name) VALUES (?, ?, ?, ?)",
                       (manager_id, user_id, email, name))
     if is_viviane:
-        all_complete = {f"m{mid}_v{vi}": True for mid in range(0, 8) for vi in range(7)}
+        # Use actual video counts per module (must match MODULES_DATA)
+        # Module: [0=Intro, 1=Neuro, 2=Inconsciente, 3=Relações, 4=Autoconsciência, 5=Bion, 6=Integracao, 7=Pratica]
+        _module_video_counts = [3, 7, 6, 5, 4, 3, 4, 2]
+        all_complete = {
+            f"m{mid}_v{vi}": True
+            for mid, count in enumerate(_module_video_counts)
+            for vi in range(count)
+        }
         c.execute("SELECT id FROM course_progress WHERE user_id = ?", (user_id,))
         if c.fetchone():
             c.execute("UPDATE course_progress SET progress_data = ? WHERE user_id = ?",
@@ -5501,10 +5508,13 @@ elif page == "LPS Curso":
             st.session_state.progress = db_progress
         
         total_lessons = sum(len(m['videos']) for m in MODULES_DATA)
-        completed_lessons = sum(1 for v in st.session_state.progress.values() if v)
+        # Count only valid lesson keys that exist in MODULES_DATA
+        valid_keys = {f"m{m['id']}_v{v_i}" for m in MODULES_DATA for v_i in range(len(m['videos']))}
+        completed_lessons = sum(1 for k, v in st.session_state.progress.items() if k in valid_keys and v)
+        progress_ratio = min(completed_lessons / total_lessons, 1.0) if total_lessons > 0 else 0.0
         
         st.markdown(f"<p style='color: #18738c; font-weight: bold;'>Progresso Geral: {completed_lessons}/{total_lessons} aulas concluídas</p>", unsafe_allow_html=True)
-        st.progress(completed_lessons / total_lessons if total_lessons > 0 else 0)
+        st.progress(progress_ratio)
     
     st.write("---")
     
@@ -5622,30 +5632,26 @@ elif page == "LPTest":
 
                 manager_name = st.session_state.user.get('name', '') if st.session_state.user else ''
                 docx_text = extract_docx_profile_text(res['dominant'], res['secondary'], "gestor")
-                if docx_text:
-                    pdf_data = generate_laudo_pdf(
-                        docx_text, manager_name,
-                        res['dominant'], res['secondary'], res['bion_role'],
-                        respondent_type="gestor"
-                    )
-                    safe_name = (manager_name or "gestor").replace(" ", "_").lower()
-                    st.download_button(
-                        "Baixar Laudo Completo em PDF",
-                        data=pdf_data,
-                        file_name=f"laudo_lps_{safe_name}_{datetime.now().strftime('%Y%m%d')}.pdf",
-                        mime="application/pdf",
-                        key="download_laudo_pdf",
-                        use_container_width=True,
-                        type="primary"
-                    )
-
-                    if not st.session_state.get('ai_laudo'):
-                        st.session_state.ai_laudo = docx_text
-                        mgr_user_id = st.session_state.user.get('id', '') if st.session_state.user else ''
-                        if mgr_user_id:
-                            save_laudo(mgr_user_id, "gestor", manager_name, res['dominant'], res['secondary'], res['bion_role'], docx_text)
-                else:
-                    st.warning("Arquivo .docx do perfil não encontrado. Verifique se os documentos estão no diretório attached_assets/.")
+                pdf_data = generate_laudo_pdf(
+                    docx_text or "", manager_name,
+                    res['dominant'], res['secondary'], res['bion_role'],
+                    respondent_type="gestor"
+                )
+                safe_name = (manager_name or "gestor").replace(" ", "_").lower()
+                st.download_button(
+                    "Baixar Laudo Completo em PDF",
+                    data=pdf_data,
+                    file_name=f"laudo_lps_{safe_name}_{datetime.now().strftime('%Y%m%d')}.pdf",
+                    mime="application/pdf",
+                    key="download_laudo_pdf",
+                    use_container_width=True,
+                    type="primary"
+                )
+                if docx_text and not st.session_state.get('ai_laudo'):
+                    st.session_state.ai_laudo = docx_text
+                    mgr_user_id = st.session_state.user.get('id', '') if st.session_state.user else ''
+                    if mgr_user_id:
+                        save_laudo(mgr_user_id, "gestor", manager_name, res['dominant'], res['secondary'], res['bion_role'], docx_text)
 
 elif page == "TeamManagement":
     if not st.session_state.authenticated:
@@ -5811,12 +5817,8 @@ elif page == "TeamManagement":
                     .auth-user-row:last-child { border-bottom: none; }
                     </style>
                 """, unsafe_allow_html=True)
-                st.markdown("<div class='gestao-card'><h3>Cadastro de E-mails Autorizados</h3>", unsafe_allow_html=True)
-                if is_email_configured():
-                    st.markdown("<p style='color: #155724; background:#d4edda; border-radius:6px; padding:8px 12px; font-size:0.88rem;'>✅ E-mail automático ativo — o convite será enviado por e-mail ao cadastrar.</p>", unsafe_allow_html=True)
-                else:
-                    st.markdown("<p style='color: #856404; background:#fff3cd; border-radius:6px; padding:8px 12px; font-size:0.88rem;'>⚠️ E-mail automático não configurado. O link será exibido abaixo para cópia manual. Configure as Secrets SMTP para ativar o envio automático.</p>", unsafe_allow_html=True)
-                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Cadastre os colaboradores. O link de convite será gerado e enviado por e-mail automaticamente.</p>", unsafe_allow_html=True)
+                st.markdown("<div class='gestao-card'><h3>Cadastro de Colaboradores</h3>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Cadastre o colaborador. O link de convite é gerado automaticamente — copie e envie por WhatsApp ou outro canal.</p>", unsafe_allow_html=True)
                 
                 with st.form("tm_add_auth_email_form", clear_on_submit=True):
                     col_name, col_email, col_type = st.columns([2, 2, 1])
@@ -5827,25 +5829,12 @@ elif page == "TeamManagement":
                     with col_type:
                         auth_type = st.selectbox("Tipo", ["equipe", "lider"], format_func=lambda x: "Equipe" if x == "equipe" else "Líder", key="tm_auth_type_select")
                     
-                    submit_auth = st.form_submit_button("Cadastrar e Enviar Convite por E-mail", use_container_width=True, type="primary")
+                    submit_auth = st.form_submit_button("Cadastrar Colaborador e Gerar Link", use_container_width=True, type="primary")
                     if submit_auth:
                         if auth_name and auth_email:
                             success, error = add_authorized_user(auth_email, auth_name, auth_type, user_id)
                             if success:
-                                # Retrieve the token just created and send the invite email
-                                _au_rec = check_email_authorized(auth_email)
-                                if _au_rec and _au_rec[8]:
-                                    _inv_token = _au_rec[8]
-                                    _tipo_param = "lider" if auth_type == "lider" else "equipe"
-                                    _invite_link = f"{get_app_url()}/?tipo={_tipo_param}&ref={_inv_token}"
-                                    _mgr_name = st.session_state.user.get('name', 'Seu Gestor')
-                                    _ok, _msg = send_invite_link_email(auth_name, auth_email, _invite_link, _mgr_name, auth_type)
-                                    if _ok:
-                                        st.success(f"✅ {auth_email} cadastrado e convite enviado por e-mail!")
-                                    else:
-                                        st.warning(f"Cadastrado com sucesso, mas o e-mail não foi enviado: {_msg}. Copie o link manualmente abaixo.")
-                                else:
-                                    st.success(f"E-mail {auth_email} cadastrado! Copie o link abaixo para enviar ao colaborador.")
+                                st.success(f"✅ {auth_name} cadastrado! Copie o link abaixo e envie por WhatsApp.")
                                 st.rerun()
                             else:
                                 st.warning(error)
@@ -5854,8 +5843,8 @@ elif page == "TeamManagement":
                 
                 st.markdown("</div>", unsafe_allow_html=True)
                 
-                st.markdown("<div class='gestao-card'><h3>E-mails Cadastrados</h3>", unsafe_allow_html=True)
-                st.markdown("<p style='color: #666; font-size: 0.85rem;'>Copie o link ao lado de cada colaborador e envie por WhatsApp ou e-mail.</p>", unsafe_allow_html=True)
+                st.markdown("<div class='gestao-card'><h3>Colaboradores Cadastrados</h3>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666; font-size: 0.85rem;'>Copie o link de cada colaborador e envie por WhatsApp ou outro canal.</p>", unsafe_allow_html=True)
                 auth_users = get_authorized_users(user_id)
                 if auth_users:
                     base_url = get_app_url()
@@ -5887,23 +5876,15 @@ elif page == "TeamManagement":
                             if au_token:
                                 tipo_param = "lider" if au_type == "lider" else "equipe"
                                 full_link = f"{base_url}/?tipo={tipo_param}&ref={au_token}"
-                                mgr_name_for_email = st.session_state.user.get('name', 'Seu Gestor')
-                                col_link, col_email_btn, col_del = st.columns([4, 1.5, 0.7])
+                                col_link, col_del = st.columns([5.5, 0.7])
                                 with col_link:
                                     st.text_input(
                                         f"Link de convite — {au_name}",
                                         value=full_link,
                                         key=f"au_link_{au_id}",
                                         label_visibility="collapsed",
-                                        help="Selecione e copie este link. Envie por WhatsApp ou e-mail."
+                                        help="Selecione e copie este link. Envie por WhatsApp."
                                     )
-                                with col_email_btn:
-                                    if st.button("📧 Reenviar e-mail", key=f"tm_resend_{au_id}", help=f"Reenviar link de convite para {au_email}", use_container_width=True):
-                                        _ok, _msg = send_invite_link_email(au_name, au_email, full_link, mgr_name_for_email, au_type)
-                                        if _ok:
-                                            st.success(f"E-mail reenviado para {au_email}!")
-                                        else:
-                                            st.error(f"Falha ao enviar: {_msg}")
                                 with col_del:
                                     if st.button("🗑", key=f"tm_remove_auth_{au_id}", help="Remover cadastro"):
                                         delete_authorized_user(au_id)
@@ -5920,11 +5901,6 @@ elif page == "TeamManagement":
                                         c_t.execute("INSERT INTO invite_links (id, token, invite_type, created_by) VALUES (?, ?, ?, ?)", (link_id, new_token, au_type, user_id))
                                         conn_t.commit()
                                         conn_t.close()
-                                        # Try sending the email with the new token
-                                        _mgr_name_regen = st.session_state.user.get('name', 'Seu Gestor')
-                                        _tipo_p = "lider" if au_type == "lider" else "equipe"
-                                        _new_link = f"{base_url}/?tipo={_tipo_p}&ref={new_token}"
-                                        send_invite_link_email(au_name, au_email, _new_link, _mgr_name_regen, au_type)
                                         st.rerun()
                                 with col_del:
                                     if st.button("🗑", key=f"tm_remove_auth_{au_id}", help="Remover cadastro"):
