@@ -1856,10 +1856,10 @@ def vimeo_video(url):
     video_id = url.split('/')[-1].split('?')[0]
     embed_url = (
         f"https://player.vimeo.com/video/{video_id}"
-        f"?dnt=1&badge=0&autopause=0&player_id=0&app_id=58479&byline=0&portrait=0&title=0"
+        f"?badge=0&autopause=0&player_id=0&app_id=58479&byline=0&portrait=0&title=0"
     )
     iframe_html = f"""
-    <div style="padding:56.25% 0 0 0;position:relative;margin-bottom:1rem;overflow:visible;">
+    <div style="padding:56.25% 0 0 0;position:relative;margin-bottom:1rem;">
         <iframe
             src="{embed_url}"
             frameborder="0"
