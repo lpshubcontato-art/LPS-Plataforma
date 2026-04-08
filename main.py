@@ -308,27 +308,40 @@ if 'cache_cleared' not in st.session_state:
 
 st.markdown("""
 <style>
-/* ── Minimal, safe icon-text hiding ──────────────────────────────────────
-   ONLY target spans that explicitly carry the Material Symbols CSS class.
-   These class names are unique to icon elements — they are NEVER applied
-   to Streamlit text, expander titles, or layout containers.
+/* ── Icon hiding: ONLY the known icon container data-testids ─────────
+   We do NOT set font-size:0 on span.material-symbols-* globally because
+   Streamlit 1.52 can render expander titles inside span elements that
+   share those class names in some render paths.
+   Instead we target ONLY the specific icon wrapper testids.
    ────────────────────────────────────────────────────────────────────── */
-span.material-symbols-rounded,
-span.material-symbols-outlined {
+
+/* Sidebar / page nav icon text fallback */
+[data-testid="stIconMaterial"] {
     font-size: 0 !important;
     color: transparent !important;
-    -webkit-text-fill-color: transparent !important;
+    line-height: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    display: inline-block !important;
+}
+
+/* Expander collapse/expand toggle icon ONLY */
+[data-testid="stExpanderToggleIcon"] span {
+    font-size: 0 !important;
+    color: transparent !important;
     width: 0 !important;
     height: 0 !important;
     overflow: hidden !important;
     display: inline-block !important;
     line-height: 0 !important;
-    pointer-events: none !important;
 }
+
 /* ── Expander title: ALWAYS visible ──────────────────────────────────── */
 [data-testid="stExpander"] summary p,
 [data-testid="stExpander"] details > summary p,
-details > summary > p,
+[data-testid="stExpander"] summary > div > p,
+details > summary p,
 .streamlit-expanderHeader p {
     font-size: 1rem !important;
     color: #18738c !important;
@@ -336,6 +349,7 @@ details > summary > p,
     -webkit-text-fill-color: #18738c !important;
     width: auto !important;
     height: auto !important;
+    max-width: none !important;
     overflow: visible !important;
     display: block !important;
     line-height: 1.4 !important;
@@ -344,34 +358,40 @@ details > summary > p,
 }
 </style>
 <script>
-/* JS: hide ONLY spans whose sole text content is a known icon name.
-   This is surgical — it can never accidentally hide a module title.   */
+/* JS: hide ONLY spans whose ENTIRE trimmed text content is a known icon
+   ligature name. This is surgical and cannot hide any module title.     */
 (function hideIconText() {
     var ICON_NAMES = {
         'keyboard_arrow_right':1,'keyboard_arrow_down':1,'keyboard_arrow_left':1,
         'keyboard_arrow_up':1,'keyboard_double_arrow_right':1,
         'keyboard_double_arrow_down':1,'expand_more':1,'expand_less':1,
         'chevron_right':1,'chevron_left':1,'arrow_forward_ios':1,
-        'arrow_back_ios':1,'Arrow_light':1,'arrow_right':1
+        'arrow_back_ios':1,'Arrow_light':1,'arrow_right':1,
+        'menu':1,'close':1,'add':1,'remove':1,'search':1,'home':1,
+        'settings':1,'info':1,'warning':1,'error':1,'check':1,'check_circle':1
     };
-    var HIDE = 'font-size:0!important;width:0!important;height:0!important;overflow:hidden!important;display:inline-block!important;color:transparent!important;-webkit-text-fill-color:transparent!important;line-height:0!important;pointer-events:none!important;';
+    var HIDE = 'font-size:0!important;width:0!important;height:0!important;' +
+               'overflow:hidden!important;display:inline-block!important;' +
+               'color:transparent!important;-webkit-text-fill-color:transparent!important;' +
+               'line-height:0!important;pointer-events:none!important;';
     function run() {
-        var docs = [document];
-        try { if (window.parent && window.parent.document !== document) docs.push(window.parent.document); } catch(e) {}
-        docs.forEach(function(d) {
-            d.querySelectorAll('span').forEach(function(el) {
-                var t = (el.textContent || '').trim();
-                if (ICON_NAMES[t] || t.indexOf('keyboard_arrow') === 0 || t.indexOf('keyboard_double') === 0) {
-                    el.style.cssText = HIDE;
-                    el.setAttribute('aria-hidden', 'true');
-                }
-            });
+        /* Only hide spans that:
+           1. Have the material-symbols CSS class, AND
+           2. Their ENTIRE text is a known icon ligature name            */
+        document.querySelectorAll(
+            'span.material-symbols-rounded, span.material-symbols-outlined'
+        ).forEach(function(el) {
+            var t = (el.textContent || '').trim();
+            if (ICON_NAMES[t] || t.indexOf('keyboard_arrow') === 0 || t.indexOf('keyboard_double') === 0) {
+                el.style.cssText = HIDE;
+                el.setAttribute('aria-hidden', 'true');
+            }
         });
     }
     run();
-    setTimeout(run, 150);
-    setTimeout(run, 600);
-    setTimeout(run, 1800);
+    setTimeout(run, 200);
+    setTimeout(run, 700);
+    setTimeout(run, 2000);
 })();
 </script>
 """, unsafe_allow_html=True)
@@ -2005,19 +2025,24 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 def vimeo_video(url):
-    video_id = url.split('/')[-1]
-    embed_url = f"https://player.vimeo.com/video/{video_id}?dnt=1&badge=0&autopause=0&player_id=0&app_id=58479"
+    video_id = url.split('/')[-1].split('?')[0]
+    embed_url = (
+        f"https://player.vimeo.com/video/{video_id}"
+        f"?dnt=1&badge=0&autopause=0&player_id=0&app_id=58479&byline=0&portrait=0&title=0"
+    )
     iframe_html = f"""
-    <div style="padding:56.25% 0 0 0;position:relative;margin-bottom:1rem;">
+    <div style="padding:56.25% 0 0 0;position:relative;margin-bottom:1rem;overflow:visible;">
         <iframe
             src="{embed_url}"
             frameborder="0"
             allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
             allowfullscreen
-            style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:8px;"
+            referrerpolicy="no-referrer-when-downgrade"
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:8px;border:none;"
             title="LPS Video"
         ></iframe>
     </div>
+    <script src="https://player.vimeo.com/api/player.js"></script>
     """
     st.markdown(iframe_html, unsafe_allow_html=True)
 
@@ -2907,20 +2932,17 @@ def render_sidebar_navigation():
                 overflow: hidden !important;
                 display: inline-block !important;
             }
-            /* Material symbol CSS class-based spans (safe: these class names are specific) */
-            span.material-symbols-rounded,
-            span.material-symbols-outlined {
+            /* Sidebar nav icon spans — target only within sidebar nav links */
+            [data-testid="stSidebarNavLink"] span.material-symbols-rounded,
+            [data-testid="stSidebarNavLink"] span.material-symbols-outlined,
+            [data-testid="stSidebarNav"] span.material-symbols-rounded,
+            [data-testid="stSidebarNav"] span.material-symbols-outlined {
                 font-size: 0 !important;
                 color: transparent !important;
                 width: 0 !important;
                 height: 0 !important;
                 overflow: hidden !important;
                 display: inline-block !important;
-            }
-            /* Sidebar nav icon spans only */
-            [data-testid="stSidebarNav"] span.material-symbols-rounded,
-            [data-testid="stSidebarNavLink"] span.material-symbols-rounded {
-                display: none !important;
             }
             /* ── ALWAYS keep expander title paragraph visible ── */
             [data-testid="stExpander"] summary p,
