@@ -1449,7 +1449,7 @@ def render_premium_gate(feature_name="esta funcionalidade"):
                 O acesso completo a esta ferramenta e aos conteúdos exclusivos da Metodologia LPS
                 está disponível para membros oficiais.
             </div>
-            <a href="https://wa.me/5511999999999?text=Olá! Gostaria de liberar meu acesso à Plataforma LPS." 
+            <a href="https://wa.me/5511971419453?text=Ol%C3%A1%21%20Gostaria%20de%20liberar%20meu%20acesso%20%C3%A0%20Plataforma%20LPS." 
                target="_blank" class="premium-gate-cta">
                 Liberar Acesso via WhatsApp
             </a>
@@ -2060,6 +2060,7 @@ if 'selected_module' not in st.session_state:
     st.session_state.selected_module = None
 
 WHATSAPP_URL = "https://wa.me/5511971419453"
+SUPPORT_WHATSAPP_URL = "https://wa.me/5511971419453?text=Ol%C3%A1%2C%20estou%20na%20Plataforma%20LPS%20e%20preciso%20de%20suporte."
 LOGO_PATH = "attached_assets/logotipo_1775681856317.jpeg"
 
 # Definicoes das questoes do Assessment (8 blocos: 7x8 + 1x14 = 70 questoes totais)
@@ -3101,12 +3102,25 @@ def render_sidebar_navigation():
                     st.session_state.show_login_modal = False
                     st.rerun()
         
-        # Footer in sidebar
+        # Footer in sidebar — Suporte + copyright
         st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
-        st.markdown("""
-            <p style="color: rgba(255,255,255,0.6); font-size: 0.7rem; text-align: center; padding: 0.5rem;">
-                2026 Viviane Nishiura<br>
-                Todos os direitos reservados
+        st.markdown(f"""
+            <a href="{SUPPORT_WHATSAPP_URL}" target="_blank" style="
+                display: block;
+                background: transparent;
+                border: 1.5px solid #d19f09;
+                color: #d19f09;
+                text-align: center;
+                padding: 8px 12px;
+                border-radius: 20px;
+                text-decoration: none;
+                font-size: 0.82rem;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+                transition: background 0.2s;
+            ">💬 Suporte via WhatsApp</a>
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.68rem; text-align: center; padding: 0 0.5rem 0.5rem;">
+                © 2026 Viviane Nishiura<br>Todos os direitos reservados
             </p>
         """, unsafe_allow_html=True)
 
@@ -7013,8 +7027,8 @@ elif page == "GuiaSuporte":
         <div style="background-color: #f5f5f5; padding: 1.5rem; border-radius: 10px; text-align: center; margin-top: 2rem;">
             <h3 style="color: #18738c;">Precisa de Ajuda?</h3>
             <p>Entre em contato com nossa equipe via WhatsApp para suporte personalizado.</p>
-            <a href="{WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold;">
-                Falar com Suporte
+            <a href="{SUPPORT_WHATSAPP_URL}" target="_blank" style="display: inline-block; background-color: #25D366; color: #000000; padding: 0.75rem 2rem; border-radius: 25px; text-decoration: none; font-weight: bold;">
+                💬 Falar com Suporte
             </a>
         </div>
     """, unsafe_allow_html=True)
