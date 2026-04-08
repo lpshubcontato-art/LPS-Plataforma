@@ -329,6 +329,52 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ── JS FIXER: directly style expander titles via parent DOM ───────────────
+# CSS specificity battles have been unreliable. This JavaScript runs inside
+# a same-origin iframe and directly applies inline styles to expander title
+# <p> elements in the parent document, bypassing all CSS cascade issues.
+components.html("""
+<script>
+(function() {
+    var TITLE_COLOR = '#18738c';
+    var pd;
+    try { pd = window.parent.document; } catch(e) { return; }
+
+    function fixExpanders() {
+        try {
+            pd.querySelectorAll('[data-testid="stExpander"] summary').forEach(function(summary) {
+                // Style every <p> inside the expander summary
+                summary.querySelectorAll('p').forEach(function(p) {
+                    p.style.setProperty('color', TITLE_COLOR, 'important');
+                    p.style.setProperty('-webkit-text-fill-color', TITLE_COLOR, 'important');
+                    p.style.setProperty('opacity', '1', 'important');
+                    p.style.setProperty('visibility', 'visible', 'important');
+                    p.style.setProperty('display', 'block', 'important');
+                    p.style.setProperty('font-size', '1.05rem', 'important');
+                    p.style.setProperty('font-weight', '600', 'important');
+                    p.style.setProperty('line-height', '1.4', 'important');
+                    p.style.setProperty('max-height', 'none', 'important');
+                    p.style.setProperty('overflow', 'visible', 'important');
+                });
+                // Ensure the summary itself is not clipping content
+                summary.style.setProperty('overflow', 'visible', 'important');
+                summary.style.setProperty('min-height', '2rem', 'important');
+            });
+        } catch(e) {}
+    }
+
+    // Run immediately
+    fixExpanders();
+    // Watch for Streamlit re-renders
+    try {
+        new MutationObserver(fixExpanders).observe(pd.body, { childList: true, subtree: true });
+    } catch(e) {}
+    // Fallback timer
+    setInterval(fixExpanders, 800);
+})();
+</script>
+""", height=0, scrolling=False)
+
 # Password hashing functions using bcrypt
 def hash_password(password):
     """Hash password using bcrypt for secure storage."""
