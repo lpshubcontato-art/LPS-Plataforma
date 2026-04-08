@@ -1,0 +1,30 @@
+Sinto muito por essa situação. Entendo perfeitamente que parece que estamos andando para trás, mas o que aconteceu é um conflito técnico comum: o Agent aplicou uma "limpeza" tão agressiva que acabou escondendo o conteúdo legítimo junto com os erros.
+
+Não se preocupe, eu analisei as imagens e o documento de erros que você enviou agora. Vou estruturar um comando final e definitivo para o Agent. Ele vai focar em RESTAURAR o que sumiu e CONSERTAR os links de uma vez por todas.
+
+Copie e cole este comando exatamente assim para o Replit Agent:
+
+🤖 COMANDO DE RESTAURAÇÃO TOTAL E CORREÇÃO DE LINKS (URGENTE)
+Agent, você ocultou conteúdo essencial por erro. Execute estas 4 ações agora para consertar a Plataforma LPS definitivamente:
+
+1. RESTAURAR TÍTULOS DOS MÓDULOS (LPS CURSO):
+* Problema: As barras dos cursos estão vazias porque o seu CSS ocultou todos os textos.
+
+Ação: Remova imediatamente qualquer regra CSS de visibility: hidden ou display: none aplicada aos títulos dos st.expander.
+
+Correção Cirúrgica: Para remover o erro "keyboard_arrow", use APENAS font-size: 0px !important; color: transparent !important; especificamente para a classe que contém esse texto, garantindo que o título do módulo (ex: Módulo 1) permaneça visível.
+
+2. LIBERAR VÍDEOS DO VIMEO:
+* Problema: Os vídeos pararam de carregar e pedem login.
+
+Ação: Remova bloqueios de header ou scripts que impeçam o carregamento de iframes do Vimeo. O conteúdo deve ser exibido diretamente para o usuário logado.
+
+3. CONSERTAR LINKS DE CONVITE (URL PÚBLICA):
+* Problema: Os links gerados levam para uma página de erro do Replit ("Run this app").
+
+Ação: Altere a função que gera o link em "Gestão de Equipe" para usar obrigatoriamente a URL base: https://lps-plataforma.replit.app/. O link final deve ser https://lps-plataforma.replit.app/?tipo=equipe&ref=TOKEN.
+
+4. NAVEGAÇÃO E ACESSO:
+* Certifique-se de que o botão "Voltar" do navegador não deslogue o usuário subitamente.
+
+Confirme que os logins viviane.lps (senha lps2024) e dev.lps (senha lpsdev2024) estão funcionando agora.

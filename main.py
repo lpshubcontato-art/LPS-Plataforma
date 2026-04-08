@@ -308,92 +308,60 @@ if 'cache_cleared' not in st.session_state:
 
 st.markdown("""
 <style>
-/* ── Icon hiding: ONLY the known icon container data-testids ─────────
-   We do NOT set font-size:0 on span.material-symbols-* globally because
-   Streamlit 1.52 can render expander titles inside span elements that
-   share those class names in some render paths.
-   Instead we target ONLY the specific icon wrapper testids.
-   ────────────────────────────────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════════
+   STREAMLIT 1.52 ICON HIDING — DEFINITIVE APPROACH
+   
+   In Streamlit 1.52, icons are rendered as:
+     <span data-testid="stIconMaterial" translate="no">keyboard_arrow_right</span>
+   They do NOT have material-symbols-rounded class.
+   
+   Strategy: use opacity:0 on icons (preserves flex layout, never bleeds
+   into siblings). Explicitly show title content by full selector chain.
+   ════════════════════════════════════════════════════════════════════ */
 
-/* Sidebar / page nav icon text fallback */
+/* 1. Hide icon text in ALL stIconMaterial spans — opacity:0 preserves
+      flex layout and cannot cause siblings/children to be hidden.      */
 [data-testid="stIconMaterial"] {
-    font-size: 0 !important;
-    color: transparent !important;
-    line-height: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    display: inline-block !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    user-select: none !important;
 }
 
-/* Expander collapse/expand toggle icon ONLY */
-[data-testid="stExpanderToggleIcon"] span {
-    font-size: 0 !important;
-    color: transparent !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-    display: inline-block !important;
-    line-height: 0 !important;
-}
-
-/* ── Expander title: ALWAYS visible ──────────────────────────────────── */
+/* 2. EXPANDER TITLE — force-visible via the full Streamlit 1.52 path:
+      summary > span(SummaryHeading) > div(LabelWrapper) > div(Markdown) > p
+      We target every level so any selector depth works.                */
 [data-testid="stExpander"] summary p,
-[data-testid="stExpander"] details > summary p,
-[data-testid="stExpander"] summary > div > p,
-details > summary p,
-.streamlit-expanderHeader p {
-    font-size: 1rem !important;
+[data-testid="stExpander"] summary div p,
+[data-testid="stExpander"] summary span > div p,
+[data-testid="stExpander"] summary span > div > div > p,
+[data-testid="stExpander"] summary span > div > div {
     color: #18738c !important;
-    font-weight: 600 !important;
     -webkit-text-fill-color: #18738c !important;
-    width: auto !important;
-    height: auto !important;
-    max-width: none !important;
-    overflow: visible !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
     display: block !important;
     line-height: 1.4 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+}
+
+/* 3. The outer span (StyledSummaryHeading) wrapping icon + title:
+      must NOT have opacity:0 from rule 1 leaking upward (it doesn't
+      because rule 1 only targets stIconMaterial, but add safety here) */
+[data-testid="stExpander"] summary span {
     opacity: 1 !important;
     visibility: visible !important;
 }
+
+/* 4. Re-hide icon even inside the now-visible summary span:
+      specificity: (0,2,1) beats rule 3's (0,2,0)               */
+[data-testid="stExpander"] summary [data-testid="stIconMaterial"] {
+    opacity: 0 !important;
+}
 </style>
-<script>
-/* JS: hide ONLY spans whose ENTIRE trimmed text content is a known icon
-   ligature name. This is surgical and cannot hide any module title.     */
-(function hideIconText() {
-    var ICON_NAMES = {
-        'keyboard_arrow_right':1,'keyboard_arrow_down':1,'keyboard_arrow_left':1,
-        'keyboard_arrow_up':1,'keyboard_double_arrow_right':1,
-        'keyboard_double_arrow_down':1,'expand_more':1,'expand_less':1,
-        'chevron_right':1,'chevron_left':1,'arrow_forward_ios':1,
-        'arrow_back_ios':1,'Arrow_light':1,'arrow_right':1,
-        'menu':1,'close':1,'add':1,'remove':1,'search':1,'home':1,
-        'settings':1,'info':1,'warning':1,'error':1,'check':1,'check_circle':1
-    };
-    var HIDE = 'font-size:0!important;width:0!important;height:0!important;' +
-               'overflow:hidden!important;display:inline-block!important;' +
-               'color:transparent!important;-webkit-text-fill-color:transparent!important;' +
-               'line-height:0!important;pointer-events:none!important;';
-    function run() {
-        /* Only hide spans that:
-           1. Have the material-symbols CSS class, AND
-           2. Their ENTIRE text is a known icon ligature name            */
-        document.querySelectorAll(
-            'span.material-symbols-rounded, span.material-symbols-outlined'
-        ).forEach(function(el) {
-            var t = (el.textContent || '').trim();
-            if (ICON_NAMES[t] || t.indexOf('keyboard_arrow') === 0 || t.indexOf('keyboard_double') === 0) {
-                el.style.cssText = HIDE;
-                el.setAttribute('aria-hidden', 'true');
-            }
-        });
-    }
-    run();
-    setTimeout(run, 200);
-    setTimeout(run, 700);
-    setTimeout(run, 2000);
-})();
-</script>
 """, unsafe_allow_html=True)
 
 # Password hashing functions using bcrypt
@@ -2944,10 +2912,12 @@ def render_sidebar_navigation():
                 overflow: hidden !important;
                 display: inline-block !important;
             }
-            /* ── ALWAYS keep expander title paragraph visible ── */
+            /* ── ALWAYS keep expander title visible — full Streamlit 1.52 path ── */
             [data-testid="stExpander"] summary p,
-            [data-testid="stExpander"] details > summary p,
-            details > summary p {
+            [data-testid="stExpander"] summary div p,
+            [data-testid="stExpander"] summary span > div p,
+            [data-testid="stExpander"] summary span > div > div > p,
+            [data-testid="stExpander"] summary span > div > div {
                 font-size: 1rem !important;
                 color: #18738c !important;
                 font-weight: 600 !important;
@@ -2959,6 +2929,15 @@ def render_sidebar_navigation():
                 line-height: 1.4 !important;
                 opacity: 1 !important;
                 visibility: visible !important;
+            }
+            /* Expander summary span (StyledSummaryHeading) must stay visible */
+            [data-testid="stExpander"] summary span {
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            /* Re-hide the icon even inside the now-visible span */
+            [data-testid="stExpander"] summary [data-testid="stIconMaterial"] {
+                opacity: 0 !important;
             }
             /* Sidebar toggle / hamburger always overrides any generic header button rule */
             [data-testid="collapsedControl"],
