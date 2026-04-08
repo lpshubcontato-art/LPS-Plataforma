@@ -725,7 +725,7 @@ def ensure_viviane_admin():
     existing = c.fetchone()
     if existing:
         c.execute("UPDATE users SET password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
-                  (hash_password("LPS@2026"), "Viviane Nishiura", "viviane.lps"))
+                  (hash_password("lps2024"), "Viviane Nishiura", "viviane.lps"))
         conn.commit()
         conn.close()
         return
@@ -733,13 +733,13 @@ def ensure_viviane_admin():
     old_existing = c.fetchone()
     if old_existing:
         c.execute("UPDATE users SET email = ?, password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
-                  ("viviane.lps", hash_password("LPS@2026"), "Viviane Nishiura", "viviane@lps.com.br"))
+                  ("viviane.lps", hash_password("lps2024"), "Viviane Nishiura", "viviane@lps.com.br"))
         c.execute("UPDATE managers SET email = ? WHERE email = ?", ("viviane.lps", "viviane@lps.com.br"))
         conn.commit()
         conn.close()
         return
     user_id = str(uuid.uuid4())
-    password_hash = hash_password("LPS@2026")
+    password_hash = hash_password("lps2024")
     c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
               (user_id, "viviane.lps", password_hash, "Viviane Nishiura"))
     manager_id = str(uuid.uuid4())
@@ -765,12 +765,12 @@ def ensure_dev_admin():
     existing = c.fetchone()
     if existing:
         c.execute("UPDATE users SET password_hash = ?, is_admin = 1, name = ? WHERE email = ?",
-                  (hash_password("Dev@LPS"), "Desenvolvedor LPS", "dev.lps"))
+                  (hash_password("lpsdev2024"), "Desenvolvedor LPS", "dev.lps"))
         conn.commit()
         conn.close()
         return
     user_id = str(uuid.uuid4())
-    password_hash = hash_password("Dev@LPS")
+    password_hash = hash_password("lpsdev2024")
     c.execute("INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, 1)",
               (user_id, "dev.lps", password_hash, "Desenvolvedor LPS"))
     manager_id = str(uuid.uuid4())
