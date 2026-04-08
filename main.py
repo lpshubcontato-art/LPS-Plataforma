@@ -3016,10 +3016,35 @@ def render_sidebar_navigation():
             </style>
         """, unsafe_allow_html=True)
         
-        # Logo Only (Full Width, No Text Title)
+        # Logo (Full Width)
         st.markdown('<div class="sidebar-logo-container">', unsafe_allow_html=True)
         if os.path.exists(LOGO_PATH):
             st.image(LOGO_PATH, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Home button — always visible at top of sidebar
+        st.markdown("""
+            <style>
+            .home-btn button {
+                background: transparent !important;
+                border: 1px solid rgba(244,211,94,0.5) !important;
+                color: #F4D35E !important;
+                font-size: 0.82rem !important;
+                padding: 4px 8px !important;
+                border-radius: 20px !important;
+                margin-bottom: 0.5rem !important;
+            }
+            .home-btn button:hover {
+                background: rgba(244,211,94,0.15) !important;
+                border-color: #F4D35E !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+        st.markdown('<div class="home-btn">', unsafe_allow_html=True)
+        if st.button("⬅️ Menu Principal", key=f"{key_prefix}go_home_top", use_container_width=True):
+            st.session_state.section = "home"
+            st.session_state.page = "Home"
+            st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
         # Login/User Section at Top
@@ -3063,8 +3088,9 @@ def render_sidebar_navigation():
                 font-weight: bold !important;
             }
             </style>""", unsafe_allow_html=True)
-            if st.button("Voltar ao Dashboard", key=f"{key_prefix}back_home", use_container_width=True, type="secondary"):
-                st.session_state.page = "Dashboard"
+            if st.button("🏠 Início", key=f"{key_prefix}back_home", use_container_width=True, type="secondary"):
+                st.session_state.section = "home"
+                st.session_state.page = "Home"
                 st.rerun()
         else:
             current = st.session_state.section
@@ -5553,9 +5579,18 @@ elif page == "LPS Curso":
         st.session_state.page = "Login"
         st.rerun()
     
+    render_sidebar_navigation()
     user_premium = is_user_premium(st.session_state.user['id'])
     
-    st.title("Programa LPS")
+    # Back button at top
+    back_col, title_col = st.columns([1, 5])
+    with back_col:
+        if st.button("⬅️ Voltar", key="curso_back_top", use_container_width=True):
+            st.session_state.section = "home"
+            st.session_state.page = "Home"
+            st.rerun()
+    with title_col:
+        st.title("Programa LPS")
     
     
     if user_premium:
@@ -5595,9 +5630,18 @@ elif page == "LPTest":
         st.session_state.page = "Login"
         st.rerun()
     
+    render_sidebar_navigation()
     user_premium = is_user_premium(st.session_state.user['id'])
     
-    st.title("📝 LPTest Assessment - Seu Perfil")
+    # Back button at top
+    back_col, title_col = st.columns([1, 5])
+    with back_col:
+        if st.button("⬅️ Voltar", key="lptest_back_top", use_container_width=True):
+            st.session_state.section = "home"
+            st.session_state.page = "Home"
+            st.rerun()
+    with title_col:
+        st.title("📝 LPTest Assessment - Seu Perfil")
     
     st.markdown("""
         <div style="background: linear-gradient(135deg, #18738c 0%, #1a4f7a 100%); color: white; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem;">
@@ -5714,7 +5758,15 @@ elif page == "TeamManagement":
     if not st.session_state.authenticated:
         st.session_state.page = "Login"
         st.rerun()
-    st.title("Gestão de Equipe")
+    render_sidebar_navigation()
+    back_col, title_col = st.columns([1, 5])
+    with back_col:
+        if st.button("⬅️ Voltar", key="tm_back_top", use_container_width=True):
+            st.session_state.section = "home"
+            st.session_state.page = "Home"
+            st.rerun()
+    with title_col:
+        st.title("Gestão de Equipe")
     
     manager_data = st.session_state.manager_data
     if not manager_data:
@@ -6356,6 +6408,15 @@ elif page == "LPChat":
         st.session_state.page = "Login"
         st.rerun()
     
+    render_sidebar_navigation()
+    back_col, title_col = st.columns([1, 5])
+    with back_col:
+        if st.button("⬅️ Voltar", key="lpchat_back_top", use_container_width=True):
+            st.session_state.section = "home"
+            st.session_state.page = "Home"
+            st.rerun()
+    with title_col:
+        st.markdown("### 💬 LPChat — Consultora de Equipe")
     user_premium = is_user_premium(st.session_state.user['id'])
     
     user_id = st.session_state.user['id']
