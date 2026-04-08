@@ -290,6 +290,93 @@ def send_welcome_email(user_email, user_name, password):
     
     return send_email(user_email, subject, html_content)
 
+def send_invite_link_email(employee_name, employee_email, invite_link, manager_name, invite_type="equipe"):
+    """Send invite link to employee/leader so they can access the assessment."""
+    tipo_label = "Assessment de Equipe LPS" if invite_type == "equipe" else "Assessment de Liderança LPS"
+    tipo_desc = (
+        "mapeamento do seu perfil dentro da equipe"
+        if invite_type == "equipe"
+        else "assessment completo do seu perfil de liderança"
+    )
+    subject = f"Seu convite para o {tipo_label}"
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
+            .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }}
+            .header {{ background: linear-gradient(135deg, #18738c, #1a5490); color: white; padding: 35px 30px; text-align: center; }}
+            .header h1 {{ margin: 0 0 8px 0; color: #d19f09; font-size: 1.6rem; }}
+            .header p {{ margin: 0; opacity: 0.9; font-size: 1rem; }}
+            .content {{ padding: 35px 30px; line-height: 1.7; color: #333; }}
+            .invite-box {{ background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 4px solid #18738c; padding: 20px 25px; border-radius: 8px; margin: 25px 0; }}
+            .invite-box p {{ margin: 0 0 8px 0; font-size: 0.9rem; color: #666; }}
+            .invite-box a {{ color: #18738c; word-break: break-all; font-size: 0.88rem; }}
+            .cta-button {{ display: inline-block; background: linear-gradient(135deg, #d19f09, #c08a00); color: #18738c; padding: 16px 40px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1.05rem; margin: 20px 0; letter-spacing: 0.5px; }}
+            .steps {{ background: #f8f9fa; padding: 20px 25px; border-radius: 8px; margin: 20px 0; }}
+            .steps h4 {{ margin: 0 0 12px 0; color: #18738c; }}
+            .steps ol {{ margin: 0; padding-left: 20px; }}
+            .steps li {{ padding: 5px 0; color: #555; }}
+            .signature {{ margin-top: 30px; padding-top: 20px; border-top: 2px solid #f0f0f0; }}
+            .footer {{ background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 0.85rem; color: #888; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Liderança Psicanalítica</h1>
+                <p>Você foi convidado(a) para o {tipo_label}</p>
+            </div>
+            <div class="content">
+                <p>Olá, <strong>{employee_name}</strong>!</p>
+                <p>
+                    <strong>{manager_name}</strong> convidou você para realizar o {tipo_desc}
+                    na Plataforma LPS — uma metodologia que une Neurociência e Psicanálise
+                    para mapear perfis e potencializar equipes.
+                </p>
+
+                <p style="text-align: center;">
+                    <a href="{invite_link}" class="cta-button">Acessar Meu Assessment</a>
+                </p>
+
+                <div class="invite-box">
+                    <p>Se o botão não funcionar, copie e cole este link no seu navegador:</p>
+                    <a href="{invite_link}">{invite_link}</a>
+                </div>
+
+                <div class="steps">
+                    <h4>Como funciona:</h4>
+                    <ol>
+                        <li>Clique no link acima</li>
+                        <li>Informe seu nome e e-mail para começar</li>
+                        <li>Responda as questões do assessment (cerca de 15 minutos)</li>
+                        <li>Seu perfil será mapeado automaticamente</li>
+                    </ol>
+                </div>
+
+                <p style="color: #666; font-size: 0.9rem;">
+                    <strong>Importante:</strong> este link é individual. Não compartilhe com outras pessoas.
+                </p>
+
+                <div class="signature">
+                    <p>Atenciosamente,<br><strong>Viviane Nishiura &amp; Equipe LPS</strong><br>
+                    <span style="color: #18738c; font-size: 0.9rem;">contato@lps.com.br</span></p>
+                </div>
+            </div>
+            <div class="footer">
+                <p>Este é um e-mail automático da Plataforma LPS.</p>
+                <p>Liderança Psicanalítica — Transformando gestores em líderes conscientes.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    return send_email(employee_email, subject, html_content)
+
 # Definir diretório de trabalho como local do script
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -5725,7 +5812,11 @@ elif page == "TeamManagement":
                     </style>
                 """, unsafe_allow_html=True)
                 st.markdown("<div class='gestao-card'><h3>Cadastro de E-mails Autorizados</h3>", unsafe_allow_html=True)
-                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Cadastre os colaboradores e compartilhe o link de convite gerado. Ao clicar no link, eles acessam diretamente o assessment.</p>", unsafe_allow_html=True)
+                if is_email_configured():
+                    st.markdown("<p style='color: #155724; background:#d4edda; border-radius:6px; padding:8px 12px; font-size:0.88rem;'>✅ E-mail automático ativo — o convite será enviado por e-mail ao cadastrar.</p>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<p style='color: #856404; background:#fff3cd; border-radius:6px; padding:8px 12px; font-size:0.88rem;'>⚠️ E-mail automático não configurado. O link será exibido abaixo para cópia manual. Configure as Secrets SMTP para ativar o envio automático.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #666; font-size: 0.9rem;'>Cadastre os colaboradores. O link de convite será gerado e enviado por e-mail automaticamente.</p>", unsafe_allow_html=True)
                 
                 with st.form("tm_add_auth_email_form", clear_on_submit=True):
                     col_name, col_email, col_type = st.columns([2, 2, 1])
@@ -5736,12 +5827,25 @@ elif page == "TeamManagement":
                     with col_type:
                         auth_type = st.selectbox("Tipo", ["equipe", "lider"], format_func=lambda x: "Equipe" if x == "equipe" else "Líder", key="tm_auth_type_select")
                     
-                    submit_auth = st.form_submit_button("Cadastrar E-mail", use_container_width=True, type="primary")
+                    submit_auth = st.form_submit_button("Cadastrar e Enviar Convite por E-mail", use_container_width=True, type="primary")
                     if submit_auth:
                         if auth_name and auth_email:
                             success, error = add_authorized_user(auth_email, auth_name, auth_type, user_id)
                             if success:
-                                st.success(f"E-mail {auth_email} cadastrado com sucesso!")
+                                # Retrieve the token just created and send the invite email
+                                _au_rec = check_email_authorized(auth_email)
+                                if _au_rec and _au_rec[8]:
+                                    _inv_token = _au_rec[8]
+                                    _tipo_param = "lider" if auth_type == "lider" else "equipe"
+                                    _invite_link = f"{get_app_url()}/?tipo={_tipo_param}&ref={_inv_token}"
+                                    _mgr_name = st.session_state.user.get('name', 'Seu Gestor')
+                                    _ok, _msg = send_invite_link_email(auth_name, auth_email, _invite_link, _mgr_name, auth_type)
+                                    if _ok:
+                                        st.success(f"✅ {auth_email} cadastrado e convite enviado por e-mail!")
+                                    else:
+                                        st.warning(f"Cadastrado com sucesso, mas o e-mail não foi enviado: {_msg}. Copie o link manualmente abaixo.")
+                                else:
+                                    st.success(f"E-mail {auth_email} cadastrado! Copie o link abaixo para enviar ao colaborador.")
                                 st.rerun()
                             else:
                                 st.warning(error)
@@ -5783,7 +5887,8 @@ elif page == "TeamManagement":
                             if au_token:
                                 tipo_param = "lider" if au_type == "lider" else "equipe"
                                 full_link = f"{base_url}/?tipo={tipo_param}&ref={au_token}"
-                                col_link, col_del = st.columns([5, 1])
+                                mgr_name_for_email = st.session_state.user.get('name', 'Seu Gestor')
+                                col_link, col_email_btn, col_del = st.columns([4, 1.5, 0.7])
                                 with col_link:
                                     st.text_input(
                                         f"Link de convite — {au_name}",
@@ -5792,6 +5897,13 @@ elif page == "TeamManagement":
                                         label_visibility="collapsed",
                                         help="Selecione e copie este link. Envie por WhatsApp ou e-mail."
                                     )
+                                with col_email_btn:
+                                    if st.button("📧 Reenviar e-mail", key=f"tm_resend_{au_id}", help=f"Reenviar link de convite para {au_email}", use_container_width=True):
+                                        _ok, _msg = send_invite_link_email(au_name, au_email, full_link, mgr_name_for_email, au_type)
+                                        if _ok:
+                                            st.success(f"E-mail reenviado para {au_email}!")
+                                        else:
+                                            st.error(f"Falha ao enviar: {_msg}")
                                 with col_del:
                                     if st.button("🗑", key=f"tm_remove_auth_{au_id}", help="Remover cadastro"):
                                         delete_authorized_user(au_id)
@@ -5808,6 +5920,11 @@ elif page == "TeamManagement":
                                         c_t.execute("INSERT INTO invite_links (id, token, invite_type, created_by) VALUES (?, ?, ?, ?)", (link_id, new_token, au_type, user_id))
                                         conn_t.commit()
                                         conn_t.close()
+                                        # Try sending the email with the new token
+                                        _mgr_name_regen = st.session_state.user.get('name', 'Seu Gestor')
+                                        _tipo_p = "lider" if au_type == "lider" else "equipe"
+                                        _new_link = f"{base_url}/?tipo={_tipo_p}&ref={new_token}"
+                                        send_invite_link_email(au_name, au_email, _new_link, _mgr_name_regen, au_type)
                                         st.rerun()
                                 with col_del:
                                     if st.button("🗑", key=f"tm_remove_auth_{au_id}", help="Remover cadastro"):
