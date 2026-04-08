@@ -919,6 +919,19 @@ def get_invite_by_token(token):
     c = conn.cursor()
     c.execute("SELECT * FROM invite_links WHERE token = ?", (token,))
     result = c.fetchone()
+    if not result:
+        # Fallback: check authorized_users.invite_token and synthesize a record
+        c.execute("SELECT * FROM authorized_users WHERE invite_token = ?", (token,))
+        au = c.fetchone()
+        if au:
+            # Synthesize an invite_links-compatible tuple so the caller can proceed
+            # Fields: id, token, invite_type, created_by, used_by_email, is_used, created_at, used_at
+            au_status = au[4] if len(au) > 4 else 'pendente'
+            is_used = 1 if au_status == 'concluido' else 0
+            invite_type = au[3] if len(au) > 3 else 'equipe'
+            invited_by = au[5] if len(au) > 5 else None
+            used_by = au[1] if is_used else None
+            result = (au[0], token, invite_type, invited_by, used_by, is_used, au[7] if len(au) > 7 else None, None)
     conn.close()
     return result
 
@@ -1422,21 +1435,21 @@ def get_ai_insights(manager_id, user_id):
 
 def get_app_url():
     """Get the public-facing base URL of this app (used for invite links).
-    Priority: deployed production URL > known production domain.
-    Never uses the dev-workspace domain (REPLIT_DEV_DOMAIN) because
-    that URL requires Replit login and employees cannot access it.
+    ALWAYS returns the production URL — never the dev domain (.replit.dev)
+    because dev domains require Replit login and employees cannot access them.
     """
-    # 1. Deployment URL (set when the app is published/deployed)
-    deploy_url = os.environ.get('REPLIT_DEPLOYMENT_URL', '')
-    if deploy_url:
+    # 1. Explicit deployment URL env var (safest)
+    deploy_url = os.environ.get('REPLIT_DEPLOYMENT_URL', '').strip()
+    if deploy_url and '.replit.dev' not in deploy_url:
         return deploy_url.rstrip('/') if deploy_url.startswith('https://') else f"https://{deploy_url.rstrip('/')}"
-    # 2. REPLIT_DOMAINS env var (available on deployed apps, comma-separated)
-    domains_env = os.environ.get('REPLIT_DOMAINS', '')
+    # 2. REPLIT_DOMAINS only when it is NOT the dev domain
+    domains_env = os.environ.get('REPLIT_DOMAINS', '').strip()
     if domains_env:
-        first_domain = domains_env.split(',')[0].strip()
-        if first_domain:
-            return f"https://{first_domain}"
-    # 3. Hardcoded production URL — safe fallback for sharing
+        for domain in domains_env.split(','):
+            domain = domain.strip()
+            if domain and '.replit.dev' not in domain and '.janeway.replit' not in domain:
+                return f"https://{domain}"
+    # 3. Always fall back to the hardcoded production URL
     return "https://lps-plataforma.replit.app"
 
 # Estilização Customizada
@@ -2640,13 +2653,14 @@ MODULES_DATA = [
 query_params = st.query_params
 is_employee_access = False
 
-# Invite link detection: ?tipo=equipe&ref=token123
+# Invite link detection: ?tipo=equipe&ref=token123  — PUBLIC, no login required
 if 'ref' in query_params and 'tipo' in query_params:
     invite_ref = query_params['ref']
     invite_tipo = query_params['tipo']
     st.session_state.invite_ref = invite_ref
     st.session_state.invite_tipo = invite_tipo
     st.session_state.page = "InviteWelcome"
+    is_employee_access = True  # treat as employee access so auth guard never blocks
 
 # Token in URL - set session state (legacy employee access)
 if 'token' in query_params:
@@ -2654,9 +2668,10 @@ if 'token' in query_params:
     st.session_state.page = "EmployeeAssessment"
     is_employee_access = True
 
-# Invite session state persistence
-if st.session_state.get('invite_ref') and not st.session_state.get('authenticated') and not st.session_state.get('invite_email_verified'):
-    if st.session_state.get('page') != "InviteWelcome":
+# Invite session state persistence — keep on InviteWelcome while filling form
+if st.session_state.get('invite_ref') and not st.session_state.get('authenticated'):
+    is_employee_access = True
+    if st.session_state.get('page') not in ("InviteWelcome", "EmployeeAssessment"):
         st.session_state.page = "InviteWelcome"
 
 # Token already in session state - maintain employee access lock
@@ -2665,7 +2680,7 @@ if st.session_state.get('employee_token') and not st.session_state.get('authenti
     is_employee_access = True
 
 # Default: if not authenticated and no token/invite, show Home (vitrine)
-if not st.session_state.get('authenticated') and not is_employee_access and not st.session_state.get('invite_ref'):
+if not st.session_state.get('authenticated') and not is_employee_access:
     if st.session_state.page not in ("Home", "Login", "InviteWelcome", "EmployeeAssessment"):
         st.session_state.page = "Home"
 
@@ -4589,11 +4604,17 @@ def generate_individual_pdf_report(employee_tuple, manager_name=""):
     
     return generate_individual_pdf(employee_data, manager_name).getvalue()
 
-# GLOBAL EMPLOYEE ACCESS GUARD - Force employees to stay on EmployeeAssessment
-# This runs before every page render to prevent any navigation
-if is_employee_access and page != "EmployeeAssessment":
-    st.session_state.page = "EmployeeAssessment"
-    page = "EmployeeAssessment"
+# GLOBAL EMPLOYEE ACCESS GUARD - Force employees to stay on their assessment pages
+# Allows InviteWelcome (form) and EmployeeAssessment (test), blocks everything else
+if is_employee_access and page not in ("InviteWelcome", "EmployeeAssessment"):
+    # If already past the invite form (has employee_token), go to assessment
+    if st.session_state.get('employee_token'):
+        st.session_state.page = "EmployeeAssessment"
+        page = "EmployeeAssessment"
+    else:
+        # Still filling the invite form
+        st.session_state.page = "InviteWelcome"
+        page = "InviteWelcome"
 
 # Pages
 if page == "Home":
