@@ -306,19 +306,7 @@ if 'cache_cleared' not in st.session_state:
     st.cache_resource.clear()
     st.session_state.cache_cleared = True
 
-st.markdown("""<style>
-[data-testid='stExpander'] summary p,
-[data-testid='stExpander'] summary span,
-[data-testid='stExpander'] summary div,
-[data-testid='stExpander'] p {
-    color: #18738c !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    font-size: 1.05rem !important;
-    font-weight: 600 !important;
-}
-</style>""", unsafe_allow_html=True)
+st.markdown("<style>[data-testid='stExpander'] * { visibility: visible !important; opacity: 1 !important; display: block !important; }</style>", unsafe_allow_html=True)
 
 # Password hashing functions using bcrypt
 def hash_password(password):
@@ -674,8 +662,8 @@ def _ensure_admin_user(email, password, name, is_viviane=False):
     conn.close()
 
 # ── OFFICIAL ACCOUNTS — the only two admin users on this platform ─────────
-_ensure_admin_user("contato@lps.com.br", "lps2024",    "Viviane Nishiura", is_viviane=True)
-_ensure_admin_user("suporte@lps.com.br", "lpsdev2026", "Suporte LPS",      is_viviane=False)
+_ensure_admin_user("viviane@lps.com.br", "lps2024",    "Viviane Nishiura", is_viviane=True)
+_ensure_admin_user("dev@lps.com.br",     "lpsdev2026", "Dev LPS",          is_viviane=False)
 
 # Run automatic backup on startup (once per day)
 auto_backup_on_startup()
@@ -5393,20 +5381,6 @@ elif page == "LPS Curso":
     
     st.title("Programa LPS")
     
-    st.markdown("""
-        <style>
-        [data-testid="stExpander"] summary p,
-        [data-testid="stExpander"] summary span,
-        [data-testid="stExpander"] summary div {
-            color: #18738c !important;
-            font-weight: 700 !important;
-            font-size: 1.05rem !important;
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
     
     if user_premium:
         user_id = st.session_state.user['id']
