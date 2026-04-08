@@ -308,20 +308,21 @@ if 'cache_cleared' not in st.session_state:
 
 st.markdown("""
 <style>
-/* ── Hide the expand/collapse arrow icon text ONLY ──────────────────
-   Target: <span data-testid="stIconMaterial" translate="no">keyboard_arrow_right</span>
-   font-size:0 makes the text invisible; layout space preserved.       */
-[data-testid="stIconMaterial"] {
-    font-size: 0px !important;
-    color: transparent !important;
-    user-select: none !important;
-    pointer-events: none !important;
-}
+/* ══════════════════════════════════════════════════════════════
+   EXPANDER TITLE RESTORATION — every possible selector path
+   Uses stMarkdownContainer as reliable anchor, plus fallbacks.
+   NO icon hiding here — let Streamlit render arrows naturally.
+   ══════════════════════════════════════════════════════════════ */
 
-/* ── EXPANDER TITLES: force fully visible ────────────────────────────
-   Streamlit 1.52 path: summary > span > div > div > p
-   Every ancestor in the chain is also listed for safety.              */
-summary span div div p {
+/* Primary: via stMarkdownContainer (most reliable) */
+[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"] p,
+[data-testid="stExpander"] summary [data-testid="stMarkdownContainer"],
+/* Fallback paths */
+[data-testid="stExpander"] summary p,
+[data-testid="stExpander"] summary div p,
+[data-testid="stExpander"] summary span p,
+[data-testid="stExpander"] summary span div p,
+[data-testid="stExpander"] summary span div div p {
     opacity: 1 !important;
     visibility: visible !important;
     color: #18738c !important;
@@ -329,19 +330,21 @@ summary span div div p {
     font-size: 1.1rem !important;
     font-weight: 600 !important;
     display: block !important;
+    max-height: none !important;
+    overflow: visible !important;
     line-height: 1.4 !important;
 }
-summary span div div,
-summary span div,
-summary span {
+
+/* Ensure no ancestor inside summary clips or hides the title */
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary > *,
+[data-testid="stExpander"] summary span,
+[data-testid="stExpander"] summary span > div,
+[data-testid="stExpander"] summary span > div > div {
+    overflow: visible !important;
+    max-height: none !important;
     opacity: 1 !important;
     visibility: visible !important;
-    overflow: visible !important;
-}
-/* Re-hide the icon that is inside summary span (higher specificity) */
-summary span [data-testid="stIconMaterial"] {
-    font-size: 0px !important;
-    color: transparent !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -2902,21 +2905,6 @@ def render_sidebar_navigation():
             [data-testid="stBaseButton-headerNoPadding"]:hover {
                 background-color: #c5a059 !important;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-            }
-            /* ── Icon text hiding: ONLY target known icon data-testids ── */
-            /* Hide the stIconMaterial span (the text fallback for icons) */
-            [data-testid="stIconMaterial"] {
-                font-size: 0 !important;
-                color: transparent !important;
-                line-height: 0 !important;
-                width: 0 !important;
-                height: 0 !important;
-                overflow: hidden !important;
-                display: inline-block !important;
-            }
-            /* Expander toggle icon wrapper */
-            [data-testid="stExpanderToggleIcon"] {
-                overflow: hidden !important;
             }
             /* Sidebar nav icon spans — hide only within sidebar nav links */
             [data-testid="stSidebarNavLink"] [data-testid="stIconMaterial"],
