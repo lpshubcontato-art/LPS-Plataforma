@@ -382,8 +382,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Configuração da Página - Tema LPS
 st.set_page_config(
-    page_title="Plataforma LPS",
-    page_icon="🧠",
+    page_title="LPS - Liderança Psicanalítica",
+    page_icon="attached_assets/logotipo_1775681856317.jpeg",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -2060,7 +2060,7 @@ if 'selected_module' not in st.session_state:
     st.session_state.selected_module = None
 
 WHATSAPP_URL = "https://wa.me/5511971419453"
-LOGO_PATH = "attached_assets/logotipo_2__1768529013163.jpeg"
+LOGO_PATH = "attached_assets/logotipo_1775681856317.jpeg"
 
 # Definicoes das questoes do Assessment (8 blocos: 7x8 + 1x14 = 70 questoes totais)
 ASSESSMENT_QUESTIONS = {
@@ -3397,7 +3397,7 @@ def create_pdf_styles():
 
 def create_pdf_header_table():
     """Create a styled header table with LPS logo and branding."""
-    logo_path = "attached_assets/logotipo_1768443722848.jpeg"
+    logo_path = "attached_assets/logotipo_1775681856317.jpeg"
     
     # Check if logo exists
     if os.path.exists(logo_path):
@@ -3619,7 +3619,7 @@ def generate_ai_analysis_pdf(manager_name, analysis_text, employees_data):
 def _pdf_page_decorator(canvas_obj, doc_obj):
     """Draw LPS logo at top-right and page number at bottom of every page."""
     canvas_obj.saveState()
-    logo_path = "attached_assets/logotipo_1768443722848.jpeg"
+    logo_path = "attached_assets/logotipo_1775681856317.jpeg"
     page_width = A4[0]
     if os.path.exists(logo_path):
         try:
