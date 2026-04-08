@@ -1965,12 +1965,72 @@ st.markdown("""
 
 def vimeo_video(url):
     video_id = url.split('/')[-1].split('?')[0]
-    st.markdown(
-        f'<iframe src="https://player.vimeo.com/video/{video_id}" '
-        f'width="100%" height="360" frameborder="0" '
-        f'allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>',
-        unsafe_allow_html=True
+    player_id = f"vp_{video_id}"
+    embed_url = (
+        f"https://player.vimeo.com/video/{video_id}"
+        f"?api=1&player_id={player_id}&badge=0&autopause=0&dnt=1"
     )
+    html_code = f"""
+    <style>
+      .vimeo-wrapper {{
+        position: relative; width: 100%; padding-bottom: 56.25%;
+        background: #0D3B66; border-radius: 8px; overflow: hidden;
+      }}
+      .vimeo-wrapper iframe {{
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%; border: 0;
+      }}
+      .vimeo-error {{
+        display: none; position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%; background: #0D3B66;
+        flex-direction: column; align-items: center;
+        justify-content: center; text-align: center;
+        padding: 2rem; box-sizing: border-box;
+        font-family: Ubuntu, sans-serif;
+      }}
+      .vimeo-error h3 {{ color: #F4D35E; margin-bottom: 0.5rem; font-size: 1.1rem; }}
+      .vimeo-error p {{ color: #cce0ec; margin: 0.3rem 0; font-size: 0.85rem; line-height: 1.5; }}
+    </style>
+    <div class="vimeo-wrapper" id="wrap_{video_id}">
+      <iframe id="{player_id}" src="{embed_url}"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen></iframe>
+      <div class="vimeo-error" id="err_{video_id}">
+        <h3>📹 Vídeo em configuração</h3>
+        <p>Este vídeo ainda está sendo configurado na plataforma.</p>
+        <p>Para liberar o acesso, a administradora deve acessar o Vimeo,<br>
+           entrar no vídeo e ajustar:<br>
+           <strong>Privacidade → Qualquer pessoa com o link</strong><br>
+           <strong>Incorporação → Em qualquer lugar</strong></p>
+        <p style="color:#F4D35E; margin-top:0.8rem;">Em breve disponível ✨</p>
+      </div>
+    </div>
+    <script>
+    (function() {{
+      var ready = false;
+      var errShown = false;
+      function showErr() {{
+        if (errShown) return;
+        errShown = true;
+        var fr = document.getElementById('{player_id}');
+        var er = document.getElementById('err_{video_id}');
+        if (fr) fr.style.display = 'none';
+        if (er) er.style.display = 'flex';
+      }}
+      window.addEventListener('message', function(e) {{
+        if (e.origin.indexOf('vimeo.com') === -1) return;
+        var d;
+        try {{ d = JSON.parse(e.data); }} catch(x) {{ return; }}
+        if (!d) return;
+        if (d.event === 'ready') {{ ready = true; }}
+        if (d.event === 'error') {{ showErr(); }}
+      }});
+      // If no ready event within 8 s, video is private/unavailable
+      setTimeout(function() {{ if (!ready) showErr(); }}, 8000);
+    }})();
+    </script>
+    """
+    st.components.v1.html(html_code, height=380, scrolling=False)
 
 # Inicialização do Estado de Sessão
 if 'page' not in st.session_state:
