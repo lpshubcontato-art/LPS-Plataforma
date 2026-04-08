@@ -1970,66 +1970,63 @@ def vimeo_video(url):
         f"https://player.vimeo.com/video/{video_id}"
         f"?api=1&player_id={player_id}&badge=0&autopause=0&dnt=1"
     )
-    html_code = f"""
-    <style>
-      .vimeo-wrapper {{
-        position: relative; width: 100%; padding-bottom: 56.25%;
-        background: #0D3B66; border-radius: 8px; overflow: hidden;
-      }}
-      .vimeo-wrapper iframe {{
-        position: absolute; top: 0; left: 0;
-        width: 100%; height: 100%; border: 0;
-      }}
-      .vimeo-error {{
-        display: none; position: absolute; top: 0; left: 0;
-        width: 100%; height: 100%; background: #0D3B66;
-        flex-direction: column; align-items: center;
-        justify-content: center; text-align: center;
-        padding: 2rem; box-sizing: border-box;
-        font-family: Ubuntu, sans-serif;
-      }}
-      .vimeo-error h3 {{ color: #F4D35E; margin-bottom: 0.5rem; font-size: 1.1rem; }}
-      .vimeo-error p {{ color: #cce0ec; margin: 0.3rem 0; font-size: 0.85rem; line-height: 1.5; }}
-    </style>
-    <div class="vimeo-wrapper" id="wrap_{video_id}">
-      <iframe id="{player_id}" src="{embed_url}"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen></iframe>
-      <div class="vimeo-error" id="err_{video_id}">
-        <h3>📹 Vídeo em configuração</h3>
-        <p>Este vídeo ainda está sendo configurado na plataforma.</p>
-        <p>Para liberar o acesso, a administradora deve acessar o Vimeo,<br>
-           entrar no vídeo e ajustar:<br>
-           <strong>Privacidade → Qualquer pessoa com o link</strong><br>
-           <strong>Incorporação → Em qualquer lugar</strong></p>
-        <p style="color:#F4D35E; margin-top:0.8rem;">Em breve disponível ✨</p>
-      </div>
-    </div>
-    <script>
-    (function() {{
-      var ready = false;
-      var errShown = false;
-      function showErr() {{
-        if (errShown) return;
-        errShown = true;
-        var fr = document.getElementById('{player_id}');
-        var er = document.getElementById('err_{video_id}');
-        if (fr) fr.style.display = 'none';
-        if (er) er.style.display = 'flex';
-      }}
-      window.addEventListener('message', function(e) {{
-        if (e.origin.indexOf('vimeo.com') === -1) return;
-        var d;
-        try {{ d = JSON.parse(e.data); }} catch(x) {{ return; }}
-        if (!d) return;
-        if (d.event === 'ready') {{ ready = true; }}
-        if (d.event === 'error') {{ showErr(); }}
-      }});
-      // If no ready event within 8 s, video is private/unavailable
-      setTimeout(function() {{ if (!ready) showErr(); }}, 8000);
-    }})();
-    </script>
-    """
+    # Each call to st.components.v1.html is its own isolated iframe DOM,
+    # so using fixed ids (#fr, #ld, #er) is safe — no conflicts across videos.
+    html_code = f"""<!DOCTYPE html>
+<html><head>
+<style>
+  *{{margin:0;padding:0;box-sizing:border-box;}}
+  html,body{{width:100%;height:100%;background:#0D3B66;overflow:hidden;}}
+  #wrap{{position:relative;width:100%;height:100%;background:#0D3B66;border-radius:8px;overflow:hidden;}}
+  #fr{{display:none;position:absolute;top:0;left:0;width:100%;height:100%;border:0;}}
+  #ld{{display:flex;position:absolute;top:0;left:0;width:100%;height:100%;
+       align-items:center;justify-content:center;flex-direction:column;gap:12px;}}
+  .spin{{width:34px;height:34px;border:4px solid rgba(244,211,94,.25);
+         border-top:4px solid #F4D35E;border-radius:50%;animation:sp .9s linear infinite;}}
+  @keyframes sp{{to{{transform:rotate(360deg);}}}}
+  .ltxt{{color:#F4D35E;font-family:Ubuntu,sans-serif;font-size:.82rem;}}
+  #er{{display:none;position:absolute;top:0;left:0;width:100%;height:100%;
+       background:#0D3B66;align-items:center;justify-content:center;
+       flex-direction:column;text-align:center;padding:1.5rem;font-family:Ubuntu,sans-serif;}}
+  #er h3{{color:#F4D35E;font-size:1rem;margin-bottom:8px;}}
+  #er p{{color:#cce0ec;font-size:.80rem;line-height:1.6;margin:3px 0;}}
+  #er .nt{{color:#F4D35E;margin-top:10px;font-size:.82rem;}}
+</style>
+</head><body>
+<div id="wrap">
+  <div id="ld"><div class="spin"></div><span class="ltxt">Carregando vídeo…</span></div>
+  <iframe id="fr" src="{embed_url}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+  <div id="er">
+    <h3>📹 Vídeo em configuração</h3>
+    <p>Este vídeo está sendo configurado na plataforma Vimeo.</p>
+    <p>Para liberar, acesse o Vimeo, abra o vídeo e ajuste:<br>
+       <strong>Privacidade → Qualquer pessoa com o link</strong><br>
+       <strong>Incorporação → Em qualquer lugar</strong></p>
+    <p class="nt">Em breve disponível ✨</p>
+  </div>
+</div>
+<script>
+(function(){{
+  var fr=document.getElementById('fr');
+  var ld=document.getElementById('ld');
+  var er=document.getElementById('er');
+  var done=false;
+  function showVideo(){{if(done)return;done=true;ld.style.display='none';fr.style.display='block';}}
+  function showError(){{if(done)return;done=true;ld.style.display='none';er.style.display='flex';}}
+  window.addEventListener('message',function(e){{
+    if(typeof e.data!=='string')return;
+    var d;try{{d=JSON.parse(e.data);}}catch(x){{return;}}
+    if(!d)return;
+    if(d.player_id==='{player_id}'||(!d.player_id&&d.event)){{
+      if(d.event==='ready')showVideo();
+      if(d.event==='error')showError();
+    }}
+  }});
+  // Fallback: if no ready event within 5s, video is private/unavailable
+  setTimeout(function(){{if(!done)showError();}},5000);
+}})();
+</script>
+</body></html>"""
     st.components.v1.html(html_code, height=380, scrolling=False)
 
 # Inicialização do Estado de Sessão
