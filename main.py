@@ -2885,76 +2885,59 @@ def render_sidebar_navigation():
                 background-color: #c5a059 !important;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
             }
-            /* Hide ALL Material Icon text fallback everywhere */
+            /* ── Icon text hiding: ONLY target known icon data-testids ── */
+            /* Hide the stIconMaterial span (the text fallback for icons) */
             [data-testid="stIconMaterial"] {
                 font-size: 0 !important;
+                color: transparent !important;
                 line-height: 0 !important;
                 width: 0 !important;
                 height: 0 !important;
                 overflow: hidden !important;
-                display: none !important;
+                display: inline-block !important;
             }
-            /* Also target the expand sidebar button specifically */
-            [data-testid="stExpandSidebarButton"] span,
-            [data-testid="stBaseButton-headerNoPadding"] span[data-testid="stIconMaterial"],
-            button[aria-label*="sidebar"] span[data-testid="stIconMaterial"] {
-                display: none !important;
-            }
-            /* Hide any material icon span that renders text - including expander arrows */
-            span.material-symbols-rounded,
-            span.material-symbols-outlined,
-            span[class*="material"] {
-                font-size: 0 !important;
-                display: none !important;
-            }
-            /* Hide expander icon text fallback (Arrow_light etc) */
-            [data-testid="stExpander"] span[data-testid="stIconMaterial"],
-            [data-testid="stExpanderToggleIcon"] span,
-            details summary span[class*="material"],
-            .streamlit-expanderHeader span[class*="material"] {
-                font-size: 0 !important;
-                display: none !important;
-                visibility: hidden !important;
-                width: 0 !important;
-                height: 0 !important;
+            /* Expander toggle icon wrapper */
+            [data-testid="stExpanderToggleIcon"] {
                 overflow: hidden !important;
             }
-            /* Global: hide ALL material icon text fallback everywhere */
-            [data-testid="stIconMaterial"],
-            span[data-testid="stIconMaterial"],
-            [data-testid="collapsedControl"] span,
-            [data-testid="stSidebarCollapseButton"] span,
-            button[data-testid="baseButton-headerNoPadding"] span,
-            [data-testid="stSidebarCollapsedControl"] span,
-            button[kind="header"] span,
-            [data-testid="stHeader"] button span,
-            [data-testid="stSidebarNav"] span[class*="material"],
-            [data-testid="stSidebarNavLink"] span[class*="material"] {
+            [data-testid="stExpanderToggleIcon"] span {
                 font-size: 0 !important;
                 color: transparent !important;
-                overflow: hidden !important;
                 width: 0 !important;
                 height: 0 !important;
+                overflow: hidden !important;
                 display: inline-block !important;
-                line-height: 0 !important;
             }
-            /* Force Material Symbols font to load and render as icons not text */
-            @font-face {
-                font-family: 'Material Symbols Rounded';
-                font-style: normal;
-                font-display: block;
-            }
-            /* Catch-all: any span whose text is a known icon name */
-            [data-testid="stHeader"] button,
-            [data-testid="stSidebarCollapsedControl"] button {
+            /* Material symbol CSS class-based spans (safe: these class names are specific) */
+            span.material-symbols-rounded,
+            span.material-symbols-outlined {
                 font-size: 0 !important;
-                line-height: 0 !important;
+                color: transparent !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                display: inline-block !important;
             }
-            [data-testid="stHeader"] button svg,
-            [data-testid="stSidebarCollapsedControl"] button svg {
-                font-size: initial !important;
-                width: 24px !important;
-                height: 24px !important;
+            /* Sidebar nav icon spans only */
+            [data-testid="stSidebarNav"] span.material-symbols-rounded,
+            [data-testid="stSidebarNavLink"] span.material-symbols-rounded {
+                display: none !important;
+            }
+            /* ── ALWAYS keep expander title paragraph visible ── */
+            [data-testid="stExpander"] summary p,
+            [data-testid="stExpander"] details > summary p,
+            details > summary p {
+                font-size: 1rem !important;
+                color: #18738c !important;
+                font-weight: 600 !important;
+                -webkit-text-fill-color: #18738c !important;
+                width: auto !important;
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                line-height: 1.4 !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
             /* Sidebar toggle / hamburger always overrides any generic header button rule */
             [data-testid="collapsedControl"],
