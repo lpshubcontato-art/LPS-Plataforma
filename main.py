@@ -1965,20 +1965,17 @@ st.markdown("""
 
 def vimeo_video(url):
     video_id = url.split('/')[-1].split('?')[0]
-    player_id = f"vp_{video_id}"
-    embed_url = (
-        f"https://player.vimeo.com/video/{video_id}"
-        f"?api=1&player_id={player_id}&badge=0&autopause=0&dnt=1"
-    )
-    # Each call to st.components.v1.html is its own isolated iframe DOM,
-    # so using fixed ids (#fr, #ld, #er) is safe — no conflicts across videos.
+    # Uses the official Vimeo Player.js SDK for reliable ready/error detection.
+    # The SDK is loaded inside the component's own sandboxed iframe, so it
+    # communicates directly with the Vimeo player iframe without cross-origin issues.
     html_code = f"""<!DOCTYPE html>
 <html><head>
 <style>
   *{{margin:0;padding:0;box-sizing:border-box;}}
   html,body{{width:100%;height:100%;background:#0D3B66;overflow:hidden;}}
   #wrap{{position:relative;width:100%;height:100%;background:#0D3B66;border-radius:8px;overflow:hidden;}}
-  #fr{{display:none;position:absolute;top:0;left:0;width:100%;height:100%;border:0;}}
+  #player-container{{display:none;position:absolute;top:0;left:0;width:100%;height:100%;}}
+  #player-container iframe{{width:100%;height:100%;border:0;}}
   #ld{{display:flex;position:absolute;top:0;left:0;width:100%;height:100%;
        align-items:center;justify-content:center;flex-direction:column;gap:12px;}}
   .spin{{width:34px;height:34px;border:4px solid rgba(244,211,94,.25);
@@ -1995,35 +1992,62 @@ def vimeo_video(url):
 </head><body>
 <div id="wrap">
   <div id="ld"><div class="spin"></div><span class="ltxt">Carregando vídeo…</span></div>
-  <iframe id="fr" src="{embed_url}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+  <div id="player-container"></div>
   <div id="er">
     <h3>📹 Vídeo em configuração</h3>
-    <p>Este vídeo está sendo configurado na plataforma Vimeo.</p>
-    <p>Para liberar, acesse o Vimeo, abra o vídeo e ajuste:<br>
-       <strong>Privacidade → Qualquer pessoa com o link</strong><br>
-       <strong>Incorporação → Em qualquer lugar</strong></p>
+    <p>Este vídeo estará disponível em breve.</p>
     <p class="nt">Em breve disponível ✨</p>
   </div>
 </div>
+<script src="https://player.vimeo.com/api/player.js"></script>
 <script>
 (function(){{
-  var fr=document.getElementById('fr');
-  var ld=document.getElementById('ld');
-  var er=document.getElementById('er');
-  var done=false;
-  function showVideo(){{if(done)return;done=true;ld.style.display='none';fr.style.display='block';}}
-  function showError(){{if(done)return;done=true;ld.style.display='none';er.style.display='flex';}}
-  window.addEventListener('message',function(e){{
-    if(typeof e.data!=='string')return;
-    var d;try{{d=JSON.parse(e.data);}}catch(x){{return;}}
-    if(!d)return;
-    if(d.player_id==='{player_id}'||(!d.player_id&&d.event)){{
-      if(d.event==='ready')showVideo();
-      if(d.event==='error')showError();
-    }}
-  }});
-  // Fallback: if no ready event within 5s, video is private/unavailable
-  setTimeout(function(){{if(!done)showError();}},5000);
+  var pc = document.getElementById('player-container');
+  var ld = document.getElementById('ld');
+  var er = document.getElementById('er');
+  var done = false;
+
+  function showVideo() {{
+    if (done) return; done = true;
+    ld.style.display = 'none';
+    pc.style.display = 'block';
+  }}
+  function showError() {{
+    if (done) return; done = true;
+    ld.style.display = 'none';
+    er.style.display = 'flex';
+  }}
+
+  // Safety net: if SDK takes too long (e.g. slow network), show error
+  var timeout = setTimeout(function() {{ showError(); }}, 12000);
+
+  try {{
+    var player = new Vimeo.Player(pc, {{
+      id: {video_id},
+      width: '100%',
+      height: '100%',
+      badge: 0,
+      autopause: 0,
+      dnt: 1,
+      responsive: true
+    }});
+
+    player.ready().then(function() {{
+      clearTimeout(timeout);
+      showVideo();
+    }}).catch(function(err) {{
+      clearTimeout(timeout);
+      showError();
+    }});
+
+    player.on('error', function() {{
+      clearTimeout(timeout);
+      showError();
+    }});
+  }} catch(e) {{
+    clearTimeout(timeout);
+    showError();
+  }}
 }})();
 </script>
 </body></html>"""
